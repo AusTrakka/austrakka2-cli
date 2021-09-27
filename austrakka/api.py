@@ -1,5 +1,4 @@
 import requests
-
 import click
 
 
@@ -19,7 +18,12 @@ def _get_headers():
     }
 
 
-def call_api(method: str, path: str, body: dict = None):
+def call_api(
+    method: str, 
+    path: str, 
+    params: dict = None, 
+    body: dict = None,
+):
     url = f'{click.get_current_context().parent.creds["uri"]}/api/{path}'
 
     response = method(
@@ -27,11 +31,11 @@ def call_api(method: str, path: str, body: dict = None):
         headers=_get_headers(),
         verify=False,
         data=body,
+        params=params,
     )
 
-    # TODO: this needs to handle incorrect tokens and displaying an appropriate
-    # message to the user
+    # pylint: disable=no-member
+    if response.status_code != requests.codes.ok:
+        response.raise_for_status()
 
-    print(response.content)
-
-    return response.content
+    return response.json()

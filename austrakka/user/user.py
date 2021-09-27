@@ -5,7 +5,12 @@ USER_PATH = 'Users'
 
 
 def list_users():
-    call_api(
-        get,
-        f'{USER_PATH}?includeall=false'
+    response = call_api(
+        method=get,
+        path=USER_PATH,
+        params={
+            'includeall': False
+        }
     )
+
+    print(response)

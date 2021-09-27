@@ -13,6 +13,7 @@ austrakka = {editable = true, path = "."}
 azure-identity = "*"
 azure-keyvault-secrets = "*"
 requests-toolbelt = "*"
+requests = "*"
 click = "*"
 loguru = "*"
 

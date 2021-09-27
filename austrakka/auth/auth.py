@@ -1,5 +1,4 @@
 import requests
-
 from azure.identity import InteractiveBrowserCredential
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient

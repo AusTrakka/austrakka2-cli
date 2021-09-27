@@ -18,7 +18,7 @@ class CatchAllExceptions(click.Group):
                 logger.remove()
                 logger.add(sys.stderr, level="DEBUG")
             else:
-                logger.exception(exc)
+                logger.error(exc)
                 # Set default log level to INFO
                 logger.remove()
                 logger.add(sys.stderr, level="INFO")
