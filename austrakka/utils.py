@@ -23,3 +23,11 @@ class CatchAllExceptions(click.Group):
                 logger.remove()
                 logger.add(sys.stderr, level="INFO")
             exit(1)
+
+
+def click_option(*args, **kwargs):
+    return click.option(
+        *args,
+        **kwargs,
+        show_default=True
+    )

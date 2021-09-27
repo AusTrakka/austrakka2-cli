@@ -1,13 +1,18 @@
+import requests
+
 from azure.identity import InteractiveBrowserCredential
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
+
 from .auth_enum import Auth
 
 
 def user_login():
     credential = InteractiveBrowserCredential(
-        authority = Auth.AUTHORITY.value,
-        tenant_id = Auth.TENANT_ID.value,
-        client_id = Auth.CLIENT_ID.value,
-        redirect_uri = Auth.REDIRECT_URI.value,
+        authority=Auth.AUTH_URL.value,
+        tenant_id=Auth.TENANT_ID.value,
+        client_id=Auth.CLIENT_ID.value,
+        redirect_uri=Auth.REDIRECT_URI.value,
     )
     record = credential.authenticate(scopes=[Auth.APP_ID.value])
     token = credential.get_token(Auth.APP_ID.value)
@@ -15,6 +20,26 @@ def user_login():
     print(getattr(token, 'token'))
 
 # TODO: for logging in with a service principal
-def process_login():
-    pass
 
+
+def process_login(username: str, secret_name: str):
+    credential = DefaultAzureCredential()
+    client = SecretClient(
+        vault_url=Auth.KEY_VAULT_URI.value,
+        credential=credential
+    )
+
+    retrieved_secret = client.get_secret(secret_name)
+
+    TOKEN_URL = f'{Auth.AUTH_URL.value}/{Auth.TENANT_ID.value}/oauth2/v2.0/token'
+
+    request_payload = {
+        "username": username,
+        "password": retrieved_secret.value,
+        "scope": Auth.APP_ID.value,
+        "grant_type": "password",
+        "client_id": Auth.CLIENT_ID.value
+    }
+
+    print(requests.post(url=TOKEN_URL,
+          data=request_payload).json()["access_token"])
