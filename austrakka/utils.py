@@ -17,3 +17,7 @@ class HandleTopLevelParams(click.Group):
             for param in self.params:
                 param.required = False
             return super(HandleTopLevelParams, self).parse_args(ctx, args)
+
+
+def is_dev_env(env: str):
+    return env == DEVELOPMENT_ENV
