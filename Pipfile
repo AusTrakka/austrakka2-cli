@@ -16,6 +16,8 @@ requests-toolbelt = "*"
 requests = "*"
 click = "*"
 loguru = "*"
+pandas = "*"
+tabulate = "*"
 
 [requires]
 python_version = "3.9"

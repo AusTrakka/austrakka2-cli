@@ -1,6 +1,7 @@
 import click
 
 from .user import list_users
+from ..output import table_format_option
 
 
 @click.group()
@@ -11,6 +12,7 @@ def user(ctx):
 
 
 @user.command('list')
-def user_list():
+@table_format_option()
+def user_list(table_format: str):
     '''List users in AusTrakka'''
-    list_users()
+    list_users(table_format)
