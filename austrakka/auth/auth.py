@@ -13,7 +13,7 @@ def user_login():
         client_id=Auth.CLIENT_ID.value,
         redirect_uri=Auth.REDIRECT_URI.value,
     )
-    record = credential.authenticate(scopes=[Auth.APP_ID.value])
+    credential.authenticate(scopes=[Auth.APP_ID.value])
     token = credential.get_token(Auth.APP_ID.value)
 
     print(getattr(token, 'token'))
@@ -30,8 +30,6 @@ def process_login(username: str, secret_name: str):
 
     retrieved_secret = client.get_secret(secret_name)
 
-    TOKEN_URL = f'{Auth.AUTH_URL.value}/{Auth.TENANT_ID.value}/oauth2/v2.0/token'
-
     request_payload = {
         "username": username,
         "password": retrieved_secret.value,
@@ -40,5 +38,7 @@ def process_login(username: str, secret_name: str):
         "client_id": Auth.CLIENT_ID.value
     }
 
-    print(requests.post(url=TOKEN_URL,
-          data=request_payload).json()["access_token"])
+    print(requests.post(
+        url=f'{Auth.AUTH_URL.value}/{Auth.TENANT_ID.value}/oauth2/v2.0/token',
+        data=request_payload).json()["access_token"]
+    )

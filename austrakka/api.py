@@ -19,9 +19,9 @@ def _get_headers():
 
 
 def call_api(
-    method: str, 
-    path: str, 
-    params: dict = None, 
+    method: str,
+    path: str,
+    params: dict = None,
     body: dict = None,
 ):
     url = f'{click.get_current_context().parent.creds["uri"]}/api/{path}'
