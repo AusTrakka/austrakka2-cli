@@ -1,23 +1,19 @@
 import click
+from .auth import auth
 
 DEVELOPMENT_ENV = 'dev'
 
 
-class IgnoreRequiredWithHelp(click.Group):
+class HandleTopLevelParams(click.Group):
     # pylint: disable=super-with-arguments
     def parse_args(self, ctx, args):
         try:
-            return super(IgnoreRequiredWithHelp, self).parse_args(ctx, args)
+            return super(HandleTopLevelParams, self).parse_args(ctx, args)
         except click.MissingParameter:
-            if '--help' not in args:
+            # if getting help or trying to authorise, ignore top level params
+            if '--help' not in args and args[0] != auth.name:
                 raise
-
             # remove the required params so that help can display
             for param in self.params:
                 param.required = False
-            return super(IgnoreRequiredWithHelp, self).parse_args(ctx, args)
-
-
-class IgnoreTokenRequired(click.Group):
-    pass
-    # TOOD: this needs to ignore the existance of the AT_TOKEN env var
+            return super(HandleTopLevelParams, self).parse_args(ctx, args)

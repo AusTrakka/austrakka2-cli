@@ -1,12 +1,10 @@
 import click
 
 from .auth import user_login
-from .auth import process_login as proc_login
+from .auth import process_login
 
 
-# TODO: the commands here need to ignore the existance of the AT_TOKEN envvar
-
-@click.group()
+@click.group('auth')
 @click.pass_context
 def auth(ctx):
     '''Commands related to auth'''
@@ -34,4 +32,4 @@ def user():
 )
 def process(email, secret):
     '''Get a token as a process'''
-    proc_login(email, secret)
+    process_login(email, secret)

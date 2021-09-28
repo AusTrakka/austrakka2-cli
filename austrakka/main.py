@@ -8,10 +8,10 @@ from loguru import logger
 from .auth import auth
 from .user import user
 from . import __version__ as VERSION
-from .utils import IgnoreRequiredWithHelp
+from .utils import HandleTopLevelParams
 from .utils import DEVELOPMENT_ENV
 
-@click.group(cls=IgnoreRequiredWithHelp)
+@click.group(cls=HandleTopLevelParams)
 @click.option("--uri", show_envvar=True, required=True)
 @click.option("--token", show_envvar=True, required=True)
 @click.version_option(message="%(prog)s v%(version)s", version=VERSION)

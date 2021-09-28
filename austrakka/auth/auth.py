@@ -16,9 +16,7 @@ def user_login():
     credential.authenticate(scopes=[Auth.APP_ID.value])
     token = credential.get_token(Auth.APP_ID.value)
 
-    print(getattr(token, 'token'))
-
-# TODO: for logging in with a service principal
+    print(token.token)
 
 
 def process_login(username: str, secret_name: str):
