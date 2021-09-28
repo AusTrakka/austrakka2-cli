@@ -78,7 +78,7 @@ def format_types():
 def table_format_option():
     return click.option(
         '-f',
-        '--format',
+        '--table-format',
         default=default_format(),
         type=click.Choice(format_types()),
         help='Table formatting option',
