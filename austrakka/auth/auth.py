@@ -1,20 +1,33 @@
+from contextlib import redirect_stdout
+import sys
+
 import requests
-from azure.identity import InteractiveBrowserCredential
+from azure.identity import DeviceCodeCredential
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
+from loguru import logger
 
 from .auth_enum import Auth
 
 
 def user_login():
-    credential = InteractiveBrowserCredential(
-        authority=Auth.AUTH_URL.value,
-        tenant_id=Auth.TENANT_ID.value,
-        client_id=Auth.CLIENT_ID.value,
-        redirect_uri=Auth.REDIRECT_URI.value,
+
+    logger.warning(
+        'NOTE: This may take some time to return a token after '
+        + 'authenticating in the browser'
     )
-    credential.authenticate(scopes=[Auth.APP_ID.value])
-    token = credential.get_token(Auth.APP_ID.value)
+    # redirecting this to stderr so DeviceCodeCredential can print the
+    # azure link and code, and the user can still get the token from the
+    # subprocess
+    with redirect_stdout(sys.stderr):
+        credential = DeviceCodeCredential(
+            authority=Auth.AUTH_URL.value,
+            tenant_id=Auth.TENANT_ID.value,
+            client_id=Auth.CLIENT_ID.value,
+            redirect_uri=Auth.REDIRECT_URI.value,
+        )
+        credential.authenticate(scopes=[Auth.APP_ID.value])
+        token = credential.get_token(Auth.APP_ID.value)
 
     print(token.token)
 

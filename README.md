@@ -7,4 +7,9 @@ CLI for AusTraka V2
 ### User
 
 Set the following env var
-`AT_TOKEN=$(austrakka auth login)`
+`AT_TOKEN=$(austrakka auth user)`
+
+### Process
+
+Set the following env var
+`AT_TOKEN=$(austrakka auth process)`
