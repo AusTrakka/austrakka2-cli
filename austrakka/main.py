@@ -7,6 +7,7 @@ from loguru import logger
 
 from .auth import auth
 from .user import user
+from .analysis import analysis
 from . import __version__ as VERSION
 from .utils import HandleTopLevelParams
 from .utils import is_dev_env
@@ -40,6 +41,7 @@ def main():
     try:
         cli.add_command(auth)
         cli.add_command(user)
+        cli.add_command(analysis)
         # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         cli(auto_envvar_prefix=CLI_PREFIX)
     except Exception as exc:  # pylint: disable=broad-except
