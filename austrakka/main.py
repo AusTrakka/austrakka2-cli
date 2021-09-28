@@ -12,16 +12,15 @@ from .utils import IgnoreRequiredWithHelp
 from .utils import DEVELOPMENT_ENV
 
 @click.group(cls=IgnoreRequiredWithHelp)
-@click.option("--api-key", show_envvar=True, required=True)
 @click.option("--uri", show_envvar=True, required=True)
 @click.option("--token", show_envvar=True, required=True)
 @click.version_option(message="%(prog)s v%(version)s", version=VERSION)
 @click.pass_context
-def cli(ctx: Context, api_key: str, uri: str, token: str):
+def cli(ctx: Context, uri: str, token: str):
     """
     A cli for interfacing with AusTrakka from the command line.
     """
-    ctx.creds = {'api_key': api_key, 'uri': uri, 'token': token}
+    ctx.creds = {'uri': uri, 'token': token}
 
 
 cli.add_command(auth)

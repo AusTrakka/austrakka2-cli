@@ -8,3 +8,4 @@ class Auth(Enum):
     REDIRECT_URI = 'http://localhost:8080'
     APP_ID = 'api://df125604-3b75-46d3-a8ea-e54dc3b5e402/AAP-AusTrakka-API'
     KEY_VAULT_URI = 'https://kvautrdevase01.vault.azure.net'
+    SUBSCRIPTION_KEY = 'd03bb1ce7427476e83178fc949c33e06'

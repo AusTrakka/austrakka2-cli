@@ -1,6 +1,7 @@
 import requests
 import click
 
+from .auth.auth_enum import Auth
 
 get = requests.get
 post = requests.post
@@ -9,12 +10,11 @@ post = requests.post
 def _get_headers():
 
     token = click.get_current_context().parent.creds['token']
-    sub_key = click.get_current_context().parent.creds['api_key']
 
     return {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {token}',
-        'Ocp-Apim-Subscription-Key': sub_key
+        'Ocp-Apim-Subscription-Key': Auth.SUBSCRIPTION_KEY.value
     }
 
 
