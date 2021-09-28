@@ -1,10 +1,15 @@
+from loguru import logger
 import requests
 import click
 
 from .auth.auth_enum import Auth
+from .utils import logger_wraps
 
 get = requests.get
 post = requests.post
+
+
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 def _get_headers():
@@ -18,6 +23,7 @@ def _get_headers():
     }
 
 
+@logger_wraps()
 def call_api(
     method: str,
     path: str,
@@ -34,8 +40,13 @@ def call_api(
         params=params,
     )
 
+    logger.debug(f'{response.status_code} {response.reason}: {response.url}')
+
     # pylint: disable=no-member
     if response.status_code != requests.codes.ok:
+        logger.debug('Response headers:')
+        for key, value in response.headers.items():
+            logger.debug(f'\t{key}:{value}')
         response.raise_for_status()
 
     return response.json()

@@ -1,4 +1,8 @@
+import functools
+
 import click
+from loguru import logger
+
 from .auth import auth
 
 DEVELOPMENT_ENV = 'dev'
@@ -21,3 +25,23 @@ class HandleTopLevelParams(click.Group):
 
 def is_dev_env(env: str):
     return env == DEVELOPMENT_ENV
+
+
+def logger_wraps(*, entry=True, exit_func=True):
+
+    def wrapper(func):
+        name = func.__name__
+
+        @functools.wraps(func)
+        def wrapped(*args, **kwargs):
+            if entry:
+                logger.debug("Entering '{}' (args={}, kwargs={})",
+                             name, args, kwargs)
+            result = func(*args, **kwargs)
+            if exit_func:
+                logger.debug("Exiting '{}' (result={})", name, result)
+            return result
+
+        return wrapped
+
+    return wrapper
