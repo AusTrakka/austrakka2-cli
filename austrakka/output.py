@@ -82,4 +82,5 @@ def table_format_option():
         default=default_format(),
         type=click.Choice(format_types()),
         help='Table formatting option',
+        show_default=True,
     )
