@@ -2,7 +2,6 @@ import click
 
 from .auth import user_login
 from .auth import process_login as proc_login
-from ..utils import click_option
 
 
 @click.group()
@@ -13,27 +12,27 @@ def auth(ctx):
     ctx.creds = ctx.parent.creds
 
 
-@auth.command('login')
+@auth.command('user')
 @click.help_option("-h", "--help")
-def login():
+def user():
     '''Get a token as a user'''
     user_login()
 
 
-@auth.command('process-login')
+@auth.command('process')
 @click.help_option("-h", "--help")
-@click_option(
-    "--process-email",
-    envvar='AUSTRAKKA_PROCESS_EMAIL',
+@click.option(
+    "--email",
+    show_envvar=True,
     required=True,
-    help="Process user's email. Optionally can use AUSTRAKKA_PROCESS_EMAIL env var"
+    help="Process user's email"
 )
-@click_option(
-    "--process-secret",
-    envvar='AUSTRAKKA_PROCESS_SECRET',
+@click.option(
+    "--secret",
+    show_envvar=True,
     required=True,
-    help="Process user's secret name. Optionally can use AUSTRAKKA_PROCESS_SECRET env var"
+    help="Process user's secret name"
 )
-def process_login(process_email, process_secret):
+def process(email, secret):
     '''Get a token as a process'''
-    proc_login(process_email, process_secret)
+    proc_login(email, secret)

@@ -170,7 +170,7 @@ setup(
     # executes the function `main` from this package when invoked:
     # TODO: update this
     entry_points={
-        "console_scripts": ["austrakka=austrakka.main:cli"]
+        "console_scripts": ["austrakka=austrakka.main:main"]
     },  # Optional
     # List additional URLs that are relevant to your project as a dict.
     #

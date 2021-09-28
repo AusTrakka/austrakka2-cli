@@ -7,27 +7,15 @@ from loguru import logger
 DEVELOPMENT_ENV = 'dev'
 
 
-class CatchAllExceptions(click.Group):
-
-    def __call__(self, *args, **kwargs):
+class IgnoreRequiredWithHelp(click.Group):
+    def parse_args(self, ctx, args):
         try:
-            return self.main(*args, **kwargs)
-        except Exception as exc:
-            if os.environ.get("AUSTRAKKA_ENV") == DEVELOPMENT_ENV:
-                logger.exception(exc)
-                logger.remove()
-                logger.add(sys.stderr, level="DEBUG")
-            else:
-                logger.error(exc)
-                # Set default log level to INFO
-                logger.remove()
-                logger.add(sys.stderr, level="INFO")
-            exit(1)
+            return super(IgnoreRequiredWithHelp, self).parse_args(ctx, args)
+        except click.MissingParameter:
+            if '--help' not in args:
+                raise
 
-
-def click_option(*args, **kwargs):
-    return click.option(
-        *args,
-        **kwargs,
-        show_default=True
-    )
+            # remove the required params so that help can display
+            for param in self.params:
+                param.required = False
+            return super(IgnoreRequiredWithHelp, self).parse_args(ctx, args)
