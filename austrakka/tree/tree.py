@@ -13,7 +13,7 @@ def add_tree(file: BufferedReader, analysis_id: int):
         method=post,
         path=f'{TREE_PATH}/{TREE_UPLOAD}',
         body={
-            'file': file,
+            'file': (file.name, file),
             'analysisid': str(analysis_id),
         },
         multipart=True,

@@ -38,7 +38,7 @@ def call_api(
 ) -> Dict:
     url = f'{click.get_current_context().parent.creds["uri"]}/api/{path}'
 
-    data = body if not multipart else MultipartEncoder(body)
+    data = body if not multipart else MultipartEncoder(fields=body)
 
     headers = _get_headers() if not isinstance(data, MultipartEncoder) \
         else _get_headers(data.content_type)
