@@ -17,8 +17,10 @@ from austrakka.utils import is_dev_env
 CLI_PREFIX = 'AT'
 CLI_ENV = 'env'
 
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
-@click.group(cls=HandleTopLevelParams)
+
+@click.group(cls=HandleTopLevelParams, context_settings=CONTEXT_SETTINGS)
 @click.option("--uri", show_envvar=True, required=True)
 @click.option("--token", show_envvar=True, required=True)
 @click.option(
