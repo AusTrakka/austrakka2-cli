@@ -17,9 +17,9 @@ All commands require `AT_URI` and `AT_TOKEN` to be set, except for `auth` comman
 ### User
 
 Set the following env var
-`AT_TOKEN=$(austrakka auth user)`
+`export AT_TOKEN=$(austrakka auth user)`
 
 ### Process
 
 Set the following env var
-`AT_TOKEN=$(austrakka auth process)`
+`export AT_TOKEN=$(austrakka auth process)`
