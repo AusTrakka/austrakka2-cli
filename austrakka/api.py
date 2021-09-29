@@ -76,7 +76,10 @@ def call_api(
         # TODO: Make an actual exception type for this
         raise Exception(f'Request failed: {first_object}')
 
-    if first_object[RESPONSE_TYPE] == RESPONSE_TYPE_SUCCESS:
+    if (
+        RESPONSE_TYPE in first_object
+        and first_object[RESPONSE_TYPE] == RESPONSE_TYPE_SUCCESS
+    ):
         log_dict({'API Response': first_object}, logger.success)
 
     return response.json()
