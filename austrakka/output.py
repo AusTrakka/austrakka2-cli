@@ -1,4 +1,6 @@
 from typing import Any
+from typing import Callable
+from typing import Dict
 from typing import List
 from typing import Union
 import click
@@ -84,3 +86,12 @@ def table_format_option():
         help='Table formatting option',
         show_default=True,
     )
+
+
+def log_dict(items: Dict, log_func: Callable, indent: int = 0) -> None:
+    for key, val in items.items():
+        if isinstance(val, dict):
+            log_func('\t' * indent + f'{key}:')
+            log_dict(val, log_func, indent+1)
+        else:
+            log_func('\t' * indent + f'{key}:{val}')

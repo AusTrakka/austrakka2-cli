@@ -7,9 +7,10 @@ from ..api import post
 TREE_PATH = 'Tree'
 TREE_UPLOAD = 'UploadTree'
 
+
 @logger_wraps()
 def add_tree(file: BufferedReader, analysis_id: int):
-    response = call_api(
+    call_api(
         method=post,
         path=f'{TREE_PATH}/{TREE_UPLOAD}',
         body={
@@ -18,5 +19,3 @@ def add_tree(file: BufferedReader, analysis_id: int):
         },
         multipart=True,
     )
-
-    print(response)

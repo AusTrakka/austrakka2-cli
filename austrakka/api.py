@@ -8,14 +8,17 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from .auth.auth_enum import Auth
 from .utils import logger_wraps
+from .output import log_dict
 
 get = requests.get
 post = requests.post
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
+RESPONSE_TYPE_SUCCESS = 'Success'
 RESPONSE_TYPE_ERROR = 'Error'
 RESPONSE_TYPE = 'ResponseType'
+
 
 def _get_headers(content_type: str = 'application/json') -> Dict:
 
@@ -67,11 +70,13 @@ def call_api(
         failed = True
 
     if failed:
-        logger.debug('Response headers:')
-        for key, value in response.headers.items():
-            logger.debug(f'\t{key}:{value}')
+        log_dict({'Response headers': dict(response.headers)}, logger.debug)
+
         response.raise_for_status()
         # TODO: Make an actual exception type for this
         raise Exception(f'Request failed: {first_object}')
+
+    if first_object[RESPONSE_TYPE] == RESPONSE_TYPE_SUCCESS:
+        log_dict({'API Response': first_object}, logger.success)
 
     return response.json()
