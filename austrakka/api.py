@@ -1,5 +1,6 @@
 from typing import Callable
 from typing import Dict
+from json.decoder import JSONDecodeError
 
 from loguru import logger
 import requests
@@ -18,6 +19,12 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 RESPONSE_TYPE_SUCCESS = 'Success'
 RESPONSE_TYPE_ERROR = 'Error'
 RESPONSE_TYPE = 'ResponseType'
+
+class UnknownResponseException(Exception):
+    pass
+
+class FailedResponseException(Exception):
+    pass
 
 
 def _get_headers(content_type: str = 'application/json') -> Dict:
@@ -56,11 +63,23 @@ def call_api(
 
     logger.debug(f'{response.status_code} {response.reason}: {response.url}')
 
-    parsed_resp = response.json()
-
     # pylint: disable=no-member
     failed = response.status_code != requests.codes.ok
 
+    def check_failed_resp(response):
+        log_dict({'Response headers': dict(response.headers)}, logger.debug)
+        response.raise_for_status()
+
+    check_failed_resp(response)
+
+    try:
+        parsed_resp = response.json()
+    except JSONDecodeError as ex:
+        logger.debug(str(ex))
+        raise UnknownResponseException(
+            f'Unable to parse response: "{response.text}"'
+        ) from ex
+        
     first_object = next(iter(parsed_resp), {})
 
     if (
@@ -70,11 +89,11 @@ def call_api(
         failed = True
 
     if failed:
-        log_dict({'Response headers': dict(response.headers)}, logger.debug)
-
-        response.raise_for_status()
-        # TODO: Make an actual exception type for this
-        raise Exception(f'Request failed: {first_object}')
+        check_failed_resp(response)
+        # If the API returns 200 but contains a response type of error,
+        # check_failed_resp will not raise an exception. Therefore this needs to
+        # be here
+        raise FailedResponseException(f'Request failed: {first_object}')
 
     if (
         RESPONSE_TYPE in first_object
@@ -82,4 +101,4 @@ def call_api(
     ):
         log_dict({'API Response': first_object}, logger.success)
 
-    return response.json()
+    return parsed_resp
