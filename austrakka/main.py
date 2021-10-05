@@ -10,6 +10,7 @@ from austrakka.user import user
 from austrakka.analysis import analysis
 from austrakka.tree import tree
 from austrakka.species import species
+from austrakka.submission import submission
 
 from austrakka import __version__ as VERSION
 from austrakka.utils import HandleTopLevelParams
@@ -49,6 +50,7 @@ def main():
         cli.add_command(analysis)
         cli.add_command(tree)
         cli.add_command(species)
+        cli.add_command(submission)
         # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         cli(auto_envvar_prefix=CLI_PREFIX)
     except Exception as exc:  # pylint: disable=broad-except

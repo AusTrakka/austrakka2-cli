@@ -9,3 +9,4 @@ build*
 test
 *xml
 ignore
+.DS_Store
