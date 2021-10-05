@@ -20,6 +20,6 @@ def tree(ctx):
     help='Analysis ID',
     type=click.INT
 )
-def tree_list(newick: BufferedReader, analysis: int):
+def tree_add(newick: BufferedReader, analysis: int):
     '''Upload tree to AusTrakka'''
     add_tree(newick, analysis)
