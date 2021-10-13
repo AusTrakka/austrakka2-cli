@@ -15,7 +15,7 @@ def add_submission(file: BufferedReader, species_id: int):
         path=f'{SUBMISSION_PATH}/{SUBMISSION_UPLOAD}',
         body={
             'file': (file.name, file),
-            'species': str(species_id),
+            'speciesid': str(species_id),
         },
         multipart=True,
     )
