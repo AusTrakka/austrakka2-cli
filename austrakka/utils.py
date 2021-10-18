@@ -35,11 +35,12 @@ def logger_wraps(*, entry=True, exit_func=True):
         @functools.wraps(func)
         def wrapped(*args, **kwargs):
             if entry:
-                logger.debug("Entering '{}' (args={}, kwargs={})",
-                             name, args, kwargs)
+                logger.debug(
+                    f"Entering '{name}' (args={args}, kwargs={kwargs})"
+                )
             result = func(*args, **kwargs)
             if exit_func:
-                logger.debug("Exiting '{}' (result={})", name, result)
+                logger.debug(f"Exiting '{name}' (result={result})")
             return result
 
         return wrapped

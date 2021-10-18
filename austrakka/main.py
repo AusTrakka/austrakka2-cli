@@ -1,5 +1,7 @@
 import os
 import sys
+from tempfile import NamedTemporaryFile
+from tempfile import gettempdir
 
 import click
 from click.core import Context
@@ -32,15 +34,32 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
     default='prod',
     show_default=True
 )
+@click.option(
+    '--log',
+    show_envvar=True,
+    help='Outputs logs to a temporary file',
+)
 @click.version_option(message="%(prog)s v%(version)s", version=VERSION)
 @click.pass_context
-def cli(ctx: Context, uri: str, token: str, env: str):
+def cli(ctx: Context, uri: str, token: str, env: str, log: str):
     """
     A cli for interfacing with AusTrakka from the command line.
     """
     ctx.creds = {'uri': uri, 'token': token}
     logger.remove()
     logger.add(sys.stderr, level='DEBUG' if is_dev_env(env) else 'INFO')
+    if log == 'file':
+        logger.debug(f'Creating temp file in {gettempdir()}')
+        # pylint: disable=consider-using-with
+        log_file = NamedTemporaryFile(
+            mode='w',
+            prefix='austrakka-cli-output-',
+            suffix='.log',
+            delete=False
+        )
+        logger.info(f'Redirecting log output to {log_file.name}')
+        logger.remove()
+        logger.add(log_file.name)
 
 
 def main():
@@ -58,7 +77,8 @@ def main():
             logger.exception(exc)
         else:
             logger.error(exc)
-    sys.exit(1)
+        sys.exit(1)
+    sys.exit(0)
 
 
 if __name__ == '__main__':

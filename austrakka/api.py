@@ -20,8 +20,10 @@ RESPONSE_TYPE_SUCCESS = 'Success'
 RESPONSE_TYPE_ERROR = 'Error'
 RESPONSE_TYPE = 'ResponseType'
 
+
 class UnknownResponseException(Exception):
     pass
+
 
 class FailedResponseException(Exception):
     pass
@@ -79,7 +81,7 @@ def call_api(
         raise UnknownResponseException(
             f'Unable to parse response: "{response.text}"'
         ) from ex
-        
+
     first_object = next(iter(parsed_resp), {})
 
     if (
