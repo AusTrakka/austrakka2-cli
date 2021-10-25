@@ -1,7 +1,9 @@
+# pylint: disable=redefined-outer-name
 from io import BufferedReader
 import click
 
 from .submission import add_submission
+from ..species.options import species
 
 
 @click.group()
@@ -13,13 +15,7 @@ def submission(ctx):
 
 @submission.command('add')
 @click.argument('file', type=click.File('rb'))
-@click.option(
-    '-s',
-    '--species',
-    required=True,
-    help='Species ID',
-    type=click.INT
-)
+@species
 def submission_add(file: BufferedReader, species: int):
     '''Upload submission to AusTrakka'''
     add_submission(file, species)
