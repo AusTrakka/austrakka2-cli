@@ -1,5 +1,6 @@
 import click
 
+
 def analysis(func):
     return click.option(
         '-a',

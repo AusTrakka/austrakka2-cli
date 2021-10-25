@@ -1,5 +1,6 @@
 import click
 
+
 def species(func):
     return click.option(
         '-s',
