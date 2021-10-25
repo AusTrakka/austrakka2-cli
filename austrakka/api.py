@@ -1,3 +1,4 @@
+import json
 from typing import Callable
 from typing import Dict
 from json.decoder import JSONDecodeError
@@ -50,7 +51,7 @@ def call_api(
 ) -> Dict:
     url = f'{click.get_current_context().parent.creds["uri"]}/api/{path}'
 
-    data = body if not multipart else MultipartEncoder(fields=body)
+    data = json.dumps(body) if not multipart else MultipartEncoder(fields=body)
 
     headers = _get_headers() if not isinstance(data, MultipartEncoder) \
         else _get_headers(data.content_type)
@@ -66,7 +67,7 @@ def call_api(
     logger.debug(f'{response.status_code} {response.reason}: {response.url}')
 
     # pylint: disable=no-member
-    failed = response.status_code != requests.codes.ok
+    failed = not response.ok
 
     def check_failed_resp(response):
         log_dict({'Response headers': dict(response.headers)}, logger.debug)
@@ -102,5 +103,7 @@ def call_api(
         and first_object[RESPONSE_TYPE] == RESPONSE_TYPE_SUCCESS
     ):
         log_dict({'API Response': first_object}, logger.success)
+    else:
+        log_dict({'API Response': parsed_resp}, logger.success)
 
     return parsed_resp
