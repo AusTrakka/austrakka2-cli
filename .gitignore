@@ -1,0 +1,12 @@
+.env
+.idea
+*egg-info
+*json
+.pypirc
+dist*
+build*
+*pycache*
+test
+*xml
+ignore
+.DS_Store

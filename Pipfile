@@ -1,0 +1,23 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+autopep8 = "*"
+pycodestyle = "*"
+
+[packages]
+austrakka = {editable = true, path = "."}
+azure-identity = "*"
+azure-keyvault-secrets = "*"
+requests-toolbelt = "*"
+requests = "*"
+click = "*"
+loguru = "*"
+pandas = "*"
+tabulate = "*"
+
+[requires]
+python_version = "3.9"

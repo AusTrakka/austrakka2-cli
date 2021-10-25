@@ -1,0 +1,37 @@
+name: Check version
+
+on:
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout pr branch
+        uses: actions/checkout@v2
+        with:
+          path: pr
+
+      - name: Checkout master
+        uses: actions/checkout@v2
+        with:
+          ref: master
+          path: master
+      - name: Get versions
+        run: |
+          echo "MASTER_VERSION=$(cat master/austrakka/__init__.py | grep __version__ | cut -d "=" -f2 | cut -d "\"" -f2)" >> $GITHUB_ENV
+          echo "PR_VERSION=$(cat pr/austrakka/__init__.py | grep __version__ | cut -d "=" -f2 | cut -d "\"" -f2)" >> $GITHUB_ENV
+      - name: Compare Versions
+        id: compare_versions
+        uses: samcarswell/semver-compare-action@0.1
+        with:
+          left-semver: ${{ env.PR_VERSION }}
+          right-semver: ${{ env.MASTER_VERSION }}
+      - name: Compare Output
+        run: |
+          if [ "${{ steps.compare_versions.outputs.compare-value }}" != "1" ]; then echo "${{ env.PR_VERSION }} is not greater than ${{ env.MASTER_VERSION }}" && exit 1; fi
+        
