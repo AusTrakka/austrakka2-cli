@@ -11,6 +11,7 @@ from austrakka.auth import auth
 from austrakka.user import user
 from austrakka.analysis import analysis
 from austrakka.tree import tree
+from austrakka.static import static
 from austrakka.species import species
 from austrakka.submission import submission
 
@@ -70,6 +71,7 @@ def main():
         cli.add_command(tree)
         cli.add_command(species)
         cli.add_command(submission)
+        cli.add_command(static)
         # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         cli(auto_envvar_prefix=CLI_PREFIX)
     except Exception as exc:  # pylint: disable=broad-except
