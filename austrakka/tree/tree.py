@@ -1,9 +1,9 @@
 from io import BufferedReader
 
-from austrakka.utils import logger_wraps
-from austrakka.api import call_api
-from austrakka.api import post
-from austrakka.job.instance.job_instance import add_job_instance
+from ..utils import logger_wraps
+from ..api import call_api
+from ..api import post
+from ..job.instance.job_instance import add_job_instance
 
 TREE_ROUTE = 'Tree'
 TREE_UPLOAD = 'UploadTree'
