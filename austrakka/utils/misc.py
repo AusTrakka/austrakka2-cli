@@ -7,6 +7,8 @@ from ..components.auth import auth
 
 DEVELOPMENT_ENV = 'dev'
 
+HELP_OPTS = ['-h', '--help']
+
 
 class HandleTopLevelParams(click.Group):
     # pylint: disable=super-with-arguments
@@ -15,7 +17,7 @@ class HandleTopLevelParams(click.Group):
             return super(HandleTopLevelParams, self).parse_args(ctx, args)
         except click.MissingParameter:
             # if getting help or trying to authorise, ignore top level params
-            if '--help' not in args and args[0] != auth.name:
+            if not any(i in HELP_OPTS for i in args) and args[0] != auth.name:
                 raise
             # remove the required params so that help can display
             for param in self.params:

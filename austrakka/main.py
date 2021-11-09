@@ -18,11 +18,12 @@ from .components.static import static
 from . import __version__ as VERSION
 from .utils.misc import HandleTopLevelParams
 from .utils.misc import is_dev_env
+from .utils.misc import HELP_OPTS
 
 CLI_PREFIX = 'AT'
 CLI_ENV = 'env'
 
-CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+CONTEXT_SETTINGS = dict(help_option_names=HELP_OPTS)
 
 
 @click.group(cls=HandleTopLevelParams, context_settings=CONTEXT_SETTINGS)
