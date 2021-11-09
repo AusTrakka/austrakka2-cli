@@ -2,8 +2,8 @@
 from io import BufferedReader
 import click
 
-from .submission import add_submission
-from ..species.options import species
+from .funcs import add_submission
+from ..species.opts import species
 
 
 @click.group()

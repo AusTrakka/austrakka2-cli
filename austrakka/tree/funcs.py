@@ -3,7 +3,7 @@ from io import BufferedReader
 from ..utils import logger_wraps
 from ..api import call_api
 from ..api import post
-from ..job.instance.job_instance import add_job_instance
+from ..job.instance.funcs import add_job_instance
 
 TREE_ROUTE = 'Tree'
 TREE_UPLOAD = 'UploadTree'

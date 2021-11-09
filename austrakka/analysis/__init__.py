@@ -1,6 +1,6 @@
 import click
 
-from .analysis import list_analyses
+from .funcs import list_analyses
 from ..output import table_format_option
 
 

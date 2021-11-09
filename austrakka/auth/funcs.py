@@ -7,7 +7,7 @@ from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 from loguru import logger
 
-from .auth_enum import Auth
+from .enums import Auth
 
 
 def user_login():
