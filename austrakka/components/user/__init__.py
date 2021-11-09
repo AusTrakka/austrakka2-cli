@@ -1,7 +1,7 @@
 import click
 
-from .user import list_users
-from ..output import table_format_option
+from .funcs import list_users
+from austrakka.utils.output import table_format_option
 
 
 @click.group()

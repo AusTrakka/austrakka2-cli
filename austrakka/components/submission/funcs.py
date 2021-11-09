@@ -1,8 +1,8 @@
 from io import BufferedReader
 
-from ..utils import logger_wraps
-from ..api import call_api
-from ..api import post
+from austrakka.utils.misc import logger_wraps
+from austrakka.utils.api import call_api
+from austrakka.utils.api import post
 
 SUBMISSION_PATH = 'SubmissionSamples'
 SUBMISSION_UPLOAD = 'UploadSubmissionSamples'

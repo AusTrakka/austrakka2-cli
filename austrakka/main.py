@@ -7,17 +7,17 @@ import click
 from click.core import Context
 from loguru import logger
 
-from austrakka.auth import auth
-from austrakka.user import user
-from austrakka.analysis import analysis
-from austrakka.tree import tree
-from austrakka.static import static
-from austrakka.species import species
-from austrakka.submission import submission
+from .components.auth import auth
+from .components.user import user
+from .components.analysis import analysis
+from .components.tree import tree
+from .components.species import species
+from .components.submission import submission
+from .components.static import static
 
-from austrakka import __version__ as VERSION
-from austrakka.utils import HandleTopLevelParams
-from austrakka.utils import is_dev_env
+from . import __version__ as VERSION
+from .utils.misc import HandleTopLevelParams
+from .utils.misc import is_dev_env
 
 CLI_PREFIX = 'AT'
 CLI_ENV = 'env'

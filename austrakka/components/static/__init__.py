@@ -3,8 +3,8 @@ from io import BufferedReader
 import click
 
 from .static import add_static
-from ..species.options import species
-from ..analysis.options import analysis
+from ..species.opts import species
+from ..analysis.opts import analysis
 
 
 @click.group()

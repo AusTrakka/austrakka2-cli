@@ -1,9 +1,9 @@
 from io import BufferedReader
 
-from austrakka.utils import logger_wraps
-from austrakka.api import call_api
-from austrakka.api import post
-from austrakka.job.instance.job_instance import add_job_instance
+from ..misc import logger_wraps
+from ..api import call_api
+from ..api import post
+from ...components.job.instance.funcs import add_job_instance
 
 
 @logger_wraps()

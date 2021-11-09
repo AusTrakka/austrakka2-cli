@@ -8,8 +8,8 @@ import requests
 import click
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
-from .auth.auth_enum import Auth
-from .utils import logger_wraps
+from ..components.auth.enums import Auth
+from .misc import logger_wraps
 from .output import log_dict
 
 get = requests.get

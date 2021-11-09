@@ -3,7 +3,7 @@ import functools
 import click
 from loguru import logger
 
-from .auth import auth
+from ..components.auth import auth
 
 DEVELOPMENT_ENV = 'dev'
 

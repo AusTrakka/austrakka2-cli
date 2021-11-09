@@ -1,6 +1,6 @@
-from austrakka.utils import logger_wraps
-from austrakka.api import call_api
-from austrakka.api import post
+from ....utils.misc import logger_wraps
+from ....utils.api import call_api
+from ....utils.api import post
 
 JOB_INSTANCE_ROUTE = 'JobInstance'
 

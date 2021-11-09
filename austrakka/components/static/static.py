@@ -1,7 +1,7 @@
 from io import BufferedReader
 
-from austrakka.utils import logger_wraps
-from austrakka.helpers.upload import upload_file
+from austrakka.utils.misc import logger_wraps
+from austrakka.utils.helpers.upload import upload_file
 
 STATIC_ROUTE = 'StaticTable'
 STATIC_UPLOAD = 'Upload'
