@@ -2,9 +2,9 @@
 from io import BufferedReader
 import click
 
-from .tree import add_tree
-from ..species.options import species
-from ..analysis.options import analysis
+from .funcs import add_tree
+from ..species.opts import species
+from ..analysis.opts import analysis
 
 
 @click.group()

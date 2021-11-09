@@ -1,6 +1,6 @@
 import click
 
-from .species import list_species
+from .funcs import list_species
 from ..output import table_format_option
 
 

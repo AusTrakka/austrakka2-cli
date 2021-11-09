@@ -1,7 +1,7 @@
 import click
 
-from .auth import user_login
-from .auth import process_login
+from .funcs import user_login
+from .funcs import process_login
 
 
 @click.group('auth')

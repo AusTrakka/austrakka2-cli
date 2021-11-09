@@ -1,6 +1,6 @@
 import click
 
-from .user import list_users
+from .funcs import list_users
 from ..output import table_format_option
 
 
