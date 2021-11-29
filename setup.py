@@ -131,11 +131,6 @@ setup(
         "azure-identity",
         "azure-keyvault-secrets",
         "requests-toolbelt",
-        "requests",
-        "click",
-        "loguru",
-        "pandas",
-        "tabulate",
     ],  # Optional
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"

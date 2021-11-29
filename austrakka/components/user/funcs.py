@@ -1,9 +1,9 @@
 import pandas as pd
 
-from ..api import call_api
-from ..api import get
-from ..utils import logger_wraps
-from ..output import print_table
+from austrakka.utils.api import call_api
+from austrakka.utils.api import get
+from austrakka.utils.misc import logger_wraps
+from austrakka.utils.output import print_table
 
 USER_PATH = 'Users'
 

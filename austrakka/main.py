@@ -7,21 +7,23 @@ import click
 from click.core import Context
 from loguru import logger
 
-from .auth import auth
-from .user import user
-from .analysis import analysis
-from .tree import tree
-from .species import species
-from .submission import submission
+from .components.auth import auth
+from .components.user import user
+from .components.analysis import analysis
+from .components.tree import tree
+from .components.species import species
+from .components.submission import submission
+from .components.static import static
 
 from . import __version__ as VERSION
-from .utils import HandleTopLevelParams
-from .utils import is_dev_env
+from .utils.misc import HandleTopLevelParams
+from .utils.misc import is_dev_env
+from .utils.misc import HELP_OPTS
 
 CLI_PREFIX = 'AT'
 CLI_ENV = 'env'
 
-CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+CONTEXT_SETTINGS = dict(help_option_names=HELP_OPTS)
 
 
 @click.group(cls=HandleTopLevelParams, context_settings=CONTEXT_SETTINGS)
@@ -70,6 +72,7 @@ def main():
         cli.add_command(tree)
         cli.add_command(species)
         cli.add_command(submission)
+        cli.add_command(static)
         # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         cli(auto_envvar_prefix=CLI_PREFIX)
     except Exception as exc:  # pylint: disable=broad-except
