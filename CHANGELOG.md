@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.1.0] - 2021-11-30
+### Added
+- Command to create Static Table analyses.
+### Changed
+- Project structure for components.
+
 ## [0.0.4] - 2021-11-09
 ### Changed
 - Project structure for components.
@@ -32,3 +38,4 @@ and this project adheres to [Semantic Versioning].
 [0.0.2]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.0.2
 [0.0.3]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.0.3
 [0.0.4]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.0.4
+[0.1.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.1.0
