@@ -20,16 +20,19 @@ def list_orgs(table_format: str):
     )
 
     result = pd.DataFrame.from_dict(response)
-    
+
     users = get_users()
     users.set_index('userID', inplace=True)
-    
-    result = result.join(users[['displayName']].rename(columns={'displayName':'createdBy'}), on='createdById')
+
+    result = result.join(users[['displayName']].rename(
+        columns={'displayName': 'createdBy'}), on='createdById')
     result['createdBy'] = result['createdBy'].fillna('unknown')
-    result = result.join(users[['displayName']].rename(columns={'displayName':'lastUpdatedBy'}), on='lastUpdatedById')
+    result = result.join(users[['displayName']].rename(
+        columns={'displayName': 'lastUpdatedBy'}), on='lastUpdatedById')
     result['lastUpdatedBy'] = result['lastUpdatedBy'].fillna('unknown')
-    
-    result.drop(['createdById', 'lastUpdatedById'], axis='columns', inplace=True)
+
+    result.drop(['createdById', 'lastUpdatedById'],
+                axis='columns', inplace=True)
 
     print_table(
         result,
