@@ -5,25 +5,17 @@ from austrakka.utils.api import get
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
 
-USER_PATH = 'Users'
-
-
-def get_users(include_all: bool = False):
-    response = call_api(
-        method=get,
-        path=USER_PATH,
-        params={
-            'includeall': include_all
-        }
-    )
-
-    result = pd.DataFrame.from_dict(response)
-    return result
+PROJECT_ROUTE = 'Projects'
 
 
 @logger_wraps()
-def list_users(table_format: str):
-    result = get_users()
+def list_projects(table_format: str):
+    response = call_api(
+        method=get,
+        path=PROJECT_ROUTE,
+    )
+
+    result = pd.DataFrame.from_dict(response)
 
     print_table(
         result,

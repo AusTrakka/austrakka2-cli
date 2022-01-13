@@ -9,6 +9,8 @@ from loguru import logger
 
 from .components.auth import auth
 from .components.user import user
+from .components.org import org
+from .components.project import project
 from .components.analysis import analysis
 from .components.tree import tree
 from .components.species import species
@@ -68,6 +70,8 @@ def main():
     try:
         cli.add_command(auth)
         cli.add_command(user)
+        cli.add_command(org)
+        cli.add_command(project)
         cli.add_command(analysis)
         cli.add_command(tree)
         cli.add_command(species)

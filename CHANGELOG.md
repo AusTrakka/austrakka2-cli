@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.1.2] - 2022-01-12
+### Added
+- Added project and org commands sections.
+
 ## [0.1.1] - 2021-12-14
 ### Fixed
 - Imports were broken.
