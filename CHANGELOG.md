@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.1.3] - 2022-02-01
+### Fixed
+- No longer sending empty request body with GET requests; this would cause rejections from the application firewall.
+
 ## [0.1.2] - 2022-01-12
 ### Added
 - Added project and org commands sections.
@@ -48,3 +52,5 @@ and this project adheres to [Semantic Versioning].
 [0.0.4]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.0.4
 [0.1.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.1.0
 [0.1.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.1.1
+[0.1.2]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.1.2
+[0.1.3]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.1.3
