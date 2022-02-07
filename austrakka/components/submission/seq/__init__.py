@@ -1,5 +1,7 @@
 # pylint: disable=redefined-outer-name
 from io import BufferedReader
+from typing import Tuple
+
 import click
 
 from .funcs import add_sequence_submission
@@ -13,7 +15,10 @@ def seq(ctx):
 
 
 @seq.command('add')
-@click.argument('file', type=click.File('rb'))
-def submission_add(file: BufferedReader):
-    """Upload sequence submission to AusTrakka"""
-    add_sequence_submission(file)
+@click.argument('files', type=click.File('rb'), nargs=-1)
+def submission_add(files: Tuple[BufferedReader]):
+    """Upload sequence submission to AusTrakka
+
+    FILES: list of fasta files
+    """
+    add_sequence_submission(files)
