@@ -1,0 +1,1 @@
+SUBMISSION_PATH = 'SubmissionSamples'
