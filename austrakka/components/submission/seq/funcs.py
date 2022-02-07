@@ -34,6 +34,7 @@ def add_sequence_submission(files: Tuple[BufferedReader]):
             elif item[RESPONSE_TYPE] == RESPONSE_TYPE_ERROR:
                 log_dict({item.pop(RESPONSE_TYPE): item}, logger.error)
             else:
-                logger.warning(f'Unknown {RESPONSE_TYPE}: "{item[RESPONSE_TYPE]}" ' +
-                               f'with {RESPONSE_MESSAGE}: "{item[RESPONSE_MESSAGE]}" ' +
-                               f'and {RESPONSE_ROW_NUMBER}: "{item[RESPONSE_ROW_NUMBER]}"')
+                logger.warning(
+                    f'Unknown {RESPONSE_TYPE}: "{item[RESPONSE_TYPE]}" ' +
+                    f'with {RESPONSE_MESSAGE}: "{item[RESPONSE_MESSAGE]}" ' +
+                    f'and {RESPONSE_ROW_NUMBER}: "{item[RESPONSE_ROW_NUMBER]}"')
