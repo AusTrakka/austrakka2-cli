@@ -11,7 +11,7 @@ def add_job_instance(analysis_id: int, species_id: int):
         method=post,
         path=JOB_INSTANCE_ROUTE,
         body={
-            "analyses": {
+            "analysis": {
                 "analysisId": analysis_id,
                 "species": [
                     {
