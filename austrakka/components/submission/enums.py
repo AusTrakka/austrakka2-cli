@@ -1,1 +1,0 @@
-SUBMISSION_PATH = 'SubmissionSamples'

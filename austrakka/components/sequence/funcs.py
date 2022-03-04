@@ -13,7 +13,7 @@ from austrakka.utils.api import RESPONSE_TYPE_SUCCESS
 from austrakka.utils.api import RESPONSE_MESSAGE
 from austrakka.utils.api import RESPONSE_ROW_NUMBER
 from austrakka.utils.output import log_dict
-from ..enums import SUBMISSION_PATH
+from austrakka.utils.paths import SUBMISSION_PATH
 
 SUBMISSION_UPLOAD = 'UploadSequenceFile'
 

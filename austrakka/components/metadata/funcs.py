@@ -3,7 +3,7 @@ from io import BufferedReader
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import call_api
 from austrakka.utils.api import post
-from ..enums import SUBMISSION_PATH
+from austrakka.utils.paths import SUBMISSION_PATH
 
 
 SUBMISSION_UPLOAD = 'UploadSubmissionSamples'

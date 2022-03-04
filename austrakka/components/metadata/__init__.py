@@ -3,7 +3,7 @@ from io import BufferedReader
 import click
 
 from .funcs import add_metadata_submission
-from ...species.opts import species as species_opt
+from ..species.opts import species as species_opt
 
 
 @click.group()
