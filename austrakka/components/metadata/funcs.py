@@ -1,3 +1,4 @@
+from os import path
 from io import BufferedReader
 
 from austrakka.utils.misc import logger_wraps
@@ -13,7 +14,7 @@ SUBMISSION_UPLOAD = 'UploadSubmissionSamples'
 def add_metadata_submission(file: BufferedReader, species_id: int):
     call_api(
         method=post,
-        path=f'{SUBMISSION_PATH}/{SUBMISSION_UPLOAD}',
+        path=path.join(SUBMISSION_PATH, SUBMISSION_UPLOAD),
         body={
             'file': (file.name, file),
             'speciesid': str(species_id),

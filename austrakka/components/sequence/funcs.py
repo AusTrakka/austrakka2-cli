@@ -1,5 +1,6 @@
 from io import BufferedReader
 from typing import Tuple
+from os import path
 
 from loguru import logger
 
@@ -23,7 +24,7 @@ def add_sequence_submission(files: Tuple[BufferedReader]):
     try:
         call_api(
             method=post,
-            path=f'{SUBMISSION_PATH}/{SUBMISSION_UPLOAD}',
+            path=path.join(SUBMISSION_PATH, SUBMISSION_UPLOAD),
             body=[('files[]', (file.name, file)) for file in files],
             multipart=True,
         )
