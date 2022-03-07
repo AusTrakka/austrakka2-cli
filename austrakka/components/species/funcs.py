@@ -10,6 +10,7 @@ from austrakka.utils.output import print_table
 SPECIES_PATH = 'Species'
 SPECIES_DTO = 'dto'
 
+
 @logger_wraps()
 def list_species(table_format: str):
     response = call_api(
