@@ -4,9 +4,8 @@ from austrakka.utils.api import call_api
 from austrakka.utils.api import get
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
+from austrakka.utils.paths import ORG_PATH
 from austrakka.components.user.funcs import get_users
-
-ORG_PATH = 'Organisations'
 
 
 @logger_wraps()

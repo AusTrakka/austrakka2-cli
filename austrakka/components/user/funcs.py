@@ -4,8 +4,7 @@ from austrakka.utils.api import call_api
 from austrakka.utils.api import get
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
-
-USER_PATH = 'Users'
+from austrakka.utils.paths import USER_PATH
 
 
 def get_users(include_all: bool = False):

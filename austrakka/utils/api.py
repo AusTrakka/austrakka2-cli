@@ -1,6 +1,8 @@
 import json
 from typing import Callable
 from typing import Dict
+from typing import List
+from typing import Union
 from json.decoder import JSONDecodeError
 
 from loguru import logger
@@ -20,6 +22,8 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 RESPONSE_TYPE_SUCCESS = 'Success'
 RESPONSE_TYPE_ERROR = 'Error'
 RESPONSE_TYPE = 'ResponseType'
+RESPONSE_MESSAGE = 'ResponseMessage'
+RESPONSE_ROW_NUMBER = 'RowNumber'
 
 
 class UnknownResponseException(Exception):
@@ -27,7 +31,10 @@ class UnknownResponseException(Exception):
 
 
 class FailedResponseException(Exception):
-    pass
+    def __init__(self, parsed_resp):
+        self.parsed_resp = parsed_resp
+        self.message = f'Request failed: {parsed_resp}'
+        super().__init__(self.message)
 
 
 def _get_headers(content_type: str = 'application/json') -> Dict:
@@ -46,7 +53,7 @@ def call_api(
     method: Callable,
     path: str,
     params: Dict = None,
-    body: Dict = None,
+    body: Union[Dict, List] = None,
     multipart: bool = False,
 ) -> Dict:
     url = f'{click.get_current_context().parent.creds["uri"]}/api/{path}'
@@ -99,7 +106,7 @@ def call_api(
         # If the API returns 200 but contains a response type of error,
         # check_failed_resp will not raise an exception. Therefore this needs to
         # be here
-        raise FailedResponseException(f'Request failed: {first_object}')
+        raise FailedResponseException(parsed_resp)
 
     if (
         RESPONSE_TYPE in first_object

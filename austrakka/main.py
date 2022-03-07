@@ -14,7 +14,8 @@ from .components.project import project
 from .components.analysis import analysis
 from .components.tree import tree
 from .components.species import species
-from .components.submission import submission
+from .components.metadata import metadata
+from .components.sequence import seq
 from .components.static import static
 
 from . import __version__ as VERSION
@@ -75,7 +76,8 @@ def main():
         cli.add_command(analysis)
         cli.add_command(tree)
         cli.add_command(species)
-        cli.add_command(submission)
+        cli.add_command(metadata)
+        cli.add_command(seq)
         cli.add_command(static)
         # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         cli(auto_envvar_prefix=CLI_PREFIX)
