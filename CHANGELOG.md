@@ -5,10 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [0.2.0] - 2022-02-07
+## [0.2.0] - 2022-03-07
 ### Added
 - Sequence submission command.
 
+### Changed
+- Moved metadata commands from `submission` to `metadata`.
+
+## [0.1.5] - 2022-03-07
+### Fixed
+- A bug where `species list` would include Analysis Definition information.
+
+## [0.1.4] - 2022-02-28
+### Fixed
+- A bug that would cause failed tree uploads.
 
 ## [0.1.3] - 2022-02-01
 ### Fixed
@@ -59,4 +69,6 @@ and this project adheres to [Semantic Versioning].
 [0.1.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.1.1
 [0.1.2]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.1.2
 [0.1.3]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.1.3
+[0.1.4]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.1.4
+[0.1.5]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.1.5
 [0.2.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.2.0
