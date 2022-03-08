@@ -1,4 +1,4 @@
-SUBMISSION_PATH = 'SubmissionSamples'
+SUBMISSION_PATH = 'Submissions'
 USER_PATH = 'Users'
 ORG_PATH = 'Organisations'
 ANALYSIS_PATH = 'Analyses'
