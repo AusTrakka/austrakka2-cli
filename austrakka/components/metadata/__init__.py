@@ -2,7 +2,7 @@
 from io import BufferedReader
 import click
 
-from .funcs import add_metadata_submission
+from .funcs import add_metadata
 from ..species.opts import species as species_opt
 
 
@@ -18,4 +18,4 @@ def metadata(ctx):
 @species_opt
 def submission_add(file: BufferedReader, species: int):
     """Upload metadata submission to AusTrakka"""
-    add_metadata_submission(file, species)
+    add_metadata(file, species)
