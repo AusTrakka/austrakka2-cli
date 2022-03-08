@@ -10,7 +10,7 @@ SUBMISSION_UPLOAD = 'UploadSubmissions'
 
 
 @logger_wraps()
-def add_submission(file: BufferedReader, species_id: int):
+def add_metadata(file: BufferedReader, species_id: int):
     call_api(
         method=post,
         path=path.join(SUBMISSION_PATH, SUBMISSION_UPLOAD),
