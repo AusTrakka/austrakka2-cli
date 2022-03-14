@@ -83,7 +83,6 @@ def call_api(
                     f'Call to AusTrakka failed: {resp.reason}'
                 )
 
-
     check_failed_resp(response)
 
     try:
