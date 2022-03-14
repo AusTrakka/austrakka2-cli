@@ -16,9 +16,15 @@ def seq(ctx):
 
 @seq.command('add')
 @click.argument('files', type=click.File('rb'), nargs=-1)
-def submission_add(files: Tuple[BufferedReader]):
+@click.option(
+    "--csv",
+    type=click.File('rb'),
+    default=None,
+    help="CSV with Sample to Sequence mapping"
+)
+def submission_add(files: Tuple[BufferedReader], csv: BufferedReader):
     """Upload sequence submission to AusTrakka
 
     FILES: list of fasta files
     """
-    add_sequence_submission(files)
+    add_sequence_submission(files, csv)

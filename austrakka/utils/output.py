@@ -3,10 +3,21 @@ from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Union
-import click
 
+import click
 import pandas as pd
 from tabulate import tabulate
+from loguru import logger
+
+from austrakka.utils.enums.api import RESPONSE_TYPE
+from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
+from austrakka.utils.enums.api import RESPONSE_TYPE_SUCCESS
+from austrakka.utils.enums.api import RESPONSE_MESSAGE
+from austrakka.utils.enums.api import RESPONSE_ROW_NUMBER
+from austrakka.utils.enums.api import RESPONSE_TYPE_WARNING
+from austrakka.utils.enums.api import RESPONSE_DATA
+from austrakka.utils.enums.api import RESPONSE_MESSAGES
+
 
 FORMAT_PREFIX = '_format_'
 
@@ -95,3 +106,26 @@ def log_dict(items: Dict, log_func: Callable, indent: int = 0) -> None:
             log_dict(val, log_func, indent + 1)
         else:
             log_func('\t' * indent + f'{key}:{val}')
+
+
+def log_response(response):
+    def log_item(item):
+        if item[RESPONSE_TYPE] == RESPONSE_TYPE_SUCCESS:
+            log_dict({item.pop(RESPONSE_TYPE): item}, logger.success)
+        elif item[RESPONSE_TYPE] == RESPONSE_TYPE_WARNING:
+            log_dict({item.pop(RESPONSE_TYPE): item}, logger.warning)
+        elif item[RESPONSE_TYPE] == RESPONSE_TYPE_ERROR:
+            log_dict({item.pop(RESPONSE_TYPE): item}, logger.error)
+        else:
+            log_dict({'Unknown response:': item}, logger.critical)
+
+    if RESPONSE_MESSAGES in response:
+        for item in response[RESPONSE_MESSAGES]:
+            log_item(item)
+    else:
+        # This is to handle for legacy endpoints that don't return ApiResponse
+        for item in response:
+            log_item(item)
+    if RESPONSE_DATA in response:
+        for item in response[RESPONSE_DATA]:
+            log_dict({'Inserted': item}, logger.success)
