@@ -12,8 +12,6 @@ from loguru import logger
 from austrakka.utils.enums.api import RESPONSE_TYPE
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.enums.api import RESPONSE_TYPE_SUCCESS
-from austrakka.utils.enums.api import RESPONSE_MESSAGE
-from austrakka.utils.enums.api import RESPONSE_ROW_NUMBER
 from austrakka.utils.enums.api import RESPONSE_TYPE_WARNING
 from austrakka.utils.enums.api import RESPONSE_DATA
 from austrakka.utils.enums.api import RESPONSE_MESSAGES

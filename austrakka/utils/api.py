@@ -14,7 +14,6 @@ from requests.models import Response
 
 from austrakka.utils.enums.api import RESPONSE_TYPE
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
-from austrakka.utils.enums.api import RESPONSE_TYPE_SUCCESS
 from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
 from ..components.auth.enums import Auth
@@ -78,10 +77,9 @@ def call_api(
             try:
                 raise FailedResponseException(resp.json()) from HTTPError
             except Exception:
-                print(resp)
                 raise UnknownResponseException(
                     f'Call to AusTrakka failed: {resp.reason}'
-                )
+                ) from Exception
 
     check_failed_resp(response)
 
