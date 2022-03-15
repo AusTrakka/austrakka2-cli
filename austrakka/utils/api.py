@@ -9,32 +9,22 @@ from loguru import logger
 import requests
 import click
 from requests_toolbelt.multipart.encoder import MultipartEncoder
+from requests.exceptions import HTTPError
+from requests.models import Response
 
+from austrakka.utils.enums.api import RESPONSE_TYPE
+from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
+from austrakka.utils.exceptions import FailedResponseException
+from austrakka.utils.exceptions import UnknownResponseException
 from ..components.auth.enums import Auth
 from .misc import logger_wraps
 from .output import log_dict
+from .output import log_response
 
 get = requests.get
 post = requests.post
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
-RESPONSE_TYPE_SUCCESS = 'Success'
-RESPONSE_TYPE_ERROR = 'Error'
-RESPONSE_TYPE = 'ResponseType'
-RESPONSE_MESSAGE = 'ResponseMessage'
-RESPONSE_ROW_NUMBER = 'RowNumber'
-
-
-class UnknownResponseException(Exception):
-    pass
-
-
-class FailedResponseException(Exception):
-    def __init__(self, parsed_resp):
-        self.parsed_resp = parsed_resp
-        self.message = f'Request failed: {parsed_resp}'
-        super().__init__(self.message)
 
 
 def _get_headers(content_type: str = 'application/json') -> Dict:
@@ -79,9 +69,17 @@ def call_api(
     # pylint: disable=no-member
     failed = not response.ok
 
-    def check_failed_resp(response):
-        log_dict({'Response headers': dict(response.headers)}, logger.debug)
-        response.raise_for_status()
+    def check_failed_resp(resp: Response):
+        log_dict({'Response headers': dict(resp.headers)}, logger.debug)
+        try:
+            resp.raise_for_status()
+        except HTTPError:
+            try:
+                raise FailedResponseException(resp.json()) from HTTPError
+            except Exception:
+                raise UnknownResponseException(
+                    f'Call to AusTrakka failed: {resp.reason}'
+                ) from Exception
 
     check_failed_resp(response)
 
@@ -102,18 +100,9 @@ def call_api(
         failed = True
 
     if failed:
-        check_failed_resp(response)
-        # If the API returns 200 but contains a response type of error,
-        # check_failed_resp will not raise an exception. Therefore this needs to
-        # be here
         raise FailedResponseException(parsed_resp)
 
-    if (
-        RESPONSE_TYPE in first_object
-        and first_object[RESPONSE_TYPE] == RESPONSE_TYPE_SUCCESS
-    ):
-        log_dict({'API Response': first_object}, logger.success)
-    else:
-        log_dict({'API Response': parsed_resp}, logger.success)
+    if method.__name__ == 'post':
+        log_response(parsed_resp)
 
     return parsed_resp

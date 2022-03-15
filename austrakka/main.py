@@ -1,7 +1,5 @@
 import os
 import sys
-from tempfile import NamedTemporaryFile
-from tempfile import gettempdir
 
 import click
 from click.core import Context
@@ -22,6 +20,9 @@ from . import __version__ as VERSION
 from .utils.misc import HandleTopLevelParams
 from .utils.misc import is_dev_env
 from .utils.misc import HELP_OPTS
+from .utils.exceptions import FailedResponseException
+from .utils.output import log_response
+from .utils.logger import setup_logger
 
 CLI_PREFIX = 'AT'
 CLI_ENV = 'env'
@@ -48,23 +49,10 @@ CONTEXT_SETTINGS = dict(help_option_names=HELP_OPTS)
 @click.pass_context
 def cli(ctx: Context, uri: str, token: str, env: str, log: str):
     """
-    A cli for interfacing with AusTrakka from the command line.
+    A cli for interfacing with AusTrakka.
     """
     ctx.creds = {'uri': uri, 'token': token}
-    logger.remove()
-    logger.add(sys.stderr, level='DEBUG' if is_dev_env(env) else 'INFO')
-    if log == 'file':
-        logger.debug(f'Creating temp file in {gettempdir()}')
-        # pylint: disable=consider-using-with
-        log_file = NamedTemporaryFile(
-            mode='w',
-            prefix='austrakka-cli-output-',
-            suffix='.log',
-            delete=False
-        )
-        logger.info(f'Redirecting log output to {log_file.name}')
-        logger.remove()
-        logger.add(log_file.name)
+    setup_logger(env, log)
 
 
 def main():
@@ -81,11 +69,13 @@ def main():
         cli.add_command(static)
         # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         cli(auto_envvar_prefix=CLI_PREFIX)
-    except Exception as exc:  # pylint: disable=broad-except
+    except FailedResponseException as ex:
+        log_response(ex.parsed_resp)
+    except Exception as ex:  # pylint: disable=broad-except
         if is_dev_env(os.environ.get(f"{CLI_PREFIX}_{CLI_ENV.upper()}")):
-            logger.exception(exc)
+            logger.exception(ex)
         else:
-            logger.error(exc)
+            logger.error(ex)
         sys.exit(1)
     sys.exit(0)
 

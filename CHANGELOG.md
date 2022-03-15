@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.3.0] - 2022-03-15
+### Changed
+- Updated to use sequence submission endpoint.
+- Changes to how API responses are printed.
+
 ## [0.2.1] - 2022-03-09
 ### Changed
 - Metadata commands to use updated endpoint.
@@ -77,3 +82,4 @@ and this project adheres to [Semantic Versioning].
 [0.1.5]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.1.5
 [0.2.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.2.0
 [0.2.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.2.1
+[0.3.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.3.0
