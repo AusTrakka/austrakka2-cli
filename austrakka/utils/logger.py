@@ -6,7 +6,7 @@ from loguru import logger
 
 from austrakka.utils.misc import is_dev_env
 
-FORMAT = "<g>{time:YYYY:MM:DD HH:mm:ss.SSS}</g> | <lvl>{level}</lvl> | <lvl>{" \
+FORMAT = "<m>{time:YYYY:MM:DD HH:mm:ss.SSS}</m> | <lvl>{level}</lvl> | <lvl>{" \
          "message}</lvl> "
 
 

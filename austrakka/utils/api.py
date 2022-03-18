@@ -10,7 +10,6 @@ import requests
 import click
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from requests.exceptions import HTTPError
-from requests.models import Response
 
 from austrakka.utils.enums.api import RESPONSE_TYPE
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
@@ -39,12 +38,14 @@ def _get_headers(content_type: str = 'application/json') -> Dict:
 
 
 @logger_wraps()
+# pylint: disable=too-many-arguments
 def call_api(
     method: Callable,
     path: str,
     params: Dict = None,
     body: Union[Dict, List] = None,
     multipart: bool = False,
+    custom_headers: Dict = None,
 ) -> Dict:
     url = f'{click.get_current_context().parent.creds["uri"]}/api/{path}'
 
@@ -55,6 +56,8 @@ def call_api(
 
     headers = _get_headers() if not isinstance(data, MultipartEncoder) \
         else _get_headers(data.content_type)
+    custom_headers = custom_headers if custom_headers else {}
+    headers = headers | custom_headers
 
     response = method(
         url,
@@ -69,28 +72,19 @@ def call_api(
     # pylint: disable=no-member
     failed = not response.ok
 
-    def check_failed_resp(resp: Response):
-        log_dict({'Response headers': dict(resp.headers)}, logger.debug)
-        try:
-            resp.raise_for_status()
-        except HTTPError:
-            try:
-                raise FailedResponseException(resp.json()) from HTTPError
-            except Exception:
-                raise UnknownResponseException(
-                    f'Call to AusTrakka failed: {resp.reason}'
-                ) from Exception
-
-    check_failed_resp(response)
-
+    log_dict({'Response headers': dict(response.headers)}, logger.debug)
     try:
-        parsed_resp = response.json()
-    except JSONDecodeError as ex:
-        logger.debug(str(ex))
-        raise UnknownResponseException(
-            f'Unable to parse response: "{response.text}"'
-        ) from ex
-
+        response.raise_for_status()
+    except HTTPError:
+        try:
+            raise FailedResponseException(response.json()) from HTTPError
+        except FailedResponseException as ex:
+            raise ex from ex
+        except JSONDecodeError as ex:
+            raise UnknownResponseException(
+                f'Unknown response: {response.text}'
+            ) from ex
+    parsed_resp = response.json()
     first_object = next(iter(parsed_resp), {})
 
     if (
