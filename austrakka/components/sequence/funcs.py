@@ -7,6 +7,7 @@ import pandas as pd
 # pylint: disable=no-name-in-module
 from pandas._libs.parsers import STR_NA_VALUES
 from pandas.core.frame import DataFrame
+from loguru import logger
 
 from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.misc import logger_wraps
@@ -15,6 +16,7 @@ from austrakka.utils.api import post
 from austrakka.utils.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
 from austrakka.utils.output import create_response_object
+from austrakka.utils.output import log_response
 
 FASTA_UPLOAD = 'Fasta'
 FASTQ_UPLOAD = 'Fastq'
@@ -78,14 +80,19 @@ def add_fastq_submission(files: Tuple[BufferedReader], csv: BufferedReader):
                 row[FASTQ_CSV_FILENAME_2],
             ]
         ]
-
-        call_api(
-            method=post,
-            path=path.join(SEQUENCE_PATH, FASTQ_UPLOAD),
-            body=sample_files,
-            multipart=True,
-            custom_headers=custom_headers,
-        )
+        try:
+            call_api(
+                method=post,
+                path=path.join(SEQUENCE_PATH, FASTQ_UPLOAD),
+                body=sample_files,
+                multipart=True,
+                custom_headers=custom_headers,
+            )
+        except FailedResponseException as ex:
+            logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
+            log_response(ex.parsed_resp)
+        except Exception as ex:
+            raise ex from ex
 
 
 def _validate_fastq_submission(
