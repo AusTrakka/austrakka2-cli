@@ -2,8 +2,8 @@
 from io import BufferedReader
 import click
 
+from austrakka.utils.options import species
 from .funcs import add_tree
-from ..species.opts import species
 from ..analysis.opts import analysis
 
 

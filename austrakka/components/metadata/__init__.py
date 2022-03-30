@@ -2,8 +2,8 @@
 from io import BufferedReader
 import click
 
+from austrakka.utils.options import species as species_opt
 from .funcs import add_metadata
-from ..species.opts import species as species_opt
 
 
 @click.group()

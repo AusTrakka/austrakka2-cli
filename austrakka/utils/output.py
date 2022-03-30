@@ -15,6 +15,7 @@ from austrakka.utils.enums.api import RESPONSE_TYPE_SUCCESS
 from austrakka.utils.enums.api import RESPONSE_TYPE_WARNING
 from austrakka.utils.enums.api import RESPONSE_DATA
 from austrakka.utils.enums.api import RESPONSE_MESSAGES
+from austrakka.utils.enums.api import RESPONSE_MESSAGE
 
 
 FORMAT_PREFIX = '_format_'
@@ -127,3 +128,10 @@ def log_response(response):
     if RESPONSE_DATA in response:
         for item in response[RESPONSE_DATA]:
             log_dict({'Inserted': item}, logger.success)
+
+
+def create_response_object(message: str, message_type: str):
+    return {
+        RESPONSE_MESSAGE: message,
+        RESPONSE_TYPE: message_type
+    }
