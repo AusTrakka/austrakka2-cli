@@ -125,9 +125,12 @@ def log_response(response):
         # This is to handle for legacy endpoints that don't return ApiResponse
         for item in response:
             log_item(item)
-    if RESPONSE_DATA in response:
-        for item in response[RESPONSE_DATA]:
-            log_dict({'Inserted': item}, logger.success)
+    if RESPONSE_DATA in response and response[RESPONSE_DATA] is not None:
+        if isinstance(response[RESPONSE_DATA], dict):
+            log_dict({'Inserted': response[RESPONSE_DATA]}, logger.success)
+        else:
+            for item in response[RESPONSE_DATA]:
+                log_dict({'Inserted': item}, logger.success)
 
 
 def create_response_object(message: str, message_type: str):
