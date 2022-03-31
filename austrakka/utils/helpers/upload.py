@@ -23,7 +23,7 @@ def upload_file(
         path=route,
         body={
             'file': (file.name, file),
-            'jobinstanceid': str(job_instance_resp['jobInstanceId']),
+            'jobinstanceid': str(job_instance_resp['data']['jobInstanceId'])
         },
         multipart=True,
     )
