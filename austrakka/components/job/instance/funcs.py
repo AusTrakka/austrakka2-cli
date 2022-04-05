@@ -12,14 +12,6 @@ def add_job_instance(analysis_id: int, species_id: int):
         body={
             "analysis": {
                 "analysisId": analysis_id,
-                "species": [
-                    {
-                        "speciesId": species_id,
-                        "isActive": True
-                    }
-                ],
-                "isActive": True
-            },
-            "isActive": True
+            }
         }
     )
