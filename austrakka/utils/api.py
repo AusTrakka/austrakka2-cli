@@ -14,7 +14,6 @@ from requests.exceptions import HTTPError
 from austrakka.utils.enums.api import RESPONSE_TYPE
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.exceptions import FailedResponseException
-from austrakka.utils.exceptions import UnknownResponseException
 from ..components.auth.enums import Auth
 from .misc import logger_wraps
 from .output import log_dict
@@ -66,7 +65,6 @@ def call_api(
         data=data,
         params=params,
     )
-
     logger.debug(f'{response.status_code} {response.reason}: {response.url}')
 
     # pylint: disable=no-member
@@ -75,15 +73,14 @@ def call_api(
     log_dict({'Response headers': dict(response.headers)}, logger.debug)
     try:
         response.raise_for_status()
-    except HTTPError:
+    except HTTPError as httperror:
         try:
             raise FailedResponseException(response.json()) from HTTPError
         except FailedResponseException as ex:
             raise ex from ex
-        except JSONDecodeError as ex:
-            raise UnknownResponseException(
-                f'Unknown response: {response.text}'
-            ) from ex
+        except JSONDecodeError:
+            # pylint: disable=raise-missing-from
+            raise httperror
     parsed_resp = response.json()
     first_object = next(iter(parsed_resp), {})
 
