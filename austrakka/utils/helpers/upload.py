@@ -10,12 +10,10 @@ from ...components.job.instance.funcs import add_job_instance
 def upload_file(
         file: BufferedReader,
         analysis_id: int,
-        species_id: int,
         route: str
 ):
     job_instance_resp = add_job_instance(
-        analysis_id=analysis_id,
-        species_id=species_id,
+        analysis_id=analysis_id
     )
 
     return call_api(
