@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.5.0] - 2022-04-20
+### Fixed
+- Unauthorised calls are not displayed correctly.
+
+### Changed
+- Uploading a tree no longer requires a Species ID.
+
 ## [0.4.1] - 2022-04-01
 ### Fixed
 - Response indentation was not uniform.
@@ -94,3 +101,4 @@ and this project adheres to [Semantic Versioning].
 [0.3.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.3.0
 [0.4.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.4.0
 [0.4.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.4.1
+[0.5.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.5.0
