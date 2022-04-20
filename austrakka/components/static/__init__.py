@@ -17,7 +17,6 @@ def static(ctx):
 @static.command('add')
 @click.argument('csv', type=click.File('rb'))
 @analysis
-@species
-def static_add(csv: BufferedReader, analysis: int, species: int):
+def static_add(csv: BufferedReader, analysis: int):
     '''Upload static analysis to AusTrakka'''
-    add_static(csv, analysis, species)
+    add_static(csv, analysis)

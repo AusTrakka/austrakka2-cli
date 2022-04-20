@@ -9,10 +9,9 @@ STATIC_UPLOAD = 'Upload'
 
 
 @logger_wraps()
-def add_static(file: BufferedReader, analysis_id: int, species_id: int):
+def add_static(file: BufferedReader, analysis_id: int):
     upload_file(
         file,
         analysis_id,
-        species_id,
         path.join(STATIC_PATH, STATIC_UPLOAD)
     )

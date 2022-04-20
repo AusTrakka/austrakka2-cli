@@ -5,21 +5,13 @@ from ....utils.paths import JOB_INSTANCE_PATH
 
 
 @logger_wraps()
-def add_job_instance(analysis_id: int, species_id: int):
+def add_job_instance(analysis_id: int):
     return call_api(
         method=post,
         path=JOB_INSTANCE_PATH,
         body={
             "analysis": {
                 "analysisId": analysis_id,
-                "species": [
-                    {
-                        "speciesId": species_id,
-                        "isActive": True
-                    }
-                ],
-                "isActive": True
-            },
-            "isActive": True
+            }
         }
     )

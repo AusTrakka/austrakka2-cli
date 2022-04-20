@@ -9,10 +9,9 @@ TREE_UPLOAD = 'UploadTree'
 
 
 @logger_wraps()
-def add_tree(file: BufferedReader, analysis_id: int, species_id: int):
+def add_tree(file: BufferedReader, analysis_id: int):
     upload_file(
         file,
         analysis_id,
-        species_id,
         path.join(TREE_PATH, TREE_UPLOAD)
     )

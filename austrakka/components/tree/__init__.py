@@ -2,7 +2,6 @@
 from io import BufferedReader
 import click
 
-from austrakka.utils.options import species
 from .funcs import add_tree
 from ..analysis.opts import analysis
 
@@ -17,7 +16,6 @@ def tree(ctx):
 @tree.command('add')
 @click.argument('newick', type=click.File('rb'))
 @analysis
-@species
-def tree_add(newick: BufferedReader, analysis: int, species: int):
+def tree_add(newick: BufferedReader, analysis: int):
     '''Upload tree to AusTrakka'''
-    add_tree(newick, analysis, species)
+    add_tree(newick, analysis)
