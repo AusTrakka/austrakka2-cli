@@ -65,6 +65,7 @@ def call_api(
         data=data,
         params=params,
     )
+    print(response.text)
     logger.debug(f'{response.status_code} {response.reason}: {response.url}')
 
     # pylint: disable=no-member
@@ -73,14 +74,14 @@ def call_api(
     log_dict({'Response headers': dict(response.headers)}, logger.debug)
     try:
         response.raise_for_status()
-    except HTTPError as httperror:
+    except HTTPError as http_error:
         try:
             raise FailedResponseException(response.json()) from HTTPError
         except FailedResponseException as ex:
             raise ex from ex
         except JSONDecodeError:
             # pylint: disable=raise-missing-from
-            raise httperror
+            raise http_error
     parsed_resp = response.json()
     first_object = next(iter(parsed_resp), {})
 
@@ -97,3 +98,47 @@ def call_api(
         log_response(parsed_resp)
 
     return parsed_resp
+
+
+@logger_wraps()
+# pylint: disable=too-many-arguments
+def call_api_raw(
+        path: str,
+        params: Dict = None,
+        body: Union[Dict, List] = None,
+        custom_headers: Dict = None,
+        stream: bool = False,
+) -> str:
+    url = f'{click.get_current_context().parent.creds["uri"]}/api/{path}'
+
+    data = json.dumps(body) if body is not None else None
+
+    headers = _get_headers() if not isinstance(data, MultipartEncoder) \
+        else _get_headers(data.content_type)
+    custom_headers = custom_headers if custom_headers else {}
+    headers = headers | custom_headers
+
+    response = get(
+        url,
+        headers=headers,
+        verify=False,
+        data=data,
+        params=params,
+        stream=stream,
+    )
+
+    logger.debug(f'{response.status_code} {response.reason}: {response.url}')
+
+    log_dict({'Response headers': dict(response.headers)}, logger.debug)
+    try:
+        response.raise_for_status()
+    except HTTPError as http_error:
+        try:
+            raise FailedResponseException(response.json()) from HTTPError
+        except FailedResponseException as ex:
+            raise ex from ex
+        except JSONDecodeError:
+            # pylint: disable=raise-missing-from
+            raise http_error
+
+    return response

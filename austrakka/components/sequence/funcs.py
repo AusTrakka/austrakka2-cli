@@ -1,3 +1,4 @@
+import os
 from io import BufferedReader
 from typing import Tuple
 from os import path
@@ -12,14 +13,17 @@ from loguru import logger
 from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import call_api
+from austrakka.utils.api import call_api_raw
 from austrakka.utils.api import post
 from austrakka.utils.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
 from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
+from austrakka.utils.fs import create_dir
 
-FASTA_UPLOAD = 'Fasta'
-FASTQ_UPLOAD = 'Fastq'
+FASTA = 'Fasta'
+FASTQ = 'Fastq'
+DOWNLOAD = 'download'
 
 FASTQ_CSV_SAMPLE_ID = 'sampleId'
 FASTQ_CSV_FILENAME_1 = 'filename1'
@@ -32,7 +36,7 @@ FASTQ_CSV_SPECIES = 'species'
 def add_fasta_submission(files: Tuple[BufferedReader], csv: BufferedReader):
     call_api(
         method=post,
-        path=path.join(SEQUENCE_PATH, FASTA_UPLOAD),
+        path=path.join(SEQUENCE_PATH, FASTA),
         body=[('files[]', (file.name, file)) for file in files]
         + [('files[]', (csv.name, csv))],
         multipart=True,
@@ -83,7 +87,7 @@ def add_fastq_submission(files: Tuple[BufferedReader], csv: BufferedReader):
         try:
             call_api(
                 method=post,
-                path=path.join(SEQUENCE_PATH, FASTQ_UPLOAD),
+                path=path.join(SEQUENCE_PATH, FASTQ),
                 body=sample_files,
                 multipart=True,
                 custom_headers=custom_headers,
@@ -160,3 +164,45 @@ def _validate_fastq_submission(
             ))
 
     return messages
+
+
+@logger_wraps()
+def download_fastq(species: str, output_dir: str, output_format: str):
+
+    # fetch sample list
+    if os.path.exists(output_dir):
+        create_dir(output_dir)
+
+    samples = fetch_fastq_samples(species)
+
+    if not samples:
+        raise FailedResponseException(create_response_object(
+            f'No samples found for species: {species}',
+            RESPONSE_TYPE_ERROR
+        ))
+
+    # for each sample
+    for sample in samples:
+        for read in range(1, 2):
+            try:
+                resp = call_api_raw(
+                    path=path.join(
+                        SEQUENCE_PATH, 
+                        DOWNLOAD, 
+                        FASTQ, 
+                        sample, 
+                        str(read),
+                    ),
+                    stream=True,
+                )
+
+                filename = os.path.join(output_dir, sample.original_file_name)
+                with open(filename, 'wb') as fd:
+                    for chunk in resp.iter_content(chunk_size=128):
+                        fd.write(chunk)
+
+            except FailedResponseException as ex:
+                logger.error(f'Error while downloading file for sample: '
+                             f'{sample}, read: {read}.')
+        # download fastq read to output dir in format
+
