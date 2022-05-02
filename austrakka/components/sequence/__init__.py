@@ -43,12 +43,12 @@ def submission_add(
         else add_fastq_submission(files, csv_file)
 
 
-@seq.command('download')
+@seq.command('get')
 @click.argument('output_dir', type=click.Path(exists=False))
 @opt_species
 @opt_seq_type
 @opt_read
-def download(
+def get(
         output_dir,
         species: int,
         seq_type: str,
@@ -57,7 +57,12 @@ def download(
     """Download sequence files to the local drive
 
     OUTPUT_DIR: The directory to save downloaded files. Saved files will
-                be nested under a directory named after the sample.
+    be nested under a directory named after the sample.
+
+    Example1: austrakka seq get -t fastq --read 2 --species 1 ~/Downloads/fastq-files
+
+    Example2: austrakka seq get -t fastq -r 2 -s 1 ~/Downloads/fastq-files
+
     """
     # pylint: disable=expression-not-assigned
     if seq_type == FASTQ_UPLOAD_TYPE:
