@@ -248,7 +248,9 @@ def fetch_seq_download_info(sample_names):
 
 def throw_if_empty(a_list: list, msg: str):
     if not a_list:
-        raise FailedResponseException(create_response_object(msg, RESPONSE_TYPE_ERROR))
+        raise FailedResponseException(
+            create_response_object(
+                msg, RESPONSE_TYPE_ERROR))
 
 
 def fetch_samples_names_by_species(species):
@@ -256,4 +258,3 @@ def fetch_samples_names_by_species(species):
         path=path.join(SAMPLE_BY_SPECIES_PATH, species),
     )
     return samples
-

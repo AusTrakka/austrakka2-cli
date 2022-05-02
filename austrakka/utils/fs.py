@@ -21,4 +21,3 @@ def can_write(output_dir):
         return os.access(output_dir, os.W_OK)
     except OSError:
         raise ValueError(f'directory {output_dir} doesn\'t exist.')
-
