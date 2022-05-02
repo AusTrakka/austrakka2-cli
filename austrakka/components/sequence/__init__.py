@@ -4,9 +4,14 @@ from typing import Tuple
 
 import click
 
+from austrakka.utils.api import RESPONSE_TYPE_ERROR
+from austrakka.utils.output import create_response_object
 from austrakka.utils.options import opt_csv
 from austrakka.utils.options import opt_seq_type
+from austrakka.utils.options import opt_species
+from austrakka.utils.options import opt_read
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
+from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from .funcs import add_fasta_submission
 from .funcs import add_fastq_submission
 from .funcs import download_fastq
@@ -39,17 +44,26 @@ def submission_add(
 
 
 @seq.command('download')
-@click.argument('sample_name')
+@click.argument('output_dir', type=click.Path(exists=False))
+@opt_species
 @opt_seq_type
+@opt_read
 def download(
-        sample_name: str,
+        output_dir,
+        species: int,
         seq_type: str,
+        read: str,
 ):
-    """Upload sequence submission to AusTrakka
+    """Download sequence files to the local drive
 
-    FILES: list of fasta files
+    OUTPUT_DIR: The directory to save downloaded files. Saved files will
+                be nested under a directory named after the sample.
     """
     # pylint: disable=expression-not-assigned
-    
-    
-    download_fastq(sample_name)
+    if seq_type == FASTQ_UPLOAD_TYPE:
+        download_fastq(str(species), output_dir, read)
+    else:
+        raise Exception(create_response_object(
+            f"Downloading of {seq_type} not supported.",
+            RESPONSE_TYPE_ERROR)
+        )

@@ -28,9 +28,21 @@ def opt_csv(help_text='CSV file'):
 
 def opt_seq_type(func):
     return click.option(
+        "-t",
         '--type',
         'seq_type',
         required=True,
         type=click.Choice([FASTA_UPLOAD_TYPE, FASTQ_UPLOAD_TYPE]),
         help='Sequence format',
-    )
+    )(func)
+
+
+def opt_read(func):
+    return click.option(
+        "-r",
+        '--read',
+        'read',
+        default="-1",
+        type=click.Choice(["-1", "1", "2"]),
+        help='Fastq read. Defaults to -1, meaning both 1 and 2',
+    )(func)
