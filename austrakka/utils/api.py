@@ -99,6 +99,7 @@ def call_api(
 
     return parsed_resp
 
+
 @logger_wraps()
 # pylint: disable=too-many-arguments
 def call_get_api(
