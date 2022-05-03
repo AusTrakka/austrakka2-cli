@@ -200,7 +200,7 @@ def download_fastq_for_each_sample(
             if read not in (dto_read, ALL_READS):
                 continue
 
-            filename = seq_dto['originalFileName']
+            filename = seq_dto['fileName']
             sample_dir = os.path.join(output_dir, sample_name)
             file_path = os.path.join(sample_dir, filename)
 
