@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.6.0] - 2022-04-20
+### Added
+- Support for downloading fastq files by species ID.
+
 ## [0.5.0] - 2022-04-20
 ### Fixed
 - Unauthorised calls are not displayed correctly.

@@ -1,7 +1,5 @@
 import os
 
-from loguru import logger
-
 
 def create_dir(output_dir):
     try:

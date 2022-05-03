@@ -1,4 +1,3 @@
-import json
 import os
 from io import BufferedReader
 from typing import Tuple
@@ -17,7 +16,6 @@ from austrakka.utils.api import call_api
 from austrakka.utils.api import call_api_raw
 from austrakka.utils.api import call_get_api
 from austrakka.utils.api import post
-from austrakka.utils.api import get
 from austrakka.utils.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
 from austrakka.utils.paths import SAMPLE_BY_SPECIES_PATH
@@ -225,15 +223,15 @@ def download_fastq_for_each_sample(
                 if not os.path.exists(sample_dir):
                     create_dir(sample_dir)
 
-                with open(file_path, 'wb') as fd:
+                with open(file_path, 'wb') as file:
                     for chunk in resp.iter_content(chunk_size=128):
-                        fd.write(chunk)
+                        file.write(chunk)
 
                 logger.success(f'Downloaded: {filename} To: {file_path}')
 
             except FailedResponseException as ex:
                 logger.error(f'Error while downloading file for sample: '
-                             f'{ssi[0]}, read: {seq_dto["Read"]}.')
+                             f'{sample_name}, read: {dto_read}. \n{ex.message}')
 
 
 def fetch_seq_download_info(sample_names):
