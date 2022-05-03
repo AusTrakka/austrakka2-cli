@@ -205,7 +205,8 @@ def download_fastq_for_each_sample(
             file_path = os.path.join(sample_dir, filename)
 
             if os.path.exists(file_path):
-                logger.warning(f'Found a local copy of {filename}.  Skipping...')
+                logger.warning(
+                    f'Found a local copy of {filename}.  Skipping...')
                 continue
 
             try:
