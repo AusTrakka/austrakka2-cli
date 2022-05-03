@@ -8,6 +8,7 @@ from austrakka.utils.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.output import create_response_object
 from austrakka.utils.options import opt_csv
 from austrakka.utils.options import opt_seq_type
+from austrakka.utils.options import opt_fastq_seq
 from austrakka.utils.options import opt_species
 from austrakka.utils.options import opt_read
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
@@ -46,7 +47,7 @@ def submission_add(
 @seq.command('get')
 @click.argument('output_dir', type=click.Path(exists=False))
 @opt_species
-@opt_seq_type
+@opt_fastq_seq
 @opt_read
 def get(
         output_dir,

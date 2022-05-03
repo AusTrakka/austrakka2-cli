@@ -37,6 +37,17 @@ def opt_seq_type(func):
     )(func)
 
 
+def opt_fastq_seq(func):
+    return click.option(
+        "-t",
+        '--type',
+        'seq_type',
+        required=True,
+        type=click.Choice([FASTQ_UPLOAD_TYPE]),
+        help='Sequence format',
+    )(func)
+
+
 def opt_read(func):
     return click.option(
         "-r",

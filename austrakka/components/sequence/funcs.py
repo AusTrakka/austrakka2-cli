@@ -106,6 +106,20 @@ def add_fastq_submission(files: Tuple[BufferedReader], csv: BufferedReader):
             raise ex from ex
 
 
+@logger_wraps()
+def download_fastq(species: str, output_dir: str, read: str):
+
+    # fetch sample list
+    if not os.path.exists(output_dir):
+        create_dir(output_dir)
+
+    data = fetch_samples_names_by_species(species)
+    samples_names = list(data)
+    throw_if_empty(samples_names, f'No samples found for species: {species}')
+    samples_seq_info = fetch_seq_download_info(samples_names)
+    download_fastq_for_each_sample(output_dir, samples_seq_info, read)
+
+
 def _validate_fastq_submission(
         files: Tuple[BufferedReader],
         csv_dataframe: DataFrame,
@@ -173,20 +187,6 @@ def _validate_fastq_submission(
     return messages
 
 
-@logger_wraps()
-def download_fastq(species: str, output_dir: str, read: str):
-
-    # fetch sample list
-    if not os.path.exists(output_dir):
-        create_dir(output_dir)
-
-    data = fetch_samples_names_by_species(species)
-    samples_names = list(data)
-    throw_if_empty(samples_names, f'No samples found for species: {species}')
-    samples_seq_info = fetch_seq_download_info(samples_names)
-    download_fastq_for_each_sample(output_dir, samples_seq_info, read)
-
-
 def download_fastq_for_each_sample(
     output_dir: str,
     samples_seq_info: list[tuple[any, any]],
@@ -202,6 +202,14 @@ def download_fastq_for_each_sample(
             if dto_read != read and read != ALL_READS:
                 continue
 
+            filename = seq_dto['originalFileName']
+            sample_dir = os.path.join(output_dir, sample_name)
+            file_path = os.path.join(sample_dir, filename)
+
+            if os.path.exists(file_path):
+                logger.warning(f'Found a local copy of {filename}.  Skipping...')
+                continue
+
             try:
                 resp = call_api_raw(
                     path=path.join(
@@ -214,26 +222,18 @@ def download_fastq_for_each_sample(
                     stream=True,
                 )
 
-                save_to_file(resp, output_dir, sample_name, seq_dto)
+                if not os.path.exists(sample_dir):
+                    create_dir(sample_dir)
+
+                with open(file_path, 'wb') as fd:
+                    for chunk in resp.iter_content(chunk_size=128):
+                        fd.write(chunk)
+
+                logger.success(f'Downloaded: {filename} To: {file_path}')
 
             except FailedResponseException as ex:
                 logger.error(f'Error while downloading file for sample: '
                              f'{ssi[0]}, read: {seq_dto["Read"]}.')
-
-
-def save_to_file(resp, output_dir, sample_name, seq_dto):
-
-    sample_dir = os.path.join(output_dir, sample_name)
-
-    if not os.path.exists(sample_dir):
-        create_dir(sample_dir)
-
-    filename = os.path.join(sample_dir, seq_dto['originalFileName'])
-    logger.info(f'Downloading: {filename}')
-
-    with open(filename, 'wb') as fd:
-        for chunk in resp.iter_content(chunk_size=128):
-            fd.write(chunk)
 
 
 def fetch_seq_download_info(sample_names):
