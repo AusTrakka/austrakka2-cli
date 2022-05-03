@@ -231,8 +231,9 @@ def download_fastq_for_each_sample(
                 logger.success(f'Downloaded: {filename} To: {file_path}')
 
             except FailedResponseException as ex:
-                logger.error(f'Error while downloading file for sample: '
-                             f'{sample_name}, read: {dto_read}. \n{ex.message}')
+                logger.error(
+                    f'Error while downloading file for sample: '
+                    f'{sample_name}, read: {dto_read}. \n{ex.message}')
 
 
 def fetch_seq_download_info(sample_names):
