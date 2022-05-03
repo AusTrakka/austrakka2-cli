@@ -28,7 +28,7 @@ FASTA = 'Fasta'
 FASTQ = 'Fastq'
 DOWNLOAD = 'download'
 
-ALL_READS = -1
+ALL_READS = "-1"
 
 FASTQ_CSV_SAMPLE_ID = 'sampleId'
 FASTQ_CSV_FILENAME_1 = 'filename1'
@@ -197,7 +197,7 @@ def download_fastq_for_each_sample(
             dto_read = str(seq_dto['read'])
 
             # When read is -1, it means take both.
-            if dto_read != read and read != ALL_READS:
+            if read not in (dto_read, ALL_READS):
                 continue
 
             filename = seq_dto['originalFileName']
