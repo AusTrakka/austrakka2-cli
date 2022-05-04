@@ -23,6 +23,6 @@ jobs:
           propenstate: 'UAT Passed'
           inprogressstate: 'Closed'
           ghrepo_owner: 'AusTrakka'
-          ghrepo: 'austrakka-portal'
+          ghrepo: 'austrakka2-cli'
           pull_number: ${{github.event.number}}
           branch_name: ${{ github.ref }}
