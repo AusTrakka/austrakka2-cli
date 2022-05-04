@@ -9,6 +9,7 @@ from austrakka.utils.output import create_response_object
 from austrakka.utils.options import opt_csv
 from austrakka.utils.options import opt_seq_type
 from austrakka.utils.options import opt_fastq_seq
+from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_species
 from austrakka.utils.options import opt_read
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
@@ -45,7 +46,7 @@ def submission_add(
 
 
 @seq.command('get')
-@click.argument('output_dir', type=click.Path(exists=False))
+@opt_output_dir
 @opt_species
 @opt_fastq_seq
 @opt_read
@@ -57,12 +58,23 @@ def get(
 ):
     """Download sequence files to the local drive
 
-    OUTPUT_DIR: The directory to save downloaded files. Saved files will
+    OUTPUT_DIR: The directory to save downloaded files. Saved files will \
     be nested under a directory named after the sample.
 
-    Example1: austrakka seq get -t fastq --read 2 --species 1 ~/Downloads/fastq-files
+    EXAMPLE 1: Download both Reads for species 1
 
-    Example2: austrakka seq get -t fastq -r 2 -s 1 ~/Downloads/fastq-files
+        austrakka seq get -t fastq --species 1 --outdir ~/Downloads/fastq-files
+
+
+    EXAMPLE 2: Download Read 2 for species 1
+
+        austrakka seq get -t fastq --read 2 --species 1 --outdir ~/Downloads/fastq-files
+
+
+    EXAMPLE 3: Download Read 2 for species 1. Command uses short-hand.
+
+        austrakka seq get -t fastq -r 2 -s 1 --outdir ~/Downloads/fastq-files
+
 
     """
     # pylint: disable=expression-not-assigned

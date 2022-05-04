@@ -48,6 +48,18 @@ def opt_fastq_seq(func):
     )(func)
 
 
+def opt_output_dir(func):
+    return click.option(
+        "-o",
+        '--outdir',
+        'output_dir',
+        required=True,
+        type=click.Path(exists=False),
+        help='The output directory where files are saved. Sub \
+        directories will be created beneath this as needed.',
+    )(func)
+
+
 def opt_read(func):
     return click.option(
         "-r",
