@@ -1,0 +1,28 @@
+name: Update AZ items (UAT)
+
+on:
+  pull_request:
+    branches: [UAT]
+    types: [opened, closed, edited]
+  push:
+    branches: [UAT]
+
+jobs:
+  alert:
+    if: ${{ github.actor != 'azure-boards[bot]' }}
+    runs-on: ubuntu-latest
+    name: Update AZ push to UAT
+    steps:
+      - uses: samcarswell/pr-update-work-item-state@master
+        env:
+          gh_token : '${{ secrets.AUSTRAKKA_ACTIONS_PAT }}'
+          ado_token: '${{ secrets.AZURE_DEVOPS_PAT_BOARDS }}'
+          ado_organization: '${{ secrets.AZURE_DEVOPS_ORG }}'
+          ado_project: '${{ secrets.AZURE_DEVOPS_PROJECT_AT2 }}'
+          closedstate: 'Ready for Testing'
+          propenstate: 'Ready for UAT'
+          inprogressstate: 'Ready for Testing'
+          ghrepo_owner: 'AusTrakka'
+          ghrepo: 'austrakka2-cli'
+          pull_number: ${{github.event.number}}
+          branch_name: ${{ github.ref }}

@@ -9,10 +9,14 @@ and this project adheres to [Semantic Versioning].
 ### Changed
 - Changed to require --outdir option when using seq command.
 - Added examples to the seq command help section.
-- 
+-
 ## [0.6.0] - 2022-05-03
 ### Added
 - Support for downloading fastq files by species ID.
+
+## [0.5.1] - 2022-05-04
+### Changes
+- CI/CD upgrades.
 
 ## [0.5.0] - 2022-04-20
 ### Fixed
