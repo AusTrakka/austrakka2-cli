@@ -65,7 +65,6 @@ def call_api(
         data=data,
         params=params,
     )
-    print(response.text)
     logger.debug(f'{response.status_code} {response.reason}: {response.url}')
 
     # pylint: disable=no-member
