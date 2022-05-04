@@ -8,7 +8,6 @@ from austrakka.utils.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.output import create_response_object
 from austrakka.utils.options import opt_csv
 from austrakka.utils.options import opt_seq_type
-from austrakka.utils.options import opt_fastq_seq
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_species
 from austrakka.utils.options import opt_read
@@ -48,7 +47,7 @@ def submission_add(
 @seq.command('get')
 @opt_output_dir
 @opt_species
-@opt_fastq_seq
+@opt_seq_type
 @opt_read
 def get(
         output_dir,
@@ -57,9 +56,6 @@ def get(
         read: str,
 ):
     """Download sequence files to the local drive
-
-    OUTPUT_DIR: The directory to save downloaded files. Saved files will \
-    be nested under a directory named after the sample.
 
     EXAMPLE 1: Download both Reads for species 1
 
