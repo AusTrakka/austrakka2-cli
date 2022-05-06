@@ -30,6 +30,8 @@ FASTQ = 'Fastq'
 DOWNLOAD = 'download'
 
 ALL_READS = "-1"
+ONE = "1"
+TWO = "2"
 
 FASTQ_CSV_SAMPLE_ID = 'sampleId'
 FASTQ_CSV_FILENAME_1 = 'filename1'
@@ -210,9 +212,19 @@ def download_fastq_for_each_sample(
 
         for seq_dto in ssi[1]:
             dto_read = str(seq_dto['read'])
+            seq_type = seq_dto['type']
+
+            if not sample_name:
+                logger.error(f'Encountered sample name. Skipping all sequences associated with the sample...')
+                continue
+
+            if dto_read not in (ONE, TWO) or not seq_type:
+                logger.error(f'Error in sample: {sample_name}. Found sequence with invalid Read or Type. Skipping...')
+                continue
 
             # When read is -1, it means take both.
-            if read not in (dto_read, ALL_READS):
+            # Ignore fasta. Some samples can have both fasta and fastq files.
+            if seq_type == FASTA or read not in (dto_read, ALL_READS):
                 continue
 
             filename = seq_dto['fileName']
