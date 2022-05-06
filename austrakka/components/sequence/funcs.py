@@ -129,7 +129,8 @@ def take_fastq_sample_names(data):
         return samples_names
 
     except Exception as ex:
-        logger.error('Error while fetching sample names for samples with fastq files attached: ')
+        logger.error(
+            'Error while fetching sample names for samples with fastq files attached: ')
         raise ex from ex
 
 
