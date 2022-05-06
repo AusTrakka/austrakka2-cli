@@ -24,9 +24,10 @@ from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
 from austrakka.utils.fs import create_dir
+from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 
-FASTA = 'Fasta'
-FASTQ = 'Fastq'
+FASTA_PATH = 'Fasta'
+FASTQ_PATH = 'Fastq'
 DOWNLOAD = 'download'
 
 ALL_READS = "-1"
@@ -44,7 +45,7 @@ FASTQ_CSV_SPECIES = 'species'
 def add_fasta_submission(files: Tuple[BufferedReader], csv: BufferedReader):
     call_api(
         method=post,
-        path=path.join(SEQUENCE_PATH, FASTA),
+        path=path.join(SEQUENCE_PATH, FASTA_PATH),
         body=[('files[]', (file.name, file)) for file in files]
         + [('files[]', (csv.name, csv))],
         multipart=True,
@@ -95,7 +96,7 @@ def add_fastq_submission(files: Tuple[BufferedReader], csv: BufferedReader):
         try:
             call_api(
                 method=post,
-                path=path.join(SEQUENCE_PATH, FASTQ),
+                path=path.join(SEQUENCE_PATH, FASTQ_PATH),
                 body=sample_files,
                 multipart=True,
                 custom_headers=custom_headers,
@@ -132,7 +133,8 @@ def take_fastq_sample_names(data):
 
     except Exception as ex:
         logger.error(
-            'Error while fetching sample names for samples with fastq files attached: ')
+            'Error while fetching sample names for samples '
+            'with fastq files attached: ')
         raise ex from ex
 
 
@@ -227,7 +229,8 @@ def download_fastq_for_each_sample(
 
             # When read is -1, it means take both.
             # Ignore fasta. Some samples can have both fasta and fastq files.
-            if seq_type == FASTA or read not in (dto_read, ALL_READS):
+            if seq_type.lower() == FASTA_UPLOAD_TYPE \
+                    or read not in (dto_read, ALL_READS):
                 continue
 
             filename = seq_dto['fileName']
@@ -244,7 +247,7 @@ def download_fastq_for_each_sample(
                     path=path.join(
                         SEQUENCE_PATH,
                         DOWNLOAD,
-                        FASTQ,
+                        FASTQ_PATH,
                         sample_name,
                         dto_read,
                     ),
