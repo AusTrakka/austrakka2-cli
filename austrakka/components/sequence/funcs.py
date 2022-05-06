@@ -24,12 +24,15 @@ from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
 from austrakka.utils.fs import create_dir
+from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 
-FASTA = 'Fasta'
-FASTQ = 'Fastq'
+FASTA_PATH = 'Fasta'
+FASTQ_PATH = 'Fastq'
 DOWNLOAD = 'download'
 
 ALL_READS = "-1"
+ONE = "1"
+TWO = "2"
 
 FASTQ_CSV_SAMPLE_ID = 'sampleId'
 FASTQ_CSV_FILENAME_1 = 'filename1'
@@ -42,7 +45,7 @@ FASTQ_CSV_SPECIES = 'species'
 def add_fasta_submission(files: Tuple[BufferedReader], csv: BufferedReader):
     call_api(
         method=post,
-        path=path.join(SEQUENCE_PATH, FASTA),
+        path=path.join(SEQUENCE_PATH, FASTA_PATH),
         body=[('files[]', (file.name, file)) for file in files]
         + [('files[]', (csv.name, csv))],
         multipart=True,
@@ -93,7 +96,7 @@ def add_fastq_submission(files: Tuple[BufferedReader], csv: BufferedReader):
         try:
             call_api(
                 method=post,
-                path=path.join(SEQUENCE_PATH, FASTQ),
+                path=path.join(SEQUENCE_PATH, FASTQ_PATH),
                 body=sample_files,
                 multipart=True,
                 custom_headers=custom_headers,
@@ -113,10 +116,26 @@ def download_fastq(species: str, output_dir: str, read: str):
         create_dir(output_dir)
 
     data = fetch_samples_names_by_species(species)
-    samples_names = list(data)
+    samples_names = take_fastq_sample_names(data)
     throw_if_empty(samples_names, f'No samples found for species: {species}')
     samples_seq_info = fetch_seq_download_info(samples_names)
     download_fastq_for_each_sample(output_dir, samples_seq_info, read)
+
+
+def take_fastq_sample_names(data):
+    try:
+        # Expecting response with flat sample summary dtos
+        fss_dtos = list(data)
+        fastq_fss_dtos = filter(lambda fss: fss['hasFastq'], fss_dtos)
+        samples_map = map(lambda x: x['sampleName'], fastq_fss_dtos)
+        samples_names = list(samples_map)
+        return samples_names
+
+    except Exception as ex:
+        logger.error(
+            'Error while fetching sample names for samples '
+            'with fastq files attached: ')
+        raise ex from ex
 
 
 def _validate_fastq_submission(
@@ -196,9 +215,22 @@ def download_fastq_for_each_sample(
 
         for seq_dto in ssi[1]:
             dto_read = str(seq_dto['read'])
+            seq_type = seq_dto['type']
+
+            if not sample_name:
+                logger.error('Encountered empty sample name. Skipping all '
+                             'sequences associated with the sample...')
+                continue
+
+            if dto_read not in (ONE, TWO) or not seq_type:
+                logger.error(f'Error in sample: {sample_name}. Found sequence '
+                             f'with invalid Read or Type. Skipping...')
+                continue
 
             # When read is -1, it means take both.
-            if read not in (dto_read, ALL_READS):
+            # Ignore fasta. Some samples can have both fasta and fastq files.
+            if seq_type.lower() == FASTA_UPLOAD_TYPE \
+                    or read not in (dto_read, ALL_READS):
                 continue
 
             filename = seq_dto['fileName']
@@ -215,7 +247,7 @@ def download_fastq_for_each_sample(
                     path=path.join(
                         SEQUENCE_PATH,
                         DOWNLOAD,
-                        FASTQ,
+                        FASTQ_PATH,
                         sample_name,
                         dto_read,
                     ),
