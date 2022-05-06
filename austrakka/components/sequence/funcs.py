@@ -22,6 +22,7 @@ from austrakka.utils.paths import SAMPLE_BY_SPECIES_PATH
 from austrakka.utils.paths import SAMPLE_DOWNLOAD_INFO_PATH
 from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
+from austrakka.utils.output import log_response_compact
 from austrakka.utils.fs import create_dir
 
 FASTA = 'Fasta'
@@ -231,9 +232,7 @@ def download_fastq_for_each_sample(
                 logger.success(f'Downloaded: {filename} To: {file_path}')
 
             except FailedResponseException as ex:
-                logger.error(
-                    f'Error while downloading file for sample: '
-                    f'{sample_name}, read: {dto_read}. \n{ex.message}')
+                log_response_compact(ex.parsed_resp)
 
 
 def fetch_seq_download_info(sample_names):
