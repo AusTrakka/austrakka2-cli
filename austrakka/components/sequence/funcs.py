@@ -216,11 +216,13 @@ def download_fastq_for_each_sample(
             seq_type = seq_dto['type']
 
             if not sample_name:
-                logger.error(f'Encountered sample name. Skipping all sequences associated with the sample...')
+                logger.error('Encountered sample name. Skipping all sequences '
+                             'associated with the sample...')
                 continue
 
             if dto_read not in (ONE, TWO) or not seq_type:
-                logger.error(f'Error in sample: {sample_name}. Found sequence with invalid Read or Type. Skipping...')
+                logger.error(f'Error in sample: {sample_name}. Found sequence '
+                             f'with invalid Read or Type. Skipping...')
                 continue
 
             # When read is -1, it means take both.
