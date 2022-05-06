@@ -113,10 +113,24 @@ def download_fastq(species: str, output_dir: str, read: str):
         create_dir(output_dir)
 
     data = fetch_samples_names_by_species(species)
-    samples_names = list(data)
+    samples_names = take_fastq_sample_names(data)
     throw_if_empty(samples_names, f'No samples found for species: {species}')
     samples_seq_info = fetch_seq_download_info(samples_names)
     download_fastq_for_each_sample(output_dir, samples_seq_info, read)
+
+
+def take_fastq_sample_names(data):
+    try:
+        # Expecting response with flat sample summary dtos
+        fss_dtos = list(data)
+        fastq_fss_dtos = filter(lambda fss: fss['hasFastq'], fss_dtos)
+        samples_map = map(lambda x: x['sampleName'], fastq_fss_dtos)
+        samples_names = list(samples_map)
+        return samples_names
+
+    except Exception as ex:
+        logger.error('Error while fetching sample names for samples with fastq files attached: ')
+        raise ex from ex
 
 
 def _validate_fastq_submission(
