@@ -25,6 +25,7 @@ from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
 from austrakka.utils.fs import create_dir
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
+from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 
 FASTA_PATH = 'Fasta'
 FASTQ_PATH = 'Fastq'
@@ -108,25 +109,11 @@ def add_fastq_submission(files: Tuple[BufferedReader], csv: BufferedReader):
             raise ex from ex
 
 
-@logger_wraps()
-def download_fastq(species: str, output_dir: str, read: str):
-
-    # fetch sample list
-    if not os.path.exists(output_dir):
-        create_dir(output_dir)
-
-    data = fetch_samples_names_by_species(species)
-    samples_names = take_fastq_sample_names(data)
-    throw_if_empty(samples_names, f'No samples found for species: {species}')
-    samples_seq_info = fetch_seq_download_info(samples_names)
-    download_fastq_for_each_sample(output_dir, samples_seq_info, read)
-
-
-def take_fastq_sample_names(data):
+def take_sample_names(data, filter_prop):
     try:
         # Expecting response with flat sample summary dtos
         fss_dtos = list(data)
-        fastq_fss_dtos = filter(lambda fss: fss['hasFastq'], fss_dtos)
+        fastq_fss_dtos = filter(lambda fss: fss[filter_prop], fss_dtos)
         samples_map = map(lambda x: x['sampleName'], fastq_fss_dtos)
         samples_names = list(samples_map)
         return samples_names
@@ -242,29 +229,70 @@ def download_fastq_for_each_sample(
                     f'Found a local copy of {filename}.  Skipping...')
                 continue
 
-            try:
-                resp = call_api_raw(
-                    path=path.join(
-                        SEQUENCE_PATH,
-                        DOWNLOAD,
-                        FASTQ_PATH,
-                        sample_name,
-                        dto_read,
-                    ),
-                    stream=True,
-                )
+            query_path = path.join(
+                SEQUENCE_PATH,
+                DOWNLOAD,
+                FASTQ_PATH,
+                sample_name,
+                dto_read,
+            )
+            download_seq_file(file_path, filename, query_path, sample_dir)
 
-                if not os.path.exists(sample_dir):
-                    create_dir(sample_dir)
 
-                with open(file_path, 'wb') as file:
-                    for chunk in resp.iter_content(chunk_size=128):
-                        file.write(chunk)
+def download_fasta_for_each_sample(
+    output_dir: str,
+    samples_seq_info: list[tuple[any, any]]
+):
+    for ssi in samples_seq_info:
+        sample_name = ssi[0]
 
-                logger.success(f'Downloaded: {filename} To: {file_path}')
+        for seq_dto in ssi[1]:
+            seq_type = seq_dto['type']
 
-            except FailedResponseException as ex:
-                log_response_compact(ex.parsed_resp)
+            if not sample_name:
+                logger.error('Encountered empty sample name. Skipping all '
+                             'sequences associated with the sample...')
+                continue
+
+            if seq_type.lower() == FASTQ_UPLOAD_TYPE:
+                continue
+
+            filename = seq_dto['fileName']
+            sample_dir = os.path.join(output_dir, sample_name)
+            file_path = os.path.join(sample_dir, filename)
+
+            if os.path.exists(file_path):
+                logger.warning(
+                    f'Found a local copy of {filename}.  Skipping...')
+                continue
+
+            query_path = path.join(
+                SEQUENCE_PATH,
+                DOWNLOAD,
+                FASTA_PATH,
+                sample_name,
+            )
+            download_seq_file(file_path, filename, query_path, sample_dir)
+
+
+def download_seq_file(file_path, filename, query_path, sample_dir):
+    try:
+        resp = call_api_raw(
+            path=query_path,
+            stream=True,
+        )
+
+        if not os.path.exists(sample_dir):
+            create_dir(sample_dir)
+
+        with open(file_path, 'wb') as file:
+            for chunk in resp.iter_content(chunk_size=128):
+                file.write(chunk)
+
+        logger.success(f'Downloaded: {filename} To: {file_path}')
+
+    except FailedResponseException as ex:
+        log_response_compact(ex.parsed_resp)
 
 
 def fetch_seq_download_info(sample_names):
