@@ -46,7 +46,7 @@ versions = [
 # filter out non-uat versions
 versions = [version for version in versions if f"uat-{VERSION}" in version]
 
-next_version_text = f"uat-{VERSION}.{len(versions) + 1}"
+next_version_text = f"{VERSION}.{len(versions) + 1}"
 
 print(f"Creating UAT release {next_version_text}")
 
