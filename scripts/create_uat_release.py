@@ -8,7 +8,7 @@ AT_CLI_PACKAGE_GUID = os.environ.get("AT_CLI_PACKAGE_GUID")
 DEVOPS_TOKEN = os.environ.get("DEVOPS_TOKEN")
 
 SETUP_ENTRY_POINT = 'austrakka=austrakka.main:main'
-UAT_SETUP_ENTRY_POINT = 'austrakka=austrakka.main:main'
+UAT_SETUP_ENTRY_POINT = 'austrakka-uat=austrakka.main:main'
 
 SETUP_PACKAGE_NAME = 'name="austrakka"'
 UAT_SETUP_PACKAGE_NAME = 'name="austrakka-uat"'
