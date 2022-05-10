@@ -43,10 +43,14 @@ versions = [
     in json_obj['value']
 ]
 
-# filter out non-uat versions
-versions = [version for version in versions if f"uat-{VERSION}" in version]
+# filter out non-related versions
+versions = [version for version in versions if version.startswith(VERSION)]
 
-next_version_text = f"{VERSION}.{len(versions) + 1}"
+version_list = VERSION.split('.')
+
+version_list.append(str(len(versions) + 1))
+
+next_version_text = '.'.join(version_list)
 
 print(f"Creating UAT release {next_version_text}")
 
