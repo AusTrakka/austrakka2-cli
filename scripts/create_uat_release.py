@@ -7,11 +7,18 @@ import requests
 AT_CLI_PACKAGE_GUID = os.environ.get("AT_CLI_PACKAGE_GUID")
 DEVOPS_TOKEN = os.environ.get("DEVOPS_TOKEN")
 
+SETUP_ENTRY_POINT = 'austrakka=austrakka.main:main'
+UAT_SETUP_ENTRY_POINT = 'austrakka=austrakka.main:main'
+
+SETUP_PACKAGE_NAME = 'name="austrakka"'
+UAT_SETUP_PACKAGE_NAME = 'name="austrakka-uat"'
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 version_module = types.ModuleType('version')
 
 VERSION_FILE_PATH = os.path.join(dir_path, "..", "austrakka", "__init__.py")
+SETUP_FILE_PATH = os.path.join(dir_path, "..", "setup.py")
 
 with open(VERSION_FILE_PATH, "r") as version_file_data:
     exec(version_file_data.read(), version_module.__dict__)
@@ -49,3 +56,17 @@ with open(VERSION_FILE_PATH, 'r+') as version_file:
     version_file.seek(0)
     version_file.truncate()
     version_file.write(version_file_data)
+
+with open(SETUP_FILE_PATH, 'r+') as setup_file:
+    setup_file_data = setup_file.read()
+    setup_file_data = setup_file_data.replace(
+        SETUP_ENTRY_POINT,
+        UAT_SETUP_ENTRY_POINT
+    )
+    setup_file_data = setup_file_data.replace(
+        SETUP_PACKAGE_NAME,
+        UAT_SETUP_PACKAGE_NAME
+    )
+    setup_file.seek(0)
+    setup_file.truncate()
+    setup_file.write(setup_file_data)
