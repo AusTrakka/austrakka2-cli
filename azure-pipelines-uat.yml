@@ -1,0 +1,45 @@
+trigger:
+  - UAT
+
+pr: none
+pool:
+    vmImage: 'ubuntu-latest'
+      
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.9'
+    addToPath: true
+    architecture: 'x64'
+
+- script: python -m pip install --upgrade pip setuptools wheel
+  displayName: 'Install tools'
+
+- script: python -m pip install pipenv
+  displayName: 'Install pipenv'
+
+- script: pipenv lock --requirements > requirements.txt
+  displayName: 'Create requirements.txt'
+
+- script: pip install -r requirements.txt
+  displayName: 'Install requirements'
+  
+- script: python scripts/create_uat_release.py
+  env:
+    DEVOPS_TOKEN: $(System.AccessToken)
+    AT_CLI_PACKAGE_GUID: 'e24fdcef-9a21-44b6-8ddd-d865bc119492'
+  displayName: 'Create UAT release'
+
+- script: python setup.py bdist_wheel 
+  displayName: 'Artifact creation'
+
+- script: python -m pip install --upgrade twine
+  displayName: 'Install Twine'
+
+- task: TwineAuthenticate@1
+  inputs:
+    artifactFeed: $(ARTIFACT_FEED)
+
+- script: |
+    python -m twine upload --skip-existing -r $(REPOSITORY) --config-file $(PYPIRC_PATH) dist/*.whl
+  displayName: 'Publish to PyPi through Twine'
