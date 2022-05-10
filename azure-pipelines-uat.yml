@@ -27,7 +27,7 @@ steps:
 - script: python scripts/create_uat_release.py
   env:
     DEVOPS_TOKEN: $(System.AccessToken)
-    AT_CLI_PACKAGE_GUID: 'e24fdcef-9a21-44b6-8ddd-d865bc119492'
+    AT_CLI_PACKAGE_GUID: '3cca0460-21db-4677-9963-0310bd66e07f'
   displayName: 'Create UAT release'
 
 - script: python setup.py bdist_wheel 
