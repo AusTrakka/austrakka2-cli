@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.5.3] - 2022-05-10
+### Fixed
+- Fixed broken build.
+
+## [0.5.2] - 2022-05-10
+### Changes
+- CI/CD upgrades.
+
+## [0.5.1] - 2022-05-04
+### Changes
+- CI/CD upgrades.
+
 ## [0.5.0] - 2022-04-20
 ### Fixed
 - Unauthorised calls are not displayed correctly.
@@ -102,3 +114,6 @@ and this project adheres to [Semantic Versioning].
 [0.4.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.4.0
 [0.4.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.4.1
 [0.5.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.5.0
+[0.5.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.5.1
+[0.5.2]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.5.2
+[0.5.3]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.5.3
