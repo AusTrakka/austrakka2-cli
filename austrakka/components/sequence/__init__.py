@@ -2,10 +2,9 @@
 from io import BufferedReader
 from typing import Tuple
 
+import os
 import click
 
-from austrakka.utils.api import RESPONSE_TYPE_ERROR
-from austrakka.utils.output import create_response_object
 from austrakka.utils.options import opt_csv
 from austrakka.utils.options import opt_seq_type
 from austrakka.utils.options import opt_output_dir
@@ -13,9 +12,15 @@ from austrakka.utils.options import opt_species
 from austrakka.utils.options import opt_read
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
+from austrakka.utils.fs import create_dir
 from .funcs import add_fasta_submission
 from .funcs import add_fastq_submission
-from .funcs import download_fastq
+from .funcs import fetch_samples_names_by_species
+from .funcs import fetch_seq_download_info
+from .funcs import take_sample_names
+from .funcs import throw_if_empty
+from .funcs import download_fasta_for_each_sample
+from .funcs import download_fastq_for_each_sample
 
 
 @click.group()
@@ -57,27 +62,32 @@ def get(
 ):
     """Download sequence files to the local drive
 
-    EXAMPLE 1: Download both Reads for species 1
+    EXAMPLE 1: Download Fastq with both Reads for species 1
 
         austrakka seq get -t fastq --species 1 --outdir ~/Downloads/fastq-files
 
 
-    EXAMPLE 2: Download Read 2 for species 1
+    EXAMPLE 2: Download Fasta species 1
 
-        austrakka seq get -t fastq --read 2 --species 1 --outdir ~/Downloads/fastq-files
-
-
-    EXAMPLE 3: Download Read 2 for species 1. Command uses short-hand.
-
-        austrakka seq get -t fastq -r 2 -s 1 --outdir ~/Downloads/fastq-files
+        austrakka seq get -t fasta --species 1 --outdir ~/Downloads/fasta-files
 
 
     """
     # pylint: disable=expression-not-assigned
+    if not os.path.exists(output_dir):
+        create_dir(output_dir)
+
+    data = fetch_samples_names_by_species(str(species))
+
     if seq_type == FASTQ_UPLOAD_TYPE:
-        download_fastq(str(species), output_dir, read)
+        samples_names = take_sample_names(data, 'hasFastq')
     else:
-        raise Exception(create_response_object(
-            f"Downloading of {seq_type} not supported.",
-            RESPONSE_TYPE_ERROR)
-        )
+        samples_names = take_sample_names(data, 'hasFasta')
+
+    throw_if_empty(samples_names, f'No samples found for species: {species}')
+    samples_seq_info = fetch_seq_download_info(samples_names)
+
+    if seq_type == FASTQ_UPLOAD_TYPE:
+        download_fastq_for_each_sample(output_dir, samples_seq_info, read)
+    else:
+        download_fasta_for_each_sample(output_dir, samples_seq_info)
