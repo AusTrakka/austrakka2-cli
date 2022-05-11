@@ -8,8 +8,8 @@ def opt_species(func):
         '-s',
         '--species',
         required=True,
-        help='Species ID',
-        type=click.INT
+        help='Species Abbreviation',
+        type=click.STRING
     )(func)
 
 

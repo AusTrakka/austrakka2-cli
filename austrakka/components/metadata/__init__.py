@@ -16,6 +16,6 @@ def metadata(ctx):
 @metadata.command('add')
 @click.argument('file', type=click.File('rb'))
 @opt_species
-def submission_add(file: BufferedReader, species: int):
+def submission_add(file: BufferedReader, species: str):
     """Upload metadata submission to AusTrakka"""
     add_metadata(file, species)

@@ -56,7 +56,7 @@ def submission_add(
 @opt_read
 def get(
         output_dir,
-        species: int,
+        species: str,
         seq_type: str,
         read: str,
 ):
@@ -77,7 +77,7 @@ def get(
     if not os.path.exists(output_dir):
         create_dir(output_dir)
 
-    data = fetch_samples_names_by_species(str(species))
+    data = fetch_samples_names_by_species(species)
 
     if seq_type == FASTQ_UPLOAD_TYPE:
         samples_names = take_sample_names(data, 'hasFastq')
