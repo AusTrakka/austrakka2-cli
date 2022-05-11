@@ -3,7 +3,7 @@ from io import BufferedReader
 import click
 
 from .funcs import add_tree
-from ..analysis.opts import analysis
+from ...utils.options import opt_analysis
 
 
 @click.group()
@@ -15,7 +15,7 @@ def tree(ctx):
 
 @tree.command('add')
 @click.argument('newick', type=click.File('rb'))
-@analysis
-def tree_add(newick: BufferedReader, analysis: int):
+@opt_analysis
+def tree_add(newick: BufferedReader, analysis: str):
     '''Upload tree to AusTrakka'''
     add_tree(newick, analysis)
