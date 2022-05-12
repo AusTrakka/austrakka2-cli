@@ -56,20 +56,20 @@ def submission_add(
 @opt_read
 def get(
         output_dir,
-        species: int,
+        species: str,
         seq_type: str,
         read: str,
 ):
     """Download sequence files to the local drive
 
-    EXAMPLE 1: Download Fastq with both Reads for species 1
+    EXAMPLE 1: Download Fastq with both Reads for species SARS-CoV-2
 
-        austrakka seq get -t fastq --species 1 --outdir ~/Downloads/fastq-files
+        austrakka seq get -t fastq --species SARS-CoV-2 --outdir ~/Downloads/fastq-files
 
 
-    EXAMPLE 2: Download Fasta species 1
+    EXAMPLE 2: Download Fasta species SARS-CoV-2
 
-        austrakka seq get -t fasta --species 1 --outdir ~/Downloads/fasta-files
+        austrakka seq get -t fasta --species SARS-CoV-2 --outdir ~/Downloads/fasta-files
 
 
     """
@@ -77,7 +77,7 @@ def get(
     if not os.path.exists(output_dir):
         create_dir(output_dir)
 
-    data = fetch_samples_names_by_species(str(species))
+    data = fetch_samples_names_by_species(species)
 
     if seq_type == FASTQ_UPLOAD_TYPE:
         samples_names = take_sample_names(data, 'hasFastq')

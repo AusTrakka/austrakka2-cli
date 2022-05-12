@@ -312,7 +312,7 @@ def throw_if_empty(a_list: list, msg: str):
                 msg, RESPONSE_TYPE_ERROR))
 
 
-def fetch_samples_names_by_species(species):
+def fetch_samples_names_by_species(species: str):
     samples = call_get_api(
         path=path.join(SAMPLE_BY_SPECIES_PATH, species),
     )

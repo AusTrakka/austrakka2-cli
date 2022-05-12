@@ -8,8 +8,8 @@ def opt_species(func):
         '-s',
         '--species',
         required=True,
-        help='Species ID',
-        type=click.INT
+        help='Species Abbreviation',
+        type=click.STRING
     )(func)
 
 
@@ -57,4 +57,14 @@ def opt_read(func):
         default="-1",
         type=click.Choice(["-1", "1", "2"]),
         help='Fastq read. Defaults to -1, meaning both 1 and 2',
+    )(func)
+
+
+def opt_analysis(func):
+    return click.option(
+        '-a',
+        '--analysis',
+        required=True,
+        help='Analysis Abbreviation',
+        type=click.STRING
     )(func)

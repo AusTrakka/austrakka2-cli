@@ -9,11 +9,11 @@ from ...components.job.instance.funcs import add_job_instance
 @logger_wraps()
 def upload_file(
         file: BufferedReader,
-        analysis_id: int,
+        analysis_abbrev: str,
         route: str
 ):
     job_instance_resp = add_job_instance(
-        analysis_id=analysis_id
+        analysis_abbrev=analysis_abbrev
     )
 
     return call_api(

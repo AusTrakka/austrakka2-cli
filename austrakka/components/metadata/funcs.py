@@ -10,13 +10,13 @@ SUBMISSION_UPLOAD = 'UploadSubmissions'
 
 
 @logger_wraps()
-def add_metadata(file: BufferedReader, species_id: int):
+def add_metadata(file: BufferedReader, species_abbrev: str):
     call_api(
         method=post,
         path=path.join(SUBMISSION_PATH, SUBMISSION_UPLOAD),
         body={
             'file': (file.name, file),
-            'speciesid': str(species_id),
+            'species-abbrev': species_abbrev,
         },
         multipart=True,
     )
