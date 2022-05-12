@@ -73,14 +73,14 @@ def call_api(
     log_dict({'Response headers': dict(response.headers)}, logger.debug)
     try:
         response.raise_for_status()
-    except HTTPError as httperror:
+    except HTTPError as http_error:
         try:
             raise FailedResponseException(response.json()) from HTTPError
         except FailedResponseException as ex:
             raise ex from ex
         except JSONDecodeError:
             # pylint: disable=raise-missing-from
-            raise httperror
+            raise http_error
     parsed_resp = response.json()
     first_object = next(iter(parsed_resp), {})
 
@@ -97,3 +97,58 @@ def call_api(
         log_response(parsed_resp)
 
     return parsed_resp
+
+
+@logger_wraps()
+# pylint: disable=too-many-arguments
+def call_get_api(
+    path: str,
+    params: Dict = None,
+) -> Dict:
+    url = f'{click.get_current_context().parent.creds["uri"]}/api/{path}'
+
+    response = get(
+        url,
+        headers=_get_headers(),
+        verify=False,
+        params=params,
+    )
+    ensure_success_status(response)
+
+    json_obj = json.loads(response.text)
+    return json_obj['data']
+
+
+def ensure_success_status(response):
+    try:
+        response.raise_for_status()
+    except HTTPError as http_error:
+        try:
+            raise FailedResponseException(response.json()) from HTTPError
+        except FailedResponseException as ex:
+            raise ex from ex
+        except JSONDecodeError:
+            # pylint: disable=raise-missing-from
+            raise http_error
+
+
+@logger_wraps()
+# pylint: disable=too-many-arguments
+def call_api_raw(
+        path: str,
+        params: Dict = None,
+        stream: bool = False,
+):
+    url = f'{click.get_current_context().parent.creds["uri"]}/api/{path}'
+
+    response = get(
+        url,
+        headers=_get_headers(),
+        verify=False,
+        params=params,
+        stream=stream,
+    )
+
+    ensure_success_status(response)
+
+    return response
