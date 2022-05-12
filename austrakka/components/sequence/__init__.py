@@ -62,14 +62,14 @@ def get(
 ):
     """Download sequence files to the local drive
 
-    EXAMPLE 1: Download Fastq with both Reads for species 1
+    EXAMPLE 1: Download Fastq with both Reads for species SARS-CoV-2
 
-        austrakka seq get -t fastq --species 1 --outdir ~/Downloads/fastq-files
+        austrakka seq get -t fastq --species SARS-CoV-2 --outdir ~/Downloads/fastq-files
 
 
-    EXAMPLE 2: Download Fasta species 1
+    EXAMPLE 2: Download Fasta species SARS-CoV-2
 
-        austrakka seq get -t fasta --species 1 --outdir ~/Downloads/fasta-files
+        austrakka seq get -t fasta --species SARS-CoV-2 --outdir ~/Downloads/fasta-files
 
 
     """
