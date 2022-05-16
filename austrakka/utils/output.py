@@ -107,6 +107,26 @@ def log_dict(items: Dict, log_func: Callable, indent: int = 0) -> None:
             log_func(' ' * (indent * 4) + f'{key}:{val}')
 
 
+def log_response_compact(response):
+    def log_item_compact(item):
+        if item[RESPONSE_TYPE] == RESPONSE_TYPE_SUCCESS:
+            logger.success(item[RESPONSE_MESSAGE])
+        elif item[RESPONSE_TYPE] == RESPONSE_TYPE_WARNING:
+            logger.warning(item[RESPONSE_MESSAGE])
+        elif item[RESPONSE_TYPE] == RESPONSE_TYPE_ERROR:
+            logger.error(item[RESPONSE_MESSAGE])
+        else:
+            logger.critical(item[RESPONSE_MESSAGE])
+
+    if RESPONSE_MESSAGES in response:
+        for msg in response[RESPONSE_MESSAGES]:
+            log_item_compact(msg)
+    else:
+        # This is to handle for legacy endpoints that don't return ApiResponse
+        for msg in response:
+            log_item_compact(msg)
+
+
 def log_response(response):
     def log_item(item):
         if item[RESPONSE_TYPE] == RESPONSE_TYPE_SUCCESS:
