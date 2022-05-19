@@ -24,11 +24,12 @@ def list_proformas(table_format: str):
         lambda slist: ','.join([species['abbrev'] for species in slist])
     )
 
-    result.drop(
-        ['columnMappings', 'proFormaVersionId', 'lastUpdatedBy', 'lastUpdated'],
-        axis='columns',
-        inplace=True
-    )
+    result.drop(['columnMappings',
+                 'proFormaVersionId',
+                 'lastUpdatedBy',
+                 'lastUpdated'],
+                axis='columns',
+                inplace=True)
 
     print_table(
         result,
@@ -44,7 +45,7 @@ def show_proformas(abbrev: str, table_format: str):
     )
     data = response['data']
 
-    for field in ['abbreviation','name','version','description']:
+    for field in ['abbreviation', 'name', 'version', 'description']:
         print(f'{field}: {data[field]}')
 
     species_field = 'suggestedSpecies'
@@ -55,7 +56,7 @@ def show_proformas(abbrev: str, table_format: str):
 
     # Should add isActive check, but probably in endpoint
     field_df = pd.DataFrame.from_dict(data['columnMappings'])[
-        ['metaDataColumnName','metaDataColumnPrimitiveType','isRequired']]
+        ['metaDataColumnName', 'metaDataColumnPrimitiveType', 'isRequired']]
 
     field_df.rename(
         columns={'metaDataColumnPrimitiveType': 'type'},
@@ -64,6 +65,6 @@ def show_proformas(abbrev: str, table_format: str):
 
     field_df['type'].fillna('categorical', inplace=True)
     print_table(
-            field_df,
-            table_format,
-        )
+        field_df,
+        table_format,
+    )
