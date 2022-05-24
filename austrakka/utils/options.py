@@ -13,6 +13,15 @@ def opt_species(func):
     )(func)
 
 
+def opt_proforma(func):
+    return click.option(
+        '--proforma',
+        required=True,
+        help='Proforma Abbreviation',
+        type=click.STRING
+    )(func)
+
+
 def opt_csv(help_text='CSV file'):
     def inner_func(func):
         return click.option(
