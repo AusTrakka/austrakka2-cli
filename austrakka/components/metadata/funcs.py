@@ -11,9 +11,9 @@ SUBMISSION_UPLOAD = 'UploadSubmissions'
 
 @logger_wraps()
 def add_metadata(
-        file: BufferedReader,
-        proforma_abbrev: str
-    ):
+    file: BufferedReader,
+    proforma_abbrev: str
+):
     call_api(
         method=post,
         path=path.join(SUBMISSION_PATH, SUBMISSION_UPLOAD),
