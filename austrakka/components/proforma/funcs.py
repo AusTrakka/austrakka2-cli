@@ -1,4 +1,5 @@
 import pandas as pd
+from loguru import logger
 
 from austrakka.utils.api import call_api
 from austrakka.utils.api import get
@@ -46,13 +47,13 @@ def show_proformas(abbrev: str, table_format: str):
     data = response['data']
 
     for field in ['abbreviation', 'name', 'version', 'description']:
-        print(f'{field}: {data[field]}')
+        logger.info(f'{field}: {data[field]}')
 
     species_field = 'suggestedSpecies'
-    species = ','.join([s['name'] for s in data[species_field]])
-    print(f'{species_field}: {species}')
+    species = ','.join([s['abbrev'] for s in data[species_field]])
+    logger.info(f'{species_field}: {species}')
 
-    print('Pro forma fields:')
+    logger.info('Pro forma fields:')
 
     # Should add isActive check, but probably in endpoint
     field_df = pd.DataFrame.from_dict(data['columnMappings'])[
