@@ -2,7 +2,7 @@
 from io import BufferedReader
 import click
 
-from austrakka.utils.options import opt_species
+from austrakka.utils.options import opt_proforma
 from .funcs import add_metadata
 
 
@@ -15,7 +15,7 @@ def metadata(ctx):
 
 @metadata.command('add')
 @click.argument('file', type=click.File('rb'))
-@opt_species
-def submission_add(file: BufferedReader, species: str):
+@opt_proforma
+def submission_add(file: BufferedReader, proforma: str):
     """Upload metadata submission to AusTrakka"""
-    add_metadata(file, species)
+    add_metadata(file, proforma)
