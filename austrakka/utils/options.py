@@ -3,6 +3,35 @@ from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 
 
+def opt_abbrev(help_text="Abbreviated name, for use with the CLI and in metadata uploads"):
+    def inner_func(func):
+        return click.option(
+            "-a",
+            "--abbrev",
+            required=True,
+            help=help_text
+        )(func)
+    return inner_func
+    
+def opt_name(help_text='Name'):
+    def inner_func(func):
+        return click.option(
+            "-n",
+            "--name",
+            required=True,
+            help=help_text
+        )(func)
+    return inner_func
+
+def opt_description(func):
+    return click.option(
+        '-d',
+        '--description',
+        default="",
+        help='Human-readable description text',
+        type=click.STRING
+    )(func)
+
 def opt_species(func):
     return click.option(
         '-s',
@@ -12,6 +41,14 @@ def opt_species(func):
         type=click.STRING
     )(func)
 
+def opt_organisation(func):
+    return click.option(
+        '-o',
+        '--org',
+        required=True,
+        help='Organisation abbreviation. Must match an organisation known to AusTrakka, use `austrakka org list` to see valid values',
+        type=click.STRING
+    )(func)
 
 def opt_csv(help_text='CSV file'):
     def inner_func(func):
@@ -66,5 +103,14 @@ def opt_analysis(func):
         '--analysis',
         required=True,
         help='Analysis Abbreviation',
+        type=click.STRING
+    )(func)
+    
+def opt_taxon_id(func):
+    return click.option(
+        '-t',
+        '--taxon-id',
+        default="",
+        help='Taxon ID',
         type=click.STRING
     )(func)
