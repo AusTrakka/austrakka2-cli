@@ -7,17 +7,19 @@ verify_ssl = true
 pylint = "*"
 autopep8 = "*"
 pycodestyle = "*"
+pylint-print = "*"
 
 [packages]
 austrakka = {editable = true, path = "."}
-azure-identity = "*"
-azure-keyvault-secrets = "*"
-requests-toolbelt = "*"
-requests = "*"
-click = "*"
-loguru = "*"
-pandas = "*"
-tabulate = "*"
+azure-identity = "==1.6.1"
+azure-keyvault-secrets = "==4.3.0"
+requests-toolbelt = "==0.9.1"
+requests = "==2.26.0"
+click = "==8.0.1"
+loguru = "==0.5.3"
+pandas = "==1.3.3"
+tabulate = "==0.8.9"
+cryptography = "==3.4.8"
 
 [requires]
 python_version = "3.9"
