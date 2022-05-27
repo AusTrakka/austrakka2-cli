@@ -1,5 +1,6 @@
 import pandas as pd
 from loguru import logger
+from os import path
 
 from typing import List
 
@@ -7,7 +8,7 @@ from austrakka.utils.api import call_api
 from austrakka.utils.api import get, post
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
-from austrakka.utils.paths import PROFORMA_PATH
+from austrakka.utils.paths import PROFORMA_PATH, METADATACOLUMN_PATH
 
 @logger_wraps()
 def add_proforma(
@@ -17,12 +18,21 @@ def add_proforma(
         suggested_species: List[str],
         required_columns: List[str],
         optional_columns: List[str]):
+    
+    # Include system fields (avoid an error from the endpoint; don't force CLI user to type them in)
+    # Note that we are not forcing system fields the user DOES include to set IsRequired
+    systemFields = get_system_field_names()
+    missingSystemFields = [fieldname for fieldname in systemFields if fieldname not in required_columns+optional_columns]
+    required_columns = list(required_columns)
+    for field in missingSystemFields:
+        logger.warning(f"System field {field} must be included: adding to pro forma")
+        required_columns.append(field)
         
-    # TODO: check that all system fields are included (or let endpoint take care of it?)
     columnNames = ([{"name": col, "isRequired": True} for col in required_columns] 
                     + [{"name": col, "isRequired": False} for col in optional_columns])
     if len(columnNames)==0:
         raise ValueError("A pro forma must contain at least one field")
+    
     return call_api(
         method=post,
         path=PROFORMA_PATH,
@@ -69,7 +79,7 @@ def list_proformas(table_format: str):
 def show_proformas(abbrev: str, table_format: str):
     response = call_api(
         method=get,
-        path=f'{PROFORMA_PATH}/abbrev/{abbrev}',
+        path=path.join(PROFORMA_PATH,"abbrev",abbrev)
     )
     data = response['data']
 
@@ -96,3 +106,11 @@ def show_proformas(abbrev: str, table_format: str):
         field_df,
         table_format,
     )
+
+def get_system_field_names():
+    response = call_api(
+        method=get,
+        path=path.join(METADATACOLUMN_PATH,"SystemFields"),
+    )
+    fieldNames = [col['columnName'] for col in response]
+    return fieldNames
