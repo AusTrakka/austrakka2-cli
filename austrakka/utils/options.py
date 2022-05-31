@@ -13,12 +13,12 @@ def opt_abbrev(help_text="Abbreviated name, for use with the CLI and in metadata
         )(func)
     return inner_func
     
-def opt_name(help_text='Name'):
+def opt_name(help_text='Name', required=True):
     def inner_func(func):
         return click.option(
             "-n",
             "--name",
-            required=True,
+            required=required,
             help=help_text
         )(func)
     return inner_func
@@ -124,3 +124,15 @@ def opt_taxon_id(func):
         help='Taxon ID',
         type=click.STRING
     )(func)
+
+def opt_fieldtype(required=True):
+    def inner_func(func):
+        return click.option(
+                '-ft',
+                '--field-type',
+                required=required,
+                help='Metadata field type. Use `austrakka fieldtype list` to see options.',
+                type=click.STRING
+            )(func)
+    return inner_func
+

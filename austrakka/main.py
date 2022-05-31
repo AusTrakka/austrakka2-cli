@@ -16,6 +16,8 @@ from .components.metadata import metadata
 from .components.sequence import seq
 from .components.static import static
 from .components.proforma import proforma
+from .components.field import field
+from .components.fieldtype import fieldtype
 
 from . import __version__ as VERSION
 from .utils.misc import HandleTopLevelParams
@@ -69,6 +71,8 @@ def main():
         cli.add_command(seq)
         cli.add_command(static)
         cli.add_command(proforma)
+        cli.add_command(field)
+        cli.add_command(fieldtype)
         # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         cli(auto_envvar_prefix=CLI_PREFIX)
     except FailedResponseException as ex:
