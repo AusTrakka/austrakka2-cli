@@ -26,14 +26,14 @@ def proforma(ctx):
     multiple=True
 )
 @click.option(
-    '-rf',
+    '-req',
     '--required-field',
     help='Required field in this pro forma; users must populate this field in every upload. Multiple fields may be added.',
     type=click.STRING,
     multiple=True
 )
 @click.option(
-    '-of',
+    '-opt',
     '--optional-field',
     help='Optional field in this pro forma; users may include this field in uploads. Multiple fields may be added.',
     type=click.STRING,
@@ -61,14 +61,15 @@ def proforma_list(table_format: str):
 
 @proforma.command('show')
 @click.argument('abbrev', type=click.STRING)
+# Consider option instead: @opt_abbrev("Abbreviated name of the pro forma")
 @table_format_option()
 def proforma_show(abbrev: str, table_format: str):
     """
     Show pro forma fields.
 
     USAGE:
-    austrakka proforma show [NAME]
+    austrakka proforma show [ABBREV]
 
-    NAME should be the abbreviated name of the pro forma.
+    ABBREV should be the abbreviated name of the pro forma. Use `austrakka proforma list` for options.
     """
     show_proformas(abbrev, table_format)

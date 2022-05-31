@@ -52,9 +52,10 @@ def opt_organisation(func):
 
 def opt_proforma(func):
     return click.option(
+        '-p',
         '--proforma',
         required=True,
-        help='Proforma Abbreviation',
+        help='Proforma abbreviation. Use `austrakka proforma list` to see options.',
         type=click.STRING
     )(func)
 
