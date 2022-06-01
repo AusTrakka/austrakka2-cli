@@ -29,6 +29,7 @@ def list_species(table_format: str):
         path=path.join(SPECIES_PATH, SPECIES_DTO),
     )
 
+    #pylint: disable=duplicate-code
     data = response['data'] if ('data' in response) else response
     result = pd.DataFrame.from_dict(data)
 
