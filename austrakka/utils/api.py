@@ -21,6 +21,7 @@ from .output import log_response
 
 get = requests.get
 post = requests.post
+put = requests.put
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 

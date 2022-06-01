@@ -1,4 +1,3 @@
-from os import path
 from io import BufferedReader
 
 from austrakka.utils.misc import logger_wraps
@@ -10,13 +9,16 @@ SUBMISSION_UPLOAD = 'UploadSubmissions'
 
 
 @logger_wraps()
-def add_metadata(file: BufferedReader, species_abbrev: str):
+def add_metadata(
+    file: BufferedReader,
+    proforma_abbrev: str
+):
     call_api(
         method=post,
-        path=path.join(SUBMISSION_PATH, SUBMISSION_UPLOAD),
+        path="/".join([SUBMISSION_PATH, SUBMISSION_UPLOAD]),
         body={
             'file': (file.name, file),
-            'species-abbrev': species_abbrev,
+            'proforma-abbrev': proforma_abbrev,
         },
         multipart=True,
     )

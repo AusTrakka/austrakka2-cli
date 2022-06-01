@@ -45,7 +45,7 @@ limit-inference-results=100
 
 # List of plugins (as comma separated values of python module names) to load,
 # usually to register additional checkers.
-load-plugins=
+load-plugins=pylint_print
 
 # Pickle collected data for later comparisons.
 persistent=yes
@@ -88,7 +88,8 @@ disable=raw-checker-failed,
         use-symbolic-message-instead,
         missing-module-docstring,
         missing-function-docstring,
-        missing-class-docstring
+        missing-class-docstring,
+        trailing-whitespace
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -525,7 +526,7 @@ valid-metaclass-classmethod-first-arg=cls
 ignored-parents=
 
 # Maximum number of arguments for function / method.
-max-args=5
+max-args=20
 
 # Maximum number of attributes for a class (see R0902).
 max-attributes=7

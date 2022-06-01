@@ -71,6 +71,7 @@ def print_table(
     output = globals()[format_func](dataframe, headers)
 
     if print_output:
+        # pylint: disable=print-function
         print(output)
 
     return output
