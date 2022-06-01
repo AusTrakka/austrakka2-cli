@@ -45,11 +45,7 @@ def add_field(
     """
     Add a field (MetaDataColumn) to AusTrakka.
     """
-
     fieldtype = get_fieldtype_by_name(typename)
-
-    print(name, typename, can_visualise, column_order, show_at_start)
-    print(fieldtype)
 
     if can_visualise == 'viz':
         if typename in ["date", "number", "string"]:

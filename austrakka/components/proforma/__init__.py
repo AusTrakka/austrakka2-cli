@@ -12,7 +12,6 @@ def proforma(ctx):
     """Commands related to metadata pro formas"""
     ctx.creds = ctx.parent.creds
 
-
 @proforma.command('add')
 @opt_abbrev()
 @opt_name()
@@ -21,9 +20,9 @@ def proforma(ctx):
               '--species',
               required=False,
               help="Species abbreviations for suggested species for use with this pro forma. "
-            "Zero, one, or many species may be specified. "
-            "These species may be used to find appropriate pro formas, but will not constrain use "
-            "of the pro forma.",
+                    "Zero, one, or many species may be specified. "
+                    "These species may be used to find appropriate pro formas, but will not "
+                    "constrain use of the pro forma.",
               type=click.STRING,
               multiple=True)
 @click.option('-req',
