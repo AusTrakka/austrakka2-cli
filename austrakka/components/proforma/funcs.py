@@ -20,20 +20,22 @@ def add_proforma(
         optional_columns: List[str]):
 
     # Include system fields (avoid an error from the endpoint; don't force CLI user to type them in)
-    # Note that we are not forcing system fields the user DOES include 
+    # Note that we are not forcing system fields the user DOES include
     # to set IsRequired
     system_fields = get_system_field_names()
-    missing_system_fields = [fieldname for fieldname in system_fields 
-                             if fieldname not in required_columns+optional_columns]
+    missing_system_fields = [
+        fieldname for fieldname in system_fields if fieldname not in required_columns +
+        optional_columns]
     required_columns = list(required_columns)
     for field in missing_system_fields:
-        logger.warning(f"System field {field} must be included: adding to pro forma")
+        logger.warning(
+            f"System field {field} must be included: adding to pro forma")
         required_columns.append(field)
 
     column_names = (
-            [{"name": col, "isRequired": True} for col in required_columns] 
-           + [{"name": col, "isRequired": False} for col in optional_columns])
-    if len(column_names)==0:
+        [{"name": col, "isRequired": True} for col in required_columns]
+        + [{"name": col, "isRequired": False} for col in optional_columns])
+    if len(column_names) == 0:
         raise ValueError("A pro forma must contain at least one field")
 
     return call_api(
