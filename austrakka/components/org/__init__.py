@@ -10,6 +10,7 @@ def org(ctx):
     '''Commands related to organisations'''
     ctx.creds = ctx.parent.creds
 
+
 @org.command('list')
 @table_format_option()
 def org_list(table_format: str):

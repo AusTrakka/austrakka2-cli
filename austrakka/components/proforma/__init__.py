@@ -5,52 +5,55 @@ from austrakka.utils.output import table_format_option
 from .funcs import add_proforma, list_proformas, show_proformas
 from ...utils.options import *
 
+
 @click.group()
 @click.pass_context
 def proforma(ctx):
     """Commands related to metadata pro formas"""
     ctx.creds = ctx.parent.creds
 
+
 @proforma.command('add')
 @opt_abbrev()
 @opt_name()
 @opt_description
-@click.option(
-    '-s',
-    '--species',
-    required=False,
-    help='''Species abbreviations for suggested species for use with this pro forma. 
-            Zero, one, or many species may be specified. 
+@click.option('-s',
+              '--species',
+              required=False,
+              help='''Species abbreviations for suggested species for use with this pro forma.
+            Zero, one, or many species may be specified.
             These species may be used to find appropriate pro formas, but will not constrain use of the pro forma.''',
-    type=click.STRING,
-    multiple=True
-)
-@click.option(
-    '-req',
-    '--required-field',
-    help='Required field in this pro forma; users must populate this field in every upload. Multiple fields may be added.',
-    type=click.STRING,
-    multiple=True
-)
-@click.option(
-    '-opt',
-    '--optional-field',
-    help='Optional field in this pro forma; users may include this field in uploads. Multiple fields may be added.',
-    type=click.STRING,
-    multiple=True
-)
+              type=click.STRING,
+              multiple=True)
+@click.option('-req',
+              '--required-field',
+              help='Required field in this pro forma; users must populate this field in every upload. Multiple fields may be added.',
+              type=click.STRING,
+              multiple=True)
+@click.option('-opt',
+              '--optional-field',
+              help='Optional field in this pro forma; users may include this field in uploads. Multiple fields may be added.',
+              type=click.STRING,
+              multiple=True)
 def proforma_add(
-    abbrev: str, 
-    name: str, 
-    description: str, 
-    species: List[str], 
-    required_field: List[str], 
-    optional_field: List[str]):
+        abbrev: str,
+        name: str,
+        description: str,
+        species: List[str],
+        required_field: List[str],
+        optional_field: List[str]):
     '''
     Add a new pro forma to AusTrakka.
     This will add a new pro forma with a new abbreviation, not a new version.
     '''
-    add_proforma(abbrev, name, description, species, required_field, optional_field)
+    add_proforma(
+        abbrev,
+        name,
+        description,
+        species,
+        required_field,
+        optional_field)
+
 
 @proforma.command('list')
 @table_format_option()
