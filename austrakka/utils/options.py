@@ -3,6 +3,39 @@ from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 
 
+def opt_abbrev(
+        help_text="Abbreviated name, for use with the CLI and in metadata uploads"):
+    def inner_func(func):
+        return click.option(
+            "-a",
+            "--abbrev",
+            required=True,
+            help=help_text
+        )(func)
+    return inner_func
+
+
+def opt_name(help_text='Name', required=True):
+    def inner_func(func):
+        return click.option(
+            "-n",
+            "--name",
+            required=required,
+            help=help_text
+        )(func)
+    return inner_func
+
+
+def opt_description(func):
+    return click.option(
+        '-d',
+        '--description',
+        default="",
+        help='Human-readable description text',
+        type=click.STRING
+    )(func)
+
+
 def opt_species(func):
     return click.option(
         '-s',
@@ -13,13 +46,25 @@ def opt_species(func):
     )(func)
 
 
-def opt_proforma(func):
+def opt_organisation(func):
     return click.option(
-        '--proforma',
+        '-o',
+        '--org',
         required=True,
-        help='Proforma Abbreviation',
+        help='Organisation abbreviation. Must match an organisation ' +
+        'known to AusTrakka, use `austrakka org list` to see valid values',
         type=click.STRING
     )(func)
+
+
+def opt_proforma(func):
+    return click.option(
+        '-p',
+        '--proforma',
+        required=True,
+        help='Proforma abbreviation. Use `austrakka proforma list` '
+             + 'to see options.',
+        type=click.STRING)(func)
 
 
 def opt_csv(help_text='CSV file'):
@@ -77,3 +122,24 @@ def opt_analysis(func):
         help='Analysis Abbreviation',
         type=click.STRING
     )(func)
+
+
+def opt_taxon_id(func):
+    return click.option(
+        '-t',
+        '--taxon-id',
+        default="",
+        help='Taxon ID',
+        type=click.STRING
+    )(func)
+
+
+def opt_fieldtype(required=True):
+    def inner_func(func):
+        return click.option(
+            '-ft',
+            '--field-type',
+            required=required,
+            help='Metadata field type. Use `austrakka fieldtype list` to see options.',
+            type=click.STRING)(func)
+    return inner_func

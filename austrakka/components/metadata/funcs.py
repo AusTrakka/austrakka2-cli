@@ -1,4 +1,3 @@
-from os import path
 from io import BufferedReader
 
 from austrakka.utils.misc import logger_wraps
@@ -16,7 +15,7 @@ def add_metadata(
 ):
     call_api(
         method=post,
-        path=path.join(SUBMISSION_PATH, SUBMISSION_UPLOAD),
+        path="/".join([SUBMISSION_PATH, SUBMISSION_UPLOAD]),
         body={
             'file': (file.name, file),
             'proforma-abbrev': proforma_abbrev,

@@ -1,7 +1,8 @@
 import click
 
 from austrakka.utils.output import table_format_option
-from .funcs import list_projects
+from .funcs import list_projects, add_project
+from ...utils.options import *
 
 
 @click.group()
@@ -9,6 +10,18 @@ from .funcs import list_projects
 def project(ctx):
     '''Commands related to projects'''
     ctx.creds = ctx.parent.creds
+
+
+@project.command('add')
+@opt_abbrev()
+@opt_name(help_text="Project name")
+@opt_description
+@opt_organisation
+def project_add(abbrev, name, description, org):
+    '''
+    Add a new project to AusTrakka.
+    '''
+    add_project(abbrev, name, description, org)
 
 
 @project.command('list')
