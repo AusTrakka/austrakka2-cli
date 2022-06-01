@@ -25,7 +25,7 @@ def field_list(table_format: str):
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
               help="This field may be used to colour nodes on the tree")
 @click.option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
-              help="This field may not be used to colour nodes on the tree")  
+              help="This field may not be used to colour nodes on the tree")
 @click.option('-O', '--column-order', type=int, default=9000,
               help="Default order in which this column will be sorted in tables relative to other '"
                    "fields. If no value is specifed, the column will be placed after ordered "
@@ -51,7 +51,7 @@ def field_add(
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
               help="This field may be used to colour nodes on the tree")
 @click.option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
-              help="This field may not be used to colour nodes on the tree")  
+              help="This field may not be used to colour nodes on the tree")
 @click.option('-O', '--column-order', type=int, default=None,
               help="Default order in which this column will be sorted in tables relative to other "
                    "fields. If no value is specifed, the column will be placed after ordered "

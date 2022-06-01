@@ -75,7 +75,7 @@ def proforma_show(abbrev: str, table_format: str):
     USAGE:
     austrakka proforma show [ABBREV]
 
-    ABBREV should be the abbreviated name of the pro forma. 
+    ABBREV should be the abbreviated name of the pro forma.
     Use `austrakka proforma list` for options.
     """
     show_proformas(abbrev, table_format)
