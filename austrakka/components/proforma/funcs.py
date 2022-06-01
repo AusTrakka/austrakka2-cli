@@ -10,6 +10,7 @@ from austrakka.utils.output import print_table
 from austrakka.utils.helpers.fields import get_system_field_names
 from austrakka.utils.paths import PROFORMA_PATH
 
+
 @logger_wraps()
 def add_proforma(
         abbrev: str,

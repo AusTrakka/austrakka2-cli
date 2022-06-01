@@ -84,6 +84,7 @@ def add_field(
         }
     )
 
+
 @logger_wraps()
 def update_field(
         name: str,

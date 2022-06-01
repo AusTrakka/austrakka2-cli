@@ -21,9 +21,9 @@ def proforma(ctx):
               '--species',
               required=False,
               help="Species abbreviations for suggested species for use with this pro forma. "
-            "Zero, one, or many species may be specified. "
-            "These species may be used to find appropriate pro formas, but will not constrain use "
-            "of the pro forma.",
+              "Zero, one, or many species may be specified. "
+              "These species may be used to find appropriate pro formas, but will not constrain use "
+              "of the pro forma.",
               type=click.STRING,
               multiple=True)
 @click.option('-req',
@@ -76,7 +76,7 @@ def proforma_show(abbrev: str, table_format: str):
     USAGE:
     austrakka proforma show [ABBREV]
 
-    ABBREV should be the abbreviated name of the pro forma. 
+    ABBREV should be the abbreviated name of the pro forma.
     Use `austrakka proforma list` for options.
     """
     show_proformas(abbrev, table_format)

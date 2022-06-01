@@ -3,6 +3,7 @@ import click
 from austrakka.utils.output import table_format_option
 from .funcs import list_fieldtypes
 
+
 @click.group()
 @click.pass_context
 def fieldtype(ctx):
