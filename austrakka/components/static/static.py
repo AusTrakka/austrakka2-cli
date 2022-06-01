@@ -1,4 +1,3 @@
-from os import path
 from io import BufferedReader
 
 from austrakka.utils.misc import logger_wraps
@@ -13,5 +12,5 @@ def add_static(file: BufferedReader, analysis_id: int):
     upload_file(
         file,
         analysis_id,
-        path.join(STATIC_PATH, STATIC_UPLOAD)
+        "/".join([STATIC_PATH, STATIC_UPLOAD])
     )

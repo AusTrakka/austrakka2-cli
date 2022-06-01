@@ -26,5 +26,5 @@ def get_system_field_names():
         path=f"{METADATACOLUMN_PATH}/SystemFields",
     )
     data = response['data'] if ('data' in response) else response
-    fieldNames = [col['columnName'] for col in data]
-    return fieldNames
+    fieldnames = [col['columnName'] for col in data]
+    return fieldnames

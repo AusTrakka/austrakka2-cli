@@ -1,10 +1,7 @@
 import click
-from typing import List
 
 from austrakka.utils.output import table_format_option
 from .funcs import list_fieldtypes
-from ...utils.options import *
-
 
 @click.group()
 @click.pass_context

@@ -51,7 +51,8 @@ def opt_organisation(func):
         '-o',
         '--org',
         required=True,
-        help='Organisation abbreviation. Must match an organisation known to AusTrakka, use `austrakka org list` to see valid values',
+        help='Organisation abbreviation. Must match an organisation ' + 
+          'known to AusTrakka, use `austrakka org list` to see valid values',
         type=click.STRING
     )(func)
 
@@ -61,7 +62,8 @@ def opt_proforma(func):
         '-p',
         '--proforma',
         required=True,
-        help='Proforma abbreviation. Use `austrakka proforma list` to see options.',
+        help='Proforma abbreviation. Use `austrakka proforma list` '
+             + 'to see options.',
         type=click.STRING)(func)
 
 

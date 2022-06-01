@@ -1,8 +1,7 @@
+from typing import List
+
 import pandas as pd
 from loguru import logger
-from os import path
-
-from typing import List
 
 from austrakka.utils.api import call_api
 from austrakka.utils.api import get, post
@@ -10,7 +9,6 @@ from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
 from austrakka.utils.helpers.fields import get_system_field_names
 from austrakka.utils.paths import PROFORMA_PATH
-
 
 @logger_wraps()
 def add_proforma(
@@ -31,7 +29,7 @@ def add_proforma(
     for field in missing_system_fields:
         logger.warning(f"System field {field} must be included: adding to pro forma")
         required_columns.append(field)
-        
+
     column_names = (
             [{"name": col, "isRequired": True} for col in required_columns] 
            + [{"name": col, "isRequired": False} for col in optional_columns])
@@ -84,7 +82,7 @@ def list_proformas(table_format: str):
 def show_proformas(abbrev: str, table_format: str):
     response = call_api(
         method=get,
-        path=path.join(PROFORMA_PATH, "abbrev", abbrev)
+        path=f"{PROFORMA_PATH}/abbrev/{abbrev}"
     )
     data = response['data'] if ('data' in response) else response
 

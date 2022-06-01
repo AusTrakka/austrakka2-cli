@@ -1,5 +1,5 @@
-import click
 from typing import List
+import click
 
 from austrakka.utils.output import table_format_option
 from .funcs import add_proforma, list_proformas, show_proformas
@@ -20,19 +20,22 @@ def proforma(ctx):
 @click.option('-s',
               '--species',
               required=False,
-              help='''Species abbreviations for suggested species for use with this pro forma.
-            Zero, one, or many species may be specified.
-            These species may be used to find appropriate pro formas, but will not constrain use of the pro forma.''',
+              help="Species abbreviations for suggested species for use with this pro forma. "
+            "Zero, one, or many species may be specified. "
+            "These species may be used to find appropriate pro formas, but will not constrain use "
+            "of the pro forma.",
               type=click.STRING,
               multiple=True)
 @click.option('-req',
               '--required-field',
-              help='Required field in this pro forma; users must populate this field in every upload. Multiple fields may be added.',
+              help='Required field in this pro forma; users must populate this field in every '
+                   'upload. Multiple fields may be added.',
               type=click.STRING,
               multiple=True)
 @click.option('-opt',
               '--optional-field',
-              help='Optional field in this pro forma; users may include this field in uploads. Multiple fields may be added.',
+              help='Optional field in this pro forma; users may include this field in uploads. '
+                   'Multiple fields may be added.',
               type=click.STRING,
               multiple=True)
 def proforma_add(
@@ -73,6 +76,7 @@ def proforma_show(abbrev: str, table_format: str):
     USAGE:
     austrakka proforma show [ABBREV]
 
-    ABBREV should be the abbreviated name of the pro forma. Use `austrakka proforma list` for options.
+    ABBREV should be the abbreviated name of the pro forma. 
+    Use `austrakka proforma list` for options.
     """
     show_proformas(abbrev, table_format)
