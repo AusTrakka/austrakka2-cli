@@ -11,29 +11,35 @@ from austrakka.utils.output import print_table
 from austrakka.utils.helpers.fields import get_system_field_names
 from austrakka.utils.paths import PROFORMA_PATH
 
+
 @logger_wraps()
 def add_proforma(
-        abbrev: str, 
-        name: str, 
-        description: str, 
+        abbrev: str,
+        name: str,
+        description: str,
         suggested_species: List[str],
         required_columns: List[str],
         optional_columns: List[str]):
-    
+
     # Include system fields (avoid an error from the endpoint; don't force CLI user to type them in)
-    # Note that we are not forcing system fields the user DOES include to set IsRequired
+    # Note that we are not forcing system fields the user DOES include to set
+    # IsRequired
     systemFields = get_system_field_names()
-    missingSystemFields = [fieldname for fieldname in systemFields if fieldname not in required_columns+optional_columns]
+    missingSystemFields = [
+        fieldname for fieldname in systemFields if fieldname not in required_columns +
+        optional_columns]
     required_columns = list(required_columns)
     for field in missingSystemFields:
-        logger.warning(f"System field {field} must be included: adding to pro forma")
+        logger.warning(
+            f"System field {field} must be included: adding to pro forma")
         required_columns.append(field)
-        
-    columnNames = ([{"name": col, "isRequired": True} for col in required_columns] 
-                    + [{"name": col, "isRequired": False} for col in optional_columns])
-    if len(columnNames)==0:
+
+    columnNames = ([{"name": col,
+                     "isRequired": True} for col in required_columns] + [{"name": col,
+                                                                          "isRequired": False} for col in optional_columns])
+    if len(columnNames) == 0:
         raise ValueError("A pro forma must contain at least one field")
-    
+
     return call_api(
         method=post,
         path=PROFORMA_PATH,
@@ -42,9 +48,9 @@ def add_proforma(
             "name": name,
             "description": description,
             "speciesAbbrev": suggested_species,
-            "columnNames": columnNames  
+            "columnNames": columnNames
         })
-       
+
 
 @logger_wraps()
 def list_proformas(table_format: str):
@@ -80,7 +86,7 @@ def list_proformas(table_format: str):
 def show_proformas(abbrev: str, table_format: str):
     response = call_api(
         method=get,
-        path=path.join(PROFORMA_PATH,"abbrev",abbrev)
+        path=path.join(PROFORMA_PATH, "abbrev", abbrev)
     )
     data = response['data'] if ('data' in response) else response
 
@@ -107,4 +113,3 @@ def show_proformas(abbrev: str, table_format: str):
         field_df,
         table_format,
     )
-

@@ -5,11 +5,13 @@ from austrakka.utils.output import table_format_option
 from .funcs import list_fieldtypes
 from ...utils.options import *
 
+
 @click.group()
 @click.pass_context
 def fieldtype(ctx):
     """Commands related to metadata field types"""
     ctx.creds = ctx.parent.creds
+
 
 @fieldtype.command('list')
 @table_format_option()

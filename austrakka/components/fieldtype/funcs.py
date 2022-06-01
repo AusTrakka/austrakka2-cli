@@ -13,7 +13,6 @@ from austrakka.utils.output import print_table
 from austrakka.utils.paths import METADATACOLUMNTYPE_PATH
 
 
-
 @logger_wraps()
 def list_fieldtypes(table_format: str):
     response = call_api(
@@ -30,5 +29,3 @@ def list_fieldtypes(table_format: str):
         result,
         table_format,
     )
-
-
