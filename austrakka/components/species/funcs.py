@@ -16,7 +16,7 @@ def add_species(abbrev: str, name: str, taxon_id: str):
         method=post,
         path=SPECIES_PATH,
         body={
-            "abbreviation": abbr,
+            "abbreviation": abbrev,
             "name": name,
             "taxonId": taxon_id
         }
@@ -29,7 +29,8 @@ def list_species(table_format: str):
         path=path.join(SPECIES_PATH, SPECIES_DTO),
     )
 
-    result = pd.DataFrame.from_dict(response)
+    data = response['data'] if ('data' in response) else response
+    result = pd.DataFrame.from_dict(data)
 
     print_table(
         result,

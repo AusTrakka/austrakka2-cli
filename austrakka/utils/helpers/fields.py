@@ -8,11 +8,20 @@ def get_fieldtype_by_name(name: str):
         method=get,
         path=f"{METADATACOLUMNTYPE_PATH}/name/{name}",
     )
-    return response['data']
+    return response['data'] if ('data' in response) else response
 
 def get_field_by_name(name: str):
     response = call_api(
         method=get,
         path=f"{METADATACOLUMN_PATH}/name/{name}"
     )
-    return response['data']
+    return response['data'] if ('data' in response) else response
+
+def get_system_field_names():
+    response = call_api(
+        method=get,
+        path=f"{METADATACOLUMN_PATH}/SystemFields",
+    )
+    data = response['data'] if ('data' in response) else response
+    fieldNames = [col['columnName'] for col in data]
+    return fieldNames

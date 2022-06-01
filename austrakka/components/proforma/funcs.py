@@ -8,7 +8,8 @@ from austrakka.utils.api import call_api
 from austrakka.utils.api import get, post
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
-from austrakka.utils.paths import PROFORMA_PATH, METADATACOLUMN_PATH
+from austrakka.utils.helpers.fields import get_system_field_names
+from austrakka.utils.paths import PROFORMA_PATH
 
 @logger_wraps()
 def add_proforma(
@@ -55,7 +56,7 @@ def list_proformas(table_format: str):
         }
     )
 
-    data = response['data']
+    data = response['data'] if ('data' in response) else response
     result = pd.DataFrame.from_dict(data)
 
     result['suggestedSpecies'] = result['suggestedSpecies'].apply(
@@ -81,7 +82,7 @@ def show_proformas(abbrev: str, table_format: str):
         method=get,
         path=path.join(PROFORMA_PATH,"abbrev",abbrev)
     )
-    data = response['data']
+    data = response['data'] if ('data' in response) else response
 
     for field in ['abbreviation', 'name', 'version', 'description']:
         logger.info(f'{field}: {data[field]}')
@@ -107,10 +108,3 @@ def show_proformas(abbrev: str, table_format: str):
         table_format,
     )
 
-def get_system_field_names():
-    response = call_api(
-        method=get,
-        path=path.join(METADATACOLUMN_PATH,"SystemFields"),
-    )
-    fieldNames = [col['columnName'] for col in response]
-    return fieldNames

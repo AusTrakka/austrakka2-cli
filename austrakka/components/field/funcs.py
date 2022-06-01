@@ -22,7 +22,7 @@ def list_fields(table_format: str):
         path=METADATACOLUMN_PATH,
     )
 
-    data = response  # change to response['data'] if using ApiResponse
+    data = response['data'] if ('data' in response) else response
     result = pd.DataFrame.from_dict(data)
 
     result.drop(['mappedSpecies'],

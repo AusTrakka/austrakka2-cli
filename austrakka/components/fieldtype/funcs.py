@@ -21,13 +21,8 @@ def list_fieldtypes(table_format: str):
         path=METADATACOLUMNTYPE_PATH,
     )
 
-    data = response  # change to response['data'] if using ApiResponse
+    data = response['data'] if ('data' in response) else response
     result = pd.DataFrame.from_dict(data)
-
-    #result.drop(['mappedSpecies'],
-    #             axis='columns',
-    #             inplace=True)
-    #result['primitiveType'].fillna('category', inplace=True)
 
     # TODO flag to show validvalues for categorical fields
 

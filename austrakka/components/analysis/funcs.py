@@ -14,7 +14,8 @@ def list_analyses(table_format: str):
         path=ANALYSIS_PATH,
     )
 
-    result = pd.DataFrame.from_dict(response)
+    result = response['data'] if ('data' in response) else response
+    result = pd.DataFrame.from_dict(result)
 
     print_table(
         result,
