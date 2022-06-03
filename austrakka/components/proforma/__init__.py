@@ -2,7 +2,14 @@ from typing import List
 import click
 
 from austrakka.utils.output import table_format_option
-from .funcs import add_proforma, list_proformas, show_proformas, disable_proforma, enable_proforma
+from .funcs import \
+    add_proforma, \
+    update_proforma, \
+    list_proformas, \
+    show_proformas, \
+    disable_proforma, \
+    enable_proforma
+
 from ...utils.options import *
 
 
@@ -45,15 +52,44 @@ def proforma_add(
         species: List[str],
         required_field: List[str],
         optional_field: List[str]):
-    '''
+    """
     Add a new pro forma to AusTrakka.
     This will add a new pro forma with a new abbreviation, not a new version.
-    '''
+    """
     add_proforma(
         abbrev,
         name,
         description,
         species,
+        required_field,
+        optional_field)
+
+
+@proforma.command('update')
+@click.option('-req',
+              '--required-field',
+              help='Required field in this pro forma; users must populate this field in every '
+                   'upload. Multiple fields may be added.',
+              type=click.STRING,
+              multiple=True)
+@click.option('-opt',
+              '--optional-field',
+              help='Optional field in this pro forma; users may include this field in uploads. '
+                   'Multiple fields may be added.',
+              type=click.STRING,
+              multiple=True)
+@click.argument('abbrev', type=click.STRING)
+def proforma_update(
+        abbrev: str,
+        required_field: List[str],
+        optional_field: List[str]):
+    """
+    Update a pro forma with a new set of fields.
+    The fields specified by -req and -opt will fully replace the fields in the current version.
+    Any fields in the current version but not listed in the update will be removed.
+    """
+    update_proforma(
+        abbrev,
         required_field,
         optional_field)
 
