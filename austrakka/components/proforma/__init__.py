@@ -2,7 +2,7 @@ from typing import List
 import click
 
 from austrakka.utils.output import table_format_option
-from .funcs import add_proforma, list_proformas, show_proformas
+from .funcs import add_proforma, list_proformas, show_proformas, disable_proforma, enable_proforma
 from ...utils.options import *
 
 
@@ -80,3 +80,33 @@ def proforma_show(abbrev: str, table_format: str):
     Use `austrakka proforma list` for options.
     """
     show_proformas(abbrev, table_format)
+
+
+@proforma.command('disable')
+@click.argument('abbrev', type=click.STRING)
+# Consider option instead: @opt_abbrev("Abbreviated name of the pro forma")
+def proforma_disable(abbrev: str):
+    """
+    Disable a pro forma.
+
+    USAGE:
+    austrakka proforma disable [ABBREV]
+
+    ABBREV should be the abbreviated name of the pro forma.
+    """
+    disable_proforma(abbrev)
+
+
+@proforma.command('enable')
+@click.argument('abbrev', type=click.STRING)
+# Consider option instead: @opt_abbrev("Abbreviated name of the pro forma")
+def proforma_enable(abbrev: str):
+    """
+    Enable a pro forma.
+
+    USAGE:
+    austrakka proforma enable [ABBREV]
+
+    ABBREV should be the abbreviated name of the pro forma.
+    """
+    enable_proforma(abbrev)

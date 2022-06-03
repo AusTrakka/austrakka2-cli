@@ -4,11 +4,35 @@ import pandas as pd
 from loguru import logger
 
 from austrakka.utils.api import call_api
-from austrakka.utils.api import get, post
+from austrakka.utils.api import get, post, patch
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
 from austrakka.utils.helpers.fields import get_system_field_names
 from austrakka.utils.paths import PROFORMA_PATH
+
+
+@logger_wraps()
+def disable_proforma(abbrev: str):
+    logger.info(f'disabling pro forma: {abbrev}..')
+
+    call_api(
+        method=patch,
+        path=f'{PROFORMA_PATH}/{abbrev}/disable',
+        )
+
+    logger.info('done.')
+
+
+@logger_wraps()
+def enable_proforma(abbrev: str):
+    logger.info(f'enabling pro forma: {abbrev}..')
+
+    call_api(
+        method=patch,
+        path=f'{PROFORMA_PATH}/{abbrev}/enable',
+        )
+
+    logger.info('done.')
 
 
 @logger_wraps()
