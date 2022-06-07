@@ -18,7 +18,7 @@ def disable_proforma(abbrev: str):
     call_api(
         method=patch,
         path=f'{PROFORMA_PATH}/{abbrev}/disable',
-        )
+    )
 
     logger.info('Done.')
 
@@ -30,7 +30,7 @@ def enable_proforma(abbrev: str):
     call_api(
         method=patch,
         path=f'{PROFORMA_PATH}/{abbrev}/enable',
-        )
+    )
 
     logger.info('Done.')
 
@@ -47,8 +47,7 @@ def update_proforma(
     system_fields = get_system_field_names()
     missing_system_fields = [
         fieldname for fieldname in system_fields if fieldname not in required_columns +
-        optional_columns
-    ]
+        optional_columns]
 
     pf_resp = call_api(
         method=get,
@@ -65,8 +64,8 @@ def update_proforma(
         required_columns.append(field)
 
     column_names = (
-            [{"name": col, "isRequired": True} for col in required_columns]
-            + [{"name": col, "isRequired": False} for col in optional_columns])
+        [{"name": col, "isRequired": True} for col in required_columns]
+        + [{"name": col, "isRequired": False} for col in optional_columns])
 
     total_columns = len(column_names)
 
