@@ -1,6 +1,7 @@
 import click
 
 from austrakka.utils.output import table_format_option
+from austrakka.utils.cmd_filter import hide_admin_cmds
 from .funcs import list_species, add_species
 from ...utils.options import *
 
@@ -12,7 +13,7 @@ def species(ctx):
     ctx.creds = ctx.parent.creds
 
 
-@species.command('add')
+@species.command('add', hidden=hide_admin_cmds())
 @opt_abbrev()
 @opt_name(help_text="Species name")
 @opt_taxon_id
