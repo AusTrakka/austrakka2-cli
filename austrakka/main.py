@@ -1,3 +1,4 @@
+# pylint: disable=expression-not-assigned
 import os
 import sys
 
@@ -62,18 +63,18 @@ def cli(ctx: Context, uri: str, token: str, env: str, log: str):
 def main():
     try:
         cli.add_command(auth)
-        _ = cli.add_command(user) if show_admin_cmds() else None
-        _ = cli.add_command(org) if show_admin_cmds() else None
+        cli.add_command(user) if show_admin_cmds() else None
+        cli.add_command(org) if show_admin_cmds() else None
         cli.add_command(project)
         cli.add_command(analysis)
-        _ = cli.add_command(tree) if show_admin_cmds() else None
+        cli.add_command(tree) if show_admin_cmds() else None
         cli.add_command(species)
         cli.add_command(metadata)
         cli.add_command(seq)
-        _ = cli.add_command(static) if show_admin_cmds() else None
+        cli.add_command(static) if show_admin_cmds() else None
         cli.add_command(proforma)
-        _ = cli.add_command(field) if show_admin_cmds() else None
-        _ = cli.add_command(fieldtype) if show_admin_cmds() else None
+        cli.add_command(field) if show_admin_cmds() else None
+        cli.add_command(fieldtype) if show_admin_cmds() else None
         # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         cli(auto_envvar_prefix=CLI_PREFIX)
     except FailedResponseException as ex:
