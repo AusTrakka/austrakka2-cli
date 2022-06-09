@@ -1,6 +1,7 @@
 import click
 
 from austrakka.utils.output import table_format_option
+from austrakka.utils.cmd_filter import hide_admin_cmds
 from .funcs import list_fields, add_field, update_field
 from ...utils.options import *
 
@@ -19,7 +20,7 @@ def field_list(table_format: str):
     list_fields(table_format)
 
 
-@field.command('add')
+@field.command('add', hidden=hide_admin_cmds())
 @opt_name(help_text="Field name")
 @opt_fieldtype()
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
@@ -43,7 +44,7 @@ def field_add(
     add_field(name, field_type, colour_nodes, column_order, show)
 
 
-@field.command('update')
+@field.command('update', hidden=hide_admin_cmds())
 @click.argument('fieldname')
 @opt_name(required=False,
           help_text="New field name - if this argument is provided, the field name will be changed")

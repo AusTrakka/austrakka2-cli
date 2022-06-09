@@ -73,8 +73,8 @@ def main():
         cli.add_command(seq)
         cli.add_command(static) if show_admin_cmds() else None
         cli.add_command(proforma)
-        cli.add_command(field) if show_admin_cmds() else None
-        cli.add_command(fieldtype) if show_admin_cmds() else None
+        cli.add_command(field)
+        cli.add_command(fieldtype)
         # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         cli(auto_envvar_prefix=CLI_PREFIX)
     except FailedResponseException as ex:
