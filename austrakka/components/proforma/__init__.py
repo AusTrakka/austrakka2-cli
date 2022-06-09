@@ -2,6 +2,7 @@ from typing import List
 import click
 
 from austrakka.utils.output import table_format_option
+from austrakka.utils.cmd_filter import hide_admin_cmds
 from .funcs import \
     add_proforma, \
     update_proforma, \
@@ -20,7 +21,7 @@ def proforma(ctx):
     ctx.creds = ctx.parent.creds
 
 
-@proforma.command('add')
+@proforma.command('add', hidden=hide_admin_cmds())
 @opt_abbrev()
 @opt_name()
 @opt_description
@@ -65,7 +66,7 @@ def proforma_add(
         optional_field)
 
 
-@proforma.command('update')
+@proforma.command('update', hidden=hide_admin_cmds())
 @click.option('-req',
               '--required-field',
               help='Required field in this pro forma; users must populate this field in every '
@@ -118,7 +119,7 @@ def proforma_show(abbrev: str, table_format: str):
     show_proformas(abbrev, table_format)
 
 
-@proforma.command('disable')
+@proforma.command('disable', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=click.STRING)
 # Consider option instead: @opt_abbrev("Abbreviated name of the pro forma")
 def proforma_disable(abbrev: str):
@@ -133,7 +134,7 @@ def proforma_disable(abbrev: str):
     disable_proforma(abbrev)
 
 
-@proforma.command('enable')
+@proforma.command('enable', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=click.STRING)
 # Consider option instead: @opt_abbrev("Abbreviated name of the pro forma")
 def proforma_enable(abbrev: str):
