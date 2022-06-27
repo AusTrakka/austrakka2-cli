@@ -46,7 +46,7 @@ FASTQ_CSV_SPECIES = 'species'
 def add_fasta_submission(files: Tuple[BufferedReader], csv: BufferedReader):
     call_api(
         method=post,
-        path=path.join(SEQUENCE_PATH, FASTA_PATH),
+        path="/".join([SEQUENCE_PATH, FASTA_PATH]),
         body=[('files[]', (file.name, file)) for file in files]
         + [('files[]', (csv.name, csv))],
         multipart=True,
@@ -97,7 +97,7 @@ def add_fastq_submission(files: Tuple[BufferedReader], csv: BufferedReader):
         try:
             call_api(
                 method=post,
-                path=path.join(SEQUENCE_PATH, FASTQ_PATH),
+                path="/".join([SEQUENCE_PATH, FASTQ_PATH]),
                 body=sample_files,
                 multipart=True,
                 custom_headers=custom_headers,
