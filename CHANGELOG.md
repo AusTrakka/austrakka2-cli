@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.7.0] - 2022-06-27
+### Added
+- Added `proforma list` command.
+- Added `proforma add` command.
+- Added `proforma show` command.
+- Added `field list` command.
+- Added `field add` command.
+- Added `field update` command.
+- Added `project add` command.
+- Added `species add` command.
+
+### Changed
+- `metadata add` using unique key for Proforma.
+
+### Removed
+- Removed `species` from `metadata add`.
+
+### Fixed
+- Linting for print statements.
+
 ## [0.6.0] - 2022-05-16
 ### Added
 - `seq get` command for retrieval of FASTQ/FASTA sequences.
@@ -126,3 +146,4 @@ and this project adheres to [Semantic Versioning].
 [0.5.2]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.5.2
 [0.5.3]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.5.3
 [0.6.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.6.0
+[0.7.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.7.0
