@@ -25,7 +25,7 @@ def org_list(table_format: str):
 
 @org.command('add', hidden=hide_admin_cmds())
 @opt_name(help_text="Organisation Name")
-@opt_abbrev(help_text="Organisation Identifier")
+@opt_abbrev(help_text="Organisation Abbreviation")
 @click.option('--state', type=str, default=None)
 @click.option('--country', type=str, required=True)
 @click.option('--is-active/--not-active', default=True, type=bool)
@@ -36,6 +36,7 @@ def org_add(
     state: str,
     is_active: bool,
 ):
+    '''Add organisations in AusTrakka'''
     add_org(name, abbrev, country, state, is_active)
 
 
@@ -52,4 +53,5 @@ def org_update(
         state: str,
         is_active: bool,
 ):
+    '''Update organisations in AusTrakka'''
     update_org(identifier, name, country, state, is_active)
