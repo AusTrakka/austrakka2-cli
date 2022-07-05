@@ -97,7 +97,7 @@ def call_api(
     if failed:
         raise FailedResponseException(parsed_resp)
 
-    if method.__name__ == 'post':
+    if method.__name__ == 'post' or method.__name__ == 'put':
         log_response(parsed_resp)
 
     return parsed_resp
