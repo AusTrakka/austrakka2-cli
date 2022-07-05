@@ -2,11 +2,11 @@ import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
+from austrakka.utils.options import opt_name
+from austrakka.utils.options import opt_abbrev
 from .funcs import list_orgs
 from .funcs import add_org
 from .funcs import update_org
-from austrakka.utils.options import opt_name
-from austrakka.utils.options import opt_abbrev
 
 
 @click.group()

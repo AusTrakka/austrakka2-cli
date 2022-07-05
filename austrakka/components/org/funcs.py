@@ -42,13 +42,14 @@ def list_orgs(table_format: str):
     )
 
 
+# pylint: disable=duplicate-code
 @logger_wraps()
 def add_org(
-    name: str,
-    abbrev: str,
-    country: str,
-    state: str,
-    is_active: bool,
+        name: str,
+        abbrev: str,
+        country: str,
+        state: str,
+        is_active: bool,
 ):
     call_api(
         method=post,
@@ -63,6 +64,7 @@ def add_org(
     )
 
 
+# pylint: disable=duplicate-code
 @logger_wraps()
 def update_org(
         identifier: int,
