@@ -1,0 +1,8 @@
+VIC = "Victoria"
+NSW = "New South Wales"
+QLD = "Queensland"
+TAS = "Tasmania"
+SA = "South Australia"
+WA = "Western Australia"
+NT = "Northern Territory"
+ACT = "Australian Capital Territory"
