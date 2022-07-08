@@ -1,3 +1,4 @@
+# pylint: disable=expression-not-assigned
 import os
 import sys
 
@@ -26,6 +27,7 @@ from .utils.misc import HELP_OPTS
 from .utils.exceptions import FailedResponseException
 from .utils.output import log_response
 from .utils.logger import setup_logger
+from .utils.cmd_filter import show_admin_cmds
 
 CLI_PREFIX = 'AT'
 CLI_ENV = 'env'
@@ -61,15 +63,15 @@ def cli(ctx: Context, uri: str, token: str, env: str, log: str):
 def main():
     try:
         cli.add_command(auth)
-        cli.add_command(user)
-        cli.add_command(org)
+        cli.add_command(user) if show_admin_cmds() else None
+        cli.add_command(org) if show_admin_cmds() else None
         cli.add_command(project)
         cli.add_command(analysis)
-        cli.add_command(tree)
+        cli.add_command(tree) if show_admin_cmds() else None
         cli.add_command(species)
         cli.add_command(metadata)
         cli.add_command(seq)
-        cli.add_command(static)
+        cli.add_command(static) if show_admin_cmds() else None
         cli.add_command(proforma)
         cli.add_command(field)
         cli.add_command(fieldtype)

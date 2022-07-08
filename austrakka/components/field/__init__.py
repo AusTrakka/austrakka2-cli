@@ -1,6 +1,7 @@
 import click
 
 from austrakka.utils.output import table_format_option
+from austrakka.utils.cmd_filter import hide_admin_cmds
 from .funcs import list_fields, add_field, update_field
 from ...utils.options import *
 
@@ -19,7 +20,7 @@ def field_list(table_format: str):
     list_fields(table_format)
 
 
-@field.command('add')
+@field.command('add', hidden=hide_admin_cmds())
 @opt_name(help_text="Field name")
 @opt_fieldtype()
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
@@ -33,17 +34,24 @@ def field_list(table_format: str):
 @click.option('--show/--no-show', default=True, type=bool,
               help="Whether the column will be shown in relevant tables on load, rather than "
                    "needing to be selected in the column picker.")
+@click.option(
+    '-w', '--min-width',
+    help='Minimum width of the column. A value of 0 is automatically sized',
+    type=int, default=0,
+)
 def field_add(
         name: str,
         field_type: str,
         colour_nodes: str,
         column_order: int,
-        show: bool):
+        show: bool,
+        min_width: int,
+):
     """Add a metadata field to AusTrakka"""
-    add_field(name, field_type, colour_nodes, column_order, show)
+    add_field(name, field_type, colour_nodes, column_order, show, min_width)
 
 
-@field.command('update')
+@field.command('update', hidden=hide_admin_cmds())
 @click.argument('fieldname')
 @opt_name(required=False,
           help_text="New field name - if this argument is provided, the field name will be changed")
@@ -62,13 +70,20 @@ def field_add(
 @click.option('--no-show', 'set_show', flag_value='no_show',
               help="Whether the column will be shown in relevant tables on load, rather than "
                    "needing to be selected in the column picker.")
+@click.option(
+    '-w', '--min-width',
+    help='Minimum width of the column. A value of 0 is automatically sized',
+    type=int, default=None,
+)
 def field_update(
         fieldname: str,
         name: str,
         field_type: str,
         colour_nodes: str,
         column_order: int,
-        set_show: str):
+        set_show: str,
+        min_width: int,
+):
     """Update a metadata field within AusTrakka"""
     update_field(
         fieldname,
@@ -76,4 +91,6 @@ def field_update(
         field_type,
         colour_nodes,
         column_order,
-        set_show)
+        set_show,
+        min_width,
+    )

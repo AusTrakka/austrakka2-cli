@@ -22,6 +22,9 @@ from .output import log_response
 get = requests.get
 post = requests.post
 put = requests.put
+patch = requests.patch
+
+NO_CONTENT = 204
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -82,7 +85,7 @@ def call_api(
         except JSONDecodeError:
             # pylint: disable=raise-missing-from
             raise http_error
-    parsed_resp = response.json()
+    parsed_resp = {} if response.status_code == NO_CONTENT else response.json()
     first_object = next(iter(parsed_resp), {})
 
     if (
@@ -94,7 +97,7 @@ def call_api(
     if failed:
         raise FailedResponseException(parsed_resp)
 
-    if method.__name__ == 'post':
+    if method.__name__ in ('post', 'put'):
         log_response(parsed_resp)
 
     return parsed_resp

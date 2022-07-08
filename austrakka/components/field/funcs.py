@@ -41,7 +41,9 @@ def add_field(
         typename: str,
         can_visualise: str,
         column_order: int,
-        show_at_start: bool):
+        show_at_start: bool,
+        min_width: int,
+):
     """
     Add a field (MetaDataColumn) to AusTrakka.
     """
@@ -76,7 +78,8 @@ def add_field(
             "ColumnOrder": column_order,
             "IsDisplayedAsDefault": show_at_start,
             "MetaDataColumnTypeId": fieldtype["metaDataColumnTypeId"],
-            "IsActive": True
+            "IsActive": True,
+            "MinWidth": min_width,
         }
     )
 
@@ -88,7 +91,9 @@ def update_field(
         typename: str,
         can_visualise: str,
         column_order: int,
-        set_show: str):
+        set_show: str,
+        min_width: int,
+):
     """
     Update a field (MetaDataColumn) within AusTrakka.
 
@@ -103,7 +108,9 @@ def update_field(
         "columnOrder",
         "isDisplayedAsDefault",
         "isActive",
-        "metaDataColumnTypeId"]}
+        "metaDataColumnTypeId",
+        "minWidth",
+    ]}
 
     if new_name is not None:
         logger.warning(f"Updating field name from {name} to {new_name}")
@@ -127,6 +134,9 @@ def update_field(
 
     if set_show is not None:
         post_field["isDisplayedAsDefault"] = (set_show == 'show')
+
+    if min_width is not None:
+        post_field["minWidth"] = min_width
 
     call_api(
         method=put,
