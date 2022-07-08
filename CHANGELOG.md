@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.8.0] - 2022-07-08
+### Added
+- Added `org add` command.
+- Added `org update` command.
+- Added support for enabling and disabling pro formas.
+- Added support for fields minWidth.
+
 ## [0.7.0] - 2022-06-27
 ### Added
 - Added `proforma list` command.
@@ -147,3 +154,4 @@ and this project adheres to [Semantic Versioning].
 [0.5.3]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.5.3
 [0.6.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.6.0
 [0.7.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.7.0
+[0.8.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.8.0
