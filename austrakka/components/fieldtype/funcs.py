@@ -21,12 +21,12 @@ def list_fieldtypes(table_format: str):
         if 'validValues' in row:
             row['validValues'] = [val['name'] for val in row['validValues']]
     result = pd.DataFrame.from_dict(data)
-    
 
     print_table(
         result,
         table_format,
     )
+
 
 @logger_wraps()
 def add_fieldtype(
