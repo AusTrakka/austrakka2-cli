@@ -10,3 +10,7 @@ def show_admin_cmds():
 
 def hide_admin_cmds():
     return not show_admin_cmds()
+
+
+def is_admin():
+    return not show_admin_cmds()

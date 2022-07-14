@@ -1,6 +1,7 @@
 import click
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
+from austrakka.utils.enums.roles import get_role_list
 
 
 def opt_abbrev(
@@ -143,3 +144,34 @@ def opt_fieldtype(required=True):
             help='Metadata field type. Use `austrakka fieldtype list` to see options.',
             type=click.STRING)(func)
     return inner_func
+
+
+def opt_roles(func):
+    return click.option(
+        '--role',
+        type=click.Choice(get_role_list()),
+        help='User role',
+        required=True,
+        multiple=True
+    )(func)
+
+
+def opt_user_email(required=True):
+    def inner_func(func):
+        return click.option(
+            '-e',
+            '--email',
+            type=str,
+            help='User email',
+            required=required
+        )(func)
+    return inner_func
+
+
+def opt_is_active(func):
+    return click.option(
+        '--is-active/--not-active',
+        default=True,
+        type=bool,
+        help='Determines if the entry is active'
+    )(func)

@@ -4,6 +4,7 @@ from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_abbrev
+from austrakka.utils.options import opt_is_active
 from .funcs import list_orgs
 from .funcs import add_org
 from .funcs import update_org
@@ -28,7 +29,7 @@ def org_list(table_format: str):
 @opt_abbrev(help_text="Organisation Abbreviation")
 @click.option('--state', type=str, default=None)
 @click.option('--country', type=str, required=True)
-@click.option('--is-active/--not-active', default=True, type=bool)
+@opt_is_active
 def org_add(
     name: str,
     abbrev: str,
@@ -45,7 +46,7 @@ def org_add(
 @opt_name(help_text="Organisation Name", required=False)
 @click.option('--state', type=str)
 @click.option('--country', type=str)
-@click.option('--is-active/--not-active', default=True, type=bool)
+@opt_is_active
 def org_update(
         identifier: int,
         name: str,

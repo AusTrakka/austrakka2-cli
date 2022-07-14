@@ -1,7 +1,15 @@
+from typing import List
+
 import click
 
 from austrakka.utils.output import table_format_option
+from austrakka.utils.cmd_filter import is_admin
+from austrakka.utils.options import opt_roles
+from austrakka.utils.options import opt_user_email
+from austrakka.utils.options import opt_organisation
+from austrakka.utils.options import opt_is_active
 from .funcs import list_users
+from .funcs import add_user
 
 
 @click.group()
@@ -16,3 +24,13 @@ def user(ctx):
 def user_list(table_format: str):
     '''List users in AusTrakka'''
     list_users(table_format)
+
+
+@user.command('add', hidden=is_admin())
+@opt_user_email()
+@opt_organisation
+@opt_roles
+@opt_is_active
+def user_add(email: str, org: str, role: List[str], is_active: bool):
+    """Add users in AusTrakka"""
+    add_user(email, org, role, is_active)

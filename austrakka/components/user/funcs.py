@@ -1,7 +1,10 @@
+from typing import List
+
 import pandas as pd
 
 from austrakka.utils.api import call_api
 from austrakka.utils.api import get
+from austrakka.utils.api import post
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
 from austrakka.utils.paths import USER_PATH
@@ -27,4 +30,25 @@ def list_users(table_format: str):
     print_table(
         result,
         table_format,
+    )
+
+
+@logger_wraps()
+def add_user(email: str, org: str, roles: List[str], is_active: bool):
+    call_api(
+        method=post,
+        path=USER_PATH,
+        body={
+            "userLogin": email,
+            "userOrganisation": {
+                "abbreviation": org
+            },
+            "roles": [
+                {
+                    "name": role
+                }
+                for role in roles
+            ],
+            "isActive": is_active,
+        }
     )
