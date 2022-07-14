@@ -32,7 +32,7 @@ def list_fieldtypes(table_format: str):
 def add_fieldtype(
         name: str,
         description: str,
-        validValues: List[str],
+        valid_values: List[str],
 ):
     """
     Add a categorical fieldtype (MetaDataColumnType) and its valid values to AusTrakka.
@@ -43,7 +43,7 @@ def add_fieldtype(
         body={
             "Name": name,
             "Description": description,
-            "ValidValues": validValues,
+            "ValidValues": valid_values,
             "IsActive": True
         }
     )

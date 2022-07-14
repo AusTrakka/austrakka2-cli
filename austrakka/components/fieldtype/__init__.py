@@ -26,8 +26,9 @@ def fieldtype_list(table_format: str):
 @click.option('-v',
               '--value',
               multiple=True,
-              help='Allowed value for this categorical field. Multiple may be entered; at least one is required.',
+              help='Allowed value for this categorical field. Multiple may be '
+                   'entered; at least one is required.',
               type=click.STRING)
 def fieldtype_add(name: str, description: str, value: List[str]):
     """Add a new categorical field type and its valid values"""
-    add_fieldtype(name, description, validValues=value)
+    add_fieldtype(name, description, valid_values=value)
