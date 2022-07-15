@@ -180,10 +180,12 @@ def opt_user_email(required=True):
     return inner_func
 
 
-def opt_is_active(func):
-    return click.option(
-        '--is-active/--not-active',
-        default=True,
-        type=bool,
-        help='Determines if the entry is active'
-    )(func)
+def opt_is_active(is_update=False):
+    def inner_func(func):
+        return click.option(
+            '--is-active/--not-active',
+            default=None if is_update else True,
+            type=bool,
+            help='Determines if the entry is active'
+        )(func)
+    return inner_func

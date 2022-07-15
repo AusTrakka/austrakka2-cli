@@ -31,7 +31,7 @@ def user_list(table_format: str):
 @opt_user_email()
 @opt_organisation()
 @opt_roles()
-@opt_is_active
+@opt_is_active()
 def user_add(email: str, org: str, role: List[str], is_active: bool):
     """Add users in AusTrakka"""
     add_user(email, org, role, is_active)
@@ -41,7 +41,7 @@ def user_add(email: str, org: str, role: List[str], is_active: bool):
 @click.argument('email', type=str)
 @opt_organisation(required=False)
 @opt_roles(required=False)
-@opt_is_active
+@opt_is_active(is_update=True)
 def user_update(email: str, org: str, role: List[str], is_active: bool):
     """Add users in AusTrakka"""
     update_user(email, org, role, is_active)

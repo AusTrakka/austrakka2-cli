@@ -22,7 +22,7 @@ def species(ctx):
 @opt_abbrev()
 @opt_name(help_text="Species name")
 @opt_taxon_id()
-@opt_is_active
+@opt_is_active()
 def species_add(abbrev: str, name: str, taxon_id: str, is_active: bool):
     '''
     Add a species to AusTrakka.
@@ -34,7 +34,7 @@ def species_add(abbrev: str, name: str, taxon_id: str, is_active: bool):
 @click.argument('abbrev', type=str)
 @opt_name(help_text="Species name", required=False)
 @opt_taxon_id(required=False)
-@opt_is_active
+@opt_is_active(is_update=True)
 def species_update(abbrev: str, name: str, taxon_id: str, is_active: bool):
     '''
     Update a species in AusTrakka.

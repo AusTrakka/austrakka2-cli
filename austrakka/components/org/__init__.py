@@ -29,7 +29,7 @@ def org_list(table_format: str):
 @opt_abbrev(help_text="Organisation Abbreviation")
 @click.option('--state', type=str, default=None)
 @click.option('--country', type=str, required=True)
-@opt_is_active
+@opt_is_active()
 def org_add(
     name: str,
     abbrev: str,
@@ -46,7 +46,7 @@ def org_add(
 @opt_name(help_text="Organisation Name", required=False)
 @click.option('--state', type=str)
 @click.option('--country', type=str)
-@opt_is_active
+@opt_is_active(is_update=True)
 def org_update(
         identifier: int,
         name: str,
