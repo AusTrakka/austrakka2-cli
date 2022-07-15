@@ -60,7 +60,6 @@ def add_user(email: str, org: str, roles: List[str], is_active: bool):
 def update_user(email: str, org: str, roles: List[str], is_active: bool):
     user = get_user_by_email(email)
 
-    print(user)
     if org is not None:
         user["userOrganisation"]["abbreviation"] = org
 
@@ -69,7 +68,7 @@ def update_user(email: str, org: str, roles: List[str], is_active: bool):
 
     if is_active is not None:
         user["IsActive"] = is_active
-    print(user)
+
     call_api(
         method=put,
         path=f'{USER_PATH}/{user["userId"]}',
