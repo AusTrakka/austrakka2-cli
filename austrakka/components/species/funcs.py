@@ -12,14 +12,15 @@ SPECIES_DTO = 'dto'
 
 
 @logger_wraps()
-def add_species(abbrev: str, name: str, taxon_id: str):
+def add_species(abbrev: str, name: str, taxon_id: str, is_active: bool):
     return call_api(
         method=post,
         path=SPECIES_PATH,
         body={
             "abbreviation": abbrev,
             "name": name,
-            "taxonId": taxon_id
+            "taxonId": taxon_id,
+            "isActive": is_active,
         }
     )
 

@@ -2,8 +2,11 @@ import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
+from austrakka.utils.options import opt_abbrev
+from austrakka.utils.options import opt_name
+from austrakka.utils.options import opt_taxon_id
+from austrakka.utils.options import opt_is_active
 from .funcs import list_species, add_species
-from ...utils.options import *
 
 
 @click.group()
@@ -17,11 +20,12 @@ def species(ctx):
 @opt_abbrev()
 @opt_name(help_text="Species name")
 @opt_taxon_id
-def species_add(abbrev, name, taxon_id):
+@opt_is_active
+def species_add(abbrev: str, name: str, taxon_id: str, is_active: bool):
     '''
     Add a species to AusTrakka.
     '''
-    add_species(abbrev, name, taxon_id)
+    add_species(abbrev, name, taxon_id, is_active)
 
 
 @species.command('list')
