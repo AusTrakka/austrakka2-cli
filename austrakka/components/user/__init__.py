@@ -10,6 +10,7 @@ from austrakka.utils.options import opt_organisation
 from austrakka.utils.options import opt_is_active
 from .funcs import list_users
 from .funcs import add_user
+from .funcs import update_user
 
 
 @click.group()
@@ -26,11 +27,21 @@ def user_list(table_format: str):
     list_users(table_format)
 
 
-@user.command('add', hidden=is_admin())
+@user.command('add', hidden=not is_admin())
 @opt_user_email()
-@opt_organisation
-@opt_roles
+@opt_organisation()
+@opt_roles()
 @opt_is_active
 def user_add(email: str, org: str, role: List[str], is_active: bool):
     """Add users in AusTrakka"""
     add_user(email, org, role, is_active)
+
+
+@user.command('update', hidden=not is_admin())
+@click.argument('email', type=str)
+@opt_organisation(required=False)
+@opt_roles(required=False)
+@opt_is_active
+def user_update(email: str, org: str, role: List[str], is_active: bool):
+    """Add users in AusTrakka"""
+    update_user(email, org, role, is_active)

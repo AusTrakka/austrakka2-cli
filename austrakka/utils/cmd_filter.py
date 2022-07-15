@@ -13,4 +13,4 @@ def hide_admin_cmds():
 
 
 def is_admin():
-    return not show_admin_cmds()
+    return show_admin_cmds()

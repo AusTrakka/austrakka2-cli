@@ -47,15 +47,17 @@ def opt_species(func):
     )(func)
 
 
-def opt_organisation(func):
-    return click.option(
-        '-o',
-        '--org',
-        required=True,
-        help='Organisation abbreviation. Must match an organisation ' +
-        'known to AusTrakka, use `austrakka org list` to see valid values',
-        type=click.STRING
-    )(func)
+def opt_organisation(required=True):
+    def inner_func(func):
+        return click.option(
+            '-o',
+            '--org',
+            required=required,
+            help='Organisation abbreviation. Must match an organisation ' +
+            'known to AusTrakka, use `austrakka org list` to see valid values',
+            type=click.STRING
+        )(func)
+    return inner_func
 
 
 def opt_proforma(func):
@@ -146,14 +148,16 @@ def opt_fieldtype(required=True):
     return inner_func
 
 
-def opt_roles(func):
-    return click.option(
-        '--role',
-        type=click.Choice(get_role_list()),
-        help='User role',
-        required=True,
-        multiple=True
-    )(func)
+def opt_roles(required=True):
+    def inner_func(func):
+        return click.option(
+            '--role',
+            type=click.Choice(get_role_list()),
+            help='User role',
+            required=required,
+            multiple=True
+        )(func)
+    return inner_func
 
 
 def opt_user_email(required=True):
