@@ -3,7 +3,7 @@ from typing import List
 import click
 
 from austrakka.utils.output import table_format_option
-from austrakka.utils.cmd_filter import is_admin
+from austrakka.utils.cmd_filter import show_admin_cmds
 from austrakka.utils.options import opt_roles
 from austrakka.utils.options import opt_user_email
 from austrakka.utils.options import opt_organisation
@@ -27,7 +27,7 @@ def user_list(table_format: str):
     list_users(table_format)
 
 
-@user.command('add', hidden=not is_admin())
+@user.command('add', hidden=show_admin_cmds)
 @opt_user_email()
 @opt_organisation()
 @opt_roles()
@@ -37,7 +37,7 @@ def user_add(email: str, org: str, role: List[str], is_active: bool):
     add_user(email, org, role, is_active)
 
 
-@user.command('update', hidden=not is_admin())
+@user.command('update', hidden=show_admin_cmds)
 @click.argument('email', type=str)
 @opt_organisation(required=False)
 @opt_roles(required=False)
