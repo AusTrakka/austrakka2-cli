@@ -10,4 +10,3 @@ def show_admin_cmds():
 
 def hide_admin_cmds():
     return not show_admin_cmds()
-
