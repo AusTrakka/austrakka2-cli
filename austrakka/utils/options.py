@@ -127,14 +127,16 @@ def opt_analysis(func):
     )(func)
 
 
-def opt_taxon_id(func):
-    return click.option(
-        '-t',
-        '--taxon-id',
-        default="",
-        help='Taxon ID',
-        type=click.STRING
-    )(func)
+def opt_taxon_id(required=True):
+    def inner_func(func):
+        return click.option(
+            '-t',
+            '--taxon-id',
+            help='Taxon ID',
+            type=click.STRING,
+            required=required,
+        )(func)
+    return inner_func
 
 
 def opt_fieldtype(required=True):
