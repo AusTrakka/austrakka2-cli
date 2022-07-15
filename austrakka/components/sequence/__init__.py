@@ -51,7 +51,7 @@ def submission_add(
 
 @seq.command('get')
 @opt_output_dir
-@opt_species
+@opt_species()
 @opt_seq_type
 @opt_read
 def get(

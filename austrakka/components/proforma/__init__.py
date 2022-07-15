@@ -24,7 +24,7 @@ def proforma(ctx):
 @proforma.command('add', hidden=hide_admin_cmds())
 @opt_abbrev()
 @opt_name()
-@opt_description
+@opt_description(required=False)
 @click.option('-s',
               '--species',
               required=False,

@@ -27,24 +27,30 @@ def opt_name(help_text='Name', required=True):
     return inner_func
 
 
-def opt_description(func):
-    return click.option(
-        '-d',
-        '--description',
-        default="",
-        help='Human-readable description text',
-        type=click.STRING
-    )(func)
+def opt_description(required=True):
+    def inner_func(func):
+        return click.option(
+            '-d',
+            '--description',
+            default="",
+            help='Human-readable description text',
+            type=click.STRING,
+            required=required,
+        )(func)
+    return inner_func
 
 
-def opt_species(func):
-    return click.option(
-        '-s',
-        '--species',
-        required=True,
-        help='Species Abbreviation',
-        type=click.STRING
-    )(func)
+def opt_species(required=True, multiple=False):
+    def inner_func(func):
+        return click.option(
+            '-s',
+            '--species',
+            required=required,
+            help='Species Abbreviation',
+            type=click.STRING,
+            multiple=multiple,
+        )(func)
+    return inner_func
 
 
 def opt_organisation(required=True):
