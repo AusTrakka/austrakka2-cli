@@ -24,10 +24,12 @@ def list_fields(table_format: str):
     data = response['data'] if ('data' in response) else response
     result = pd.DataFrame.from_dict(data)
 
-    result.drop(['mappedSpecies'],
-                axis='columns',
-                inplace=True)
-    result['primitiveType'].fillna('category', inplace=True)
+    if 'mappedSpecies' in result:
+        result.drop(['mappedSpecies'],
+                    axis='columns',
+                    inplace=True)
+    if 'primitiveType' in result:
+        result['primitiveType'].fillna('category', inplace=True)
 
     print_table(
         result,
