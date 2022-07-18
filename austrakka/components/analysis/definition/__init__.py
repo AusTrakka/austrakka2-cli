@@ -4,6 +4,7 @@ import click
 
 from austrakka.components.analysis.definition.funcs import add_definition
 from austrakka.components.analysis.definition.funcs import update_definition
+from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_species
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_description
@@ -17,7 +18,7 @@ def definition(ctx):
     ctx.creds = ctx.parent.creds
 
 
-@definition.command('add')
+@definition.command('add', hidden=hide_admin_cmds())
 @opt_name()
 @opt_description()
 @opt_species(multiple=True)
@@ -32,7 +33,7 @@ def definition_add(
     add_definition(name, description, species, is_active)
 
 
-@definition.command('update')
+@definition.command('update', hidden=hide_admin_cmds())
 @click.argument('name', type=str)
 @opt_description(required=False)
 @opt_species(required=False, multiple=True)
