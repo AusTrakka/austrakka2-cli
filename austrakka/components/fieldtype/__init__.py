@@ -1,6 +1,6 @@
 from typing import List
-import click
 
+from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.output import table_format_option
 from .funcs import list_fieldtypes, add_fieldtype
 from ...utils.options import *
@@ -20,7 +20,7 @@ def fieldtype_list(table_format: str):
     list_fieldtypes(table_format)
 
 
-@fieldtype.command('add')
+@fieldtype.command('add', hidden=hide_admin_cmds())
 @opt_name(help_text="Type name")
 @opt_description
 @click.option('-v',
