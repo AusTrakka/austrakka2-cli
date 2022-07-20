@@ -1,12 +1,10 @@
-import pandas as pd
-
 from austrakka.utils.api import call_api, put
-from austrakka.utils.api import get, post
+from austrakka.utils.api import post
 from austrakka.utils.paths import SPECIES_PATH
 from austrakka.utils.paths import SPECIES_DTO
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_table
 from austrakka.utils.helpers.species import get_species_by_abbrev
+from austrakka.utils.helpers.list import print_get
 
 
 @logger_wraps()
@@ -25,19 +23,7 @@ def add_species(abbrev: str, name: str, taxon_id: str, is_active: bool):
 
 @logger_wraps()
 def list_species(table_format: str):
-    response = call_api(
-        method=get,
-        path=f'{SPECIES_PATH}/{SPECIES_DTO}',
-    )
-
-    #pylint: disable=duplicate-code
-    data = response['data'] if ('data' in response) else response
-    result = pd.DataFrame.from_dict(data)
-
-    print_table(
-        result,
-        table_format,
-    )
+    print_get(f'{SPECIES_PATH}/{SPECIES_DTO}', table_format)
 
 
 @logger_wraps()

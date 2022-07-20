@@ -2,6 +2,7 @@ import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.components.analysis.definition import definition
+from austrakka.components.analysis.instance import instance
 from .funcs import list_analyses
 
 
@@ -13,6 +14,7 @@ def analysis(ctx):
 
 
 analysis.add_command(definition)
+analysis.add_command(instance)
 
 
 @analysis.command('list')
