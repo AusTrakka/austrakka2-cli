@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.9.0] - 2022-07-18
+### Added
+- Added `fieldtype add` command.
+
 ## [0.8.0] - 2022-07-08
 ### Added
 - Added `org add` command.
@@ -155,3 +159,4 @@ and this project adheres to [Semantic Versioning].
 [0.6.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.6.0
 [0.7.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.7.0
 [0.8.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.8.0
+[0.9.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.9.0
