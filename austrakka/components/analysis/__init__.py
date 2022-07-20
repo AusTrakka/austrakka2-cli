@@ -4,6 +4,7 @@ from austrakka.utils.output import table_format_option
 from austrakka.components.analysis.definition import definition
 from austrakka.components.analysis.instance import instance
 from .funcs import list_analyses
+from ...utils.cmd_filter import show_admin_cmds
 
 
 @click.group()
@@ -13,8 +14,8 @@ def analysis(ctx):
     ctx.creds = ctx.parent.creds
 
 
-analysis.add_command(definition)
-analysis.add_command(instance)
+analysis.add_command(definition) if show_admin_cmds() else None
+analysis.add_command(instance) if show_admin_cmds() else None
 
 
 @analysis.command('list')
