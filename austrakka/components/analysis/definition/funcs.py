@@ -42,9 +42,6 @@ def update_definition(
 ):
     definition = get_definition_by_name(name)
 
-    if name is not None:
-        definition['name'] = name
-
     if description is not None:
         definition['description'] = description
 

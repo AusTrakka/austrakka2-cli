@@ -5,6 +5,7 @@ from typing import List
 from typing import Union
 from json.decoder import JSONDecodeError
 
+import pandas as pd
 from loguru import logger
 import requests
 import click
@@ -16,7 +17,7 @@ from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.exceptions import FailedResponseException
 from ..components.auth.enums import Auth
 from .misc import logger_wraps
-from .output import log_dict
+from .output import log_dict, print_table
 from .output import log_response
 
 get = requests.get
@@ -156,3 +157,19 @@ def call_api_raw(
     ensure_success_status(response)
 
     return response
+
+
+@logger_wraps()
+def call_get_and_print_table(path: str, table_format: str):
+    response = call_api(
+        method=get,
+        path=path,
+    )
+
+    result = response['data'] if ('data' in response) else response
+    result = pd.DataFrame.from_dict(result)
+
+    print_table(
+        result,
+        table_format,
+    )

@@ -1,8 +1,7 @@
-from austrakka.utils.api import call_api
+from austrakka.utils.api import call_api, call_get_and_print_table
 from austrakka.utils.api import post
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import PROJECT_PATH
-from austrakka.utils.helpers.list import print_get
 
 
 @logger_wraps()
@@ -23,4 +22,4 @@ def add_project(abbrev: str, name: str, description: str, org: str):
 
 @logger_wraps()
 def list_projects(table_format: str):
-    print_get(PROJECT_PATH, table_format)
+    call_get_and_print_table(PROJECT_PATH, table_format)
