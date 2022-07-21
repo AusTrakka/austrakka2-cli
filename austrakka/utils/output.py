@@ -17,7 +17,6 @@ from austrakka.utils.enums.api import RESPONSE_DATA
 from austrakka.utils.enums.api import RESPONSE_MESSAGES
 from austrakka.utils.enums.api import RESPONSE_MESSAGE
 
-
 FORMAT_PREFIX = '_format_'
 
 

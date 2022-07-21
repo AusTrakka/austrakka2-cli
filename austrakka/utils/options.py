@@ -1,6 +1,7 @@
 import click
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
+from austrakka.utils.enums.roles import get_role_list
 
 
 def opt_abbrev(
@@ -26,35 +27,43 @@ def opt_name(help_text='Name', required=True):
     return inner_func
 
 
-def opt_description(func):
-    return click.option(
-        '-d',
-        '--description',
-        default="",
-        help='Human-readable description text',
-        type=click.STRING
-    )(func)
+def opt_description(required=True):
+    def inner_func(func):
+        return click.option(
+            '-d',
+            '--description',
+            default="",
+            help='Human-readable description text',
+            type=click.STRING,
+            required=required,
+        )(func)
+    return inner_func
 
 
-def opt_species(func):
-    return click.option(
-        '-s',
-        '--species',
-        required=True,
-        help='Species Abbreviation',
-        type=click.STRING
-    )(func)
+def opt_species(required=True, multiple=False):
+    def inner_func(func):
+        return click.option(
+            '-s',
+            '--species',
+            required=required,
+            help='Species Abbreviation',
+            type=click.STRING,
+            multiple=multiple,
+        )(func)
+    return inner_func
 
 
-def opt_organisation(func):
-    return click.option(
-        '-o',
-        '--org',
-        required=True,
-        help='Organisation abbreviation. Must match an organisation ' +
-        'known to AusTrakka, use `austrakka org list` to see valid values',
-        type=click.STRING
-    )(func)
+def opt_organisation(required=True):
+    def inner_func(func):
+        return click.option(
+            '-o',
+            '--org',
+            required=required,
+            help='Organisation abbreviation. Must match an organisation ' +
+            'known to AusTrakka, use `austrakka org list` to see valid values',
+            type=click.STRING
+        )(func)
+    return inner_func
 
 
 def opt_proforma(func):
@@ -124,14 +133,16 @@ def opt_analysis(func):
     )(func)
 
 
-def opt_taxon_id(func):
-    return click.option(
-        '-t',
-        '--taxon-id',
-        default="",
-        help='Taxon ID',
-        type=click.STRING
-    )(func)
+def opt_taxon_id(required=True):
+    def inner_func(func):
+        return click.option(
+            '-t',
+            '--taxon-id',
+            help='Taxon ID',
+            type=click.STRING,
+            required=required,
+        )(func)
+    return inner_func
 
 
 def opt_fieldtype(required=True):
@@ -142,4 +153,39 @@ def opt_fieldtype(required=True):
             required=required,
             help='Metadata field type. Use `austrakka fieldtype list` to see options.',
             type=click.STRING)(func)
+    return inner_func
+
+
+def opt_roles(required=True):
+    def inner_func(func):
+        return click.option(
+            '--role',
+            type=click.Choice(get_role_list()),
+            help='User role',
+            required=required,
+            multiple=True
+        )(func)
+    return inner_func
+
+
+def opt_user_email(required=True):
+    def inner_func(func):
+        return click.option(
+            '-e',
+            '--email',
+            type=str,
+            help='User email',
+            required=required
+        )(func)
+    return inner_func
+
+
+def opt_is_active(is_update=False):
+    def inner_func(func):
+        return click.option(
+            '--is-active/--not-active',
+            default=None if is_update else True,
+            type=bool,
+            help='Determines if the entry is active'
+        )(func)
     return inner_func
