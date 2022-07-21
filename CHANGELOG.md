@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.10.0] - 2022-07-21
+### Added
+- Added `user add` command.
+- Added `user update` command.
+- Added `species add` command.
+- Added `species update` command.
+- Added `analysis definition add` command.
+- Added `analysis definition update` command.
+- Added `analysis instance list` command.
+
 ## [0.9.0] - 2022-07-18
 ### Added
 - Added `fieldtype add` command.
@@ -160,3 +170,4 @@ and this project adheres to [Semantic Versioning].
 [0.7.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.7.0
 [0.8.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.8.0
 [0.9.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.9.0
+[0.10.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.10.0
