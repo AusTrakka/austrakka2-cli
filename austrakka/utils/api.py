@@ -156,5 +156,3 @@ def call_api_raw(
     ensure_success_status(response)
 
     return response
-
-
