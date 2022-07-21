@@ -1,4 +1,5 @@
-from austrakka.utils.api import call_api, call_get_and_print_table
+from austrakka.utils.api import call_api
+from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.api import post
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import PROJECT_PATH

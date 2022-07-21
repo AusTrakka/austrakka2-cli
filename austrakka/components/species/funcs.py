@@ -1,4 +1,5 @@
-from austrakka.utils.api import call_api, put, call_get_and_print_table
+from austrakka.utils.api import call_api, put
+from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.api import post
 from austrakka.utils.paths import SPECIES_PATH
 from austrakka.utils.paths import SPECIES_DTO
