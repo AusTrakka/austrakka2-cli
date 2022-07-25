@@ -15,7 +15,6 @@ from .components.tree import tree
 from .components.species import species
 from .components.metadata import metadata
 from .components.sequence import seq
-from .components.static import static
 from .components.proforma import proforma
 from .components.field import field
 from .components.fieldtype import fieldtype
@@ -71,7 +70,6 @@ def main():
         cli.add_command(species)
         cli.add_command(metadata)
         cli.add_command(seq)
-        cli.add_command(static) if show_admin_cmds() else None
         cli.add_command(proforma)
         cli.add_command(field)
         cli.add_command(fieldtype)
