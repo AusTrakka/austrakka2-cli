@@ -189,3 +189,26 @@ def opt_is_active(is_update=False):
             help='Determines if the entry is active'
         )(func)
     return inner_func
+
+
+def opt_country(help_text='Country', required=True):
+    def inner_func(func):
+        return click.option(
+            "--country",
+            required=required,
+            help=help_text,
+            type=str
+        )(func)
+    return inner_func
+
+
+def opt_state(help_text='State', required=True):
+    def inner_func(func):
+        return click.option(
+            "--state",
+            required=required,
+            help=help_text,
+            type=str,
+            default=None,
+        )(func)
+    return inner_func

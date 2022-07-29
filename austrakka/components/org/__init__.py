@@ -5,6 +5,8 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_abbrev
 from austrakka.utils.options import opt_is_active
+from austrakka.utils.options import opt_country
+from austrakka.utils.options import opt_state
 from .funcs import list_orgs
 from .funcs import add_org
 from .funcs import update_org
@@ -27,8 +29,8 @@ def org_list(table_format: str):
 @org.command('add', hidden=hide_admin_cmds())
 @opt_name(help_text="Organisation Name")
 @opt_abbrev(help_text="Organisation Abbreviation")
-@click.option('--state', type=str, default=None)
-@click.option('--country', type=str, required=True)
+@opt_state()
+@opt_country()
 @opt_is_active()
 def org_add(
     name: str,
@@ -42,17 +44,17 @@ def org_add(
 
 
 @org.command('update', hidden=hide_admin_cmds())
-@click.argument('identifier', type=int)
+@click.argument('abbrev', type=str)
 @opt_name(help_text="Organisation Name", required=False)
-@click.option('--state', type=str)
-@click.option('--country', type=str)
+@opt_state(required=False)
+@opt_country(required=False)
 @opt_is_active(is_update=True)
 def org_update(
-        identifier: int,
+        abbrev: str,
         name: str,
         country: str,
         state: str,
         is_active: bool,
 ):
     '''Update organisations in AusTrakka'''
-    update_org(identifier, name, country, state, is_active)
+    update_org(abbrev, name, country, state, is_active)
