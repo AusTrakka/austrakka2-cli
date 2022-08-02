@@ -22,7 +22,7 @@ def fieldtype_list(table_format: str):
 
 @fieldtype.command('add', hidden=hide_admin_cmds())
 @opt_name(help_text="Type name")
-@opt_description
+@opt_description()
 @click.option('-v',
               '--value',
               multiple=True,
