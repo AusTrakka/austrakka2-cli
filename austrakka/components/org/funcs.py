@@ -1,45 +1,15 @@
-import pandas as pd
-
 from austrakka.utils.api import call_api
-from austrakka.utils.api import get
 from austrakka.utils.api import post
 from austrakka.utils.api import put
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_table
 from austrakka.utils.paths import ORG_PATH
-from austrakka.utils.helpers.orgs import get_org_by_id
-from austrakka.components.user.funcs import get_users
+from austrakka.utils.helpers.orgs import get_org_by_abbrev
+from austrakka.utils.helpers.output import call_get_and_print_table
 
 
 @logger_wraps()
 def list_orgs(table_format: str):
-    response = call_api(
-        method=get,
-        path=ORG_PATH,
-        params={
-            'includeall': False
-        }
-    )
-
-    result = pd.DataFrame.from_dict(response)
-
-    users = get_users()
-    users.set_index('userID', inplace=True)
-
-    result = result.join(users[['displayName']].rename(
-        columns={'displayName': 'createdBy'}), on='createdById')
-    result['createdBy'] = result['createdBy'].fillna('unknown')
-    result = result.join(users[['displayName']].rename(
-        columns={'displayName': 'lastUpdatedBy'}), on='lastUpdatedById')
-    result['lastUpdatedBy'] = result['lastUpdatedBy'].fillna('unknown')
-
-    result.drop(['createdById', 'lastUpdatedById'],
-                axis='columns', inplace=True)
-
-    print_table(
-        result,
-        table_format,
-    )
+    call_get_and_print_table(ORG_PATH, table_format)
 
 
 # pylint: disable=duplicate-code
@@ -67,20 +37,19 @@ def add_org(
 # pylint: disable=duplicate-code
 @logger_wraps()
 def update_org(
-        identifier: int,
+        abbrev: str,
         name: str,
         country: str,
         state: str,
         is_active: bool,
 ):
-    org = get_org_by_id(identifier)
+    org = get_org_by_abbrev(abbrev)
 
     put_org = {k: org[k] for k in [
         "name",
         "country",
         "state",
         "isActive",
-        "abbreviation",
         "organisationId",
     ]}
 
@@ -95,6 +64,6 @@ def update_org(
 
     call_api(
         method=put,
-        path=f'{ORG_PATH}/{identifier}',
+        path=f'{ORG_PATH}/{abbrev}',
         body=put_org
     )
