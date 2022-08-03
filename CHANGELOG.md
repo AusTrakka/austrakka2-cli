@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.11.0] - 2022-08-03
+### Changed
+- `org update` now accepts an organisation abbreviation.
+
 ## [0.10.1] - 2022-08-03
 ### Fixed
 - Fixed a bug where the `description` option was hidden on `fieldtype add`.
@@ -176,3 +180,4 @@ and this project adheres to [Semantic Versioning].
 [0.9.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.9.0
 [0.10.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.10.0
 [0.10.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.10.1
+[0.11.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.11.0
