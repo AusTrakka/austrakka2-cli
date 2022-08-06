@@ -27,6 +27,17 @@ def opt_name(help_text='Name', required=True):
     return inner_func
 
 
+def opt_newname(help_text='New name', required=True):
+    def inner_func(func):
+        return click.option(
+            "-r",
+            "--newname",
+            required=required,
+            help=help_text
+        )(func)
+    return inner_func
+
+
 def opt_description(required=True):
     def inner_func(func):
         return click.option(
