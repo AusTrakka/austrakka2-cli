@@ -31,8 +31,12 @@ def group_add(
 
 
 @group.command('update', hidden=hide_admin_cmds())
-@opt_name()
-@opt_newname(required=False)
+@click.argument('name', type=str)
+@opt_name(
+    help_text="The new name of the group",
+    required=False,
+    var_name='newname'
+)
 @opt_organisation(required=False)
 def group_update(
         name: str,
