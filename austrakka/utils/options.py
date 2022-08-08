@@ -16,11 +16,12 @@ def opt_abbrev(
     return inner_func
 
 
-def opt_name(help_text='Name', required=True):
+def opt_name(help_text='Name', required=True, var_name='name'):
     def inner_func(func):
         return click.option(
             "-n",
             "--name",
+            var_name,
             required=required,
             help=help_text
         )(func)

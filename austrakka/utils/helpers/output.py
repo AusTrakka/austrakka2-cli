@@ -13,7 +13,7 @@ def call_get_and_print_table(path: str, table_format: str):
     )
 
     result = response['data'] if ('data' in response) else response
-    result = pd.DataFrame.from_dict(result)
+    result = pd.json_normalize(result, max_level=1)
 
     print_table(
         result,
