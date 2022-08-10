@@ -18,6 +18,7 @@ from .components.sequence import seq
 from .components.proforma import proforma
 from .components.field import field
 from .components.fieldtype import fieldtype
+from .components.group import group
 
 from . import __version__ as VERSION
 from .utils.misc import HandleTopLevelParams
@@ -64,6 +65,7 @@ def main():
         cli.add_command(auth)
         cli.add_command(user) if show_admin_cmds() else None
         cli.add_command(org) if show_admin_cmds() else None
+        cli.add_command(group)
         cli.add_command(project)
         cli.add_command(analysis)
         cli.add_command(tree) if show_admin_cmds() else None

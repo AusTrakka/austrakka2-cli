@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.12.0] - 2022-08-10
+### Added
+- Added `group list` command
+- Added `group add` command
+- Added `group update` command
+
+### Changed
+- Normalized output of tables that contain json data, turning nested object properties into columns.
+
 ## [0.11.0] - 2022-08-03
 ### Changed
 - `org update` now accepts an organisation abbreviation.
