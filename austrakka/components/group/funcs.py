@@ -58,9 +58,10 @@ def list_group(table_format: str):
     data = response['data'] if ('data' in response) else response
     result = pd.json_normalize(data, max_level=1)
 
-    result.drop(['organisation'],
-                axis='columns',
-                inplace=True)
+    if 'organisation' in result.columns:
+        result.drop(['organisation'],
+                    axis='columns',
+                    inplace=True)
 
     result.fillna('', inplace=True)
 
