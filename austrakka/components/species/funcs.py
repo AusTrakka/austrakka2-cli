@@ -2,7 +2,6 @@ from austrakka.utils.api import call_api, put
 from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.api import post
 from austrakka.utils.paths import SPECIES_PATH
-from austrakka.utils.paths import SPECIES_DTO
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.helpers.species import get_species_by_abbrev
 
@@ -23,7 +22,7 @@ def add_species(abbrev: str, name: str, taxon_id: str, is_active: bool):
 
 @logger_wraps()
 def list_species(table_format: str):
-    call_get_and_print_table(f'{SPECIES_PATH}/{SPECIES_DTO}', table_format)
+    call_get_and_print_table(SPECIES_PATH, table_format)
 
 
 @logger_wraps()
