@@ -50,7 +50,7 @@ def add_user(email: str, org: str, roles: List[str], is_active: bool):
         ],
         "isActive": is_active,
     }
-        
+
     call_api(
         method=post,
         path=USER_PATH,
