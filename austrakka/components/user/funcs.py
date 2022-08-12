@@ -37,22 +37,24 @@ def list_users(table_format: str):
 
 @logger_wraps()
 def add_user(email: str, org: str, roles: List[str], is_active: bool):
+    user = {
+        "userLogin": email,
+        "organisation": {
+            "abbreviation": org
+        },
+        "roles": [
+            {
+                "id": role
+            }
+            for role in roles
+        ],
+        "isActive": is_active,
+    }
+        
     call_api(
         method=post,
         path=USER_PATH,
-        body={
-            "userLogin": email,
-            "userOrganisation": {
-                "abbreviation": org
-            },
-            "roles": [
-                {
-                    "name": role
-                }
-                for role in roles
-            ],
-            "isActive": is_active,
-        }
+        body=user
     )
 
 
@@ -61,16 +63,16 @@ def update_user(email: str, org: str, roles: List[str], is_active: bool):
     user = get_user_by_email(email)
 
     if org is not None:
-        user["userOrganisation"]["abbreviation"] = org
+        user["organisation"]["abbreviation"] = org
 
     if roles is not None and len(roles) > 0:
-        user["roles"] = [{"name": role} for role in roles]
+        user["roles"] = [{"id": role} for role in roles]
 
     if is_active is not None:
-        user["IsActive"] = is_active
+        user["isActive"] = is_active
 
     call_api(
         method=put,
-        path=f'{USER_PATH}/{user["userId"]}',
+        path=f'{USER_PATH}/{email}',
         body=user
     )
