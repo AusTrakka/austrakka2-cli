@@ -192,6 +192,28 @@ def opt_is_active(is_update=False):
     return inner_func
 
 
+def opt_is_owner(is_update=False):
+    def inner_func(func):
+        return click.option(
+            '--is-owner/--not-owner',
+            default=None if is_update else True,
+            type=bool,
+            help='Determines if the user is an owner within the user''s current org'
+        )(func)
+    return inner_func
+
+
+def opt_is_contributor(is_update=False):
+    def inner_func(func):
+        return click.option(
+            '--is-contributor/--not-contributor',
+            default=None if is_update else True,
+            type=bool,
+            help='Determines if the user is a contributor within the user''s current org'
+        )(func)
+    return inner_func
+
+
 def opt_country(help_text='Country', required=True):
     def inner_func(func):
         return click.option(

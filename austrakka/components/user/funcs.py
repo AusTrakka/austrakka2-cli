@@ -21,7 +21,8 @@ def get_users(include_all: bool = False):
         }
     )
 
-    result = pd.DataFrame.from_dict(response)
+    data = response['data'] if ('data' in response) else response
+    result = pd.json_normalize(data, max_level=1)
     return result
 
 
@@ -36,7 +37,15 @@ def list_users(table_format: str):
 
 
 @logger_wraps()
-def add_user(email: str, org: str, roles: List[str], is_active: bool):
+def add_user(
+    email: str,
+    org: str,
+    roles: List[str],
+    is_active: bool,
+    is_owner: bool,
+    is_contributor: bool
+):
+
     user = {
         "userLogin": email,
         "organisation": {
@@ -49,6 +58,8 @@ def add_user(email: str, org: str, roles: List[str], is_active: bool):
             for role in roles
         ],
         "isActive": is_active,
+        "isOwner": is_owner,
+        "isContributor": is_contributor
     }
 
     call_api(
@@ -59,7 +70,14 @@ def add_user(email: str, org: str, roles: List[str], is_active: bool):
 
 
 @logger_wraps()
-def update_user(email: str, org: str, roles: List[str], is_active: bool):
+def update_user(
+    email: str,
+    org: str,
+    roles: List[str],
+    is_active: bool,
+    is_owner: bool,
+    is_contributor: bool
+):
     user = get_user_by_email(email)
 
     if org is not None:
@@ -70,6 +88,12 @@ def update_user(email: str, org: str, roles: List[str], is_active: bool):
 
     if is_active is not None:
         user["isActive"] = is_active
+
+    if is_owner is not None:
+        user["isOwner"] = is_owner
+
+    if is_contributor is not None:
+        user["isContributor"] = is_contributor
 
     call_api(
         method=put,
