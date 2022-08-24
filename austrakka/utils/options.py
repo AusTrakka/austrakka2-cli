@@ -198,8 +198,8 @@ def opt_is_owner(is_update=False):
             '--is-owner/--not-owner',
             default=None if is_update else True,
             type=bool,
-            help='Determines if the user is an owner within the user''s current org'
-        )(func)
+            help='Determines if the user is an owner within the user'
+            's current org')(func)
     return inner_func
 
 
@@ -209,8 +209,8 @@ def opt_is_contributor(is_update=False):
             '--is-contributor/--not-contributor',
             default=None if is_update else True,
             type=bool,
-            help='Determines if the user is a contributor within the user''s current org'
-        )(func)
+            help='Determines if the user is a contributor within the user'
+            's current org')(func)
     return inner_func
 
 
