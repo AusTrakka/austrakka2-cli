@@ -18,8 +18,11 @@ steps:
 - script: python -m pip install pipenv
   displayName: 'Install pipenv'
 
-- script: pipenv lock --requirements > requirements.txt
-  displayName: 'Create requirements.txt'
+- script: pipenv lock
+  displayName: 'Generate Pipfile.lock'
+
+- script: pipenv requirements > requirements.txt
+  displayName: 'Create requirements.txt from Pipfile.lock'
 
 - script: pip install -r requirements.txt
   displayName: 'Install requirements'
