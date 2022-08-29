@@ -6,7 +6,9 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 from .funcs import \
     add_group, \
     update_group, \
-    list_group
+    list_group, \
+    assign_groups, \
+    unassign_groups
 
 from ...utils.options import *
 
@@ -49,6 +51,42 @@ def group_update(
         name,
         newname,
         org)
+
+
+@group.command('assign', hidden=hide_admin_cmds())
+@opt_user_email()
+@click.option('-gr',
+              '--group-roles',
+              help='The group and role assignment for the specified user. '
+                   'Multiple assignments may be added. Use comma (,) as a separator. '
+                   'Format is <group>,<role> Eg. group1,role1',
+              type=click.STRING,
+              multiple=True)
+def group_assign(
+        email: str,
+        group_roles: List[str]):
+    """
+    Assign the user to the specified groups with the specified roles.
+    """
+    assign_groups(email, group_roles)
+
+
+@group.command('unassign', hidden=hide_admin_cmds())
+@opt_user_email()
+@click.option('-gr',
+              '--group-roles',
+              help='The group and role to remove from the specified user.'
+                   'Multiple assignment removals can be specified. Use comma (,) '
+                   'as a separator. Format is <group>,<role> Eg. group1,role1',
+              type=click.STRING,
+              multiple=True)
+def group_unassign(
+        email: str,
+        group_roles: List[str]):
+    """
+    Remove the user from the specified group and role combinations.
+    """
+    unassign_groups(email, group_roles)
 
 
 @group.command('list')
