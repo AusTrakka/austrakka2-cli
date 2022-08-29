@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.13.0] - 2022-08-29
+### Added
+- Added `group assign` command
+- Added `group unassign` command
+
 ## [0.12.2] - 2022-08-11
 ### Fixed
 - Fixed `user add` and `user update` commands crash due to backend API change.
