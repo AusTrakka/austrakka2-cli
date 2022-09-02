@@ -77,12 +77,13 @@ def opt_proforma(func):
         type=click.STRING)(func)
 
 
-def opt_csv(help_text='CSV file'):
+def opt_csv(help_text='CSV file', required=False):
     def inner_func(func):
         return click.option(
             "--csv",
             "csv_file",
             type=click.File('rb'),
+            required=required,
             default=None,
             help=help_text
         )(func)
