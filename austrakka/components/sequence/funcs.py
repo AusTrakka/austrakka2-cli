@@ -67,8 +67,9 @@ def add_fastq_submission(files: Tuple[BufferedReader], csv: BufferedReader):
             usecols=usecols
         )
     except ValueError:
-        logger.error("The CSV file mapping samples to sequences must contain exactly the "+
-                     f"column headers {','.join(usecols)}")
+        logger.error(
+            "The CSV file mapping samples to sequences must contain exactly the " +
+            f"column headers {','.join(usecols)}")
         raise
 
     messages = _validate_fastq_submission(files, csv_dataframe)
