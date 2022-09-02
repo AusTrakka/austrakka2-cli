@@ -35,7 +35,8 @@ ALL_READS = "-1"
 ONE = "1"
 TWO = "2"
 
-FASTQ_CSV_SAMPLE_ID = 'sampleId'
+FASTQ_CSV_SAMPLE_ID = 'Seq_ID'
+FASTQ_CSV_SAMPLE_ID_API = 'sample-id'
 FASTQ_CSV_FILENAME_1 = 'filename1'
 FASTQ_CSV_FILENAME_2 = 'filename2'
 FASTQ_CSV_OWNER_ORG = 'ownerOrg'
@@ -55,16 +56,21 @@ def add_fasta_submission(files: Tuple[BufferedReader], csv: BufferedReader):
 
 @logger_wraps()
 def add_fastq_submission(files: Tuple[BufferedReader], csv: BufferedReader):
-    csv_dataframe = pd.read_csv(
-        csv,
-        usecols=[
-            FASTQ_CSV_SAMPLE_ID,
-            FASTQ_CSV_FILENAME_1,
-            FASTQ_CSV_FILENAME_2,
-            FASTQ_CSV_OWNER_ORG,
-            FASTQ_CSV_SPECIES,
-        ]
-    )
+    usecols = [
+        FASTQ_CSV_SAMPLE_ID,
+        FASTQ_CSV_FILENAME_1,
+        FASTQ_CSV_FILENAME_2
+    ]
+    try:
+        csv_dataframe = pd.read_csv(
+            csv,
+            usecols=usecols
+        )
+    except ValueError:
+        logger.error(
+            "The CSV file mapping samples to sequences must contain exactly the " +
+            f"column headers {','.join(usecols)}")
+        raise
 
     messages = _validate_fastq_submission(files, csv_dataframe)
     if messages:
@@ -72,18 +78,12 @@ def add_fastq_submission(files: Tuple[BufferedReader], csv: BufferedReader):
 
     for _, row in csv_dataframe.iterrows():
         custom_headers = {
-            FASTQ_CSV_SAMPLE_ID: row[FASTQ_CSV_SAMPLE_ID],
+            FASTQ_CSV_SAMPLE_ID_API: row[FASTQ_CSV_SAMPLE_ID],
             FASTQ_CSV_FILENAME_1: row[FASTQ_CSV_FILENAME_1],
         }
 
         if str(row[FASTQ_CSV_FILENAME_2]) not in STR_NA_VALUES:
             custom_headers[FASTQ_CSV_FILENAME_2] = row[FASTQ_CSV_FILENAME_2]
-
-        if str(row[FASTQ_CSV_OWNER_ORG]) not in STR_NA_VALUES:
-            custom_headers[FASTQ_CSV_OWNER_ORG] = row[FASTQ_CSV_OWNER_ORG]
-
-        if str(row[FASTQ_CSV_SPECIES]) not in STR_NA_VALUES:
-            custom_headers[FASTQ_CSV_SPECIES] = row[FASTQ_CSV_SPECIES]
 
         sample_files = [
             ('files[]', (file.name, file))

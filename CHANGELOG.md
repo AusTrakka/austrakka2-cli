@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.13.2] - 2022-09-02
+### Fixed
+- The `seq add -t fastq` command now explicitly requires the sample-to-file CSV, and does not expect the user to specify OwnerOrg or Species, since these must already have been provided in a minimal metadata upload
+
 ## [0.13.1] - 2022-08-29
 ### Added
 - Added `group assign` command
