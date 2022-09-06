@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.13.3] - 2022-09-06
+### Fixed
+- `proforma list` and `proforma show` commands fixed to handle suggested species correctly
+- `proforma add` fixed to set the newly-created project to active
+
 # [0.13.2] - 2022-09-02
 ### Fixed
 - The `seq add -t fastq` command now explicitly requires the sample-to-file CSV, and does not expect the user to specify OwnerOrg or Species, since these must already have been provided in a minimal metadata upload
