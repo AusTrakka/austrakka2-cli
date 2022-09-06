@@ -38,13 +38,13 @@ def user_add(
 
 
 @user.command('update', hidden=hide_admin_cmds())
-@click.argument('email', type=str)
+@click.argument('user-id', type=int)
 @opt_organisation(required=False)
 @opt_owner_group_roles(required=False)
 def user_update(
-    email: str,
+    user_id: int,
     org: str,
     owner_group_roles: List[str],
 ):
     """Add users in AusTrakka"""
-    update_user(email, org, owner_group_roles)
+    update_user(user_id, org, owner_group_roles)

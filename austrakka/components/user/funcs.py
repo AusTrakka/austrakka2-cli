@@ -21,23 +21,26 @@ def list_users():
     )
 
     data = response['data'] if ('data' in response) else response
-    urg = pd.json_normalize(data, record_path='userRoleGroup')
+    urg = pd.json_normalize(data, record_path='userRoleGroup') \
+        .pipe(lambda x: x.drop('role.id', axis=1)) \
+        .pipe(lambda x: x.drop('group.id', axis=1))
+
     org = pd.json_normalize(data)\
-        .pipe(lambda x: x.drop('lastUpdatedBy', 1))\
-        .pipe(lambda x: x.drop('lastUpdated', 1))\
-        .pipe(lambda x: x.drop('created', 1))\
-        .pipe(lambda x: x.drop('userId', 1))\
-        .pipe(lambda x: x.drop('isActive', 1))\
-        .pipe(lambda x: x.drop('userRoleGroup', 1))\
-        .pipe(lambda x: x.drop('organisation.id', 1))\
-        .pipe(lambda x: x.drop('createdBy', 1))
+        .pipe(lambda x: x.drop('lastUpdatedBy', axis=1))\
+        .pipe(lambda x: x.drop('lastUpdated', axis=1))\
+        .pipe(lambda x: x.drop('created', axis=1))\
+        .pipe(lambda x: x.drop('userId', axis=1))\
+        .pipe(lambda x: x.drop('isActive', axis=1))\
+        .pipe(lambda x: x.drop('userRoleGroup', axis=1))\
+        .pipe(lambda x: x.drop('organisation.id', axis=1))\
+        .pipe(lambda x: x.drop('createdBy', axis=1))
 
     normalized = pd.merge(
         urg,
         org,
         how="inner",
         on=None,
-        left_on="user.id",
+        left_on="user.userLogin",
         right_on="userLogin",
         left_index=False,
         right_index=False,
@@ -48,7 +51,7 @@ def list_users():
         validate=None,
     )\
         .sort_values(["isAusTrakkaAdmin"], ascending=False) \
-        .pipe(lambda x: x.drop('userLogin', 1))
+        .pipe(lambda x: x.drop('userLogin', axis=1))
 
     # pylint: disable=print-function
     print(normalized)
@@ -77,7 +80,7 @@ def add_user(
 
 @logger_wraps()
 def update_user(
-    email: str,
+    user_id: int,
     org: str,
     owner_group_roles: List[str],
 ):
@@ -90,6 +93,6 @@ def update_user(
 
     call_api(
         method=put,
-        path=f'{USER_PATH}/{email}',
+        path=f'{USER_PATH}/{user_id}',
         body=user
     )
