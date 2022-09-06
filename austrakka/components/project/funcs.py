@@ -16,7 +16,8 @@ def add_project(abbrev: str, name: str, description: str, org: str):
             "description": description,
             "owningOrganisation": {
                 "abbreviation": org
-            }
+            },
+            "isActive": True
         }
     )
 
