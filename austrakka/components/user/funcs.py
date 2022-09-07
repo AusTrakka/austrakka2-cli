@@ -21,6 +21,7 @@ def list_users():
     )
 
     data = response['data'] if ('data' in response) else response
+    pd.set_option('display.max_rows', 500)
     urg = pd.json_normalize(data, record_path='userRoleGroup') \
         .pipe(lambda x: x.drop('role.id', axis=1)) \
         .pipe(lambda x: x.drop('group.id', axis=1))
@@ -50,7 +51,7 @@ def list_users():
         indicator=False,
         validate=None,
     )\
-        .sort_values(["isAusTrakkaAdmin"], ascending=False) \
+        .sort_values(["user.userId", "isAusTrakkaAdmin", "group.name"]) \
         .pipe(lambda x: x.drop('userLogin', axis=1))
 
     # pylint: disable=print-function
