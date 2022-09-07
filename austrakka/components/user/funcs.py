@@ -7,59 +7,68 @@ from austrakka.utils.api import get
 from austrakka.utils.api import post
 from austrakka.utils.api import put
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_table
 from austrakka.utils.paths import USER_PATH
-from austrakka.utils.helpers.users import get_user_by_email
 
 
-def get_users(include_all: bool = False):
+@logger_wraps()
+def list_users():
     response = call_api(
         method=get,
         path=USER_PATH,
         params={
-            'includeall': include_all
+            'includeall': False
         }
     )
 
     data = response['data'] if ('data' in response) else response
-    result = pd.json_normalize(data, max_level=1)
-    return result
+    urg = pd.json_normalize(data, record_path='userRoleGroup') \
+        .pipe(lambda x: x.drop('role.id', axis=1)) \
+        .pipe(lambda x: x.drop('group.id', axis=1))
 
+    org = pd.json_normalize(data)\
+        .pipe(lambda x: x.drop('lastUpdatedBy', axis=1))\
+        .pipe(lambda x: x.drop('lastUpdated', axis=1))\
+        .pipe(lambda x: x.drop('created', axis=1))\
+        .pipe(lambda x: x.drop('userId', axis=1))\
+        .pipe(lambda x: x.drop('isActive', axis=1))\
+        .pipe(lambda x: x.drop('userRoleGroup', axis=1))\
+        .pipe(lambda x: x.drop('organisation.id', axis=1))\
+        .pipe(lambda x: x.drop('createdBy', axis=1))
 
-@logger_wraps()
-def list_users(table_format: str):
-    result = get_users()
+    normalized = pd.merge(
+        urg,
+        org,
+        how="inner",
+        on=None,
+        left_on="user.userLogin",
+        right_on="userLogin",
+        left_index=False,
+        right_index=False,
+        sort=True,
+        suffixes=("_x", "_y"),
+        copy=True,
+        indicator=False,
+        validate=None,
+    )\
+        .sort_values(["isAusTrakkaAdmin"], ascending=False) \
+        .pipe(lambda x: x.drop('userLogin', axis=1))
 
-    print_table(
-        result,
-        table_format,
-    )
+    # pylint: disable=print-function
+    print(normalized)
 
 
 @logger_wraps()
 def add_user(
     email: str,
     org: str,
-    roles: List[str],
-    is_active: bool,
-    is_owner: bool,
-    is_contributor: bool
+    owner_group_roles: List[str],
 ):
-
     user = {
         "userLogin": email,
         "organisation": {
             "abbreviation": org
         },
-        "roles": [
-            {
-                "id": role
-            }
-            for role in roles
-        ],
-        "isActive": is_active,
-        "isOwner": is_owner,
-        "isContributor": is_contributor
+        "ownerGroupRoles": list(owner_group_roles),
     }
 
     call_api(
@@ -71,32 +80,19 @@ def add_user(
 
 @logger_wraps()
 def update_user(
-    email: str,
+    user_id: int,
     org: str,
-    roles: List[str],
-    is_active: bool,
-    is_owner: bool,
-    is_contributor: bool
+    owner_group_roles: List[str],
 ):
-    user = get_user_by_email(email)
-
-    if org is not None:
-        user["organisation"]["abbreviation"] = org
-
-    if roles is not None and len(roles) > 0:
-        user["roles"] = [{"id": role} for role in roles]
-
-    if is_active is not None:
-        user["isActive"] = is_active
-
-    if is_owner is not None:
-        user["isOwner"] = is_owner
-
-    if is_contributor is not None:
-        user["isContributor"] = is_contributor
+    user = {
+        "organisation": {
+            "abbreviation": org
+        },
+        "ownerGroupRoles": list(owner_group_roles),
+    }
 
     call_api(
         method=put,
-        path=f'{USER_PATH}/{email}',
+        path=f'{USER_PATH}/{user_id}',
         body=user
     )
