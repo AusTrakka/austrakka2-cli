@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.13.4] - 2022-09-07
+### Changed
+- `user update` to use user id instead of email
+- `user list` fixed formatting for an easier read
+
 # [0.13.3] - 2022-09-06
 ### Fixed
 - `proforma list` and `proforma show` commands fixed to handle suggested species correctly
