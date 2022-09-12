@@ -158,12 +158,14 @@ def opt_fieldtype(required=True):
     return inner_func
 
 
-def opt_roles(required=True):
+def opt_owner_group_roles(required=True):
     def inner_func(func):
         return click.option(
-            '--role',
+            '-ogr',
+            '--owner-group-roles',
             type=click.Choice(get_role_list()),
-            help='User role',
+            help='The user''s Owner group and role assignment. Exclude ' +
+                 'this option if the user is not an owner.',
             required=required,
             multiple=True
         )(func)
@@ -190,28 +192,6 @@ def opt_is_active(is_update=False):
             type=bool,
             help='Determines if the entry is active'
         )(func)
-    return inner_func
-
-
-def opt_is_owner(is_update=False):
-    def inner_func(func):
-        return click.option(
-            '--is-owner/--not-owner',
-            default=None if is_update else True,
-            type=bool,
-            help='Determines if the user is an owner within the user'
-            's current org')(func)
-    return inner_func
-
-
-def opt_is_contributor(is_update=False):
-    def inner_func(func):
-        return click.option(
-            '--is-contributor/--not-contributor',
-            default=None if is_update else True,
-            type=bool,
-            help='Determines if the user is a contributor within the user'
-            's current org')(func)
     return inner_func
 
 
