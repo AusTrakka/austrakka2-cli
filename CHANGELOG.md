@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.13.5] - 2022-09-12
+### Fixed
+- `user list` fixed table row truncation and formatting.
+
 # [0.13.4] - 2022-09-07
 ### Changed
 - `user update` to use user id instead of email
