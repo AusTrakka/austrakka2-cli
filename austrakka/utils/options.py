@@ -102,12 +102,13 @@ def opt_proforma(func):
         type=click.STRING)(func)
 
 
-def opt_csv(help_text='CSV file'):
+def opt_csv(help_text='CSV file', required=False):
     def inner_func(func):
         return click.option(
             "--csv",
             "csv_file",
             type=click.File('rb'),
+            required=required,
             default=None,
             help=help_text
         )(func)
@@ -182,12 +183,14 @@ def opt_fieldtype(required=True):
     return inner_func
 
 
-def opt_roles(required=True):
+def opt_owner_group_roles(required=True):
     def inner_func(func):
         return click.option(
-            '--role',
+            '-ogr',
+            '--owner-group-roles',
             type=click.Choice(get_role_list()),
-            help='User role',
+            help='The user''s Owner group and role assignment. Exclude ' +
+                 'this option if the user is not an owner.',
             required=required,
             multiple=True
         )(func)

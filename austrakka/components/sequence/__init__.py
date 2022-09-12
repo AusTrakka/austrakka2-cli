@@ -32,7 +32,7 @@ def seq(ctx):
 
 @seq.command('add')
 @click.argument('files', type=click.File('rb'), nargs=-1)
-@opt_csv(help_text='CSV with Sample to Sequence mapping')
+@opt_csv(help_text='CSV with Sample to Sequence mapping', required=True)
 @opt_seq_type
 def submission_add(
         files: Tuple[BufferedReader],

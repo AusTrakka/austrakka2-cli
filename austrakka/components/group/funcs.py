@@ -1,8 +1,10 @@
+from typing import List
+
 import pandas as pd
 from loguru import logger
 
 from austrakka.utils.api import call_api
-from austrakka.utils.api import get, post, put
+from austrakka.utils.api import get, post, put, patch
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
 from austrakka.utils.paths import GROUP_PATH
@@ -49,6 +51,48 @@ def add_group(
 
 
 @logger_wraps()
+def assign_groups(
+        email: str,
+        group_roles: List[str]):
+
+    sub_path = "assign"
+    return change_user_group_assignment(email, group_roles, sub_path)
+
+
+@logger_wraps()
+def unassign_groups(
+        email: str,
+        group_roles: List[str]):
+
+    sub_path = "unassign"
+    return change_user_group_assignment(email, group_roles, sub_path)
+
+
+def change_user_group_assignment(email, group_roles, sub_path):
+    if len(group_roles) == 0:
+        logger.warning("Nothing to do.")
+        return None
+
+    group_role_pairs = []
+    for group_role in group_roles:
+        pairs = group_role.split(",")
+        group_role_pairs.append({
+            "groupName": pairs[0],
+            "roleName": pairs[1]
+        })
+
+    payload = {
+        "userLogin": email,
+        "entitlements": group_role_pairs
+    }
+
+    return call_api(
+        method=patch,
+        path=f'{GROUP_PATH}/{sub_path}',
+        body=payload)
+
+
+@logger_wraps()
 def list_group(table_format: str):
     response = call_api(
         method=get,
@@ -58,9 +102,10 @@ def list_group(table_format: str):
     data = response['data'] if ('data' in response) else response
     result = pd.json_normalize(data, max_level=1)
 
-    result.drop(['organisation'],
-                axis='columns',
-                inplace=True)
+    if 'organisation' in result.columns:
+        result.drop(['organisation'],
+                    axis='columns',
+                    inplace=True)
 
     result.fillna('', inplace=True)
 
