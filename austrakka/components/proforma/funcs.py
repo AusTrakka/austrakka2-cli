@@ -36,6 +36,28 @@ def enable_proforma(abbrev: str):
 
 
 @logger_wraps()
+def share_proforma(abbrev: str, group_names: List[str]):
+    call_api(
+        method=patch,
+        path=f'{PROFORMA_PATH}/{abbrev}/share',
+        body=group_names
+    )
+
+    logger.info('Done.')
+
+
+@logger_wraps()
+def unshare_proforma(abbrev: str, group_names: List[str]):
+    call_api(
+        method=patch,
+        path=f'{PROFORMA_PATH}/{abbrev}/unshare',
+        body=group_names
+    )
+
+    logger.info('Done.')
+
+
+@logger_wraps()
 def update_proforma(
         abbrev: str,
         required_columns: List[str],
@@ -136,6 +158,11 @@ def list_proformas(table_format: str):
     )
 
     data = response['data'] if ('data' in response) else response
+
+    if not data:
+        logger.info("No pro formas available.")
+        return
+
     result = pd.DataFrame.from_dict(data)
 
     result['suggestedSpecies'] = result['suggestedSpecies'].apply(

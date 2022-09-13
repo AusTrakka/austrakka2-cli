@@ -67,6 +67,20 @@ def opt_organisation(required=True):
     return inner_func
 
 
+def opt_group(required=True):
+    def inner_func(func):
+        return click.option(
+            '-g',
+            '--group-names',
+            required=required,
+            help='Name of group to be granted access to the proforma. '
+                 'Multiple fields may be added.',
+            type=click.STRING,
+            multiple=True
+        )(func)
+    return inner_func
+
+
 def opt_proforma(func):
     return click.option(
         '-p',
