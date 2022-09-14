@@ -2,8 +2,10 @@ from typing import List
 
 import click
 
+from austrakka.utils.output import table_format_option
 from austrakka.components.analysis.definition.funcs import add_definition
 from austrakka.components.analysis.definition.funcs import update_definition
+from austrakka.components.analysis.definition.funcs import list_definitions
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_species
 from austrakka.utils.options import opt_name
@@ -16,6 +18,13 @@ from austrakka.utils.options import opt_is_active
 def definition(ctx):
     """Commands related to analyses"""
     ctx.creds = ctx.parent.creds
+
+
+@definition.command('list')
+@table_format_option()
+def definition_list(table_format: str):
+    """List analysis definitions in AusTrakka"""
+    list_definitions(table_format)
 
 
 @definition.command('add', hidden=hide_admin_cmds())
