@@ -42,7 +42,7 @@ def analysis_list(table_format: str):
 @opt_description()
 @opt_project()
 @opt_definition(var_name='definition_abbrev')
-@opt_filter_string()
+@opt_filter_string(required=False)
 @opt_is_active()
 def analysis_add(
         abbrev: str,
