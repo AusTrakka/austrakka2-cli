@@ -3,9 +3,15 @@ from typing import List
 from austrakka.utils.api import call_api
 from austrakka.utils.api import post
 from austrakka.utils.api import put
+from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.paths import JOB_DEFINITION_PATH
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.helpers.definition import get_definition_by_name
+
+
+@logger_wraps()
+def list_definitions(table_format: str):
+    call_get_and_print_table(JOB_DEFINITION_PATH, table_format)
 
 
 @logger_wraps()
