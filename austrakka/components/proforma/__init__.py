@@ -9,7 +9,9 @@ from .funcs import \
     list_proformas, \
     show_proformas, \
     disable_proforma, \
-    enable_proforma
+    enable_proforma, \
+    share_proforma, \
+    unshare_proforma
 
 from ...utils.options import *
 
@@ -147,3 +149,35 @@ def proforma_enable(abbrev: str):
     ABBREV should be the abbreviated name of the pro forma.
     """
     enable_proforma(abbrev)
+
+
+@proforma.command('share', hidden=hide_admin_cmds())
+@click.argument('abbrev', type=click.STRING)
+@opt_group()
+def proforma_share(abbrev: str, group_names: List[str]):
+    """
+    Share a pro forma with one or more groups so can see the proforma
+    in the `list` operation.
+
+    USAGE:
+    austrakka proforma share -g [GROUP NAME] [ABBREV]
+
+    ABBREV should be the abbreviated name of the pro forma.
+    """
+    share_proforma(abbrev, group_names)
+
+
+@proforma.command('unshare', hidden=hide_admin_cmds())
+@click.argument('abbrev', type=click.STRING)
+@opt_group()
+def proforma_unshare(abbrev: str, group_names: List[str]):
+    """
+    UnShare a pro forma with one or more groups to prevent the proforma
+    being returned in the `list` operation.
+
+    USAGE:
+    austrakka proforma unshare -g [GROUP NAME] [ABBREV]
+
+    ABBREV should be the abbreviated name of the pro forma.
+    """
+    unshare_proforma(abbrev, group_names)

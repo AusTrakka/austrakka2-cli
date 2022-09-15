@@ -54,6 +54,31 @@ def opt_species(required=True, multiple=False):
     return inner_func
 
 
+def opt_project(required=True, multiple=False):
+    def inner_func(func):
+        return click.option(
+            '--project',
+            required=required,
+            help='Project Abbreviation',
+            type=click.STRING,
+            multiple=multiple,
+        )(func)
+    return inner_func
+
+
+def opt_definition(required=True, multiple=False, var_name='definition'):
+    def inner_func(func):
+        return click.option(
+            '--definition',
+            var_name,
+            required=required,
+            help='Analysis definition name',
+            type=click.STRING,
+            multiple=multiple,
+        )(func)
+    return inner_func
+
+
 def opt_organisation(required=True):
     def inner_func(func):
         return click.option(
@@ -63,6 +88,20 @@ def opt_organisation(required=True):
             help='Organisation abbreviation. Must match an organisation ' +
             'known to AusTrakka, use `austrakka org list` to see valid values',
             type=click.STRING
+        )(func)
+    return inner_func
+
+
+def opt_group(required=True):
+    def inner_func(func):
+        return click.option(
+            '-g',
+            '--group-names',
+            required=required,
+            help='Name of group to be granted access to the proforma. '
+                 'Multiple fields may be added.',
+            type=click.STRING,
+            multiple=True
         )(func)
     return inner_func
 
@@ -210,6 +249,18 @@ def opt_state(help_text='State', required=True):
     def inner_func(func):
         return click.option(
             "--state",
+            required=required,
+            help=help_text,
+            type=str,
+            default=None,
+        )(func)
+    return inner_func
+
+
+def opt_filter_string(help_text='Filter String', required=True):
+    def inner_func(func):
+        return click.option(
+            "--filter-str",
             required=required,
             help=help_text,
             type=str,
