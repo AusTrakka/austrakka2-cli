@@ -77,7 +77,7 @@ def display_field_project(abbrev: str, table_format):
     print_table(
         result,
         table_format,
-)
+    )
 
 
 @logger_wraps()
