@@ -28,6 +28,19 @@ def opt_name(help_text='Name', required=True, var_name='name'):
     return inner_func
 
 
+def opt_field_name(required=True, multiple=True):
+    def inner_func(func):
+        return click.option(
+            "-fn",
+            "--field-names",
+            required=required,
+            help='Field name to show for this project',
+            type=click.STRING,
+            multiple=multiple
+        )(func)
+    return inner_func
+
+
 def opt_description(required=True):
     def inner_func(func):
         return click.option(

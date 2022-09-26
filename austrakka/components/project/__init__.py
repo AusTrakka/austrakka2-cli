@@ -1,8 +1,9 @@
-import click
-
+# pylint: disable=expression-not-assigned
 from austrakka.utils.output import table_format_option
-from austrakka.utils.cmd_filter import hide_admin_cmds
-from .funcs import list_projects, add_project
+from austrakka.utils.cmd_filter import hide_admin_cmds, show_admin_cmds
+from austrakka.components.project.field import field
+from austrakka.components.project.funcs import list_projects, add_project
+
 from ...utils.options import *
 
 
@@ -11,6 +12,9 @@ from ...utils.options import *
 def project(ctx):
     '''Commands related to projects'''
     ctx.creds = ctx.parent.creds
+
+
+project.add_command(field) if show_admin_cmds() else None
 
 
 @project.command('add', hidden=hide_admin_cmds())
