@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.15.0] - 2022-09-27
+### Added
+- `project field add` to add fields that a project should see.
+- `project field remove` to remove fields that a project should see.
+- `project field list` to list fields that a project should see.
+
 # [0.14.0] - 2022-09-15
 ### Changed
 - `proforma list` restricted to only proformas shared with the user
