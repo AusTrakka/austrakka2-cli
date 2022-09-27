@@ -1,9 +1,15 @@
 from typing import List
 
+import click
+
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.output import table_format_option
-from .funcs import list_fieldtypes, add_fieldtype
-from ...utils.options import *
+from austrakka.components.fieldtype.funcs import list_fieldtypes, add_fieldtype
+from austrakka.components.fieldtype.value import value
+from austrakka.utils.options import opt_description
+from austrakka.utils.options import opt_name
+from austrakka.utils.options import opt_fieldtype_value
+from austrakka.utils.cmd_filter import show_admin_cmds
 
 
 @click.group()
@@ -11,6 +17,10 @@ from ...utils.options import *
 def fieldtype(ctx):
     """Commands related to metadata field types"""
     ctx.creds = ctx.parent.creds
+
+
+# pylint: disable=expression-not-assigned
+fieldtype.add_command(value) if show_admin_cmds() else None
 
 
 @fieldtype.command('list')
@@ -23,12 +33,7 @@ def fieldtype_list(table_format: str):
 @fieldtype.command('add', hidden=hide_admin_cmds())
 @opt_name(help_text="Type name")
 @opt_description()
-@click.option('-v',
-              '--value',
-              multiple=True,
-              help='Allowed value for this categorical field. Multiple may be '
-                   'entered; at least one is required.',
-              type=click.STRING)
-def fieldtype_add(name: str, description: str, value: List[str]):
+@opt_fieldtype_value()
+def fieldtype_add(name: str, description: str, values: List[str]):
     """Add a new categorical field type and its valid values"""
-    add_fieldtype(name, description, valid_values=value)
+    add_fieldtype(name, description, valid_values=values)

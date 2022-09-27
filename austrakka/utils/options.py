@@ -280,3 +280,18 @@ def opt_filter_string(help_text='Filter String', required=True):
             default=None,
         )(func)
     return inner_func
+
+
+def opt_fieldtype_value(var_name='values'):
+    def inner_func(func):
+        return click.option(
+            '-v',
+            '--value',
+            var_name,
+            multiple=True,
+            required=True,
+            help='Allowed value for this categorical field. Multiple may be '
+                 'entered.',
+            type=str
+        )(func)
+    return inner_func
