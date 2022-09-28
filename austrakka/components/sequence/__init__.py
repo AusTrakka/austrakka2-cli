@@ -38,6 +38,17 @@ def submission_add(
 ):
     """
     Upload sequence submission to AusTrakka
+
+    The following CSV mapping fields are required:\n
+        For FASTA:\n
+            SampleId: The sample name in AusTrakka\n
+            FileName: The local path of the fasta file to be uploaded\n
+            FastaId: The sequence id in the fasta file\n
+
+        For FASTQ:\n
+            Seq_ID: The sample name in AusTrakka\n
+            filepath1: The local path of the first read to be uploaded\n
+            filepath2: The local path of the second read to be uploaded
     """
     # pylint: disable=expression-not-assigned
     add_fasta_submission(csv_file) \
