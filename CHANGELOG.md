@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.16.0] - 2022-09-29
+### Added
+- `fieldtype value add`
+- `fieldtype value remove`
+- `fieldtype update`
+
+### Changed
+- `user update -gr` user server-side role name validation.
+
 # [0.15.0] - 2022-09-27
 ### Added
 - `project field add` to add fields that a project should see.
