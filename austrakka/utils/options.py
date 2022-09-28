@@ -1,7 +1,6 @@
 import click
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
-from austrakka.utils.enums.roles import get_role_list
 
 
 def opt_abbrev(
@@ -215,7 +214,7 @@ def opt_owner_group_roles(required=True):
         return click.option(
             '-ogr',
             '--owner-group-roles',
-            type=click.Choice(get_role_list()),
+            type=click.STRING,
             help='The user''s Owner group and role assignment. Exclude ' +
                  'this option if the user is not an owner.',
             required=required,
@@ -278,5 +277,20 @@ def opt_filter_string(help_text='Filter String', required=True):
             help=help_text,
             type=str,
             default=None,
+        )(func)
+    return inner_func
+
+
+def opt_fieldtype_value(var_name='values'):
+    def inner_func(func):
+        return click.option(
+            '-v',
+            '--value',
+            var_name,
+            multiple=True,
+            required=True,
+            help='Allowed value for this categorical field. Multiple may be '
+                 'entered.',
+            type=str
         )(func)
     return inner_func
