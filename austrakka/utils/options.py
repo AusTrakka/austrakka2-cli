@@ -1,7 +1,6 @@
 import click
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
-from austrakka.utils.enums.roles import get_role_list
 
 
 def opt_abbrev(
