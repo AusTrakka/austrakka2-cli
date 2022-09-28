@@ -1,7 +1,6 @@
 import click
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
-from austrakka.utils.enums.roles import get_role_list
 
 
 def opt_abbrev(
@@ -215,7 +214,7 @@ def opt_owner_group_roles(required=True):
         return click.option(
             '-ogr',
             '--owner-group-roles',
-            type=click.Choice(get_role_list()),
+            type=click.STRING,
             help='The user''s Owner group and role assignment. Exclude ' +
                  'this option if the user is not an owner.',
             required=required,
