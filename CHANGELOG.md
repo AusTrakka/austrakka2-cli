@@ -5,11 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.17.0] - 2022-09-29
+### Changed
+- Simplified usage of the `seq add` command.
+
 # [0.16.0] - 2022-09-29
 ### Added
-- `fieldtype value add`
-- `fieldtype value remove`
-- `fieldtype update`
+- Added `fieldtype value add` command.
+- Added `fieldtype value remove` command.
+- Added `fieldtype update` command.
 
 ### Changed
 - `user update -gr` user server-side role name validation.
@@ -248,3 +252,15 @@ and this project adheres to [Semantic Versioning].
 [0.10.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.10.0
 [0.10.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.10.1
 [0.11.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.11.0
+[0.12.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.12.0
+[0.12.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.12.1
+[0.12.2]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.12.2
+[0.13.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.13.1
+[0.13.2]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.13.2
+[0.13.3]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.13.3
+[0.13.4]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.13.4
+[0.13.5]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.13.5
+[0.14.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.14.0
+[0.15.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.15.0
+[0.16.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.16.0
+[0.17.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.17.0

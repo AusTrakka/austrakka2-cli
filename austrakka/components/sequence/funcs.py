@@ -1,8 +1,7 @@
 import os
 from io import BufferedReader
-from typing import Tuple
+from typing import BinaryIO, List
 from os import path
-from collections import Counter
 
 import pandas as pd
 # pylint: disable=no-name-in-module
@@ -37,64 +36,107 @@ TWO = "2"
 
 FASTQ_CSV_SAMPLE_ID = 'Seq_ID'
 FASTQ_CSV_SAMPLE_ID_API = 'sample-id'
-FASTQ_CSV_FILENAME_1 = 'filename1'
-FASTQ_CSV_FILENAME_2 = 'filename2'
-FASTQ_CSV_OWNER_ORG = 'ownerOrg'
-FASTQ_CSV_SPECIES = 'species'
+FASTQ_CSV_PATH_1 = 'filepath1'
+FASTQ_CSV_PATH_2 = 'filepath2'
+FASTQ_CSV_PATH_1_API = 'filename1'
+FASTQ_CSV_PATH_2_API = 'filename2'
+
+FASTA_CSV_SAMPLE = 'SampleId'
+FASTA_CSV_FILENAME = 'FileName'
+FASTA_CSV_FASTA_ID = 'FastaId'
 
 
 @logger_wraps()
-def add_fasta_submission(files: Tuple[BufferedReader], csv: BufferedReader):
+def add_fasta_submission(csv: BufferedReader):
+    usecols = [
+        FASTA_CSV_SAMPLE,
+        FASTA_CSV_FILENAME,
+        FASTA_CSV_FASTA_ID
+    ]
+    csv_dataframe = _get_and_validate_csv(csv, usecols)
+
+    messages = _validate_fasta_submission(csv_dataframe)
+    if messages:
+        raise FailedResponseException(messages)
+
+    body = [
+        _get_file(filepath) for filepath in csv_dataframe[FASTA_CSV_FILENAME]
+    ]
+    csv.seek(0)
+    body.append(('files[]', (csv.name, csv)))
+
     call_api(
         method=post,
         path="/".join([SEQUENCE_PATH, FASTA_PATH]),
-        body=[('files[]', (file.name, file)) for file in files]
-        + [('files[]', (csv.name, csv))],
+        body=body,
         multipart=True,
     )
 
 
-@logger_wraps()
-def add_fastq_submission(files: Tuple[BufferedReader], csv: BufferedReader):
-    usecols = [
-        FASTQ_CSV_SAMPLE_ID,
-        FASTQ_CSV_FILENAME_1,
-        FASTQ_CSV_FILENAME_2
-    ]
+def _validate_fasta_submission(csv_dataframe: DataFrame):
+    messages = []
+
+    for _, row in csv_dataframe.iterrows():
+        if not os.path.isfile(row[FASTA_CSV_FILENAME]):
+            messages.append(create_response_object(
+                f'File {row[FASTA_CSV_FILENAME]} not found',
+                RESPONSE_TYPE_ERROR
+            ))
+
+    return messages
+
+
+def _get_and_validate_csv(csv: BufferedReader, usecols: List[str]):
     try:
         csv_dataframe = pd.read_csv(
             csv,
             usecols=usecols
         )
+        return csv_dataframe
     except ValueError:
         logger.error(
-            "The CSV file mapping samples to sequences must contain exactly the " +
-            f"column headers {','.join(usecols)}")
+            "The CSV file mapping samples to sequences must contain exactly "
+            f"the column headers {','.join(usecols)}")
         raise
 
-    messages = _validate_fastq_submission(files, csv_dataframe)
+
+def _fastq_file_2_is_present(row: pd.Series) -> bool:
+    return str(row[FASTQ_CSV_PATH_2]) not in STR_NA_VALUES
+
+
+def _get_file(filepath: str) -> tuple[str, tuple[str, BinaryIO]]:
+    # pylint: disable=consider-using-with
+    file = open(filepath, 'rb')
+    return 'files[]', (os.path.basename(file.name), file)
+
+
+@logger_wraps()
+def add_fastq_submission(csv: BufferedReader):
+    usecols = [
+        FASTQ_CSV_SAMPLE_ID,
+        FASTQ_CSV_PATH_1,
+        FASTQ_CSV_PATH_2
+    ]
+    csv_dataframe = _get_and_validate_csv(csv, usecols)
+
+    messages = _validate_fastq_submission(csv_dataframe)
     if messages:
         raise FailedResponseException(messages)
 
     for _, row in csv_dataframe.iterrows():
-        custom_headers = {
-            FASTQ_CSV_SAMPLE_ID_API: row[FASTQ_CSV_SAMPLE_ID],
-            FASTQ_CSV_FILENAME_1: row[FASTQ_CSV_FILENAME_1],
-        }
-
-        if str(row[FASTQ_CSV_FILENAME_2]) not in STR_NA_VALUES:
-            custom_headers[FASTQ_CSV_FILENAME_2] = row[FASTQ_CSV_FILENAME_2]
-
-        sample_files = [
-            ('files[]', (file.name, file))
-            for file
-            in files
-            if file.name in [
-                row[FASTQ_CSV_FILENAME_1],
-                row[FASTQ_CSV_FILENAME_2],
-            ]
-        ]
         try:
+            sample_files = []
+            custom_headers = {
+                FASTQ_CSV_SAMPLE_ID_API: row[FASTQ_CSV_SAMPLE_ID],
+                FASTQ_CSV_PATH_1_API: os.path.basename(row[FASTQ_CSV_PATH_1]),
+            }
+            sample_files.append(_get_file(row[FASTQ_CSV_PATH_1]))
+
+            if _fastq_file_2_is_present(row):
+                custom_headers[FASTQ_CSV_PATH_2_API] \
+                    = os.path.basename(row[FASTQ_CSV_PATH_2])
+                sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
+
             call_api(
                 method=post,
                 path="/".join([SEQUENCE_PATH, FASTQ_PATH]),
@@ -105,6 +147,9 @@ def add_fastq_submission(files: Tuple[BufferedReader], csv: BufferedReader):
         except FailedResponseException as ex:
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             log_response(ex.parsed_resp)
+        except PermissionError as ex:
+            logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
+            logger.error(ex)
         except Exception as ex:
             raise ex from ex
 
@@ -125,67 +170,47 @@ def take_sample_names(data, filter_prop):
         raise ex from ex
 
 
-def _validate_fastq_submission(
-        files: Tuple[BufferedReader],
-        csv_dataframe: DataFrame,
-):
-    filenames = [file.name for file in files]
-
-    duplicate_filenames = [
-        item for item, count
-        in Counter(filenames).items()
-        if count > 1
-    ]
-
+def _validate_fastq_submission(csv_dataframe: DataFrame):
     messages = []
 
-    if duplicate_filenames:
-        # This should probably build a response object, and then throw to let
-        # the main exception handler catch and log it correctly.
-        for filename in duplicate_filenames:
-            messages.append(create_response_object(
-                f'Filename {filename} appears twice in passed files',
-                RESPONSE_TYPE_ERROR
-            ))
-
-    if csv_dataframe[FASTQ_CSV_FILENAME_1].isnull().values.any():
+    if csv_dataframe[FASTQ_CSV_PATH_1].isnull().values.any():
         messages.append(create_response_object(
-            'Filename1 column contains missing values',
+            f'{FASTQ_CSV_PATH_1} column contains missing values',
             RESPONSE_TYPE_ERROR
         ))
 
     if csv_dataframe[FASTQ_CSV_SAMPLE_ID].isnull().values.any():
         messages.append(create_response_object(
-            'SampleId column contains missing values',
+            f'{FASTQ_CSV_SAMPLE_ID} column contains missing values',
             RESPONSE_TYPE_ERROR
         ))
     if csv_dataframe[FASTQ_CSV_SAMPLE_ID].dropna().duplicated().any():
         messages.append(create_response_object(
-            'SampleId column contains duplicate values',
+            f'{FASTQ_CSV_SAMPLE_ID} column contains duplicate values',
             RESPONSE_TYPE_ERROR
         ))
-    if csv_dataframe[FASTQ_CSV_FILENAME_1].dropna().duplicated().any():
+    if csv_dataframe[FASTQ_CSV_PATH_1].dropna().duplicated().any():
         messages.append(create_response_object(
-            'Filename1 column contains duplicate values',
+            f'{FASTQ_CSV_PATH_1} column contains duplicate values',
             RESPONSE_TYPE_ERROR
         ))
-    if csv_dataframe[FASTQ_CSV_FILENAME_2].dropna().duplicated().any():
+    if csv_dataframe[FASTQ_CSV_PATH_2].dropna().duplicated().any():
         messages.append(create_response_object(
-            'Filename2 column contains duplicate values',
+            f'{FASTQ_CSV_PATH_2} column contains duplicate values',
             RESPONSE_TYPE_ERROR
         ))
 
     for _, row in csv_dataframe.iterrows():
-        if row[FASTQ_CSV_FILENAME_1] not in filenames:
+        if not os.path.isfile(row[FASTQ_CSV_PATH_1]):
             messages.append(create_response_object(
-                f'File {row[FASTQ_CSV_FILENAME_1]} not found',
+                f'File {row[FASTQ_CSV_PATH_1]} not found',
                 RESPONSE_TYPE_ERROR
             ))
 
-        if str(row[FASTQ_CSV_FILENAME_2]) not in STR_NA_VALUES \
-                and row[FASTQ_CSV_FILENAME_2] not in filenames:
+        if _fastq_file_2_is_present(row) \
+                and not os.path.isfile(row[FASTQ_CSV_PATH_2]):
             messages.append(create_response_object(
-                f'File {row[FASTQ_CSV_FILENAME_2]} not found',
+                f'File {row[FASTQ_CSV_PATH_2]} not found',
                 RESPONSE_TYPE_ERROR
             ))
 
