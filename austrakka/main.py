@@ -28,6 +28,7 @@ from .utils.exceptions import FailedResponseException
 from .utils.output import log_response
 from .utils.logger import setup_logger
 from .utils.cmd_filter import show_admin_cmds
+from .utils.man import man_option
 
 CLI_PREFIX = 'AT'
 CLI_ENV = 'env'
@@ -51,6 +52,7 @@ CONTEXT_SETTINGS = dict(help_option_names=HELP_OPTS)
     help='Outputs logs to a temporary file',
 )
 @click.version_option(message="%(prog)s v%(version)s", version=VERSION)
+@man_option()
 @click.pass_context
 def cli(ctx: Context, uri: str, token: str, env: str, log: str):
     """
