@@ -24,7 +24,7 @@ def man_option(
         if not value or ctx.resilient_parsing:
             return
 
-        with open(README_PATH, "r+") as readme:
+        with open(README_PATH, "r+", encoding="utf-8") as readme:
             console.print(Markdown(readme.read()))
         ctx.exit()
 
