@@ -1,6 +1,5 @@
 # pylint: disable=redefined-outer-name
 from io import BufferedReader
-from typing import Tuple
 
 import os
 import click
@@ -31,22 +30,30 @@ def seq(ctx):
 
 
 @seq.command('add')
-@click.argument('files', type=click.File('rb'), nargs=-1)
 @opt_csv(help_text='CSV with Sample to Sequence mapping', required=True)
 @opt_seq_type
 def submission_add(
-        files: Tuple[BufferedReader],
         csv_file: BufferedReader,
         seq_type: str
 ):
-    """Upload sequence submission to AusTrakka
+    """
+    Upload sequence submission to AusTrakka
 
-    FILES: list of fasta files
+    The following CSV mapping fields are required:\n
+        For FASTA:\n
+            SampleId: The sample name in AusTrakka\n
+            FileName: The local path of the fasta file to be uploaded\n
+            FastaId: The sequence id in the fasta file\n
+
+        For FASTQ:\n
+            Seq_ID: The sample name in AusTrakka\n
+            filepath1: The local path of the first read to be uploaded\n
+            filepath2: The local path of the second read to be uploaded
     """
     # pylint: disable=expression-not-assigned
-    add_fasta_submission(files, csv_file) \
+    add_fasta_submission(csv_file) \
         if seq_type == FASTA_UPLOAD_TYPE \
-        else add_fastq_submission(files, csv_file)
+        else add_fastq_submission(csv_file)
 
 
 @seq.command('get')
