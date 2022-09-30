@@ -60,12 +60,12 @@ def list_users():
 
 @logger_wraps()
 def add_user(
-    email: str,
+    user_id: str,
     org: str,
     owner_group_roles: List[str],
 ):
     user = {
-        "userLogin": email,
+        "objectId": user_id,
         "organisation": {
             "abbreviation": org
         },
