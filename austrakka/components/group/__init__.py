@@ -54,7 +54,7 @@ def group_update(
 
 
 @group.command('assign', hidden=hide_admin_cmds())
-@opt_user_email()
+@opt_user_object_id()
 @click.option('-gr',
               '--group-roles',
               help='The group and role assignment for the specified user. '
@@ -63,16 +63,16 @@ def group_update(
               type=click.STRING,
               multiple=True)
 def group_assign(
-        email: str,
+        user_id: str,
         group_roles: List[str]):
     """
     Assign the user to the specified groups with the specified roles.
     """
-    assign_groups(email, group_roles)
+    assign_groups(user_id, group_roles)
 
 
 @group.command('unassign', hidden=hide_admin_cmds())
-@opt_user_email()
+@opt_user_object_id()
 @click.option('-gr',
               '--group-roles',
               help='The group and role to remove from the specified user.'
@@ -81,12 +81,12 @@ def group_assign(
               type=click.STRING,
               multiple=True)
 def group_unassign(
-        email: str,
+        user_id: str,
         group_roles: List[str]):
     """
     Remove the user from the specified group and role combinations.
     """
-    unassign_groups(email, group_roles)
+    unassign_groups(user_id, group_roles)
 
 
 @group.command('list')
