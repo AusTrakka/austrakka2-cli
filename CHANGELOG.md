@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.18.0] - 2022-10-03
+### Changed
+- `user add` now uses `object-id` as the identifier rather than email.
+
 # [0.17.0] - 2022-09-29
 ### Changed
 - Simplified usage of the `seq add` command.
@@ -264,3 +268,4 @@ and this project adheres to [Semantic Versioning].
 [0.15.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.15.0
 [0.16.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.16.0
 [0.17.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.17.0
+[0.18.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.18.0
