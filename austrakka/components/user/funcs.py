@@ -41,8 +41,8 @@ def list_users():
         org,
         how="inner",
         on=None,
-        left_on="user.userLogin",
-        right_on="userLogin",
+        left_on="user.email",
+        right_on="email",
         left_index=False,
         right_index=False,
         sort=True,
@@ -52,7 +52,7 @@ def list_users():
         validate=None,
     )\
         .sort_values(["user.userId", "isAusTrakkaAdmin", "group.name"]) \
-        .pipe(lambda x: x.drop('userLogin', axis=1))
+        .pipe(lambda x: x.drop('email', axis=1))
 
     # pylint: disable=print-function
     print(normalized)
