@@ -223,13 +223,13 @@ def opt_owner_group_roles(required=True):
     return inner_func
 
 
-def opt_user_email(required=True):
+def opt_user_object_id(required=True):
     def inner_func(func):
         return click.option(
-            '-e',
-            '--email',
+            '-ui',
+            '--user-id',
             type=str,
-            help='User email',
+            help='User object ID',
             required=required
         )(func)
     return inner_func
