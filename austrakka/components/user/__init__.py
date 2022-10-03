@@ -4,7 +4,7 @@ import click
 
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_owner_group_roles
-from austrakka.utils.options import opt_user_email
+from austrakka.utils.options import opt_user_object_id
 from austrakka.utils.options import opt_organisation
 from .funcs import list_users
 from .funcs import add_user
@@ -25,16 +25,16 @@ def user_list():
 
 
 @user.command('add', hidden=hide_admin_cmds())
-@opt_user_email()
+@opt_user_object_id()
 @opt_organisation()
 @opt_owner_group_roles(required=False)
 def user_add(
-    email: str,
+    user_id: str,
     org: str,
     owner_group_roles: List[str],
 ):
     """Add users in AusTrakka"""
-    add_user(email, org, owner_group_roles)
+    add_user(user_id, org, owner_group_roles)
 
 
 @user.command('update', hidden=hide_admin_cmds())

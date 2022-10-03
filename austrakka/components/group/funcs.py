@@ -52,23 +52,23 @@ def add_group(
 
 @logger_wraps()
 def assign_groups(
-        email: str,
+        user_id: str,
         group_roles: List[str]):
 
     sub_path = "assign"
-    return change_user_group_assignment(email, group_roles, sub_path)
+    return change_user_group_assignment(user_id, group_roles, sub_path)
 
 
 @logger_wraps()
 def unassign_groups(
-        email: str,
+        user_id: str,
         group_roles: List[str]):
 
     sub_path = "unassign"
-    return change_user_group_assignment(email, group_roles, sub_path)
+    return change_user_group_assignment(user_id, group_roles, sub_path)
 
 
-def change_user_group_assignment(email, group_roles, sub_path):
+def change_user_group_assignment(user_id, group_roles, sub_path):
     if len(group_roles) == 0:
         logger.warning("Nothing to do.")
         return None
@@ -82,7 +82,7 @@ def change_user_group_assignment(email, group_roles, sub_path):
         })
 
     payload = {
-        "userLogin": email,
+        "objectId": user_id,
         "entitlements": group_role_pairs
     }
 
