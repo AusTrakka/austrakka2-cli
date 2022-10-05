@@ -35,6 +35,7 @@ class AusTrakkaCliTopLevel(click.Group):
                 param.required = False
             return super(AusTrakkaCliTopLevel, self).parse_args(ctx, args)
 
+    # pylint: disable=inconsistent-return-statements
     def __call__(self, *args, **kwargs):
         try:
             return super(AusTrakkaCliTopLevel, self).__call__(
