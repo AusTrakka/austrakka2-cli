@@ -50,6 +50,7 @@ class AusTrakkaCliTopLevel(click.Group):
             else:
                 exc.ctx = None
                 exc.show(file=sys.stdout)
+            sys.exit(exc.exit_code)
 
 
 def is_dev_env(env: str):
