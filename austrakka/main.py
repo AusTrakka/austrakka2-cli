@@ -21,9 +21,11 @@ from .components.fieldtype import fieldtype
 from .components.group import group
 
 from . import __version__ as VERSION
-from .utils.misc import HandleTopLevelParams
+from .utils.misc import AusTrakkaCliTopLevel
 from .utils.misc import is_dev_env
 from .utils.misc import HELP_OPTS
+from .utils.misc import TOKEN_OPT_NAME
+from .utils.misc import URI_OPT_NAME
 from .utils.exceptions import FailedResponseException
 from .utils.output import log_response
 from .utils.logger import setup_logger
@@ -35,9 +37,9 @@ CLI_ENV = 'env'
 CONTEXT_SETTINGS = dict(help_option_names=HELP_OPTS)
 
 
-@click.group(cls=HandleTopLevelParams, context_settings=CONTEXT_SETTINGS)
-@click.option("--uri", show_envvar=True, required=True)
-@click.option("--token", show_envvar=True, required=True)
+@click.group(cls=AusTrakkaCliTopLevel, context_settings=CONTEXT_SETTINGS)
+@click.option(f"--{URI_OPT_NAME}", show_envvar=True, required=True)
+@click.option(f"--{TOKEN_OPT_NAME}", show_envvar=True, required=True)
 @click.option(
     f"--{CLI_ENV}",
     show_envvar=True,
