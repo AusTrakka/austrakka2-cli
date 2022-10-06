@@ -8,8 +8,8 @@ from austrakka.utils.helpers.output import call_get_and_print_table
 
 
 @logger_wraps()
-def list_orgs(table_format: str):
-    call_get_and_print_table(ORG_PATH, table_format)
+def list_orgs(out_format: str):
+    call_get_and_print_table(ORG_PATH, out_format)
 
 
 # pylint: disable=duplicate-code

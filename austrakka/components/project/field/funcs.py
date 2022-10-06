@@ -46,7 +46,7 @@ def unset_field_project(abbrev: str, field_names: List[str]):
 
 
 @logger_wraps()
-def display_field_project(abbrev: str, table_format):
+def display_field_project(abbrev: str, out_format):
 
     response = call_api(
         method=get,
@@ -58,5 +58,5 @@ def display_field_project(abbrev: str, table_format):
 
     print_table(
         result,
-        table_format,
+        out_format,
     )

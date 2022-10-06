@@ -148,7 +148,7 @@ def add_proforma(
 
 
 @logger_wraps()
-def list_proformas(table_format: str):
+def list_proformas(out_format: str):
     response = call_api(
         method=get,
         path=PROFORMA_PATH,
@@ -178,12 +178,12 @@ def list_proformas(table_format: str):
 
     print_table(
         result,
-        table_format,
+        out_format,
     )
 
 
 @logger_wraps()
-def show_proformas(abbrev: str, table_format: str):
+def show_proformas(abbrev: str, out_format: str):
     response = call_api(
         method=get,
         path=f"{PROFORMA_PATH}/abbrev/{abbrev}"
@@ -211,5 +211,5 @@ def show_proformas(abbrev: str, table_format: str):
     field_df['type'].fillna('categorical', inplace=True)
     print_table(
         field_df,
-        table_format,
+        out_format,
     )

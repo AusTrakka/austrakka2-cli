@@ -6,7 +6,7 @@ from austrakka.utils.output import print_table
 
 
 @logger_wraps()
-def call_get_and_print_table(path: str, table_format: str):
+def call_get_and_print_table(path: str, out_format: str):
     response = call_api(
         method=get,
         path=path,
@@ -17,5 +17,5 @@ def call_get_and_print_table(path: str, table_format: str):
 
     print_table(
         result,
-        table_format,
+        out_format,
     )

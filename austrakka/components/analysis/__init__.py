@@ -31,9 +31,9 @@ analysis.add_command(instance) if show_admin_cmds() else None
 
 @analysis.command('list')
 @table_format_option()
-def analysis_list(table_format: str):
+def analysis_list(out_format: str):
     '''List analyses in AusTrakka'''
-    list_analyses(table_format)
+    list_analyses(out_format)
 
 
 @analysis.command('add', hidden=hide_admin_cmds())

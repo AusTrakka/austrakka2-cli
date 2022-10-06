@@ -55,13 +55,17 @@ def _format_tsv(
     return dataframe.to_csv(header=headers, index=False, sep='\t')
 
 
-def default_format():
+def default_table_format():
     return _format_pretty.__name__[len(FORMAT_PREFIX):]
+
+
+def default_object_format():
+    return _format_json.__name__[len(FORMAT_PREFIX):]
 
 
 def print_table(
     dataframe: pd.DataFrame,
-    output_format: str = default_format(),
+    output_format: str = default_object_format(),
     print_output: bool = True,
     headers: Union[str, List[Any]] = 'keys',
 ):
@@ -76,7 +80,7 @@ def print_table(
     return output
 
 
-def format_types():
+def table_format_types():
     formats = []
     for key, value in globals().items():
         if (
@@ -87,13 +91,29 @@ def format_types():
     return formats
 
 
+def object_format_types():
+    return [
+        _format_json.__name__[len(FORMAT_PREFIX):],
+        _format_html.__name__[len(FORMAT_PREFIX):],
+    ]
+
+
 def table_format_option():
+    return _format_option(default_table_format, table_format_types)
+
+
+def object_format_option():
+    return _format_option(default_object_format, object_format_types)
+
+
+def _format_option(default_func: Callable, format_list_func: Callable):
     return click.option(
         '-f',
-        '--table-format',
-        default=default_format(),
-        type=click.Choice(format_types()),
-        help='Table formatting option',
+        '--format',
+        'out_format',
+        default=default_func(),
+        type=click.Choice(format_list_func()),
+        help='Formatting option',
         show_default=True,
     )
 

@@ -10,8 +10,8 @@ from austrakka.utils.helpers.definition import get_definition_by_name
 
 
 @logger_wraps()
-def list_definitions(table_format: str):
-    call_get_and_print_table(JOB_DEFINITION_PATH, table_format)
+def list_definitions(out_format: str):
+    call_get_and_print_table(JOB_DEFINITION_PATH, out_format)
 
 
 @logger_wraps()

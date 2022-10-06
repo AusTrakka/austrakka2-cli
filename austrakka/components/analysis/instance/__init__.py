@@ -14,6 +14,6 @@ def instance(ctx):
 
 @instance.command('list', hidden=hide_admin_cmds())
 @table_format_option()
-def analysis_list(table_format: str):
+def analysis_list(out_format: str):
     """List analysis instances in AusTrakka"""
-    list_instances(table_format)
+    list_instances(out_format)
