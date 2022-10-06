@@ -31,7 +31,7 @@ def _format_json(
     dataframe: pd.DataFrame,
     _,
 ) -> str:
-    return dataframe.to_json(orient='records', date_format='iso')
+    return dataframe.to_json(orient='records', date_format='iso', indent=2)
 
 
 def _format_pretty(
