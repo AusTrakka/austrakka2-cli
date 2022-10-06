@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.18.2] - 2022-10-07
+### Changed
+- More helpful messaging when user has not signed in or the token is expired.
+
 # [0.18.1] - 2022-10-03
 ### Fixed
 - Broken `user list` command.
