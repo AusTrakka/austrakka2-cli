@@ -11,7 +11,7 @@ from rich.markdown import Markdown
 
 from austrakka import ROOT_DIR
 
-README_PATH = os.path.join(ROOT_DIR, '..', 'README.md')
+README_PATH = os.path.join(ROOT_DIR, '..', 'MANUAL.md')
 
 console = Console()
 
