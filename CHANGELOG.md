@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-# [0.18.3] - 2022-10-07
+# [0.18.2] - 2022-10-07
 ### Changed
 - More helpful messaging when user has not signed in or the token is expired.
 - Drop need for org parameter when creating projects.
@@ -278,4 +278,5 @@ and this project adheres to [Semantic Versioning].
 [0.16.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.16.0
 [0.17.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.17.0
 [0.18.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.18.0
-[0.18.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.18.1
+[0.18.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.18.1
+[0.18.2]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.18.2
