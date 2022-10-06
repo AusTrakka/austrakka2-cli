@@ -21,12 +21,11 @@ project.add_command(field) if show_admin_cmds() else None
 @opt_abbrev()
 @opt_name(help_text="Project name")
 @opt_description(required=False)
-@opt_organisation()
-def project_add(abbrev, name, description, org):
+def project_add(abbrev, name, description):
     '''
     Add a new project to AusTrakka.
     '''
-    add_project(abbrev, name, description, org)
+    add_project(abbrev, name, description)
 
 
 @project.command('list')
