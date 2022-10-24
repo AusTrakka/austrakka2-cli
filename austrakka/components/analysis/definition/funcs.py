@@ -18,7 +18,6 @@ def list_definitions(table_format: str):
 def add_definition(
         name: str,
         description: str,
-        species: List[str],
         is_active: bool
 ):
     call_api(
@@ -27,12 +26,6 @@ def add_definition(
         body={
             "name": name,
             "description": description,
-            "species": [
-                {
-                    "abbreviation": species_item
-                }
-                for species_item in species
-            ],
             "isActive": is_active,
             "unavailable": True,
         }
@@ -43,18 +36,12 @@ def add_definition(
 def update_definition(
         name: str,
         description: str,
-        species: List[str],
         is_active: bool
 ):
     definition = get_definition_by_name(name)
 
     if description is not None:
         definition['description'] = description
-
-    if species is not None and len(species) > 0:
-        definition["species"] = [
-            {"abbreviation": species_item} for species_item in species
-        ]
 
     if is_active is not None:
         definition['isActive'] = is_active
