@@ -1,5 +1,3 @@
-from typing import List
-
 from austrakka.utils.api import call_api
 from austrakka.utils.api import post
 from austrakka.utils.api import put
