@@ -31,21 +31,24 @@ def _format_json(
     dataframe: pd.DataFrame,
     _,
 ) -> str:
-    return dataframe.to_json(orient='records', date_format='iso', indent=2)+"\n"
+    return dataframe.to_json(
+        orient='records',
+        date_format='iso',
+        indent=2) + "\n"
 
 
 def _format_pretty(
     dataframe: pd.DataFrame,
     headers: Union[str, List[Any]],
 ) -> str:
-    return tabulate(dataframe, headers=headers, showindex=False)+"\n"
+    return tabulate(dataframe, headers=headers, showindex=False) + "\n"
 
 
 def _format_html(
     dataframe: pd.DataFrame,
     headers: Union[str, List[Any]],
 ) -> str:
-    return dataframe.to_html(header=headers, index=False)+"\n"
+    return dataframe.to_html(header=headers, index=False) + "\n"
 
 
 def _format_tsv(
