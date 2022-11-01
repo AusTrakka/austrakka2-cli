@@ -8,6 +8,7 @@ from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import USER_PATH
 from austrakka.utils.output import print_table
 
+
 @logger_wraps()
 def list_users(out_format: str):
     response = call_api(
