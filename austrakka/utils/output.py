@@ -99,14 +99,14 @@ def object_format_types():
 
 
 def table_format_option():
-    return _format_option(default_table_format, table_format_types)
+    return _generic_format_option(default_table_format, table_format_types)
 
 
 def object_format_option():
-    return _format_option(default_object_format, object_format_types)
+    return _generic_format_option(default_object_format, object_format_types)
 
 
-def _format_option(default_func: Callable, format_list_func: Callable):
+def _generic_format_option(default_func: Callable, format_list_func: Callable):
     return click.option(
         '-f',
         '--format',
