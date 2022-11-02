@@ -38,8 +38,8 @@ def project_unset_field(abbrev, field_names):
 @field.command('list', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=str)
 @table_format_option()
-def project_display_field(abbrev: str, table_format: str):
+def project_display_field(abbrev: str, out_format: str):
     """
     Unset fields to show for this project.
     """
-    display_field_project(abbrev, table_format)
+    display_field_project(abbrev, out_format)

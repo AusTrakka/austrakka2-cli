@@ -20,5 +20,5 @@ def add_project(abbrev: str, name: str, description: str):
 
 
 @logger_wraps()
-def list_projects(table_format: str):
-    call_get_and_print_table(PROJECT_PATH, table_format)
+def list_projects(out_format: str):
+    call_get_and_print_table(PROJECT_PATH, out_format)

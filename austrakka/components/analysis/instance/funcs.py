@@ -5,8 +5,8 @@ from austrakka.utils.helpers.output import call_get_and_print_table
 
 
 @logger_wraps()
-def list_instances(table_format: str):
+def list_instances(out_format: str):
     call_get_and_print_table(
         f'{JOB_INSTANCE_PATH}/{ANALYSIS_HISTORY_PATH}',
-        table_format,
+        out_format,
     )

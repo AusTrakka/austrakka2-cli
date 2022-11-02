@@ -2,6 +2,7 @@ from typing import List
 
 import click
 
+from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_owner_group_roles
 from austrakka.utils.options import opt_user_object_id
@@ -19,9 +20,10 @@ def user(ctx):
 
 
 @user.command('list')
-def user_list():
+@table_format_option()
+def user_list(out_format: str):
     '''List users in AusTrakka'''
-    list_users()
+    list_users(out_format)
 
 
 @user.command('add', hidden=hide_admin_cmds())

@@ -99,16 +99,16 @@ def proforma_update(
 
 @proforma.command('list')
 @table_format_option()
-def proforma_list(table_format: str):
+def proforma_list(out_format: str):
     """List metadata pro formas in AusTrakka"""
-    list_proformas(table_format)
+    list_proformas(out_format)
 
 
 @proforma.command('show')
 @click.argument('abbrev', type=click.STRING)
 # Consider option instead: @opt_abbrev("Abbreviated name of the pro forma")
 @table_format_option()
-def proforma_show(abbrev: str, table_format: str):
+def proforma_show(abbrev: str, out_format: str):
     """
     Show pro forma fields.
 
@@ -118,7 +118,7 @@ def proforma_show(abbrev: str, table_format: str):
     ABBREV should be the abbreviated name of the pro forma.
     Use `austrakka proforma list` for options.
     """
-    show_proformas(abbrev, table_format)
+    show_proformas(abbrev, out_format)
 
 
 @proforma.command('disable', hidden=hide_admin_cmds())

@@ -44,6 +44,6 @@ def species_update(abbrev: str, name: str, taxon_id: str, is_active: bool):
 
 @species.command('list')
 @table_format_option()
-def species_list(table_format: str):
+def species_list(out_format: str):
     '''List species in AusTrakka'''
-    list_species(table_format)
+    list_species(out_format)

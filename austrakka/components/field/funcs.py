@@ -12,7 +12,7 @@ from austrakka.utils.paths import METADATACOLUMN_PATH
 
 
 @logger_wraps()
-def list_fields(table_format: str):
+def list_fields(out_format: str):
     """
     List all metadata fields (MetaDataColumns) within AusTrakka.
     """
@@ -33,7 +33,7 @@ def list_fields(table_format: str):
 
     print_table(
         result,
-        table_format,
+        out_format,
     )
 
 

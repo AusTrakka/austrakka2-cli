@@ -93,7 +93,7 @@ def change_user_group_assignment(user_id, group_roles, sub_path):
 
 
 @logger_wraps()
-def list_group(table_format: str):
+def list_group(out_format: str):
     response = call_api(
         method=get,
         path=GROUP_PATH,
@@ -111,5 +111,5 @@ def list_group(table_format: str):
 
     print_table(
         result,
-        table_format,
+        out_format,
     )

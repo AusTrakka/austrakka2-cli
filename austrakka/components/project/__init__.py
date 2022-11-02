@@ -30,6 +30,6 @@ def project_add(abbrev, name, description):
 
 @project.command('list')
 @table_format_option()
-def projects_list(table_format: str):
+def projects_list(out_format: str):
     '''List projects in AusTrakka'''
-    list_projects(table_format)
+    list_projects(out_format)
