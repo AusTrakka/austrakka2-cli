@@ -40,6 +40,6 @@ def update_species(abbrev: str, name: str, taxon_id: str, is_active: bool):
 
     return call_api(
         method=put,
-        path=f'{SPECIES_PATH}/{species["speciesId"]}',
+        path=f'{SPECIES_PATH}/{species["abbreviation"]}',
         body=species
     )
