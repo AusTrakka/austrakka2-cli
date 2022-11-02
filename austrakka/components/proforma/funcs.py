@@ -165,10 +165,6 @@ def list_proformas(table_format: str):
 
     result = pd.DataFrame.from_dict(data)
 
-    result['suggestedSpecies'] = result['suggestedSpecies'].apply(
-        lambda slist: ','.join([species['abbreviation'] for species in slist])
-    )
-
     result.drop(['columnMappings',
                  'proFormaVersionId',
                  'lastUpdatedBy',
@@ -192,10 +188,6 @@ def show_proformas(abbrev: str, table_format: str):
 
     for field in ['abbreviation', 'name', 'version', 'description']:
         logger.info(f'{field}: {data[field]}')
-
-    species_field = 'suggestedSpecies'
-    species = ','.join([s['abbreviation'] for s in data[species_field]])
-    logger.info(f'{species_field}: {species}')
 
     logger.info('Pro forma fields:')
 
