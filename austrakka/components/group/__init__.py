@@ -91,6 +91,6 @@ def group_unassign(
 
 @group.command('list')
 @table_format_option()
-def group_list(table_format: str):
+def group_list(out_format: str):
     """List all known groups in AusTrakka"""
-    list_group(table_format)
+    list_group(out_format)

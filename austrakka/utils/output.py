@@ -31,21 +31,24 @@ def _format_json(
     dataframe: pd.DataFrame,
     _,
 ) -> str:
-    return dataframe.to_json(orient='records', date_format='iso')
+    return dataframe.to_json(
+        orient='records',
+        date_format='iso',
+        indent=2) + "\n"
 
 
 def _format_pretty(
     dataframe: pd.DataFrame,
     headers: Union[str, List[Any]],
 ) -> str:
-    return tabulate(dataframe, headers=headers, showindex=False)
+    return tabulate(dataframe, headers=headers, showindex=False) + "\n"
 
 
 def _format_html(
     dataframe: pd.DataFrame,
     headers: Union[str, List[Any]],
 ) -> str:
-    return dataframe.to_html(header=headers, index=False)
+    return dataframe.to_html(header=headers, index=False) + "\n"
 
 
 def _format_tsv(
@@ -55,13 +58,17 @@ def _format_tsv(
     return dataframe.to_csv(header=headers, index=False, sep='\t')
 
 
-def default_format():
+def default_table_format():
     return _format_pretty.__name__[len(FORMAT_PREFIX):]
+
+
+def default_object_format():
+    return _format_json.__name__[len(FORMAT_PREFIX):]
 
 
 def print_table(
     dataframe: pd.DataFrame,
-    output_format: str = default_format(),
+    output_format: str = default_object_format(),
     print_output: bool = True,
     headers: Union[str, List[Any]] = 'keys',
 ):
@@ -71,12 +78,12 @@ def print_table(
 
     if print_output:
         # pylint: disable=print-function
-        print(output)
+        print(output, end='')
 
     return output
 
 
-def format_types():
+def table_format_types():
     formats = []
     for key, value in globals().items():
         if (
@@ -87,13 +94,29 @@ def format_types():
     return formats
 
 
+def object_format_types():
+    return [
+        _format_json.__name__[len(FORMAT_PREFIX):],
+        _format_html.__name__[len(FORMAT_PREFIX):],
+    ]
+
+
 def table_format_option():
+    return _generic_format_option(default_table_format, table_format_types)
+
+
+def object_format_option():
+    return _generic_format_option(default_object_format, object_format_types)
+
+
+def _generic_format_option(default_func: Callable, format_list_func: Callable):
     return click.option(
         '-f',
-        '--table-format',
-        default=default_format(),
-        type=click.Choice(format_types()),
-        help='Table formatting option',
+        '--format',
+        'out_format',
+        default=default_func(),
+        type=click.Choice(format_list_func()),
+        help='Formatting option',
         show_default=True,
     )
 

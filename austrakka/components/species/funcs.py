@@ -21,8 +21,8 @@ def add_species(abbrev: str, name: str, taxon_id: str, is_active: bool):
 
 
 @logger_wraps()
-def list_species(table_format: str):
-    call_get_and_print_table(SPECIES_PATH, table_format)
+def list_species(out_format: str):
+    call_get_and_print_table(SPECIES_PATH, out_format)
 
 
 @logger_wraps()

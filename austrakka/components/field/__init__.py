@@ -15,9 +15,9 @@ def field(ctx):
 
 @field.command('list')
 @table_format_option()
-def field_list(table_format: str):
+def field_list(out_format: str):
     """List metadata fields understood by AusTrakka"""
-    list_fields(table_format)
+    list_fields(out_format)
 
 
 @field.command('add', hidden=hide_admin_cmds())
