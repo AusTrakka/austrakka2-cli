@@ -29,7 +29,7 @@ def org_list(table_format: str):
 @org.command('add', hidden=hide_admin_cmds())
 @opt_name(help_text="Organisation Name")
 @opt_abbrev(help_text="Organisation Abbreviation")
-@opt_state()
+@opt_state(required=False)
 @opt_country()
 @opt_is_active()
 def org_add(
