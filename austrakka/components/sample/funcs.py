@@ -5,6 +5,7 @@ from austrakka.utils.paths import SAMPLE_PATH
 
 DISABLE = 'Disable'
 
+
 @logger_wraps()
 def disable_sample(
         sample_ids: [str]
