@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.18.3] - 2022-11-03
+### Added
+- Command for uploaders to disable samples which they have authority to manage.
+
+### Changed
+- Indent JSON output
+- Added object format option
+- Add format to user list command
+- linting
+- --state flag for org add is no longer required
+- Remove species job def add and update
+- Support for disabling samples
+
 # [0.18.2] - 2022-10-07
 ### Changed
 - More helpful messaging when user has not signed in or the token is expired.
