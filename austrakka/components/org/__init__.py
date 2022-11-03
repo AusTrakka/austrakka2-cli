@@ -21,15 +21,15 @@ def org(ctx):
 
 @org.command('list')
 @table_format_option()
-def org_list(table_format: str):
+def org_list(out_format: str):
     '''List organisations in AusTrakka'''
-    list_orgs(table_format)
+    list_orgs(out_format)
 
 
 @org.command('add', hidden=hide_admin_cmds())
 @opt_name(help_text="Organisation Name")
 @opt_abbrev(help_text="Organisation Abbreviation")
-@opt_state()
+@opt_state(required=False)
 @opt_country()
 @opt_is_active()
 def org_add(

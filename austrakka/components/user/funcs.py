@@ -1,17 +1,16 @@
 from typing import List
-
 import pandas as pd
 
-from austrakka.utils.api import call_api
-from austrakka.utils.api import get
+from austrakka.utils.api import call_api, get
 from austrakka.utils.api import post
 from austrakka.utils.api import put
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import USER_PATH
+from austrakka.utils.output import print_table
 
 
 @logger_wraps()
-def list_users():
+def list_users(out_format: str):
     response = call_api(
         method=get,
         path=USER_PATH,
@@ -54,8 +53,10 @@ def list_users():
         .sort_values(["user.userId", "isAusTrakkaAdmin", "group.name"]) \
         .pipe(lambda x: x.drop('email', axis=1))
 
-    # pylint: disable=print-function
-    print(normalized)
+    print_table(
+        normalized,
+        out_format,
+    )
 
 
 @logger_wraps()
