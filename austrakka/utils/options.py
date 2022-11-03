@@ -53,19 +53,6 @@ def opt_description(required=True):
     return inner_func
 
 
-def opt_species(required=True, multiple=False):
-    def inner_func(func):
-        return click.option(
-            '-s',
-            '--species',
-            required=required,
-            help='Species Abbreviation',
-            type=click.STRING,
-            multiple=multiple,
-        )(func)
-    return inner_func
-
-
 def opt_project(required=True, multiple=False):
     def inner_func(func):
         return click.option(

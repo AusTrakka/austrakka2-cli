@@ -12,7 +12,6 @@ from .components.org import org
 from .components.project import project
 from .components.analysis import analysis
 from .components.tree import tree
-from .components.species import species
 from .components.metadata import metadata
 from .components.sequence import seq
 from .components.proforma import proforma
@@ -71,7 +70,6 @@ def main():
         cli.add_command(project)
         cli.add_command(analysis)
         cli.add_command(tree) if show_admin_cmds() else None
-        cli.add_command(species)
         cli.add_command(metadata)
         cli.add_command(seq)
         cli.add_command(proforma)

@@ -27,15 +27,6 @@ def proforma(ctx):
 @opt_abbrev()
 @opt_name()
 @opt_description(required=False)
-@click.option('-s',
-              '--species',
-              required=False,
-              help="Species abbreviations for suggested species for use with this pro forma. "
-              "Zero, one, or many species may be specified. "
-              "These species may be used to find appropriate pro formas, but will not "
-              "constrain use of the pro forma.",
-              type=click.STRING,
-              multiple=True)
 @click.option('-req',
               '--required-field',
               help='Required field in this pro forma; users must populate this field in every '
