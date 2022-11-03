@@ -11,7 +11,7 @@ from austrakka.utils.helpers.fieldtype import get_fieldtype_by_name
 
 
 @logger_wraps()
-def list_fieldtypes(table_format: str):
+def list_fieldtypes(out_format: str):
     response = call_api(
         method=get,
         path=METADATACOLUMNTYPE_PATH,
@@ -25,7 +25,7 @@ def list_fieldtypes(table_format: str):
 
     print_table(
         result,
-        table_format,
+        out_format,
     )
 
 

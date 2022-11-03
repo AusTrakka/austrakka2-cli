@@ -28,9 +28,9 @@ fieldtype.add_command(value) if show_admin_cmds() else None
 
 @fieldtype.command('list')
 @table_format_option()
-def fieldtype_list(table_format: str):
+def fieldtype_list(out_format: str):
     """List metadata field types, including different categorical fields"""
-    list_fieldtypes(table_format)
+    list_fieldtypes(out_format)
 
 
 @fieldtype.command('add', hidden=hide_admin_cmds())

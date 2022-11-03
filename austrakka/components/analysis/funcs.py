@@ -8,8 +8,8 @@ from austrakka.utils.api import put
 
 
 @logger_wraps()
-def list_analyses(table_format: str):
-    call_get_and_print_table(ANALYSIS_PATH, table_format)
+def list_analyses(out_format: str):
+    call_get_and_print_table(ANALYSIS_PATH, out_format)
 
 
 @logger_wraps()
