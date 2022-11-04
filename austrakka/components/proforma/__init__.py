@@ -43,7 +43,6 @@ def proforma_add(
         abbrev: str,
         name: str,
         description: str,
-        species: List[str],
         required_field: List[str],
         optional_field: List[str]):
     """
@@ -54,7 +53,6 @@ def proforma_add(
         abbrev,
         name,
         description,
-        species,
         required_field,
         optional_field)
 

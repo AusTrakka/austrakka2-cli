@@ -112,7 +112,6 @@ def add_proforma(
         abbrev: str,
         name: str,
         description: str,
-        suggested_species: List[str],
         required_columns: List[str],
         optional_columns: List[str]):
 
@@ -142,7 +141,6 @@ def add_proforma(
             "abbreviation": abbrev,
             "name": name,
             "description": description,
-            "speciesAbbrev": suggested_species,
             "columnNames": column_names
         })
 
