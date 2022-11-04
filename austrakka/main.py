@@ -18,6 +18,7 @@ from .components.proforma import proforma
 from .components.field import field
 from .components.fieldtype import fieldtype
 from .components.group import group
+from .components.sample import sample
 
 from . import __version__ as VERSION
 from .utils.misc import AusTrakkaCliTopLevel
@@ -71,6 +72,7 @@ def main():
         cli.add_command(analysis)
         cli.add_command(tree) if show_admin_cmds() else None
         cli.add_command(metadata)
+        cli.add_command(sample)
         cli.add_command(seq)
         cli.add_command(proforma)
         cli.add_command(field)
