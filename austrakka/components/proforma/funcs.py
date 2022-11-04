@@ -112,7 +112,6 @@ def add_proforma(
         abbrev: str,
         name: str,
         description: str,
-        suggested_species: List[str],
         required_columns: List[str],
         optional_columns: List[str]):
 
@@ -142,7 +141,6 @@ def add_proforma(
             "abbreviation": abbrev,
             "name": name,
             "description": description,
-            "speciesAbbrev": suggested_species,
             "columnNames": column_names
         })
 
@@ -164,10 +162,6 @@ def list_proformas(out_format: str):
         return
 
     result = pd.DataFrame.from_dict(data)
-
-    result['suggestedSpecies'] = result['suggestedSpecies'].apply(
-        lambda slist: ','.join([species['abbreviation'] for species in slist])
-    )
 
     result.drop(['columnMappings',
                  'proFormaVersionId',
@@ -192,10 +186,6 @@ def show_proformas(abbrev: str, out_format: str):
 
     for field in ['abbreviation', 'name', 'version', 'description']:
         logger.info(f'{field}: {data[field]}')
-
-    species_field = 'suggestedSpecies'
-    species = ','.join([s['abbreviation'] for s in data[species_field]])
-    logger.info(f'{species_field}: {species}')
 
     logger.info('Pro forma fields:')
 
