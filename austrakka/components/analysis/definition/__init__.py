@@ -1,5 +1,3 @@
-from typing import List
-
 import click
 
 from austrakka.utils.output import object_format_option
@@ -7,7 +5,6 @@ from austrakka.components.analysis.definition.funcs import add_definition
 from austrakka.components.analysis.definition.funcs import update_definition
 from austrakka.components.analysis.definition.funcs import list_definitions
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import opt_species
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_is_active
