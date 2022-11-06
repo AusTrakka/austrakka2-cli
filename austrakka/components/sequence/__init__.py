@@ -7,8 +7,8 @@ import click
 from austrakka.utils.options import opt_csv
 from austrakka.utils.options import opt_seq_type
 from austrakka.utils.options import opt_output_dir
-from austrakka.utils.options import opt_species
 from austrakka.utils.options import opt_read
+from austrakka.utils.options import opt_species
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.fs import create_dir
