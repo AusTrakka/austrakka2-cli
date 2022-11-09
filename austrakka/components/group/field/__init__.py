@@ -3,12 +3,11 @@ import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
+from austrakka.utils.options import *
 from .funcs import \
     add_field_group, \
     remove_field_group, \
     list_field_group
-
-from austrakka.utils.options import *
 
 
 @click.group()

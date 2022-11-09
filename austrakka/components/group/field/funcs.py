@@ -1,10 +1,9 @@
 from typing import List
 
 import pandas as pd
-from loguru import logger
 
 from austrakka.utils.api import call_api
-from austrakka.utils.api import get, post, put, patch
+from austrakka.utils.api import get, patch
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
 from austrakka.utils.paths import GROUP_PATH

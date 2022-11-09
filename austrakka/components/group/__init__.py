@@ -1,3 +1,4 @@
+# pylint: disable=expression-not-assigned
 from typing import List
 import click
 
