@@ -3,14 +3,14 @@ from typing import List
 import pandas as pd
 
 from austrakka.utils.api import call_api
-from austrakka.utils.api import patch, get
+from austrakka.utils.api import get, patch
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.paths import PROJECT_PATH
 from austrakka.utils.output import print_table
+from austrakka.utils.paths import GROUP_PATH
 
 
 @logger_wraps()
-def set_field_project(abbrev: str, field_names: List[str]):
+def add_field_group(name: str, field_names: List[str]):
 
     field_name_objs = []
     for field_name in field_names:
@@ -20,7 +20,7 @@ def set_field_project(abbrev: str, field_names: List[str]):
 
     return call_api(
         method=patch,
-        path=f'{PROJECT_PATH}/set-fields/{abbrev}',
+        path=f'{GROUP_PATH}/allow-fields/{name}',
         body={
             "columnNames": field_name_objs
         }
@@ -28,7 +28,7 @@ def set_field_project(abbrev: str, field_names: List[str]):
 
 
 @logger_wraps()
-def unset_field_project(abbrev: str, field_names: List[str]):
+def remove_field_group(name: str, field_names: List[str]):
 
     field_name_objs = []
     for field_name in field_names:
@@ -38,7 +38,7 @@ def unset_field_project(abbrev: str, field_names: List[str]):
 
     return call_api(
         method=patch,
-        path=f'{PROJECT_PATH}/unset-fields/{abbrev}',
+        path=f'{GROUP_PATH}/deny-fields/{name}',
         body={
             "columnNames": field_name_objs
         }
@@ -46,11 +46,11 @@ def unset_field_project(abbrev: str, field_names: List[str]):
 
 
 @logger_wraps()
-def display_field_project(abbrev: str, out_format):
+def list_field_group(name: str, out_format: str):
 
     response = call_api(
         method=get,
-        path=f'{PROJECT_PATH}/display-fields/{abbrev}',
+        path=f'{GROUP_PATH}/allowed-fields/{name}',
     )
 
     data = response['data'] if ('data' in response) else response
