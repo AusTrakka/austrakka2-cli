@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-# [0.19.0] - 2022-11-11
+# [0.20.0] - 2022-11-11
 ### Added
 - Added commands to restrict fields per group.
+
+# [0.19.0] - 2022-11-07
+### Removed
+- All Species related commands. Species is now managed as a regular metadata field.
 
 # [0.18.3] - 2022-11-03
 ### Added
@@ -297,3 +301,5 @@ and this project adheres to [Semantic Versioning].
 [0.18.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.18.0
 [0.18.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.18.1
 [0.18.2]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.18.2
+[0.18.3]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.18.3
+[0.19.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.19.0
