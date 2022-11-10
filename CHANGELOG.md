@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.19.0] - 2022-11-11
+### Added
+- Added commands to restrict fields per group.
+
 # [0.18.3] - 2022-11-03
 ### Added
 - Command for uploaders to disable samples which they have authority to manage.
