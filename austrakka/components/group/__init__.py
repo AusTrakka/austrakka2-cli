@@ -1,8 +1,11 @@
+# pylint: disable=expression-not-assigned
 from typing import List
 import click
 
 from austrakka.utils.output import table_format_option
-from austrakka.utils.cmd_filter import hide_admin_cmds
+from austrakka.utils.cmd_filter import hide_admin_cmds, show_admin_cmds
+
+from austrakka.components.group.field import field
 from .funcs import \
     add_group, \
     update_group, \
@@ -18,6 +21,9 @@ from ...utils.options import *
 def group(ctx):
     """Commands related to groups"""
     ctx.creds = ctx.parent.creds
+
+
+group.add_command(field) if show_admin_cmds() else None
 
 
 @group.command('add', hidden=hide_admin_cmds())
