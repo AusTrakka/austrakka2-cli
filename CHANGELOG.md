@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.20.1] - 2022-12-01
+### Fixed
+- The `seq add` command will treat all Seq_IDs as strings and not try to deduce the CSV column type
+
 # [0.20.0] - 2022-11-11
 ### Added
 - Added commands to restrict fields per group.
