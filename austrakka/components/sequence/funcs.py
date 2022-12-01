@@ -90,7 +90,8 @@ def _get_and_validate_csv(csv: BufferedReader, usecols: List[str]):
     try:
         csv_dataframe = pd.read_csv(
             csv,
-            usecols=usecols
+            usecols=usecols,
+            dtype=str
         )
         return csv_dataframe
     except ValueError:
