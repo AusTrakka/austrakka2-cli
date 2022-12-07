@@ -1,25 +1,25 @@
 # pylint: disable=redefined-outer-name
 from io import BufferedReader
 
-import os
 import click
+from click_option_group import optgroup
+from click_option_group import RequiredMutuallyExclusiveOptionGroup
 
+from austrakka.utils.output import table_format_option
 from austrakka.utils.options import opt_csv
 from austrakka.utils.options import opt_seq_type
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_read
+from austrakka.utils.options import opt_group
 from austrakka.utils.options import opt_species
+from austrakka.utils.options import opt_analysis
+from austrakka.utils.options import opt_analysis_instance
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
-from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
-from austrakka.utils.fs import create_dir
 from .funcs import add_fasta_submission
 from .funcs import add_fastq_submission
-from .funcs import fetch_samples_names_by_species
-from .funcs import fetch_seq_download_info
 from .funcs import take_sample_names
-from .funcs import throw_if_empty
-from .funcs import download_fasta_for_each_sample
-from .funcs import download_fastq_for_each_sample
+from .funcs import get_sequences
+from .funcs import list_sequences
 
 
 @click.group()
@@ -30,8 +30,8 @@ def seq(ctx):
 
 
 @seq.command('add')
-@opt_csv(help_text='CSV with Sample to Sequence mapping', required=True)
-@opt_seq_type
+@opt_csv(help='CSV with Sample to Sequence mapping', required=True)
+@opt_seq_type()
 def submission_add(
         csv_file: BufferedReader,
         seq_type: str
@@ -57,15 +57,22 @@ def submission_add(
 
 
 @seq.command('get')
-@opt_output_dir
-@opt_species()
-@opt_seq_type
-@opt_read
+@opt_output_dir()
+@opt_seq_type()
+@opt_read()
+@optgroup.group('Filter', cls=RequiredMutuallyExclusiveOptionGroup)
+@opt_species(in_group=True, default=None)
+@opt_group(in_group=True, default=None, multiple=False)
+@opt_analysis(in_group=True, default=None)
+@opt_analysis_instance(in_group=True, default=None)
 def get(
         output_dir,
-        species: str,
         seq_type: str,
         read: str,
+        species: str,
+        group_name: str,
+        analysis: str,
+        analysis_inst: int
 ):
     """Download sequence files to the local drive
 
@@ -74,27 +81,47 @@ def get(
         austrakka seq get -t fastq --species SARS-CoV-2 --outdir ~/Downloads/fastq-files
 
 
-    EXAMPLE 2: Download Fasta species SARS-CoV-2
+    EXAMPLE 2: Download Fasta for group Example-Group
 
-        austrakka seq get -t fasta --species SARS-CoV-2 --outdir ~/Downloads/fasta-files
+        austrakka seq get -t fasta --group-name Example-Group --outdir ~/Downloads/fasta-files
 
 
     """
-    # pylint: disable=expression-not-assigned
-    if not os.path.exists(output_dir):
-        create_dir(output_dir)
+    get_sequences(
+        output_dir,
+        seq_type,
+        read,
+        species,
+        group_name,
+        analysis,
+        analysis_inst
+    )
 
-    data = fetch_samples_names_by_species(species)
 
-    if seq_type == FASTQ_UPLOAD_TYPE:
-        samples_names = take_sample_names(data, 'hasFastq')
-    else:
-        samples_names = take_sample_names(data, 'hasFasta')
-
-    throw_if_empty(samples_names, f'No samples found for species: {species}')
-    samples_seq_info = fetch_seq_download_info(samples_names)
-
-    if seq_type == FASTQ_UPLOAD_TYPE:
-        download_fastq_for_each_sample(output_dir, samples_seq_info, read)
-    else:
-        download_fasta_for_each_sample(output_dir, samples_seq_info)
+@seq.command('list')
+@table_format_option()
+@opt_seq_type()
+@opt_read()
+@optgroup.group('Filter', cls=RequiredMutuallyExclusiveOptionGroup)
+@opt_species(in_group=True, default=None)
+@opt_group(in_group=True, default=None, multiple=False)
+@opt_analysis(in_group=True, default=None)
+@opt_analysis_instance(in_group=True, default=None)
+def seq_list(
+        out_format: str,
+        seq_type: str,
+        read: str,
+        species: str,
+        group_name: str,
+        analysis: str,
+        analysis_inst: int
+):
+    list_sequences(
+        out_format,
+        seq_type,
+        read,
+        species,
+        group_name,
+        analysis,
+        analysis_inst
+    )

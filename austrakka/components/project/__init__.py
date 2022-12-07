@@ -15,7 +15,7 @@ def project(ctx):
 
 @project.command('add', hidden=hide_admin_cmds())
 @opt_abbrev()
-@opt_name(help_text="Project name")
+@opt_name(help="Project name")
 @opt_description(required=False)
 def project_add(abbrev, name, description):
     '''

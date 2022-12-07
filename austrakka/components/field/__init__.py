@@ -21,7 +21,7 @@ def field_list(out_format: str):
 
 
 @field.command('add', hidden=hide_admin_cmds())
-@opt_name(help_text="Field name")
+@opt_name(help="Field name")
 @opt_fieldtype()
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
               help="This field may be used to colour nodes on the tree")
@@ -54,7 +54,7 @@ def field_add(
 @field.command('update', hidden=hide_admin_cmds())
 @click.argument('fieldname')
 @opt_name(required=False,
-          help_text="New field name - if this argument is provided, the field name will be changed")
+          help="New field name - if this argument is provided, the field name will be changed")
 @opt_fieldtype(required=False)
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
               help="This field may be used to colour nodes on the tree")

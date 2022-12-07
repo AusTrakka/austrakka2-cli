@@ -1,296 +1,398 @@
+import typing as t
+import functools
+
 import click
+from click_option_group import optgroup
+
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
+from austrakka.utils.misc import AusTrakkaCliOption
+from austrakka.utils.misc import AusTrakkaCliGroupOption
 
 
-def opt_abbrev(
-        help_text="Abbreviated name, for use with the CLI and in metadata uploads"):
-    def inner_func(func):
-        return click.option(
-            "-a",
-            "--abbrev",
-            required=True,
-            help=help_text
-        )(func)
-    return inner_func
+def _default_option_params(**default):
+    def decorator(func):
+        @functools.wraps(func)
+        def inner_func(*args, **kwargs):
+            default.update(kwargs)
+            return func(*args, **default)
+        return inner_func
+    return decorator
 
 
-def opt_name(help_text='Name', required=True, var_name='name'):
-    def inner_func(func):
-        return click.option(
-            "-n",
-            "--name",
-            var_name,
-            required=required,
-            help=help_text
-        )(func)
-    return inner_func
+@_default_option_params(
+    required=True,
+    help='Abbreviated name, for use with the CLI and in metadata uploads'
+)
+def opt_abbrev(in_group=False, **attrs: t.Any):
+    return _create_option(
+        "-a",
+        "--abbrev",
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_field_name(required=True, multiple=True):
-    def inner_func(func):
-        return click.option(
-            "-fn",
-            "--field-names",
-            required=required,
-            help='Field name to show for this project',
-            type=click.STRING,
-            multiple=multiple
-        )(func)
-    return inner_func
+@_default_option_params(
+    required=True,
+    help='Name'
+)
+def opt_name(in_group=False, var_name='name', **attrs: t.Any):
+    return _create_option(
+        "-n",
+        "--name",
+        var_name,
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_description(required=True):
-    def inner_func(func):
-        return click.option(
-            '-d',
-            '--description',
-            default="",
-            help='Human-readable description text',
-            type=click.STRING,
-            required=required,
-        )(func)
-    return inner_func
+@_default_option_params(
+    required=True,
+    multiple=True,
+    help='Field name to show for this project',
+)
+def opt_field_name(in_group=False, **attrs: t.Any):
+    return _create_option(
+        "-fn",
+        "--field-names",
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_species(required=True, multiple=False):
-    def inner_func(func):
-        return click.option(
-            '-s',
-            '--species',
-            required=required,
-            help='Species Abbreviation',
-            type=click.STRING,
-            multiple=multiple,
-        )(func)
-    return inner_func
+@_default_option_params(
+    required=True,
+    default="",
+    help='Human-readable description text'
+)
+def opt_description(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '-d',
+        '--description',
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_project(required=True, multiple=False):
-    def inner_func(func):
-        return click.option(
-            '--project',
-            required=required,
-            help='Project Abbreviation',
-            type=click.STRING,
-            multiple=multiple,
-        )(func)
-    return inner_func
+@_default_option_params(
+    required=True,
+    multiple=False,
+    help='Species Abbreviation'
+)
+def opt_species(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '-s',
+        '--species',
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_definition(required=True, multiple=False, var_name='definition'):
-    def inner_func(func):
-        return click.option(
-            '--definition',
-            var_name,
-            required=required,
-            help='Analysis definition name',
-            type=click.STRING,
-            multiple=multiple,
-        )(func)
-    return inner_func
+@_default_option_params(
+    required=True,
+    multiple=False,
+    help='Project Abbreviation'
+)
+def opt_project(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '--project',
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_organisation(required=True):
-    def inner_func(func):
-        return click.option(
-            '-o',
-            '--org',
-            required=required,
-            help='Organisation abbreviation. Must match an organisation ' +
-            'known to AusTrakka, use `austrakka org list` to see valid values',
-            type=click.STRING
-        )(func)
-    return inner_func
+@_default_option_params(
+    required=True,
+    multiple=False,
+    help='Analysis definition name'
+)
+def opt_definition(in_group=False, var_name='definition', **attrs: t.Any):
+    return _create_option(
+        '--definition',
+        var_name,
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_group(required=True):
-    def inner_func(func):
-        return click.option(
-            '-g',
-            '--group-names',
-            required=required,
-            help='Name of group to be granted access to the proforma. '
-                 'Multiple fields may be added.',
-            type=click.STRING,
-            multiple=True
-        )(func)
-    return inner_func
+@_default_option_params(
+    required=True,
+    help='Organisation abbreviation. Must match an organisation ' +
+         'known to AusTrakka, use `austrakka org list` to see valid values',
+)
+def opt_organisation(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '-o',
+        '--org',
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_proforma(func):
-    return click.option(
+@_default_option_params(
+    required=True,
+    multiple=True,
+    help='Name of group to be granted access to the proforma.'
+)
+def opt_group(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '-g',
+        '--group-name',
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
+
+
+@_default_option_params(
+    required=True,
+    help='Proforma abbreviation. Use `austrakka proforma list` '
+         + 'to see options.',
+)
+def opt_proforma(in_group=False, **attrs: t.Any):
+    return _create_option(
         '-p',
         '--proforma',
-        required=True,
-        help='Proforma abbreviation. Use `austrakka proforma list` '
-             + 'to see options.',
-        type=click.STRING)(func)
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_csv(help_text='CSV file', required=False):
-    def inner_func(func):
-        return click.option(
-            "--csv",
-            "csv_file",
-            type=click.File('rb'),
-            required=required,
-            default=None,
-            help=help_text
-        )(func)
+@_default_option_params(
+    required=False,
+    help='CSV file'
+)
+def opt_csv(in_group=False, **attrs: t.Any):
+    return _create_option(
+        "--csv",
+        "csv_file",
+        type=click.File('rb'),
+        default=None,
+        in_group=in_group,
+        **attrs
+    )
 
-    return inner_func
 
-
-def opt_seq_type(func):
-    return click.option(
+@_default_option_params(
+    required=True,
+    help='Sequence format'
+)
+def opt_seq_type(in_group=False, **attrs: t.Any):
+    return _create_option(
         "-t",
         '--type',
         'seq_type',
-        required=True,
         type=click.Choice([FASTA_UPLOAD_TYPE, FASTQ_UPLOAD_TYPE]),
-        help='Sequence format',
-    )(func)
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_output_dir(func):
-    return click.option(
+@_default_option_params(
+    required=True,
+    help='The output directory where files are saved. Sub '
+         'directories will be created beneath this as needed.',
+)
+def opt_output_dir(in_group=False, **attrs: t.Any):
+    return _create_option(
         "-o",
         '--outdir',
         'output_dir',
-        required=True,
         type=click.Path(exists=False),
-        help='The output directory where files are saved. Sub \
-        directories will be created beneath this as needed.',
-    )(func)
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_read(func):
-    return click.option(
+@_default_option_params(
+    help='Fastq read. Defaults to -1, meaning both 1 and 2',
+    default="-1",
+)
+def opt_read(in_group=False, **attrs: t.Any):
+    return _create_option(
         "-r",
         '--read',
         'read',
-        default="-1",
         type=click.Choice(["-1", "1", "2"]),
-        help='Fastq read. Defaults to -1, meaning both 1 and 2',
-    )(func)
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_analysis(func):
-    return click.option(
+@_default_option_params(
+    required=True,
+    help='Analysis Abbreviation'
+)
+def opt_analysis(in_group=False, **attrs: t.Any):
+    return _create_option(
         '-a',
         '--analysis',
-        required=True,
-        help='Analysis Abbreviation',
-        type=click.STRING
-    )(func)
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
 
 
-def opt_taxon_id(required=True):
+@_default_option_params(
+    required=True,
+    help='Analysis Instance'
+)
+def opt_analysis_instance(in_group: bool, **attrs: t.Any):
+    return _create_option(
+        '-ai',
+        '--analysis-inst',
+        type=click.INT,
+        in_group=in_group,
+        **attrs
+    )
+
+
+@_default_option_params(
+    required=True,
+    help='Metadata field type. Use `austrakka fieldtype list` to see options.'
+)
+def opt_fieldtype(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '-ft',
+        '--field-type',
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
+
+
+@_default_option_params(
+    required=True,
+    multiple=True,
+    help='The user''s Owner group and role assignment. Exclude ' +
+         'this option if the user is not an owner.',
+)
+def opt_owner_group_roles(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '-ogr',
+        '--owner-group-roles',
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
+
+
+@_default_option_params(
+    required=True,
+    help='User object ID'
+)
+def opt_user_object_id(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '-ui',
+        '--user-id',
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
+
+
+@_default_option_params(
+    help='Determines if the entry is active'
+)
+def opt_is_active(in_group=False, is_update=False, **attrs: t.Any):
+    return _create_option(
+        '--is-active/--not-active',
+        type=bool,
+        in_group=in_group,
+        default=None if is_update else True,
+        **attrs
+    )
+
+
+@_default_option_params(
+    required=True,
+    help='Country'
+)
+def opt_country(in_group=False, **attrs: t.Any):
+    return _create_option(
+        "--country",
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
+
+
+@_default_option_params(
+    required=True,
+    help='State',
+    default=None
+)
+def opt_state(in_group=False, **attrs: t.Any):
+    return _create_option(
+        "--state",
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
+
+
+@_default_option_params(
+    required=True,
+    help='Filter String'
+)
+def opt_filter_string(in_group=False, **attrs: t.Any):
+    return _create_option(
+        "--filter-str",
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
+
+
+@_default_option_params(
+    required=True,
+    multiple=True,
+    help='Allowed value for this categorical field.',
+)
+def opt_fieldtype_value(in_group=False, var_name='values', **attrs: t.Any):
+    return _create_option(
+        '-v',
+        '--value',
+        var_name,
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
+
+
+@_default_option_params(
+    required=False,
+    multiple=True,
+    help='The group and role to remove from the specified user. Use comma (,) '
+         'as a separator. Format is <group>,<role> Eg. group1,role1',
+)
+def opt_group_role(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '-gr',
+        '--group-role',
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
+
+
+def _create_option(*param_decls: str, in_group: bool, **attrs: t.Any):
     def inner_func(func):
-        return click.option(
-            '-t',
-            '--taxon-id',
-            help='Taxon ID',
-            type=click.STRING,
-            required=required,
-        )(func)
-    return inner_func
-
-
-def opt_fieldtype(required=True):
-    def inner_func(func):
-        return click.option(
-            '-ft',
-            '--field-type',
-            required=required,
-            help='Metadata field type. Use `austrakka fieldtype list` to see options.',
-            type=click.STRING)(func)
-    return inner_func
-
-
-def opt_owner_group_roles(required=True):
-    def inner_func(func):
-        return click.option(
-            '-ogr',
-            '--owner-group-roles',
-            type=click.STRING,
-            help='The user''s Owner group and role assignment. Exclude ' +
-                 'this option if the user is not an owner.',
-            required=required,
-            multiple=True
-        )(func)
-    return inner_func
-
-
-def opt_user_object_id(required=True):
-    def inner_func(func):
-        return click.option(
-            '-ui',
-            '--user-id',
-            type=str,
-            help='User object ID',
-            required=required
-        )(func)
-    return inner_func
-
-
-def opt_is_active(is_update=False):
-    def inner_func(func):
-        return click.option(
-            '--is-active/--not-active',
-            default=None if is_update else True,
-            type=bool,
-            help='Determines if the entry is active'
-        )(func)
-    return inner_func
-
-
-def opt_country(help_text='Country', required=True):
-    def inner_func(func):
-        return click.option(
-            "--country",
-            required=required,
-            help=help_text,
-            type=str
-        )(func)
-    return inner_func
-
-
-def opt_state(help_text='State', required=True):
-    def inner_func(func):
-        return click.option(
-            "--state",
-            required=required,
-            help=help_text,
-            type=str,
-            default=None,
-        )(func)
-    return inner_func
-
-
-def opt_filter_string(help_text='Filter String', required=True):
-    def inner_func(func):
-        return click.option(
-            "--filter-str",
-            required=required,
-            help=help_text,
-            type=str,
-            default=None,
-        )(func)
-    return inner_func
-
-
-def opt_fieldtype_value(var_name='values'):
-    def inner_func(func):
-        return click.option(
-            '-v',
-            '--value',
-            var_name,
-            multiple=True,
-            required=True,
-            help='Allowed value for this categorical field. Multiple may be '
-                 'entered.',
-            type=str
-        )(func)
+        if in_group:
+            # This will cause issues for a non-mutually exclusive group.
+            # We can deal with it when/if it comes up.
+            attrs.pop('required')
+            attrs['cls'] = AusTrakkaCliGroupOption
+            return optgroup.option(*param_decls, **attrs)(func)
+        attrs['cls'] = AusTrakkaCliOption
+        return click.option(*param_decls, **attrs)(func)
     return inner_func
