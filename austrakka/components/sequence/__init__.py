@@ -100,7 +100,7 @@ def get(
 
 @seq.command('list')
 @table_format_option()
-@opt_seq_type()
+@opt_seq_type(default=None, required=False)
 @opt_read()
 @optgroup.group('Filter', cls=RequiredMutuallyExclusiveOptionGroup)
 @opt_species(in_group=True, default=None)

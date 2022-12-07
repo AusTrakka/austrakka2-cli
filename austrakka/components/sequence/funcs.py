@@ -272,7 +272,7 @@ def _download_sequences(
 
 
 def _filter_sequences(data, seq_type, read):
-    data = filter(lambda x: x['type'] == seq_type, data)
+    data = filter(lambda x: x['type'] == seq_type or seq_type is None, data)
     if seq_type == FASTA_UPLOAD_TYPE:
         return list(data)
     data = filter(lambda x: read == '-1' or x['read'] == int(read), data)
