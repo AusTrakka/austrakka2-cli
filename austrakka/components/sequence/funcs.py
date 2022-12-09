@@ -16,11 +16,10 @@ from austrakka.utils.api import call_get_api
 from austrakka.utils.api import post
 from austrakka.utils.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
-from austrakka.utils.paths import SAMPLE_BY_SPECIES_PATH
-from austrakka.utils.paths import SAMPLE_BY_GROUP_PATH
-from austrakka.utils.paths import SAMPLE_BY_ANALYSIS_PATH
-from austrakka.utils.paths import SAMPLE_BY_ANALYSIS_INST_PATH
-from austrakka.utils.paths import SAMPLE_PATH
+from austrakka.utils.paths import SEQUENCE_BY_SPECIES_PATH
+from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
+from austrakka.utils.paths import SEQUENCE_BY_ANALYSIS_PATH
+from austrakka.utils.paths import SEQUENCE_BY_ANALYSIS_INST_PATH
 from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
@@ -288,15 +287,15 @@ def _get_seq_data(
         analysis: str,
         analysis_inst: int,
 ):
-    api_path = SAMPLE_PATH
+    api_path = SEQUENCE_PATH
     if species is not None:
-        api_path += f'/{SAMPLE_BY_SPECIES_PATH}/{species}'
+        api_path += f'/{SEQUENCE_BY_SPECIES_PATH}/{species}'
     elif group_name is not None:
-        api_path += f'/{SAMPLE_BY_GROUP_PATH}/{group_name}'
+        api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}'
     elif analysis is not None:
-        api_path += f'/{SAMPLE_BY_ANALYSIS_PATH}/{analysis}'
+        api_path += f'/{SEQUENCE_BY_ANALYSIS_PATH}/{analysis}'
     elif analysis_inst is not None:
-        api_path += f'/{SAMPLE_BY_ANALYSIS_INST_PATH}/{analysis_inst}'
+        api_path += f'/{SEQUENCE_BY_ANALYSIS_INST_PATH}/{analysis_inst}'
     else:
         raise ValueError("A filter has not been passed")
     data = call_get_api(path=api_path)
