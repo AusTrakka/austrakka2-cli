@@ -57,11 +57,11 @@ class AusTrakkaCliTopLevel(click.Group):
 def _get_custom_help_record(orig_help, multiple):
     if multiple:
         tmp_list = list(orig_help)
-        split_str = tmp_list[len(tmp_list)-1].rsplit("]", 1)
+        split_str = tmp_list[len(tmp_list) - 1].rsplit("]", 1)
         if len(split_str) > 1:
-            tmp_list[len(tmp_list)-1] = split_str[0] + ";Accepts Multiple]"
+            tmp_list[len(tmp_list) - 1] = split_str[0] + ";Accepts Multiple]"
         else:
-            tmp_list[len(tmp_list)-1] += " [Accepts Multiple]"
+            tmp_list[len(tmp_list) - 1] += " [Accepts Multiple]"
         orig_help = tuple(tmp_list)
     return orig_help
 
