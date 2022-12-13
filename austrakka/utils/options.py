@@ -4,8 +4,9 @@ import functools
 import click
 from click_option_group import optgroup
 
-from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
-from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
+from austrakka.utils.enums.seq import SEQ_TYPES
+from austrakka.utils.enums.seq import READS
+from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.misc import AusTrakkaCliOption
 from austrakka.utils.misc import AusTrakkaCliGroupOption
 
@@ -191,7 +192,7 @@ def opt_seq_type(in_group=False, **attrs: t.Any):
         "-t",
         '--type',
         'seq_type',
-        type=click.Choice([FASTA_UPLOAD_TYPE, FASTQ_UPLOAD_TYPE]),
+        type=click.Choice(SEQ_TYPES),
         in_group=in_group,
         **attrs
     )
@@ -214,15 +215,15 @@ def opt_output_dir(in_group=False, **attrs: t.Any):
 
 
 @_default_option_params(
-    help='Fastq read. Defaults to -1, meaning both 1 and 2',
-    default="-1",
+    help=f'Fastq read. Defaults to {READ_BOTH}, meaning both 1 and 2',
+    default=READ_BOTH,
 )
 def opt_read(in_group=False, **attrs: t.Any):
     return _create_option(
         "-r",
         '--read',
         'read',
-        type=click.Choice(["-1", "1", "2"]),
+        type=click.Choice(READS),
         in_group=in_group,
         **attrs
     )

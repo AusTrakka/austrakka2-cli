@@ -26,15 +26,12 @@ from austrakka.utils.output import log_response_compact
 from austrakka.utils.fs import create_dir
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
+from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.output import print_table
 
 FASTA_PATH = 'Fasta'
 FASTQ_PATH = 'Fastq'
 DOWNLOAD = 'download'
-
-ALL_READS = "-1"
-ONE = "1"
-TWO = "2"
 
 FASTQ_CSV_SAMPLE_ID = 'Seq_ID'
 FASTQ_CSV_SAMPLE_ID_API = 'sample-id'
@@ -270,18 +267,15 @@ def _download_sequences(
         _download_seq_file(file_path, filename, query_path, sample_dir)
 
 
-def _filter_sequences(data, seq_type, read):
+def _filter_sequences(data, seq_type, read) -> List[Dict]:
     data = filter(lambda x: x['type'] == seq_type or seq_type is None, data)
     if seq_type == FASTA_UPLOAD_TYPE:
         return list(data)
-    data = filter(lambda x: read == '-1' or x['read'] == int(read), data)
+    data = filter(lambda x: read == READ_BOTH or x['read'] == int(read), data)
     return list(data)
 
 
-# pylint: disable=duplicate-code
-def _get_seq_data(
-        seq_type: str,
-        read: str,
+def _get_seq_api(
         species: str,
         group_name: str,
         analysis: str,
@@ -298,6 +292,19 @@ def _get_seq_data(
         api_path += f'/{SEQUENCE_BY_ANALYSIS_INST_PATH}/{analysis_inst}'
     else:
         raise ValueError("A filter has not been passed")
+    return api_path
+
+
+# pylint: disable=duplicate-code
+def _get_seq_data(
+        seq_type: str,
+        read: str,
+        species: str,
+        group_name: str,
+        analysis: str,
+        analysis_inst: int,
+):
+    api_path = _get_seq_api(species, group_name, analysis, analysis_inst)
     data = call_get_api(path=api_path)
     return _filter_sequences(data, seq_type, read)
 
