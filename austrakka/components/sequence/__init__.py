@@ -13,7 +13,6 @@ from austrakka.utils.options import opt_read
 from austrakka.utils.options import opt_group
 from austrakka.utils.options import opt_species
 from austrakka.utils.options import opt_analysis
-from austrakka.utils.options import opt_analysis_instance
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from .funcs import add_fasta_submission
 from .funcs import add_fastq_submission
@@ -64,7 +63,6 @@ def submission_add(
 @opt_species(in_group=True, default=None)
 @opt_group(in_group=True, default=None, multiple=False)
 @opt_analysis(in_group=True, default=None)
-@opt_analysis_instance(in_group=True, default=None)
 def get(
         output_dir,
         seq_type: str,
@@ -72,7 +70,6 @@ def get(
         species: str,
         group_name: str,
         analysis: str,
-        analysis_inst: int
 ):
     """Download sequence files to the local drive
 
@@ -94,7 +91,6 @@ def get(
         species,
         group_name,
         analysis,
-        analysis_inst
     )
 
 
@@ -106,7 +102,6 @@ def get(
 @opt_species(in_group=True, default=None)
 @opt_group(in_group=True, default=None, multiple=False)
 @opt_analysis(in_group=True, default=None)
-@opt_analysis_instance(in_group=True, default=None)
 def seq_list(
         out_format: str,
         seq_type: str,
@@ -114,7 +109,6 @@ def seq_list(
         species: str,
         group_name: str,
         analysis: str,
-        analysis_inst: int
 ):
     list_sequences(
         out_format,
@@ -123,5 +117,4 @@ def seq_list(
         species,
         group_name,
         analysis,
-        analysis_inst
     )

@@ -245,20 +245,6 @@ def opt_analysis(in_group=False, **attrs: t.Any):
 
 @_default_option_params(
     required=True,
-    help='Analysis Instance'
-)
-def opt_analysis_instance(in_group: bool, **attrs: t.Any):
-    return _create_option(
-        '-ai',
-        '--analysis-inst',
-        type=click.INT,
-        in_group=in_group,
-        **attrs
-    )
-
-
-@_default_option_params(
-    required=True,
     help='Metadata field type. Use `austrakka fieldtype list` to see options.'
 )
 def opt_fieldtype(in_group=False, **attrs: t.Any):

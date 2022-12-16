@@ -42,8 +42,7 @@ class TestSequenceCommands:
                'option group:\n' \
                "  '-s' / '--species'\n" \
                "  '-g' / '--group-name'\n" \
-               "  '-a' / '--analysis'\n" \
-               "  '-ai' / '--analysis-inst'\n" in result.output
+               "  '-a' / '--analysis'\n" in result.output
         assert result.exit_code == 2
 
     def test_get_seq__unknown_species__expect_error(self):
@@ -66,6 +65,6 @@ class TestSequenceCommands:
             'fake-analysis'
         ])
         assert isinstance(result.exception, FailedResponseException)
-        assert "No sequences found for analysis fake-analysis." \
+        assert "Analysis with abbreviation fake-analysis not found" \
                in result.exception.get_error_messages()
         assert result.exit_code == 1

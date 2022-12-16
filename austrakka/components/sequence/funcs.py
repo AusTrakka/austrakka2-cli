@@ -279,7 +279,6 @@ def _get_seq_api(
         species: str,
         group_name: str,
         analysis: str,
-        analysis_inst: int,
 ):
     api_path = SEQUENCE_PATH
     if species is not None:
@@ -288,8 +287,6 @@ def _get_seq_api(
         api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}'
     elif analysis is not None:
         api_path += f'/{SEQUENCE_BY_ANALYSIS_PATH}/{analysis}'
-    elif analysis_inst is not None:
-        api_path += f'/{SEQUENCE_BY_ANALYSIS_INST_PATH}/{analysis_inst}'
     else:
         raise ValueError("A filter has not been passed")
     return api_path
@@ -302,9 +299,8 @@ def _get_seq_data(
         species: str,
         group_name: str,
         analysis: str,
-        analysis_inst: int,
 ):
-    api_path = _get_seq_api(species, group_name, analysis, analysis_inst)
+    api_path = _get_seq_api(species, group_name, analysis)
     data = call_get_api(path=api_path)
     return _filter_sequences(data, seq_type, read)
 
@@ -317,7 +313,6 @@ def get_sequences(
         species: str,
         group_name: str,
         analysis: str,
-        analysis_inst: int,
 ):
     if not os.path.exists(output_dir):
         create_dir(output_dir)
@@ -328,7 +323,6 @@ def get_sequences(
         species,
         group_name,
         analysis,
-        analysis_inst
     )
     _download_sequences(output_dir, data)
 
@@ -341,7 +335,6 @@ def list_sequences(
         species: str,
         group_name: str,
         analysis: str,
-        analysis_inst: int,
 ):
     data = _get_seq_data(
         seq_type,
@@ -349,7 +342,6 @@ def list_sequences(
         species,
         group_name,
         analysis,
-        analysis_inst
     )
     print_table(
         pd.DataFrame(data),

@@ -85,22 +85,18 @@ class TestSequenceFuncs:
         assert all(x['type'] == FASTA_UPLOAD_TYPE for x in filtered)
 
     def test_get_seq_api__pass_species__expect_species_path(self):
-        api_path = _get_seq_api('test-species', None, None, None)
+        api_path = _get_seq_api('test-species', None, None)
         assert api_path == 'Sequence/by-species/test-species'
 
     def test_get_seq_api__pass_group__expect_group_path(self):
-        api_path = _get_seq_api(None, 'test-group', None, None)
+        api_path = _get_seq_api(None, 'test-group', None)
         assert api_path == 'Sequence/by-group/test-group'
 
     def test_get_seq_api__pass_analysis__expect_analysis_path(self):
-        api_path = _get_seq_api(None, None, 'test-analysis', None)
+        api_path = _get_seq_api(None, None, 'test-analysis')
         assert api_path == 'Sequence/by-analysis/test-analysis'
-
-    def test_get_seq_api__pass_analysis_inst__expect_analysis_inst_path(self):
-        api_path = _get_seq_api(None, None, None, 1)
-        assert api_path == 'Sequence/by-analysis-instance/1'
 
     def test_get_seq_api__pass_none_params__expect_value_error(self):
         with pytest.raises(ValueError) as ex:
-            _ = _get_seq_api(None, None, None, None)
+            _ = _get_seq_api(None, None, None)
         assert 'A filter has not been passed' in str(ex.value)
