@@ -30,7 +30,7 @@ def seq(ctx):
 
 
 @seq.command('add')
-@opt_csv(help='CSV with Sample to Sequence mapping', required=True)
+@opt_csv(help='CSV with mapping from Seq_ID to sequence files', required=True)
 @opt_seq_type()
 def submission_add(
         csv_file: BufferedReader,

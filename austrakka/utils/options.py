@@ -141,7 +141,7 @@ def opt_organisation(in_group=False, **attrs: t.Any):
 @_default_option_params(
     required=True,
     multiple=True,
-    help='Name of group to be granted access to the proforma.'
+    help='Name of group.'
 )
 def opt_group(in_group=False, **attrs: t.Any):
     return _create_option(
@@ -200,8 +200,8 @@ def opt_seq_type(in_group=False, **attrs: t.Any):
 
 @_default_option_params(
     required=True,
-    help='The output directory where files are saved. Sub '
-         'directories will be created beneath this as needed.',
+    help='The output directory where files are saved. The directory and any '
+         ' sub-directories will be created beneath this as needed.',
 )
 def opt_output_dir(in_group=False, **attrs: t.Any):
     return _create_option(
