@@ -34,7 +34,7 @@ def fieldtype_list(out_format: str):
 
 
 @fieldtype.command('add', hidden=hide_admin_cmds())
-@opt_name(help_text="Type name")
+@opt_name(help="Type name")
 @opt_description()
 @opt_fieldtype_value()
 def fieldtype_add(name: str, description: str, values: List[str]):

@@ -1,7 +1,6 @@
 import os
 from io import BufferedReader
-from typing import BinaryIO, List
-from os import path
+from typing import BinaryIO, List, Dict
 
 import pandas as pd
 # pylint: disable=no-name-in-module
@@ -17,22 +16,21 @@ from austrakka.utils.api import call_get_api
 from austrakka.utils.api import post
 from austrakka.utils.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
-from austrakka.utils.paths import SAMPLE_BY_SPECIES_PATH
-from austrakka.utils.paths import SAMPLE_DOWNLOAD_INFO_PATH
+from austrakka.utils.paths import SEQUENCE_BY_SPECIES_PATH
+from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
+from austrakka.utils.paths import SEQUENCE_BY_ANALYSIS_PATH
 from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
 from austrakka.utils.fs import create_dir
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
+from austrakka.utils.enums.seq import READ_BOTH
+from austrakka.utils.output import print_table
 
 FASTA_PATH = 'Fasta'
 FASTQ_PATH = 'Fastq'
 DOWNLOAD = 'download'
-
-ALL_READS = "-1"
-ONE = "1"
-TWO = "2"
 
 FASTQ_CSV_SAMPLE_ID = 'Seq_ID'
 FASTQ_CSV_SAMPLE_ID_API = 'sample-id'
@@ -218,90 +216,7 @@ def _validate_fastq_submission(csv_dataframe: DataFrame):
     return messages
 
 
-def download_fastq_for_each_sample(
-    output_dir: str,
-    samples_seq_info: list[tuple[any, any]],
-    read: str
-):
-    for ssi in samples_seq_info:
-        sample_name = ssi[0]
-
-        for seq_dto in ssi[1]:
-            dto_read = str(seq_dto['read'])
-            seq_type = seq_dto['type']
-
-            if not sample_name:
-                logger.error('Encountered empty sample name. Skipping all '
-                             'sequences associated with the sample...')
-                continue
-
-            if dto_read not in (ONE, TWO) or not seq_type:
-                logger.error(f'Error in sample: {sample_name}. Found sequence '
-                             f'with invalid Read or Type. Skipping...')
-                continue
-
-            # When read is -1, it means take both.
-            # Ignore fasta. Some samples can have both fasta and fastq files.
-            if seq_type.lower() == FASTA_UPLOAD_TYPE \
-                    or read not in (dto_read, ALL_READS):
-                continue
-
-            filename = seq_dto['fileName']
-            sample_dir = os.path.join(output_dir, sample_name)
-            file_path = os.path.join(sample_dir, filename)
-
-            if os.path.exists(file_path):
-                logger.warning(
-                    f'Found a local copy of {filename}.  Skipping...')
-                continue
-
-            query_path = path.join(
-                SEQUENCE_PATH,
-                DOWNLOAD,
-                FASTQ_PATH,
-                sample_name,
-                dto_read,
-            )
-            download_seq_file(file_path, filename, query_path, sample_dir)
-
-
-def download_fasta_for_each_sample(
-    output_dir: str,
-    samples_seq_info: list[tuple[any, any]]
-):
-    for ssi in samples_seq_info:
-        sample_name = ssi[0]
-
-        for seq_dto in ssi[1]:
-            seq_type = seq_dto['type']
-
-            if not sample_name:
-                logger.error('Encountered empty sample name. Skipping all '
-                             'sequences associated with the sample...')
-                continue
-
-            if seq_type.lower() == FASTQ_UPLOAD_TYPE:
-                continue
-
-            filename = seq_dto['fileName']
-            sample_dir = os.path.join(output_dir, sample_name)
-            file_path = os.path.join(sample_dir, filename)
-
-            if os.path.exists(file_path):
-                logger.warning(
-                    f'Found a local copy of {filename}.  Skipping...')
-                continue
-
-            query_path = path.join(
-                SEQUENCE_PATH,
-                DOWNLOAD,
-                FASTA_PATH,
-                sample_name,
-            )
-            download_seq_file(file_path, filename, query_path, sample_dir)
-
-
-def download_seq_file(file_path, filename, query_path, sample_dir):
+def _download_seq_file(file_path, filename, query_path, sample_dir):
     try:
         resp = call_api_raw(
             path=query_path,
@@ -321,25 +236,113 @@ def download_seq_file(file_path, filename, query_path, sample_dir):
         log_response_compact(ex.parsed_resp)
 
 
-def fetch_seq_download_info(sample_names):
-    samples_seq_info = []
-    for name in sample_names:
-        info = call_get_api(
-            path=path.join(SAMPLE_DOWNLOAD_INFO_PATH, name),
-        )
-        samples_seq_info.append((name, info))
-    return samples_seq_info
+def _get_seq_download_path(sample_name: str, read: str, seq_type: str):
+    download_path = f'{SEQUENCE_PATH}/{DOWNLOAD}'
+    download_path += f'/{FASTQ_PATH}/{sample_name}/{read}' \
+        if seq_type == FASTQ_UPLOAD_TYPE \
+        else f'/{FASTA_PATH}/{sample_name}'
+    return download_path
 
 
-def throw_if_empty(a_list: list, msg: str):
-    if not a_list:
-        raise FailedResponseException(
-            create_response_object(
-                msg, RESPONSE_TYPE_ERROR))
+def _download_sequences(
+        output_dir: str,
+        samples_seq_info: list[Dict],
+):
+    for ssi in samples_seq_info:
+        sample_name = ssi['sampleName']
+        dto_read = str(ssi['read'])
+        filename = ssi['fileName']
+        seq_type = ssi['type']
+
+        sample_dir = os.path.join(output_dir, sample_name)
+        file_path = os.path.join(sample_dir, filename)
+
+        if os.path.exists(file_path):
+            logger.warning(
+                f'Found a local copy of {filename}.  Skipping...')
+            continue
+
+        query_path = _get_seq_download_path(sample_name, dto_read, seq_type)
+        _download_seq_file(file_path, filename, query_path, sample_dir)
 
 
-def fetch_samples_names_by_species(species: str):
-    samples = call_get_api(
-        path=path.join(SAMPLE_BY_SPECIES_PATH, species),
+def _filter_sequences(data, seq_type, read) -> List[Dict]:
+    data = filter(lambda x: x['type'] == seq_type or seq_type is None, data)
+    if seq_type == FASTA_UPLOAD_TYPE:
+        return list(data)
+    data = filter(lambda x: read == READ_BOTH or x['read'] == int(read), data)
+    return list(data)
+
+
+def _get_seq_api(
+        species: str,
+        group_name: str,
+        analysis: str,
+):
+    api_path = SEQUENCE_PATH
+    if species is not None:
+        api_path += f'/{SEQUENCE_BY_SPECIES_PATH}/{species}'
+    elif group_name is not None:
+        api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}'
+    elif analysis is not None:
+        api_path += f'/{SEQUENCE_BY_ANALYSIS_PATH}/{analysis}'
+    else:
+        raise ValueError("A filter has not been passed")
+    return api_path
+
+
+# pylint: disable=duplicate-code
+def _get_seq_data(
+        seq_type: str,
+        read: str,
+        species: str,
+        group_name: str,
+        analysis: str,
+):
+    api_path = _get_seq_api(species, group_name, analysis)
+    data = call_get_api(path=api_path)
+    return _filter_sequences(data, seq_type, read)
+
+
+# pylint: disable=duplicate-code
+def get_sequences(
+        output_dir,
+        seq_type: str,
+        read: str,
+        species: str,
+        group_name: str,
+        analysis: str,
+):
+    if not os.path.exists(output_dir):
+        create_dir(output_dir)
+
+    data = _get_seq_data(
+        seq_type,
+        read,
+        species,
+        group_name,
+        analysis,
     )
-    return samples
+    _download_sequences(output_dir, data)
+
+
+# pylint: disable=duplicate-code
+def list_sequences(
+        out_format: str,
+        seq_type: str,
+        read: str,
+        species: str,
+        group_name: str,
+        analysis: str,
+):
+    data = _get_seq_data(
+        seq_type,
+        read,
+        species,
+        group_name,
+        analysis,
+    )
+    print_table(
+        pd.DataFrame(data),
+        out_format,
+    )
