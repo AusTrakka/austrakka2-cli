@@ -19,7 +19,6 @@ from austrakka.utils.paths import SEQUENCE_PATH
 from austrakka.utils.paths import SEQUENCE_BY_SPECIES_PATH
 from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
 from austrakka.utils.paths import SEQUENCE_BY_ANALYSIS_PATH
-from austrakka.utils.paths import SEQUENCE_BY_ANALYSIS_INST_PATH
 from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
