@@ -27,8 +27,8 @@ def org_list(out_format: str):
 
 
 @org.command('add', hidden=hide_admin_cmds())
-@opt_name(help_text="Organisation Name")
-@opt_abbrev(help_text="Organisation Abbreviation")
+@opt_name(help="Organisation Name")
+@opt_abbrev(help="Organisation Abbreviation")
 @opt_state(required=False)
 @opt_country()
 @opt_is_active()
@@ -45,7 +45,7 @@ def org_add(
 
 @org.command('update', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=str)
-@opt_name(help_text="Organisation Name", required=False)
+@opt_name(help="Organisation Name", required=False)
 @opt_state(required=False)
 @opt_country(required=False)
 @opt_is_active(is_update=True)

@@ -38,7 +38,7 @@ def analysis_list(out_format: str):
 
 @analysis.command('add', hidden=hide_admin_cmds())
 @opt_abbrev()
-@opt_name(help_text='Analysis Name')
+@opt_name(help='Analysis Name')
 @opt_description()
 @opt_project()
 @opt_definition(var_name='definition_abbrev')
@@ -67,7 +67,7 @@ def analysis_add(
 
 @analysis.command('update', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=str)
-@opt_name(help_text='Analysis Name', required=False)
+@opt_name(help='Analysis Name', required=False)
 @opt_description(required=False)
 @opt_project(required=False)
 @opt_definition(var_name='definition_abbrev', required=False)

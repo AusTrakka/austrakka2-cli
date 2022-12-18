@@ -37,9 +37,21 @@ CLI_ENV = 'env'
 CONTEXT_SETTINGS = dict(help_option_names=HELP_OPTS)
 
 
+# NOTE: envvar below needs to be explicitly specified despite using
+# auto_envvar_prefix due to limitations with CliRunner tests
 @click.group(cls=AusTrakkaCliTopLevel, context_settings=CONTEXT_SETTINGS)
-@click.option(f"--{URI_OPT_NAME}", show_envvar=True, required=True)
-@click.option(f"--{TOKEN_OPT_NAME}", show_envvar=True, required=True)
+@click.option(
+    f"--{URI_OPT_NAME}",
+    show_envvar=True,
+    envvar='AT_URI',
+    required=True
+)
+@click.option(
+    f"--{TOKEN_OPT_NAME}",
+    show_envvar=True,
+    envvar='AT_TOKEN',
+    required=True
+)
 @click.option(
     f"--{CLI_ENV}",
     show_envvar=True,
@@ -62,21 +74,26 @@ def cli(ctx: Context, uri: str, token: str, env: str, log: str):
     setup_logger(env, log)
 
 
+def get_cli():
+    cli.add_command(auth)
+    cli.add_command(user) if show_admin_cmds() else None
+    cli.add_command(org) if show_admin_cmds() else None
+    cli.add_command(group)
+    cli.add_command(project)
+    cli.add_command(analysis)
+    cli.add_command(tree) if show_admin_cmds() else None
+    cli.add_command(metadata)
+    cli.add_command(sample)
+    cli.add_command(seq)
+    cli.add_command(proforma)
+    cli.add_command(field)
+    cli.add_command(fieldtype)
+    return cli
+
+
 def main():
     try:
-        cli.add_command(auth)
-        cli.add_command(user) if show_admin_cmds() else None
-        cli.add_command(org) if show_admin_cmds() else None
-        cli.add_command(group)
-        cli.add_command(project)
-        cli.add_command(analysis)
-        cli.add_command(tree) if show_admin_cmds() else None
-        cli.add_command(metadata)
-        cli.add_command(sample)
-        cli.add_command(seq)
-        cli.add_command(proforma)
-        cli.add_command(field)
-        cli.add_command(fieldtype)
+        get_cli()
         # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         cli(auto_envvar_prefix=CLI_PREFIX)
     except FailedResponseException as ex:

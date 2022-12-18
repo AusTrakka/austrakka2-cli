@@ -15,7 +15,7 @@ def tree(ctx):
 
 @tree.command('add')
 @click.argument('newick', type=click.File('rb'))
-@opt_analysis
+@opt_analysis()
 def tree_add(newick: BufferedReader, analysis: str):
     '''Upload tree to AusTrakka'''
     add_tree(newick, analysis)

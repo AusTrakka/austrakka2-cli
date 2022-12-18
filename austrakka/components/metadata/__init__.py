@@ -15,7 +15,7 @@ def metadata(ctx):
 
 @metadata.command('add')
 @click.argument('file', type=click.File('rb'))
-@opt_proforma
+@opt_proforma()
 def submission_add(file: BufferedReader, proforma: str):
     """Upload metadata submission to AusTrakka"""
     add_metadata(file, proforma)

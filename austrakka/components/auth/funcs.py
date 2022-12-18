@@ -50,7 +50,7 @@ def process_login(username: str, secret_name: str):
         "client_id": Auth.CLIENT_ID.value
     }
 
-    # pylint: disable=print-function
+    # pylint: disable=print-function,missing-timeout
     print(requests.post(
         url=f'{Auth.AUTH_URL.value}/{Auth.TENANT_ID.value}/oauth2/v2.0/token',
         data=request_payload).json()["access_token"]
