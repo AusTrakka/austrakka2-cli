@@ -17,7 +17,7 @@ steps:
 - script: python -m pip install --upgrade pip setuptools wheel
   displayName: 'Install tools'
 
-- script: python -m pip install pipenv
+- script: python -m pip install pipenv==2022.11.30
   displayName: 'Install pipenv'
 
 - script: pipenv requirements | tee requirements.txt
@@ -34,7 +34,7 @@ steps:
 
 - task: TwineAuthenticate@1
   inputs:
-    artifactFeed: $(ARTIFACT_FEED)
+    pythonUploadServiceConnection: 'pypi_austrakka'
 
 - script: |
     python -m twine upload --skip-existing -r $(REPOSITORY) --config-file $(PYPIRC_PATH) dist/*.whl
