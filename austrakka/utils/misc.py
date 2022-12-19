@@ -3,6 +3,7 @@ import sys
 
 import click
 from loguru import logger
+from click_option_group import GroupedOption
 
 from ..components.auth import auth
 
@@ -51,6 +52,30 @@ class AusTrakkaCliTopLevel(click.Group):
                 exc.ctx = None
                 exc.show(file=sys.stdout)
             sys.exit(exc.exit_code)
+
+
+def _get_custom_help_record(orig_help, multiple):
+    if multiple:
+        tmp_list = list(orig_help)
+        split_str = tmp_list[len(tmp_list) - 1].rsplit("]", 1)
+        if len(split_str) > 1:
+            tmp_list[len(tmp_list) - 1] = split_str[0] + ";Accepts Multiple]"
+        else:
+            tmp_list[len(tmp_list) - 1] += " [Accepts Multiple]"
+        orig_help = tuple(tmp_list)
+    return orig_help
+
+
+class AusTrakkaCliOption(click.Option):
+    def get_help_record(self, ctx):
+        orig_help = super().get_help_record(ctx)
+        return _get_custom_help_record(orig_help, self.multiple)
+
+
+class AusTrakkaCliGroupOption(GroupedOption):
+    def get_help_record(self, ctx):
+        orig_help = super().get_help_record(ctx)
+        return _get_custom_help_record(orig_help, self.multiple)
 
 
 def is_dev_env(env: str):

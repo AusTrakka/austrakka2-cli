@@ -25,6 +25,7 @@ put = requests.put
 patch = requests.patch
 
 NO_CONTENT = 204
+TIMEOUT_IN_SECONDS = 300
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -116,6 +117,7 @@ def call_get_api(
         headers=_get_headers(),
         verify=False,
         params=params,
+        timeout=TIMEOUT_IN_SECONDS,
     )
     ensure_success_status(response)
 
@@ -151,6 +153,7 @@ def call_api_raw(
         verify=False,
         params=params,
         stream=stream,
+        timeout=TIMEOUT_IN_SECONDS,
     )
 
     ensure_success_status(response)
