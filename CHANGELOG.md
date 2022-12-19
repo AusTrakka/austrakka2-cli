@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.21.1] - 2022-12-19
+### Changed
+- Updated production pipeline to release to public PyPI index.
+
 # [0.21.0] - 2022-12-19
 ### Added
 - Added Analysis and Group filters for `seq get`.
@@ -315,3 +319,4 @@ and this project adheres to [Semantic Versioning].
 [0.20.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.20.0
 [0.20.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.20.1
 [0.21.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.21.0
+[0.21.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.21.1
