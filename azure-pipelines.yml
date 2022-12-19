@@ -34,7 +34,7 @@ steps:
 
 - task: TwineAuthenticate@1
   inputs:
-    artifactFeed: $(ARTIFACT_FEED)
+    pythonUploadServiceConnection: 'pypi_austrakka'
 
 - script: |
     python -m twine upload --skip-existing -r $(REPOSITORY) --config-file $(PYPIRC_PATH) dist/*.whl
