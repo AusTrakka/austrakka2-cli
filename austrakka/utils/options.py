@@ -153,6 +153,17 @@ def opt_group(in_group=False, **attrs: t.Any):
     )
 
 
+def opt_groups(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '-g',
+        '--group-names',
+        multiple=True,
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
+
+
 @_default_option_params(
     required=True,
     help='Proforma abbreviation. Use `austrakka proforma list` '
