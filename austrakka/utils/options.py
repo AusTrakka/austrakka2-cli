@@ -312,6 +312,19 @@ def opt_is_active(in_group=False, is_update=False, **attrs: t.Any):
 
 
 @_default_option_params(
+    help='Specify validation mode (as if appending or creating) when checking data.'
+)
+def opt_is_append(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '--is-append/--not-append',
+        type=bool,
+        in_group=in_group,
+        default=False,
+        **attrs
+    )
+
+
+@_default_option_params(
     required=True,
     help='Country'
 )
