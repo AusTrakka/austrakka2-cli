@@ -23,7 +23,7 @@ def get_field_by_name(name: str):
 def get_system_field_names():
     response = call_api(
         method=get,
-        path=f"{METADATACOLUMN_PATH}/SystemFields",
+        path=f"{METADATACOLUMN_PATH}/SystemFields?lenient=True",
     )
     data = response['data'] if ('data' in response) else response
     fieldnames = [col['columnName'] for col in data]
