@@ -37,5 +37,5 @@ steps:
     pythonUploadServiceConnection: 'pypi_austrakka'
 
 - script: |
-    python -m twine upload --skip-existing -r $(REPOSITORY) --config-file $(PYPIRC_PATH) dist/*.whl
+    python -m twine upload --skip-existing -r austrakka --config-file $(PYPIRC_PATH) dist/*.whl
   displayName: 'Publish to PyPi through Twine'

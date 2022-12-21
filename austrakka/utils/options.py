@@ -153,6 +153,17 @@ def opt_group(in_group=False, **attrs: t.Any):
     )
 
 
+def opt_groups(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '-g',
+        '--group-names',
+        multiple=True,
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
+
+
 @_default_option_params(
     required=True,
     help='Proforma abbreviation. Use `austrakka proforma list` '
@@ -296,6 +307,19 @@ def opt_is_active(in_group=False, is_update=False, **attrs: t.Any):
         type=bool,
         in_group=in_group,
         default=None if is_update else True,
+        **attrs
+    )
+
+
+@_default_option_params(
+    help='Specify validation mode (as if appending or creating) when checking data.'
+)
+def opt_is_append(in_group=False, **attrs: t.Any):
+    return _create_option(
+        '--is-append/--not-append',
+        type=bool,
+        in_group=in_group,
+        default=False,
         **attrs
     )
 
