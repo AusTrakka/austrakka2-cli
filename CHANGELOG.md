@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.22.0] - 2022-12-22
+### Changed
+- Added `metadata check` command to validate upload without commiting.
+- Added `metadata append` command to append more metadata without having to specify Owner_group.
+
 # [0.21.1] - 2022-12-19
 ### Changed
 - Updated production pipeline to release to public PyPI index.
