@@ -1,29 +1,117 @@
 # AusTrakka CLI
-CLI for AusTrakka V2
 
-## Environment Variables
+Command line interface for AusTrakka V2.
 
-| Name         | Description                                         |
-|--------------|-----------------------------------------------------|
-| `AT_TOKEN`   | AusTrakka auth token                                |
-| `AT_URI`     | URI for API endpoint                                |
-| `AT_ENV`     | Set to `dev` to log debugging                       |
-| `AT_LOG`     | Set to `file` to redirecting logging to a temp file |
-| `AT_CMD_SET` | Set to `austrakka-admin` to display admin commands  |
+## Installation
+
+Install with 
+```
+pip install austrakka
+```
+
+You will need to set the environment variable `AT_URI`:
+```
+export AT_URI="***REMOVED***"
+```
+You may wish to add this to your `.bashrc` or `.zshrc` file.
+
+To use the CLI, you must log in by setting the `AT_TOKEN` environment variable using the 
+`austrakka user auth` command (see User Authorisation, below). You may wish to configure 
+a login command for convenience:
+```
+alias at-login="export AT_TOKEN=\$(austrakka auth user)"
+```
+You may wish to add this to your `.bashrc` or `.zshrc` file.
+
+### Install into a conda environment (optional)
+
+If you wish to create a conda environment named `austrakka` with the necessary environment 
+variables set and the `at-login` alias, run:
+```
+conda create -n austrakka python=3.9
+conda activate austrakka
+pip install austrakka
+conda env config vars set AT_URI="***REMOVED***"
+mkdir -p ${CONDA_PREFIX}/etc/conda/activate.d
+echo "alias at-login=\"export AT_TOKEN=\\\$(austrakka auth user)\"" > ${CONDA_PREFIX}/etc/conda/activate.d/austrakka-alias.sh
+```
+
+You can then use
+```
+conda activate austrakka
+at-login
+```
+in order to use the CLI.
+
+### Updating the CLI
+
+To update to the latest version, run 
+```
+pip install --upgrade austrakka
+```
+If you have installed AusTrakka into a conda environment, you should first activate it with `conda activate austrakka`.
+
+## Running the CLI
+
+Before you can use the CLI, you must log in as described below, to allow the CLI to use your AusTrakka credentials. 
+Your authorisation will expire after a period and you will need to log in again.
+
+### User Authorisation
+
+Most users will want to use the CLI this way.
+
+Set the following environment variable:
+```
+export AT_TOKEN=$(austrakka auth user)
+```
+
+If you have configured a login command as described above, you can instead run 
+```
+at-login
+```
+
+Either way, you should be directed to log in via a browser and enter a code to authorise the CLI.
+
+### Process Authorisation
+
+This authorisation mode is intended for long-term automated processes. Most users will not need it. 
+
+To authorise with a process token, set the environment variable using:
+```
+export AT_TOKEN=$(austrakka auth process)
+```
+
+### Using the CLI
+
+The CLI has a subcommand structure. Run 
+```
+austrakka -h
+```
+to see available subcommands.
+
+Run e.g. 
+```
+austrakka metadata -h
+```
+to see available commands to manipulate metadata.
+
+Run e.g. 
+```
+austrakka metadata add -h
+```
+to see the usage of the `metadata add` command to upload metadata files.
+
+## Environment Variables Reference
+
+| Name         | Description                                                                                                                                     |
+|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `AT_TOKEN`   | AusTrakka auth token                                                                                                                            |
+| `AT_URI`     | URI for API endpoint                                                                                                                            |
+| `AT_ENV`     | Set to `dev` to log debugging                                                                                                                   |
+| `AT_LOG`     | Set to `file` to redirecting logging to a temp file                                                                                             |
+| `AT_CMD_SET` | Set to `austrakka-admin` to display admin commands (these will not actually run successfully unless you have an appropriate role on the server) |
 
 All commands require `AT_URI` and `AT_TOKEN` to be set, except for `auth` commands.
-
-## Authorisation
-
-### User
-
-Set the following env var
-`export AT_TOKEN=$(austrakka auth user)`
-
-### Process
-
-Set the following env var
-`export AT_TOKEN=$(austrakka auth process)`
 
 ## Project Structure
 
