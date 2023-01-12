@@ -49,7 +49,7 @@ To update to the latest version, run
 ```
 pip install --upgrade austrakka
 ```
-If you have installed AusTrakka into a conda environment, you should first activate it with `conda activate austrakka`.
+If you have installed the CLI into a conda environment, you should first activate it with `conda activate austrakka`.
 
 ## Running the CLI
 
