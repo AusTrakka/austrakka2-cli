@@ -9,6 +9,7 @@ from pandas.core.frame import DataFrame
 from loguru import logger
 
 from austrakka.utils.exceptions import FailedResponseException
+from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import call_api
 from austrakka.utils.api import call_api_raw
@@ -147,6 +148,9 @@ def add_fastq_submission(csv: BufferedReader):
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             log_response(ex.parsed_resp)
         except PermissionError as ex:
+            logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
+            logger.error(ex)
+        except UnknownResponseException as ex:
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             logger.error(ex)
         except Exception as ex:
