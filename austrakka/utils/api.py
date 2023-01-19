@@ -14,6 +14,7 @@ from requests.exceptions import HTTPError
 from austrakka.utils.enums.api import RESPONSE_TYPE
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.exceptions import FailedResponseException
+from austrakka.utils.exceptions import UnknownResponseException
 from ..components.auth.enums import Auth
 from .misc import logger_wraps
 from .output import log_dict
@@ -80,6 +81,9 @@ def call_api(
         response.raise_for_status()
     except HTTPError as http_error:
         try:
+            if not hasattr(response.json(), "data") \
+                    or not hasattr(response.json(), "messages"):
+                raise UnknownResponseException(response.json()) from HTTPError
             raise FailedResponseException(response.json()) from HTTPError
         except FailedResponseException as ex:
             raise ex from ex
@@ -98,8 +102,12 @@ def call_api(
     if failed:
         raise FailedResponseException(parsed_resp)
 
-    if method.__name__ in ('post', 'put'):
-        log_response(parsed_resp)
+    try:
+        if method.__name__ in ('post', 'put'):
+            log_response(parsed_resp)
+    except TypeError as ex:
+        raise UnknownResponseException(f'Unknown response: {response.text}')\
+            from ex
 
     return parsed_resp
 
