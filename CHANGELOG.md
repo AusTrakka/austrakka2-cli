@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.23.0] - 2023-01-19
+### Changed
+- Added `sample enable` command to re-enable samples which are currently disabled.
+- Updated readme with installation and login instructions.
+- Fixed poor error reporting when server-side infra occasionally fails.
+
 # [0.22.0] - 2022-12-22
 ### Changed
 - Added `metadata check` command to validate upload without commiting.
