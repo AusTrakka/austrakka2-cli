@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.23.1] - 2023-02-06
+### Changed
+- Changes to CI for updating work items.
+
 # [0.23.0] - 2023-01-19
 ### Changed
 - Added `sample enable` command to re-enable samples which are currently disabled.
@@ -331,3 +335,6 @@ and this project adheres to [Semantic Versioning].
 [0.20.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.20.1
 [0.21.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.21.0
 [0.21.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.21.1
+[0.22.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.22.0
+[0.23.0]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.23.0
+[0.23.1]: https://github.com/AusTrakka/austrakka2-cli/releases/tag/0.23.1
