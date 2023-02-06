@@ -1,0 +1,35 @@
+name: Update work item state
+
+on:
+  push:
+    branches: [Development, UAT, master]
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    name: Test workflow
+    steps:
+      - uses: samcarswell/azure-board-item-move@1.0.0
+        if: ${{ github.ref_name == 'Development' }}
+        name: "Development Branch"
+        with:
+          ado_token: '${{ secrets.AZURE_DEVOPS_PAT_BOARDS }}'
+          ado_org: '${{ secrets.AZURE_DEVOPS_ORG }}'
+          ado_project: '${{ secrets.AZURE_DEVOPS_PROJECT_AT2 }}'
+          state: 'Development Completed'
+      - uses: samcarswell/azure-board-item-move@1.0.0
+        if: ${{ github.ref_name == 'UAT' }}
+        name: "UAT Branch"
+        with:
+          ado_token: '${{ secrets.AZURE_DEVOPS_PAT_BOARDS }}'
+          ado_org: '${{ secrets.AZURE_DEVOPS_ORG }}'
+          ado_project: '${{ secrets.AZURE_DEVOPS_PROJECT_AT2 }}'
+          state: 'Ready for UAT'
+      - uses: samcarswell/azure-board-item-move@1.0.0
+        if: ${{ github.ref_name == 'master' }}
+        name: "master Branch"
+        with:
+          ado_token: '${{ secrets.AZURE_DEVOPS_PAT_BOARDS }}'
+          ado_org: '${{ secrets.AZURE_DEVOPS_ORG }}'
+          ado_project: '${{ secrets.AZURE_DEVOPS_PROJECT_AT2 }}'
+          state: 'Closed'
