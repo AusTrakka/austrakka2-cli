@@ -34,7 +34,7 @@ def submission_append(file: BufferedReader, proforma: str):
     append_metadata(file, proforma)
 
 
-@metadata.command('check')
+@metadata.command('validate')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
 @opt_is_append()
