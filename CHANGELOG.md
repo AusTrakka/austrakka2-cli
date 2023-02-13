@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.23.2] - 2023-02-10
+### Changed
+- Rename `metadata check` command to `metadata validate`
+
 # [0.23.1] - 2023-02-06
 ### Changed
 - Changes to CI for updating work items.
