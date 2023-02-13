@@ -9,10 +9,7 @@ Install with
 pip install austrakka
 ```
 
-You will need to set the environment variable `AT_URI`:
-```
-export AT_URI="***REMOVED***"
-```
+You will need to set the environment variable `AT_URI` to the value provided by the AusTrakka team.
 You may wish to add this to your `.bashrc` or `.zshrc` file.
 
 To use the CLI, you must log in by setting the `AT_TOKEN` environment variable using the 
@@ -31,7 +28,7 @@ variables set and the `at-login` alias, run:
 conda create -n austrakka python=3.9
 conda activate austrakka
 pip install austrakka
-conda env config vars set AT_URI="***REMOVED***"
+conda env config vars set AT_URI="[value provided by AusTrakka team]"
 mkdir -p ${CONDA_PREFIX}/etc/conda/activate.d
 echo "alias at-login=\"export AT_TOKEN=\\\$(austrakka auth user)\"" > ${CONDA_PREFIX}/etc/conda/activate.d/austrakka-alias.sh
 ```
