@@ -51,6 +51,21 @@ def opt_name(in_group=False, var_name='name', **attrs: t.Any):
 
 @_default_option_params(
     required=True,
+    help='Group Name'
+)
+def opt_group_name(in_group=False, var_name='group_name', **attrs: t.Any):
+    return _create_option(
+        "-g",
+        "--group-name",
+        var_name,
+        type=click.STRING,
+        in_group=in_group,
+        **attrs
+    )
+
+
+@_default_option_params(
+    required=True,
     help='Name'
 )
 def opt_sample_id(in_group=False, **attrs: t.Any):

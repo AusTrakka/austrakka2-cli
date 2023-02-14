@@ -5,6 +5,38 @@ from austrakka.utils.paths import SAMPLE_PATH
 
 DISABLE = 'Disable'
 ENABLE = 'Enable'
+UNSHARE = 'UnShare'
+SHARE = 'Share'
+
+
+@logger_wraps()
+def share_sample(
+        sample_ids: [str],
+        group_name: str
+):
+    call_api(
+        method=patch,
+        path="/".join([SAMPLE_PATH, SHARE]),
+        body={
+            "seqIds": sample_ids,
+            "groupName": group_name
+        },
+    )
+
+
+@logger_wraps()
+def unshare_sample(
+        sample_ids: [str],
+        group_name: str
+):
+    call_api(
+        method=patch,
+        path="/".join([SAMPLE_PATH, UNSHARE]),
+        body={
+            "seqIds": sample_ids,
+            "groupName": group_name
+        },
+    )
 
 
 @logger_wraps()
