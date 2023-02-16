@@ -1,0 +1,37 @@
+name: Auto PR for protected branches
+
+on:
+  push:
+    branches: [Development, UAT, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Create auto Development -> UAT PR
+        uses: devops-infra/action-pull-request@v0.5.5
+        if: ${{ github.ref_name == 'Development' }}
+        with:
+          github_token: ${{ secrets.AUSTRAKKA_ACTIONS_PAT }}
+          source_branch: Development
+          target_branch: UAT
+          title: Development -> UAT
+      - name: Create auto UAT -> master PR
+        uses: devops-infra/action-pull-request@v0.5.5
+        if: ${{ github.ref_name == 'UAT' }}
+        with:
+          github_token: ${{ secrets.AUSTRAKKA_ACTIONS_PAT }}
+          source_branch: UAT
+          target_branch: master
+          title: UAT -> master
+      - name: Create auto master -> Development PR
+        uses: devops-infra/action-pull-request@v0.5.5
+        if: ${{ github.ref_name == 'master' }}
+        with:
+          github_token: ${{ secrets.AUSTRAKKA_ACTIONS_PAT }}
+          source_branch: master
+          target_branch: Development
+          title: master -> Development
