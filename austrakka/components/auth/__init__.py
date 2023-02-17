@@ -19,17 +19,17 @@ def user():
 
 @auth.command('process')
 @click.option(
-    "--email",
+    "--process-id",
     show_envvar=True,
     required=True,
-    help="Process user's email"
+    help="Process account ID"
 )
 @click.option(
-    "--secret",
+    "--process-secret",
     show_envvar=True,
     required=True,
-    help="Process user's secret name"
+    help="Process account secret"
 )
-def process(email, secret):
+def process(process_id, process_secret):
     '''Get a token as a process'''
-    process_login(email, secret)
+    process_login(process_id, process_secret)

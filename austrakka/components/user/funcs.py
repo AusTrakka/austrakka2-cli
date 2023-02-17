@@ -29,7 +29,6 @@ def list_users(out_format: str):
         .pipe(lambda x: x.drop('lastUpdatedBy', axis=1))\
         .pipe(lambda x: x.drop('lastUpdated', axis=1))\
         .pipe(lambda x: x.drop('created', axis=1))\
-        .pipe(lambda x: x.drop('userId', axis=1))\
         .pipe(lambda x: x.drop('isActive', axis=1))\
         .pipe(lambda x: x.drop('userRoleGroup', axis=1))\
         .pipe(lambda x: x.drop('organisation.id', axis=1))\
@@ -40,8 +39,8 @@ def list_users(out_format: str):
         org,
         how="inner",
         on=None,
-        left_on="user.email",
-        right_on="email",
+        left_on="user.userId",
+        right_on="userId",
         left_index=False,
         right_index=False,
         sort=True,
@@ -51,7 +50,7 @@ def list_users(out_format: str):
         validate=None,
     )\
         .sort_values(["user.userId", "isAusTrakkaAdmin", "group.name"]) \
-        .pipe(lambda x: x.drop('email', axis=1))
+        .pipe(lambda x: x.drop('userId', axis=1))
 
     print_table(
         normalized,
