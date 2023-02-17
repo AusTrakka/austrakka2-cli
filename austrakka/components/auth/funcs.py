@@ -22,7 +22,6 @@ def user_login():
             authority=Auth.AUTH_URL.value,
             tenant_id=Auth.TENANT_ID.value,
             client_id=Auth.CLIENT_ID.value,
-            redirect_uri=Auth.REDIRECT_URI.value,
         )
         credential.authenticate(scopes=[Auth.APP_SCOPE.value])
         token = credential.get_token(Auth.APP_SCOPE.value)
@@ -35,7 +34,6 @@ def process_login(client_id: str, client_secret: str):
     credential = ClientSecretCredential(
         authority=Auth.AUTH_URL.value,
         tenant_id=Auth.TENANT_ID.value,
-        redirect_uri=Auth.REDIRECT_URI.value,
         client_id=client_id,
         client_secret=client_secret,
     )
