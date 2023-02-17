@@ -73,7 +73,14 @@ Either way, you should be directed to log in via a browser and enter a code to a
 
 This authorisation mode is intended for long-term automated processes. Most users will not need it. 
 
-To authorise with a process token, set the environment variable using:
+To authorise a process, you'll need to set the following environment variables:
+```bash
+AT_AUTH_PROCESS_PROCESS_ID
+AT_AUTH_PROCESS_PROCESS_SECRET
+```
+Values for `AT_AUTH_PROCESS_PROCESS_ID` and `AT_AUTH_PROCESS_PROCESS_SECRET` will be provided to you by the AusTrakka team. Note that the secret value is sensitive.
+
+Once these variables are set, run the following to authorise:
 ```
 export AT_TOKEN=$(austrakka auth process)
 ```
