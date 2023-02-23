@@ -6,7 +6,7 @@ Command line interface for AusTrakka V2.
 
 Install with 
 ```
-pip install austrakka
+python -m pip install austrakka
 ```
 
 You will need to set the environment variable `AT_URI` to the value provided by the AusTrakka team.
@@ -27,7 +27,7 @@ variables set and the `at-login` alias, run:
 ```
 conda create -n austrakka python=3.9
 conda activate austrakka
-pip install austrakka
+python -m pip install austrakka
 conda env config vars set AT_URI="[value provided by AusTrakka team]"
 mkdir -p ${CONDA_PREFIX}/etc/conda/activate.d
 echo "alias at-login=\"export AT_TOKEN=\\\$(austrakka auth user)\"" > ${CONDA_PREFIX}/etc/conda/activate.d/austrakka-alias.sh
@@ -44,7 +44,7 @@ in order to use the CLI.
 
 To update to the latest version, run 
 ```
-pip install --upgrade austrakka
+python -m pip install --upgrade austrakka
 ```
 If you have installed the CLI into a conda environment, you should first activate it with `conda activate austrakka`.
 
@@ -73,7 +73,14 @@ Either way, you should be directed to log in via a browser and enter a code to a
 
 This authorisation mode is intended for long-term automated processes. Most users will not need it. 
 
-To authorise with a process token, set the environment variable using:
+To authorise a process, you'll need to set the following environment variables:
+```bash
+AT_AUTH_PROCESS_ID
+AT_AUTH_PROCESS_SECRET
+```
+Values for `AT_AUTH_PROCESS_ID` and `AT_AUTH_PROCESS_SECRET` will be provided to you by the AusTrakka team. Note that the secret value is sensitive.
+
+Once these variables are set, run the following to authorise:
 ```
 export AT_TOKEN=$(austrakka auth process)
 ```
