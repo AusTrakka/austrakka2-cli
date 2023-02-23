@@ -22,7 +22,7 @@ from .components.sample import sample
 
 from . import __version__ as VERSION
 from .utils.misc import AusTrakkaCliTopLevel
-from .utils.misc import is_dev_env
+from .utils.misc import is_debug
 from .utils.misc import HELP_OPTS
 from .utils.misc import TOKEN_OPT_NAME
 from .utils.misc import URI_OPT_NAME
@@ -32,7 +32,7 @@ from .utils.logger import setup_logger
 from .utils.cmd_filter import show_admin_cmds
 
 CLI_PREFIX = 'AT'
-CLI_ENV = 'env'
+CLI_DEBUG = 'debug'
 
 CONTEXT_SETTINGS = dict(help_option_names=HELP_OPTS)
 
@@ -53,10 +53,10 @@ CONTEXT_SETTINGS = dict(help_option_names=HELP_OPTS)
     required=True
 )
 @click.option(
-    f"--{CLI_ENV}",
+    f"--{CLI_DEBUG}",
     show_envvar=True,
     required=True,
-    default='prod',
+    default='',
     show_default=True
 )
 @click.option(
@@ -66,12 +66,12 @@ CONTEXT_SETTINGS = dict(help_option_names=HELP_OPTS)
 )
 @click.version_option(message="%(prog)s v%(version)s", version=VERSION)
 @click.pass_context
-def cli(ctx: Context, uri: str, token: str, env: str, log: str):
+def cli(ctx: Context, uri: str, token: str, debug: str, log: str):
     """
     A cli for interfacing with AusTrakka.
     """
     ctx.creds = {'uri': uri, 'token': token}
-    setup_logger(env, log)
+    setup_logger(debug, log)
 
 
 def get_cli():
@@ -99,7 +99,7 @@ def main():
     except FailedResponseException as ex:
         log_response(ex.parsed_resp)
     except Exception as ex:  # pylint: disable=broad-except
-        if is_dev_env(os.environ.get(f"{CLI_PREFIX}_{CLI_ENV.upper()}")):
+        if is_debug(os.environ.get(f"{CLI_PREFIX}_{CLI_DEBUG.upper()}")):
             logger.exception(ex)
         else:
             logger.error(ex)

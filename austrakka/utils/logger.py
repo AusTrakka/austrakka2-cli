@@ -4,17 +4,17 @@ from tempfile import gettempdir
 
 from loguru import logger
 
-from austrakka.utils.misc import is_dev_env
+from austrakka.utils.misc import is_debug
 
 FORMAT = "<m>{time:YYYY:MM:DD HH:mm:ss.SSS}</m> | <lvl>{level}</lvl> | <lvl>{" \
          "message}</lvl> "
 
 
-def setup_logger(env: str, log: str):
+def setup_logger(debug: str, log: str):
     logger.remove()
     logger.add(
         sys.stderr,
-        level='DEBUG' if is_dev_env(env) else 'INFO',
+        level='DEBUG' if is_debug(debug) else 'INFO',
         format=FORMAT
     )
 

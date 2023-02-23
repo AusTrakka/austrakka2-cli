@@ -111,7 +111,7 @@ to see the usage of the `metadata add` command to upload metadata files.
 |--------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | `AT_TOKEN`   | AusTrakka auth token                                                                                                                            |
 | `AT_URI`     | URI for API endpoint                                                                                                                            |
-| `AT_ENV`     | Set to `dev` to log debugging                                                                                                                   |
+| `AT_DEBUG`   | Set to `debug` to log debugging                                                                                                                 |
 | `AT_LOG`     | Set to `file` to redirecting logging to a temp file                                                                                             |
 | `AT_CMD_SET` | Set to `austrakka-admin` to display admin commands (these will not actually run successfully unless you have an appropriate role on the server) |
 

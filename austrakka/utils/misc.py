@@ -7,7 +7,7 @@ from click_option_group import GroupedOption
 
 from ..components.auth import auth
 
-DEVELOPMENT_ENV = 'dev'
+DEBUG = 'debug'
 
 HELP_OPTS = ['-h', '--help']
 TOKEN_OPT_NAME = 'token'
@@ -78,8 +78,7 @@ class AusTrakkaCliGroupOption(GroupedOption):
         return _get_custom_help_record(orig_help, self.multiple)
 
 
-def is_dev_env(env: str):
-    return env == DEVELOPMENT_ENV
+def is_debug(env: str): return env == DEBUG
 
 
 def logger_wraps(*, entry=True, exit_func=True):

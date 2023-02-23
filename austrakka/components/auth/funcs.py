@@ -5,11 +5,16 @@ from azure.identity import ClientSecretCredential
 from azure.identity import DeviceCodeCredential
 from loguru import logger
 
-from .enums import Auth
+
+def _get_api_scope(env): return f'api://austrakka-api-{env}/default'
 
 
-def user_login():
-
+def user_login(
+        tenant_id: str,
+        client_id: str,
+        env: str,
+):
+    app_scope = _get_api_scope(env)
     logger.warning(
         'NOTE: This may take some time to return a token after '
         + 'authenticating in the browser'
@@ -19,23 +24,28 @@ def user_login():
     # subprocess
     with redirect_stdout(sys.stderr):
         credential = DeviceCodeCredential(
-            tenant_id=Auth.TENANT_ID.value,
-            client_id=Auth.CLIENT_ID.value,
+            tenant_id=tenant_id,
+            client_id=client_id,
         )
-        credential.authenticate(scopes=[Auth.APP_SCOPE.value])
-        token = credential.get_token(Auth.APP_SCOPE.value)
+        credential.authenticate(scopes=[app_scope])
+        token = credential.get_token(app_scope)
 
     # pylint: disable=print-function
     print(token.token)
 
 
-def process_login(client_id: str, client_secret: str):
+def process_login(
+        tenant_id: str,
+        env: str,
+        process_id: str,
+        client_secret: str
+):
     credential = ClientSecretCredential(
-        tenant_id=Auth.TENANT_ID.value,
-        client_id=client_id,
+        tenant_id=tenant_id,
+        client_id=process_id,
         client_secret=client_secret,
     )
-    token = credential.get_token(Auth.APP_SCOPE.value)
+    token = credential.get_token(_get_api_scope(env))
 
     # pylint: disable=print-function
     print(token.token)

@@ -2,6 +2,10 @@ import click
 
 from .funcs import user_login
 from .funcs import process_login
+from .enums import Auth
+from .opts import opt_tenant_id
+from .opts import opt_client_id
+from .opts import opt_env
 
 
 @click.group('auth')
@@ -12,12 +16,17 @@ def auth(ctx):
 
 
 @auth.command('user')
-def user():
+@opt_tenant_id
+@opt_client_id
+@opt_env
+def user(tenant_id: str, client_id: str, env: str):
     '''Get a token as a user'''
-    user_login()
+    user_login(tenant_id, client_id, env)
 
 
 @auth.command('process')
+@opt_tenant_id
+@opt_env
 @click.option(
     '--id',
     'process_id',
@@ -33,6 +42,11 @@ def user():
     envvar='AT_AUTH_PROCESS_SECRET',
     help='Process account secret'
 )
-def process(process_id, secret):
+def process(
+        tenant_id: str,
+        env: str,
+        process_id: str,
+        secret: str
+):
     '''Get a token as a process'''
-    process_login(process_id, secret)
+    process_login(tenant_id, env, process_id, secret)
