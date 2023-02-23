@@ -19,7 +19,6 @@ def user_login():
     # subprocess
     with redirect_stdout(sys.stderr):
         credential = DeviceCodeCredential(
-            authority=Auth.AUTH_URL.value,
             tenant_id=Auth.TENANT_ID.value,
             client_id=Auth.CLIENT_ID.value,
         )
@@ -32,7 +31,6 @@ def user_login():
 
 def process_login(client_id: str, client_secret: str):
     credential = ClientSecretCredential(
-        authority=Auth.AUTH_URL.value,
         tenant_id=Auth.TENANT_ID.value,
         client_id=client_id,
         client_secret=client_secret,
