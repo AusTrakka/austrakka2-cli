@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.24.1] - 2023-02-23
+### Changed
+- Updates to facilitate process auth
+
 # [0.24.0] - 2023-02-16
 ### Added
 - Added `sample share` and `sample unshare` commands to change sharing outside of uploads.
