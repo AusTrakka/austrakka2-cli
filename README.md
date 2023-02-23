@@ -6,7 +6,7 @@ Command line interface for AusTrakka V2.
 
 Install with 
 ```
-pip install austrakka
+python -m pip install austrakka
 ```
 
 You will need to set the environment variable `AT_URI` to the value provided by the AusTrakka team.
@@ -27,7 +27,7 @@ variables set and the `at-login` alias, run:
 ```
 conda create -n austrakka python=3.9
 conda activate austrakka
-pip install austrakka
+python -m pip install austrakka
 conda env config vars set AT_URI="[value provided by AusTrakka team]"
 mkdir -p ${CONDA_PREFIX}/etc/conda/activate.d
 echo "alias at-login=\"export AT_TOKEN=\\\$(austrakka auth user)\"" > ${CONDA_PREFIX}/etc/conda/activate.d/austrakka-alias.sh
@@ -44,7 +44,7 @@ in order to use the CLI.
 
 To update to the latest version, run 
 ```
-pip install --upgrade austrakka
+python -m pip install --upgrade austrakka
 ```
 If you have installed the CLI into a conda environment, you should first activate it with `conda activate austrakka`.
 
