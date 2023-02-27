@@ -6,7 +6,7 @@ from azure.identity import DeviceCodeCredential
 from loguru import logger
 
 
-def _get_api_scope(env): return f'api://austrakka-api-{env}/default'
+def _get_api_scope(env): return f'api://austrakka-api-{env}/.default'
 
 
 def user_login(
