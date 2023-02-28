@@ -5,7 +5,7 @@ from .funcs import process_login
 from .enums import Auth
 from .opts import opt_tenant_id
 from .opts import opt_client_id
-from .opts import opt_env
+from .opts import opt_backend_app_uri
 
 
 @click.group('auth')
@@ -18,15 +18,19 @@ def auth(ctx):
 @auth.command('user')
 @opt_tenant_id
 @opt_client_id
-@opt_env
-def user(tenant_id: str, client_id: str, env: str):
+@opt_backend_app_uri
+def user(
+        tenant_id: str,
+        client_id: str,
+        app_uri: str
+):
     '''Get a token as a user'''
-    user_login(tenant_id, client_id, env)
+    user_login(tenant_id, client_id, app_uri)
 
 
 @auth.command('process')
 @opt_tenant_id
-@opt_env
+@opt_backend_app_uri
 @click.option(
     '--id',
     'process_id',
@@ -44,9 +48,9 @@ def user(tenant_id: str, client_id: str, env: str):
 )
 def process(
         tenant_id: str,
-        env: str,
+        app_uri: str,
         process_id: str,
         secret: str
 ):
     '''Get a token as a process'''
-    process_login(tenant_id, env, process_id, secret)
+    process_login(tenant_id, app_uri, process_id, secret)

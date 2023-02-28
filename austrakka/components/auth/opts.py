@@ -25,12 +25,12 @@ def opt_client_id(func):
     )(func)
 
 
-def opt_env(func):
+def opt_backend_app_uri(func):
     return click.option(
-        '--env',
+        '--app-uri',
         show_envvar=True,
         required=True,
         default=PROD,
-        envvar='AT_AUTH_ENV',
-        help='AusTrakka env ID'
+        envvar='AT_AUTH_APP_URI',
+        help='AusTrakka API URI'
     )(func)

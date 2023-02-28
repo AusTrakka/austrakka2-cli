@@ -6,15 +6,15 @@ from azure.identity import DeviceCodeCredential
 from loguru import logger
 
 
-def _get_api_scope(env): return f'api://austrakka-api-{env}/.default'
+def _get_api_scope(app_uri): return f'{app_uri}/.default'
 
 
 def user_login(
         tenant_id: str,
         client_id: str,
-        env: str,
+        app_uri: str,
 ):
-    app_scope = _get_api_scope(env)
+    app_scope = _get_api_scope(app_uri)
     logger.warning(
         'NOTE: This may take some time to return a token after '
         + 'authenticating in the browser'
@@ -36,7 +36,7 @@ def user_login(
 
 def process_login(
         tenant_id: str,
-        env: str,
+        app_uri: str,
         process_id: str,
         client_secret: str
 ):
@@ -45,7 +45,7 @@ def process_login(
         client_id=process_id,
         client_secret=client_secret,
     )
-    token = credential.get_token(_get_api_scope(env))
+    token = credential.get_token(_get_api_scope(app_uri))
 
     # pylint: disable=print-function
     print(token.token)
