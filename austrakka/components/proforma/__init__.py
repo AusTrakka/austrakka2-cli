@@ -12,7 +12,7 @@ from .funcs import \
     enable_proforma, \
     share_proforma, \
     unshare_proforma, \
-    list_groups
+    list_groups_proforma
 
 from ...utils.options import *
 
@@ -176,7 +176,7 @@ def proforma_unshare(abbrev: str, group_names: List[str]):
 @proforma.command('listgroups')
 @click.argument('abbrev', type=click.STRING)
 @table_format_option()
-def proforma_unshare(abbrev: str, out_format: str):
+def proforma_list_groups(abbrev: str, out_format: str):
     """
     List groups who have access to the given pro forma.
 
@@ -185,4 +185,4 @@ def proforma_unshare(abbrev: str, out_format: str):
 
     ABBREV should be the abbreviated name of the pro forma.
     """
-    list_groups(abbrev, out_format)
+    list_groups_proforma(abbrev, out_format)

@@ -206,7 +206,7 @@ def show_proformas(abbrev: str, out_format: str):
 
 
 @logger_wraps()
-def list_groups(abbrev: str, out_format: str):
+def list_groups_proforma(abbrev: str, out_format: str):
     response = call_api(
         method=get,
         path=f"{PROFORMA_PATH}/{abbrev}/listgroups"
