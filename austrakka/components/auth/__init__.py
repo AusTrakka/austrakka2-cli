@@ -2,7 +2,6 @@ import click
 
 from .funcs import user_login
 from .funcs import process_login
-from .enums import Auth
 from .opts import opt_tenant_id
 from .opts import opt_client_id
 from .opts import opt_backend_app_uri
