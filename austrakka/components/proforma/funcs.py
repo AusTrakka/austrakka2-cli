@@ -203,3 +203,32 @@ def show_proformas(abbrev: str, out_format: str):
         field_df,
         out_format,
     )
+
+
+@logger_wraps()
+def list_groups_proforma(abbrev: str, out_format: str):
+    response = call_api(
+        method=get,
+        path=f"{PROFORMA_PATH}/{abbrev}/listgroups"
+    )
+    data = response['data'] if ('data' in response) else response
+
+    if not data:
+        logger.info("This pro forma is not shared with any groups.")
+        return
+
+    result = pd.DataFrame.from_dict(data)
+
+    result.drop(['created',
+                 'lastUpdated',
+                 'lastUpdatedBy',
+                 'createdBy',
+                 'organisation',
+                 'groupId'],
+                axis='columns',
+                inplace=True)
+
+    print_table(
+        result,
+        out_format,
+    )
