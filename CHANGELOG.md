@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.25.0] - 2023-03-02
+### Added
+- Added `proforma listgroups` command to show ProFormaEditors and AusTrakkaAdmins what group has access to a given pro forma.
+
 # [0.24.1] - 2023-02-23
 ### Changed
 - Updates to facilitate process auth
