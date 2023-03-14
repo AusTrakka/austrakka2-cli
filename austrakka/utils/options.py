@@ -384,5 +384,8 @@ def opt_group_role(**attrs: t.Any):
 
 def _create_option(*param_decls: str, **attrs: t.Any):
     def inner_func(func):
-        return click.option(*param_decls, cls=AusTrakkaCliOption, **attrs)(func)
+        return click.option(
+            *param_decls,
+            cls=AusTrakkaCliOption,
+            **attrs)(func)
     return inner_func
