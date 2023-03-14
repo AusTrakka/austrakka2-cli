@@ -129,13 +129,13 @@ def update_field(
                     f"Setting colour-nodes flag on field {name} of type {typename}. "
                     f"This may work poorly as colour visualisations are configured for a "
                     f"small discrete set of values.")
-        post_field["canVisualise"] = (can_visualise == 'viz')
+        post_field["canVisualise"] = can_visualise == 'viz'
 
     if column_order is not None:
         post_field["columnOrder"] = column_order
 
     if set_show is not None:
-        post_field["isDisplayedAsDefault"] = (set_show == 'show')
+        post_field["isDisplayedAsDefault"] = set_show == 'show'
 
     if min_width is not None:
         post_field["minWidth"] = min_width

@@ -18,7 +18,6 @@ from austrakka.utils.api import call_get_api
 from austrakka.utils.api import post
 from austrakka.utils.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
-from austrakka.utils.paths import SEQUENCE_BY_SPECIES_PATH
 from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
 from austrakka.utils.paths import SEQUENCE_BY_ANALYSIS_PATH
 from austrakka.utils.output import create_response_object
@@ -277,14 +276,11 @@ def _filter_sequences(data, seq_type, read) -> List[Dict]:
 
 
 def _get_seq_api(
-        species: str,
         group_name: str,
         analysis: str,
 ):
     api_path = SEQUENCE_PATH
-    if species is not None:
-        api_path += f'/{SEQUENCE_BY_SPECIES_PATH}/{species}'
-    elif group_name is not None:
+    if group_name is not None:
         api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}'
     elif analysis is not None:
         api_path += f'/{SEQUENCE_BY_ANALYSIS_PATH}/{analysis}'
@@ -297,11 +293,10 @@ def _get_seq_api(
 def _get_seq_data(
         seq_type: str,
         read: str,
-        species: str,
         group_name: str,
         analysis: str,
 ):
-    api_path = _get_seq_api(species, group_name, analysis)
+    api_path = _get_seq_api(group_name, analysis)
     data = call_get_api(path=api_path)
     return _filter_sequences(data, seq_type, read)
 
@@ -311,7 +306,6 @@ def get_sequences(
         output_dir,
         seq_type: str,
         read: str,
-        species: str,
         group_name: str,
         analysis: str,
 ):
@@ -321,7 +315,6 @@ def get_sequences(
     data = _get_seq_data(
         seq_type,
         read,
-        species,
         group_name,
         analysis,
     )
@@ -333,14 +326,12 @@ def list_sequences(
         out_format: str,
         seq_type: str,
         read: str,
-        species: str,
         group_name: str,
         analysis: str,
 ):
     data = _get_seq_data(
         seq_type,
         read,
-        species,
         group_name,
         analysis,
     )
