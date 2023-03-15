@@ -2,8 +2,6 @@
 from io import BufferedReader
 
 import click
-from click_option_group import optgroup
-from click_option_group import RequiredMutuallyExclusiveOptionGroup
 
 from austrakka.utils.output import table_format_option
 from austrakka.utils.options import opt_csv
@@ -11,7 +9,6 @@ from austrakka.utils.options import opt_seq_type
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_read
 from austrakka.utils.options import opt_group
-from austrakka.utils.options import opt_species
 from austrakka.utils.options import opt_analysis
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from .funcs import add_fasta_submission
@@ -19,6 +16,15 @@ from .funcs import add_fastq_submission
 from .funcs import take_sample_names
 from .funcs import get_sequences
 from .funcs import list_sequences
+
+
+def _check_mutex_group_analysis(group, analysis):
+    if group is None and analysis is None:
+        raise click.UsageError("Either 'group' or 'analysis' must be provided")
+    if group is not None and analysis is not None:
+        raise click.UsageError(
+            "Both 'group' or 'analysis' cannot be provided simultaneously"
+        )
 
 
 @click.group()
@@ -59,15 +65,12 @@ def submission_add(
 @opt_output_dir()
 @opt_seq_type()
 @opt_read()
-@optgroup.group('Filter', cls=RequiredMutuallyExclusiveOptionGroup)
-@opt_species(in_group=True, default=None)
-@opt_group(in_group=True, default=None, multiple=False)
-@opt_analysis(in_group=True, default=None)
+@opt_group(default=None, multiple=False, required=False)
+@opt_analysis(default=None, required=False)
 def get(
         output_dir,
         seq_type: str,
         read: str,
-        species: str,
         group_name: str,
         analysis: str,
 ):
@@ -84,11 +87,11 @@ def get(
 
 
     """
+    _check_mutex_group_analysis(group_name, analysis)
     get_sequences(
         output_dir,
         seq_type,
         read,
-        species,
         group_name,
         analysis,
     )
@@ -98,23 +101,20 @@ def get(
 @table_format_option()
 @opt_seq_type(default=None, required=False)
 @opt_read()
-@optgroup.group('Filter', cls=RequiredMutuallyExclusiveOptionGroup)
-@opt_species(in_group=True, default=None)
-@opt_group(in_group=True, default=None, multiple=False)
-@opt_analysis(in_group=True, default=None)
+@opt_group(default=None, multiple=False, required=False)
+@opt_analysis(default=None, required=False)
 def seq_list(
         out_format: str,
         seq_type: str,
         read: str,
-        species: str,
         group_name: str,
         analysis: str,
 ):
+    _check_mutex_group_analysis(group_name, analysis)
     list_sequences(
         out_format,
         seq_type,
         read,
-        species,
         group_name,
         analysis,
     )

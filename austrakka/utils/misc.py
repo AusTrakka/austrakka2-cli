@@ -3,7 +3,6 @@ import sys
 
 import click
 from loguru import logger
-from click_option_group import GroupedOption
 
 from ..components.auth import auth
 
@@ -67,12 +66,6 @@ def _get_custom_help_record(orig_help, multiple):
 
 
 class AusTrakkaCliOption(click.Option):
-    def get_help_record(self, ctx):
-        orig_help = super().get_help_record(ctx)
-        return _get_custom_help_record(orig_help, self.multiple)
-
-
-class AusTrakkaCliGroupOption(GroupedOption):
     def get_help_record(self, ctx):
         orig_help = super().get_help_record(ctx)
         return _get_custom_help_record(orig_help, self.multiple)
