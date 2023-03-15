@@ -13,6 +13,7 @@ from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import call_api
+from austrakka.utils.api import call_api_with_retries
 from austrakka.utils.api import call_api_raw
 from austrakka.utils.api import call_get_api
 from austrakka.utils.api import post
@@ -137,7 +138,7 @@ def add_fastq_submission(csv: BufferedReader):
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
 
-            call_api(
+            call_api_with_retries(
                 method=post,
                 path="/".join([SEQUENCE_PATH, FASTQ_PATH]),
                 body=sample_files,
