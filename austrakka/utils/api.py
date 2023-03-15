@@ -42,6 +42,7 @@ def _get_headers(content_type: str = 'application/json') -> Dict:
     }
 
 
+# pylint: disable=broad-except
 def call_api_with_retries(method: Callable,
                           path: str,
                           params: Dict = None,
@@ -65,12 +66,12 @@ def call_api_with_retries(method: Callable,
             )
             succeeded = True
         except Exception as ex:
-            print(f"Failed to request '{path}': {tried + 1} times")
+            logger.warning(f"Failed to request '{path}': {tried + 1} times")
             if tried >= retries:
-                print(f"Exhausted all retries for '{path}'. Giving up.")
+                logger.warning(f"Exhausted all retries for '{path}'. Giving up.")
                 raise ex
-            else:
-                tried = tried + 1
+
+            tried = tried + 1
 
 
 @logger_wraps()
