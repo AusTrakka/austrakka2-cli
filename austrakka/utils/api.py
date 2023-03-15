@@ -42,6 +42,37 @@ def _get_headers(content_type: str = 'application/json') -> Dict:
     }
 
 
+def call_api_with_retries(method: Callable,
+                          path: str,
+                          params: Dict = None,
+                          body: Union[Dict, List] = None,
+                          multipart: bool = False,
+                          custom_headers: Dict = None,
+                          retries: int = 1,
+                          ) -> Dict:
+
+    succeeded = False
+    tried = 0
+    while (tried <= retries) and not succeeded:
+        try:
+            call_api(
+                method=method,
+                path=path,
+                params=params,
+                body=body,
+                multipart=multipart,
+                custom_headers=custom_headers,
+            )
+            succeeded = True
+        except Exception as ex:
+            print(f"Failed to request '{path}': {tried + 1} times")
+            if tried >= retries:
+                print(f"Exhausted all retries for '{path}'. Giving up.")
+                raise ex
+            else:
+                tried = tried + 1
+
+
 @logger_wraps()
 # pylint: disable=too-many-arguments
 def call_api(
