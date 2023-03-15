@@ -46,7 +46,7 @@ def submission_add(
 
     The following CSV mapping fields are required:\n
         For FASTA:\n
-            SampleId: The sample name in AusTrakka\n
+            Seq_ID: The sample name in AusTrakka\n
             FileName: The local path of the fasta file to be uploaded\n
             FastaId: The sequence id in the fasta file\n
 
