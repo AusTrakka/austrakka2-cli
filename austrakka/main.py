@@ -34,7 +34,7 @@ from .utils.cmd_filter import show_admin_cmds
 CLI_PREFIX = 'AT'
 CLI_ENV = 'env'
 
-CONTEXT_SETTINGS = dict(help_option_names=HELP_OPTS)
+CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 
 
 # NOTE: envvar below needs to be explicitly specified despite using

@@ -10,8 +10,8 @@ class TestSequenceCommands:
         result = self.runner.invoke(get_cli(), [
             'seq',
             'list',
-            '-s',
-            'fake-species',
+            '-g',
+            'fake-group',
             '-t',
             'fastb'
         ])
@@ -23,8 +23,8 @@ class TestSequenceCommands:
         result = self.runner.invoke(get_cli(), [
             'seq',
             'list',
-            '-s',
-            'fake-species',
+            '-g',
+            'fake-group',
             '-r',
             '3'
         ])
@@ -37,25 +37,9 @@ class TestSequenceCommands:
             'seq',
             'list'
         ])
-        assert "Error: Missing one of the required mutually exclusive options "\
-               "from 'Filter' " \
-               'option group:\n' \
-               "  '-s' / '--species'\n" \
-               "  '-g' / '--group-name'\n" \
-               "  '-a' / '--analysis'\n" in result.output
+        assert "Error: Either 'group' or 'analysis' must be provided"\
+               in result.output
         assert result.exit_code == 2
-
-    def test_get_seq__unknown_species__expect_error(self):
-        result = self.runner.invoke(get_cli(), [
-            'seq',
-            'list',
-            '-s',
-            'fake-species'
-        ])
-        assert isinstance(result.exception, FailedResponseException)
-        assert "No sequences found for species fake-species." \
-               in result.exception.get_error_messages()
-        assert result.exit_code == 1
 
     def test_get_seq__unknown_analysis__expect_error(self):
         result = self.runner.invoke(get_cli(), [
