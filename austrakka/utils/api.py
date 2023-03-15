@@ -68,7 +68,8 @@ def call_api_with_retries(method: Callable,
         except Exception as ex:
             logger.warning(f"Failed to request '{path}': {tried + 1} times")
             if tried >= retries:
-                logger.warning(f"Exhausted all retries for '{path}'. Giving up.")
+                logger.warning(
+                    f"Exhausted all retries for '{path}'. Giving up.")
                 raise ex
 
             tried = tried + 1
