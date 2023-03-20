@@ -30,7 +30,7 @@ def org_list(out_format: str):
 @opt_name(help="Organisation Name")
 @opt_abbrev(help="Organisation Abbreviation")
 @opt_state(required=False)
-@opt_country()
+@opt_country(required=False)
 @opt_is_active()
 def org_add(
     name: str,
