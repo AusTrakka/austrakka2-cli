@@ -113,6 +113,7 @@ def main():
         # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         cli(auto_envvar_prefix=CLI_PREFIX)
     except FailedResponseException as ex:
+        logger.error("Request failed")
         log_response(ex.parsed_resp)
     except Exception as ex:  # pylint: disable=broad-except
         if is_dev_env(os.environ.get(f"{CLI_PREFIX}_{CLI_ENV.upper()}")):

@@ -35,15 +35,19 @@ def _get_default_headers(
 def _check_response(response: httpx.Response):
     # pylint: disable=raise-missing-from
     try:
-        response.raise_for_status()
-    except HTTPStatusError as http_error:
+        parsed_resp = response.json()
+        if 'data' not in parsed_resp or 'messages' not in parsed_resp:
+            raise UnknownResponseException(
+                f'{response.status_code}: {parsed_resp}'
+            )
         try:
-            parsed_resp = response.json()
-            if 'data' not in parsed_resp or 'messages' not in parsed_resp:
-                raise UnknownResponseException(parsed_resp)
+            response.raise_for_status()
+        except HTTPStatusError:
             raise FailedResponseException(parsed_resp)
-        except JSONDecodeError:
-            raise http_error
+    except JSONDecodeError:
+        raise UnknownResponseException(
+            f'{response.status_code}: {response.text}'
+        )
 
 
 def _get_data(body: Union[Dict, List] = None) -> str:
