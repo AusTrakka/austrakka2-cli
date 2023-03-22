@@ -15,7 +15,6 @@ from austrakka.utils.enums.api import RESPONSE_TYPE
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
-from ..components.auth.enums import Auth
 from .misc import logger_wraps
 from .output import log_dict
 from .output import log_response
