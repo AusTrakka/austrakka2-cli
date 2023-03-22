@@ -14,7 +14,7 @@ from .funcs import \
 @click.pass_context
 def field(ctx):
     """Commands related to group fields access"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @field.command('add', hidden=hide_admin_cmds())

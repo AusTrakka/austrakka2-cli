@@ -10,7 +10,7 @@ from .funcs import add_metadata, validate_metadata, append_metadata
 @click.pass_context
 def metadata(ctx):
     """Commands related to metadata submissions"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @metadata.command('add')

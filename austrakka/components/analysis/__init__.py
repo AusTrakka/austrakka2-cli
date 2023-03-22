@@ -21,7 +21,7 @@ from austrakka.utils.options import opt_filter_string
 @click.pass_context
 def analysis(ctx):
     '''Commands related to analyses'''
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 analysis.add_command(definition) if show_admin_cmds() else None

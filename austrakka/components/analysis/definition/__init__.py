@@ -14,7 +14,7 @@ from austrakka.utils.options import opt_is_active
 @click.pass_context
 def definition(ctx):
     """Commands related to analyses"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @definition.command('list')

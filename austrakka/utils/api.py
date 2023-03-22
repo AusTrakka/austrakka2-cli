@@ -3,6 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Union
 from json.decoder import JSONDecodeError
+from http import HTTPStatus
 
 import click
 from httpx import HTTPStatusError
@@ -13,7 +14,6 @@ from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.components.auth.enums import Auth
 from austrakka.utils.output import log_response
 
-NO_CONTENT = 204
 TIMEOUT_IN_SECONDS = 300
 
 CONTENT_TYPE_JSON = 'application/json'
@@ -23,7 +23,7 @@ CONTENT_TYPE_MULTIPART = 'multipart/form-data; charset=utf-8; boundary=+++'
 def _get_default_headers(
         content_type: str = CONTENT_TYPE_JSON,
 ) -> Dict:
-    token = click.get_current_context().parent.creds['token']
+    token = click.get_current_context().parent.context['token']
     default_headers = {
         'Content-Type': content_type,
         'Authorization': f'Bearer {token}',
@@ -51,12 +51,13 @@ def _get_data(body: Union[Dict, List] = None) -> str:
 
 
 def _get_url(path: str):
-    return f'{click.get_current_context().parent.creds["uri"]}/api/{path}'
+    return f'{click.get_current_context().parent.context["uri"]}/api/{path}'
 
 
 def _get_response(response: httpx.Response, log_resp: bool = False) -> Dict:
     _check_response(response)
-    parsed_resp = {} if response.status_code == NO_CONTENT else response.json()
+    parsed_resp = {} \
+        if response.status_code == HTTPStatus.NO_CONTENT else response.json()
     if log_resp:
         log_response(parsed_resp)
     return parsed_resp
@@ -67,7 +68,7 @@ def _get_client(
 ):
     return httpx.Client(
         headers=_get_default_headers(content_type),
-        verify=False,
+        verify=click.get_current_context().parent.context['verify_cert'],
         timeout=TIMEOUT_IN_SECONDS,
     )
 
