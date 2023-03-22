@@ -20,18 +20,16 @@ CONTENT_TYPE_JSON = 'application/json'
 CONTENT_TYPE_MULTIPART = 'multipart/form-data; charset=utf-8; boundary=+++'
 
 
-def _get_headers(
+def _get_default_headers(
         content_type: str = CONTENT_TYPE_JSON,
-        custom_headers: Dict = None,
 ) -> Dict:
-    custom_headers = custom_headers if custom_headers else {}
     token = click.get_current_context().parent.creds['token']
     default_headers = {
         'Content-Type': content_type,
         'Authorization': f'Bearer {token}',
         'Ocp-Apim-Subscription-Key': Auth.SUBSCRIPTION_KEY.value
     }
-    return default_headers | custom_headers
+    return default_headers
 
 
 def _check_response(response: httpx.Response):
@@ -64,100 +62,105 @@ def _get_response(response: httpx.Response, log_resp: bool = False) -> Dict:
     return parsed_resp
 
 
+def _get_client(
+        content_type: str = CONTENT_TYPE_JSON
+):
+    return httpx.Client(
+        headers=_get_default_headers(content_type),
+        verify=False,
+        timeout=TIMEOUT_IN_SECONDS,
+    )
+
+
+def _use_http_client(
+        content_type: str = CONTENT_TYPE_JSON,
+        log_resp: bool = False,
+):
+    def decorator(func):
+        def inner_func(*args, **kwargs):
+            with _get_client(content_type) as client:
+                response = func(*args, **kwargs, client=client)
+                return _get_response(response, log_resp)
+        return inner_func
+    return decorator
+
+
+@_use_http_client()
 def api_get(
         path: str,
         params: Dict = None,
+        client: httpx.Client = None,
 ):
-    headers = _get_headers()
-    response = httpx.get(
+    return client.get(
         _get_url(path),
-        headers=headers,
-        verify=False,
         params=params,
-        timeout=TIMEOUT_IN_SECONDS,
     )
-    return _get_response(response)
 
 
 def api_get_stream(
         path: str,
 ):
-    headers = _get_headers()
-    return httpx.stream(
+    return _get_client().stream(
         "GET",
         _get_url(path),
-        headers=headers,
-        verify=False,
-        timeout=TIMEOUT_IN_SECONDS,
     )
 
 
+@_use_http_client(content_type=CONTENT_TYPE_MULTIPART, log_resp=True)
 def api_post_multipart(
         path: str,
         files,
         params: Dict = None,
         data: Union[Dict, List] = None,
         custom_headers: Dict = None,
+        client: httpx.Client = None,
 ):
-    headers = _get_headers(CONTENT_TYPE_MULTIPART, custom_headers)
-    response = httpx.post(
+    return client.post(
         _get_url(path),
-        headers=headers,
-        verify=False,
         data=data,
         params=params,
         files=files,
-        timeout=TIMEOUT_IN_SECONDS,
+        headers=dict(client.headers) | custom_headers
     )
-    return _get_response(response, log_resp=True)
 
 
+@_use_http_client(log_resp=True)
 def api_post(
         path: str,
         params: Dict = None,
         data: Union[Dict, List] = None,
+        client: httpx.Client = None,
 ):
-    headers = _get_headers()
-    response = httpx.post(
+    return client.post(
         _get_url(path),
-        headers=headers,
-        verify=False,
         data=json.dumps(data),
         params=params,
-        timeout=TIMEOUT_IN_SECONDS,
     )
-    return _get_response(response, log_resp=True)
 
 
+@_use_http_client(log_resp=True)
 def api_put(
         path: str,
         params: Dict = None,
         data: Union[Dict, List] = None,
+        client: httpx.Client = None,
 ):
-    headers = _get_headers()
-    response = httpx.put(
+    return client.put(
         _get_url(path),
-        headers=headers,
-        verify=False,
         data=json.dumps(data),
         params=params,
-        timeout=TIMEOUT_IN_SECONDS,
     )
-    return _get_response(response, log_resp=True)
 
 
+@_use_http_client(log_resp=True)
 def api_patch(
         path: str,
         params: Dict = None,
         data: Union[Dict, List] = None,
+        client: httpx.Client = None,
 ):
-    headers = _get_headers()
-    response = httpx.patch(
+    return client.patch(
         _get_url(path),
-        headers=headers,
-        verify=False,
         data=json.dumps(data),
         params=params,
-        timeout=TIMEOUT_IN_SECONDS,
     )
-    return _get_response(response, log_resp=True)
