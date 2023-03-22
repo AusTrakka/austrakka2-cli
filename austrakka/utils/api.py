@@ -6,7 +6,6 @@ from typing import Union
 from json.decoder import JSONDecodeError
 from http import HTTPStatus
 
-import click
 from httpx import HTTPStatusError
 import httpx
 
@@ -14,6 +13,8 @@ from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.components.auth.enums import Auth
 from austrakka.utils.output import log_response
+from austrakka.utils.context import CxtKey
+from austrakka.utils.context import get_ctx_value
 
 TIMEOUT_IN_SECONDS = 300
 
@@ -24,10 +25,9 @@ CONTENT_TYPE_MULTIPART = 'multipart/form-data; charset=utf-8; boundary=+++'
 def _get_default_headers(
         content_type: str = CONTENT_TYPE_JSON,
 ) -> Dict:
-    token = click.get_current_context().parent.context['token']
     default_headers = {
         'Content-Type': content_type,
-        'Authorization': f'Bearer {token}',
+        'Authorization': f'Bearer {get_ctx_value(CxtKey.CTX_TOKEN)}',
         'Ocp-Apim-Subscription-Key': Auth.SUBSCRIPTION_KEY.value
     }
     return default_headers
@@ -56,7 +56,7 @@ def _get_data(body: Union[Dict, List] = None) -> str:
 
 
 def _get_url(path: str):
-    return f'{click.get_current_context().parent.context["uri"]}/api/{path}'
+    return f'{get_ctx_value(CxtKey.CTX_URI)}/api/{path}'
 
 
 def _get_response(response: httpx.Response, log_resp: bool = False) -> Dict:
@@ -73,8 +73,9 @@ def _get_client(
 ):
     return httpx.Client(
         headers=_get_default_headers(content_type),
-        verify=click.get_current_context().parent.context['verify_cert'],
+        verify=get_ctx_value(CxtKey.CTX_VERIFY_CERT),
         timeout=TIMEOUT_IN_SECONDS,
+        http2=get_ctx_value(CxtKey.CTX_USE_HTTP2),
     )
 
 
