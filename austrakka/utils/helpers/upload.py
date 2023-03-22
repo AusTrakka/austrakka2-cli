@@ -1,9 +1,10 @@
 from io import BufferedReader
 
-from ..misc import logger_wraps
-from ..api import call_api
-from ..api import post
-from ...components.job.instance.funcs import add_job_instance
+from austrakka.utils.misc import logger_wraps
+from austrakka.utils.api import api_post_multipart
+from austrakka.utils.api import api_post
+from austrakka.utils.paths import JOB_INSTANCE_PATH
+
 
 
 @logger_wraps()
@@ -12,16 +13,19 @@ def upload_file(
         analysis_abbrev: str,
         route: str
 ):
-    job_instance_resp = add_job_instance(
-        analysis_abbrev=analysis_abbrev
+    job_instance_resp = api_post(
+        path=JOB_INSTANCE_PATH,
+        data={
+            "analysis": {
+                "abbreviation": analysis_abbrev,
+            }
+        }
     )
 
-    return call_api(
-        method=post,
+    return api_post_multipart(
         path=route,
-        body={
-            'file': (file.name, file),
+        data={
             'jobinstanceid': str(job_instance_resp['data']['jobInstanceId'])
         },
-        multipart=True,
+        files={'file': (file.name, file)}
     )
