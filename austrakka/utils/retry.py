@@ -8,6 +8,7 @@ def retry(func, retries, desc):
         try:
             func()
             succeeded = True
+        # pylint: disable=broad-exception-caught
         except Exception as ex:
             logger.warning(f"Retry failed for '{desc}'")
             if tried >= retries:

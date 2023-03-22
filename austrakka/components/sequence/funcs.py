@@ -142,7 +142,7 @@ def add_fastq_submission(csv: BufferedReader):
                 custom_headers[FASTQ_CSV_PATH_2_API] \
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
-            retry(lambda: _post_fastq(sample_files, custom_headers),
+            retry(lambda s=sample_files, c=custom_headers: _post_fastq(s, c),
                   1,
                   "/".join([SEQUENCE_PATH, FASTQ_PATH]))
         except FailedResponseException as ex:
@@ -222,8 +222,8 @@ def _validate_fastq_submission(csv_dataframe: DataFrame):
 
 def _download_seq_file(file_path, filename, query_path, sample_dir):
     try:
-        def _write_chunks(r: httpx.Response):
-            for chunk in r.iter_raw(chunk_size=128):
+        def _write_chunks(resp: httpx.Response):
+            for chunk in resp.iter_raw(chunk_size=128):
                 file.write(chunk)
 
         if not os.path.exists(sample_dir):

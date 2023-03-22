@@ -1,5 +1,5 @@
 import json
-import typing
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Union
@@ -15,8 +15,6 @@ from austrakka.components.auth.enums import Auth
 from austrakka.utils.output import log_response
 from austrakka.utils.context import CxtKey
 from austrakka.utils.context import get_ctx_value
-
-TIMEOUT_IN_SECONDS = 300
 
 CONTENT_TYPE_JSON = 'application/json'
 CONTENT_TYPE_MULTIPART = 'multipart/form-data; charset=utf-8; boundary=+++'
@@ -74,7 +72,7 @@ def _get_client(
     return httpx.Client(
         headers=_get_default_headers(content_type),
         verify=get_ctx_value(CxtKey.CTX_VERIFY_CERT),
-        timeout=TIMEOUT_IN_SECONDS,
+        timeout=300,
         http2=get_ctx_value(CxtKey.CTX_USE_HTTP2),
     )
 
@@ -106,10 +104,10 @@ def api_get(
 
 def api_get_stream(
         path: str,
-        func: typing.Callable[[httpx.Response], None],
+        func: Callable[[httpx.Response], None],
 ):
-    with _get_client().stream("GET", _get_url(path)) as r:
-        func(r)
+    with _get_client().stream("GET", _get_url(path)) as resp:
+        func(resp)
 
 
 @_use_http_client(content_type=CONTENT_TYPE_MULTIPART, log_resp=True)
