@@ -38,7 +38,6 @@ def _get_headers(content_type: str = 'application/json') -> Dict:
     return {
         'Content-Type': content_type,
         'Authorization': f'Bearer {token}',
-        'Ocp-Apim-Subscription-Key': Auth.SUBSCRIPTION_KEY.value
     }
 
 
