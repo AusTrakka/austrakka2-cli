@@ -1,4 +1,5 @@
 import json
+import typing
 from typing import Dict
 from typing import List
 from typing import Union
@@ -104,11 +105,10 @@ def api_get(
 
 def api_get_stream(
         path: str,
+        func: typing.Callable[[httpx.Response], None],
 ):
-    return _get_client().stream(
-        "GET",
-        _get_url(path),
-    )
+    with _get_client().stream("GET", _get_url(path)) as r:
+        func(r)
 
 
 @_use_http_client(content_type=CONTENT_TYPE_MULTIPART, log_resp=True)

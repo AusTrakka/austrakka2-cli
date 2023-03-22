@@ -2,6 +2,7 @@ import os
 from io import BufferedReader
 from typing import BinaryIO, List, Dict
 
+import httpx
 import pandas as pd
 # pylint: disable=no-name-in-module
 from pandas._libs.parsers import STR_NA_VALUES
@@ -221,17 +222,21 @@ def _validate_fastq_submission(csv_dataframe: DataFrame):
 
 def _download_seq_file(file_path, filename, query_path, sample_dir):
     try:
+        def _write_chunks(r: httpx.Response):
+            for chunk in r.iter_raw(chunk_size=128):
+                file.write(chunk)
+
         if not os.path.exists(sample_dir):
             create_dir(sample_dir)
         with open(file_path, 'wb') as file:
-            with api_get_stream(query_path) as r:
-                for chunk in r.iter_raw(chunk_size=128):
-                    file.write(chunk)
+            api_get_stream(query_path, _write_chunks)
 
         logger.success(f'Downloaded: {filename} To: {file_path}')
 
     except FailedResponseException as ex:
         log_response_compact(ex.parsed_resp)
+    except UnknownResponseException as ex:
+        log_response_compact(ex)
 
 
 def _get_seq_download_path(sample_name: str, read: str, seq_type: str):
