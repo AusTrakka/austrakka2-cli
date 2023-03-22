@@ -6,7 +6,6 @@ from austrakka.utils.api import api_post
 from austrakka.utils.paths import JOB_INSTANCE_PATH
 
 
-
 @logger_wraps()
 def upload_file(
         file: BufferedReader,
