@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.25.2] - 2023-03-24
+### Security
+- Strict host verification.
+
 # [0.25.1] - 2023-03-15
 ### Changed
 - Changed `seq add -t fastq` command to retry once on any errors.
