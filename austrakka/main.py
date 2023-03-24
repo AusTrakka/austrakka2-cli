@@ -30,6 +30,7 @@ from .utils.exceptions import FailedResponseException
 from .utils.output import log_response
 from .utils.logger import setup_logger
 from .utils.cmd_filter import show_admin_cmds
+from .utils.version import check_version
 
 CLI_PREFIX = 'AT'
 CLI_ENV = 'env'
@@ -89,6 +90,7 @@ def cli(
     """
     ctx.creds = {'uri': uri, 'token': token, CTX_VERIFY_CERT: verify_cert}
     setup_logger(env, log)
+    check_version(VERSION)
 
 
 def get_cli():
