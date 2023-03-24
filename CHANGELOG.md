@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
 # [0.25.2] - 2023-03-24
+### Added
+- Notify users if CLI is outdated.
+
 ### Security
 - Strict host verification.
 
