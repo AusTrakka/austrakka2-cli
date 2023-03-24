@@ -8,7 +8,7 @@ PYPI_PACKAGE_URI = 'https://pypi.org/pypi/austrakka/json'
 
 def check_version(current):
     try:
-        resp = requests.get(PYPI_PACKAGE_URI)
+        resp = requests.get(PYPI_PACKAGE_URI, timeout=10)
         releases = list(resp.json()['releases'].keys())
         latest = sorted(releases, key=cmp_to_key(compare))[-1]
         current_parsed = VersionInfo.parse(current)
@@ -23,5 +23,6 @@ def check_version(current):
         elif latest_parsed.patch > current_parsed.patch:
             logger.warning("A new patch version of 'austrakka' is available: "
                            f"{latest}")
+    # pylint: disable=broad-exception-caught
     except Exception as ex:
         logger.error(f"Error checking for new version : {ex}")
