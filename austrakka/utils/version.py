@@ -14,8 +14,9 @@ def check_version(current):
         current_parsed = VersionInfo.parse(current)
         latest_parsed = VersionInfo.parse(latest)
         if latest_parsed.major > current_parsed.major:
-            logger.critical(f"A new major version of 'austrakka' is available: "
-                            f"{latest} Please update immediately")
+            logger.critical(
+                f"A new major version of 'austrakka' is available: "
+                f"{latest} Please update immediately")
         elif latest_parsed.minor > current_parsed.minor:
             logger.error("A new minor version of 'austrakka' is available: "
                          f"{latest} Update to avoid any compatibility issues")
