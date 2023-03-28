@@ -5,12 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-# [0.25.2] - 2023-03-24
-### Added
-- Notify users if CLI is outdated.
-
-### Security
-- Strict host verification.
+# [0.26.0] - 2023-03-28
+### Changed
+- Changed `seq get -t fastq` command to save files with a different name format.
+- Make country optional for Organisations, to match endpoint change.
+- Fixed org retrieval for PUT.
 
 # [0.25.1] - 2023-03-15
 ### Changed
