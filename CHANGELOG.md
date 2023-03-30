@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.27.1] - 2023-03-30
+### Fixed
+- Error running CLI.
+
+# [0.27.0] - 2023-03-30
+### Added
+- Notify users if CLI is outdated.
+
+### Security
+- Strict host verification.
+
 # [0.26.0] - 2023-03-28
 ### Changed
 - Changed `seq get -t fastq` command to save files with a different name format.
