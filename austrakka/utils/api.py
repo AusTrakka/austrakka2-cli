@@ -100,7 +100,7 @@ def call_api(
     response = method(
         url,
         headers=headers,
-        verify=False,
+        verify=click.get_current_context().parent.creds["verify_cert"],
         data=data,
         params=params,
     )
@@ -156,7 +156,7 @@ def call_get_api(
     response = get(
         url,
         headers=_get_headers(),
-        verify=False,
+        verify=click.get_current_context().parent.creds["verify_cert"],
         params=params,
         timeout=TIMEOUT_IN_SECONDS,
     )
@@ -191,7 +191,7 @@ def call_api_raw(
     response = get(
         url,
         headers=_get_headers(),
-        verify=False,
+        verify=click.get_current_context().parent.creds["verify_cert"],
         params=params,
         stream=stream,
         timeout=TIMEOUT_IN_SECONDS,

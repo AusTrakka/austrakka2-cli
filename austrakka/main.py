@@ -30,9 +30,11 @@ from .utils.exceptions import FailedResponseException
 from .utils.output import log_response
 from .utils.logger import setup_logger
 from .utils.cmd_filter import show_admin_cmds
+from .utils.version import check_version
 
 CLI_PREFIX = 'AT'
 CLI_ENV = 'env'
+CTX_VERIFY_CERT = 'verify_cert'
 
 CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 
@@ -60,18 +62,35 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     show_default=True
 )
 @click.option(
+    f"--{CTX_VERIFY_CERT}",
+    show_envvar=True,
+    required=True,
+    default=True,
+    show_default=True,
+    type=bool,
+    help="Skip verification of certificate"
+)
+@click.option(
     '--log',
     show_envvar=True,
     help='Outputs logs to a temporary file',
 )
 @click.version_option(message="%(prog)s v%(version)s", version=VERSION)
 @click.pass_context
-def cli(ctx: Context, uri: str, token: str, env: str, log: str):
+def cli(
+        ctx: Context,
+        uri: str,
+        token: str,
+        env: str,
+        verify_cert: bool,
+        log: str
+):
     """
     A cli for interfacing with AusTrakka.
     """
-    ctx.creds = {'uri': uri, 'token': token}
+    ctx.creds = {'uri': uri, 'token': token, CTX_VERIFY_CERT: verify_cert}
     setup_logger(env, log)
+    check_version(VERSION)
 
 
 def get_cli():
