@@ -15,6 +15,7 @@ from austrakka.components.auth.enums import Auth
 from austrakka.utils.output import log_response
 from austrakka.utils.context import CxtKey
 from austrakka.utils.context import get_ctx_value
+from austrakka import __version__
 
 CONTENT_TYPE_JSON = 'application/json'
 CONTENT_TYPE_MULTIPART = 'multipart/form-data; charset=utf-8; boundary=+++'
@@ -26,7 +27,8 @@ def _get_default_headers(
     default_headers = {
         'Content-Type': content_type,
         'Authorization': f'Bearer {get_ctx_value(CxtKey.CTX_TOKEN)}',
-        'Ocp-Apim-Subscription-Key': Auth.SUBSCRIPTION_KEY.value
+        'Ocp-Apim-Subscription-Key': Auth.SUBSCRIPTION_KEY.value,
+        'User-Agent': f'austrakka/{__version__}',
     }
     return default_headers
 
