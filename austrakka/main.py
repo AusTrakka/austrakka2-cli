@@ -29,6 +29,7 @@ from .utils.exceptions import FailedResponseException
 from .utils.output import log_response
 from .utils.logger import setup_logger
 from .utils.cmd_filter import show_admin_cmds
+from .utils.version import check_version
 
 CLI_PREFIX = 'AT'
 CLI_ENV = 'env'
@@ -102,6 +103,7 @@ def cli(
         CxtKey.CTX_USE_HTTP2.value: use_http2,
     }
     setup_logger(env, log)
+    check_version(VERSION)
 
 
 def get_cli():

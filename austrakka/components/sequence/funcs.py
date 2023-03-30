@@ -254,7 +254,7 @@ def _download_sequences(
     for ssi in samples_seq_info:
         sample_name = ssi['sampleName']
         dto_read = str(ssi['read'])
-        filename = ssi['fileName']
+        filename = ssi['fileNameOnDisk']
         seq_type = ssi['type']
 
         sample_dir = os.path.join(output_dir, sample_name)
