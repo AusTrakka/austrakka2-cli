@@ -25,4 +25,4 @@ def check_version(current):
                            f"{latest}")
     # pylint: disable=broad-exception-caught
     except Exception as ex:
-        logger.error(f"Error checking for new version : {ex}")
+        logger.warning(f"Error checking for new version : {ex}")
