@@ -19,7 +19,7 @@ from austrakka.utils.cmd_filter import show_admin_cmds
 @click.pass_context
 def fieldtype(ctx):
     """Commands related to metadata field types"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 # pylint: disable=expression-not-assigned

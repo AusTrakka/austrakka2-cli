@@ -2,7 +2,7 @@ import json
 import os
 import types
 
-import requests
+import httpx
 
 AT_CLI_PACKAGE_GUID = os.environ.get("AT_CLI_PACKAGE_GUID")
 DEVOPS_TOKEN = os.environ.get("DEVOPS_TOKEN")
@@ -25,7 +25,7 @@ with open(VERSION_FILE_PATH, "r") as version_file_data:
 
 VERSION = version_module.__version__
 
-resp = requests.get(
+resp = httpx.get(
     f'https://feeds.dev.azure.com/mduphl/austrakka/_apis/packaging/'
     + f'feeds/austrakka-feed/packages/{AT_CLI_PACKAGE_GUID}/versions',
     headers={

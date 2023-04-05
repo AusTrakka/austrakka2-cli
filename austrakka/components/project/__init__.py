@@ -10,7 +10,7 @@ from ...utils.options import *
 @click.pass_context
 def project(ctx):
     '''Commands related to projects'''
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @project.command('add', hidden=hide_admin_cmds())

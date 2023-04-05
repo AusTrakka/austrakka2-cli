@@ -130,8 +130,7 @@ setup(
     install_requires=[
         "azure-identity",
         "azure-keyvault-secrets",
-        "requests-toolbelt",
-        "requests",
+        "httpx",
         "click",
         "loguru",
         "pandas",

@@ -10,7 +10,7 @@ from ...utils.options import opt_analysis
 @click.pass_context
 def tree(ctx):
     '''Commands related to trees'''
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @tree.command('add')
