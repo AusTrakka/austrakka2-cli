@@ -1,9 +1,9 @@
 from typing import List
 import pandas as pd
 
-from austrakka.utils.api import call_api, get
-from austrakka.utils.api import post
-from austrakka.utils.api import put
+from austrakka.utils.api import api_get
+from austrakka.utils.api import api_post
+from austrakka.utils.api import api_put
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import USER_PATH
 from austrakka.utils.output import print_table
@@ -11,8 +11,7 @@ from austrakka.utils.output import print_table
 
 @logger_wraps()
 def list_users(out_format: str):
-    response = call_api(
-        method=get,
+    response = api_get(
         path=USER_PATH,
         params={
             'includeall': False
@@ -72,10 +71,9 @@ def add_user(
         "ownerGroupRoles": list(owner_group_roles),
     }
 
-    call_api(
-        method=post,
+    api_post(
         path=USER_PATH,
-        body=user
+        data=user
     )
 
 
@@ -92,8 +90,7 @@ def update_user(
         "ownerGroupRoles": list(owner_group_roles),
     }
 
-    call_api(
-        method=put,
+    api_put(
         path=f'{USER_PATH}/{user_id}',
-        body=user
+        data=user
     )

@@ -3,8 +3,10 @@ from typing import List
 import pandas as pd
 from loguru import logger
 
-from austrakka.utils.api import call_api
-from austrakka.utils.api import get, post, put, patch
+from austrakka.utils.api import api_get
+from austrakka.utils.api import api_post
+from austrakka.utils.api import api_put
+from austrakka.utils.api import api_patch
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
 from austrakka.utils.paths import GROUP_PATH
@@ -24,10 +26,9 @@ def update_group(
     if org:
         payload["organisation"] = {"abbreviation": org}
 
-    call_api(
-        method=put,
+    api_put(
         path=f'{GROUP_PATH}/{name}',
-        body=payload)
+        data=payload)
 
     logger.info('Done.')
 
@@ -44,10 +45,9 @@ def add_group(
     if org:
         payload["organisation"] = {"abbreviation": org}
 
-    return call_api(
-        method=post,
+    return api_post(
         path=GROUP_PATH,
-        body=payload)
+        data=payload)
 
 
 @logger_wraps()
@@ -86,16 +86,15 @@ def change_user_group_assignment(user_id, group_roles, sub_path):
         "entitlements": group_role_pairs
     }
 
-    return call_api(
-        method=patch,
+    return api_patch(
         path=f'{GROUP_PATH}/{sub_path}',
-        body=payload)
+        data=payload,
+    )
 
 
 @logger_wraps()
 def list_group(out_format: str):
-    response = call_api(
-        method=get,
+    response = api_get(
         path=GROUP_PATH,
     )
 

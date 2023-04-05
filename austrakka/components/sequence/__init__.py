@@ -31,7 +31,7 @@ def _check_mutex_group_analysis(group, analysis):
 @click.pass_context
 def seq(ctx):
     """Commands related to sequences"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @seq.command('add')

@@ -1,6 +1,5 @@
-from austrakka.utils.api import call_api
-from austrakka.utils.api import post
-from austrakka.utils.api import put
+from austrakka.utils.api import api_post
+from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.paths import JOB_DEFINITION_PATH
 from austrakka.utils.misc import logger_wraps
@@ -18,10 +17,9 @@ def add_definition(
         description: str,
         is_active: bool
 ):
-    call_api(
-        method=post,
+    api_post(
         path=JOB_DEFINITION_PATH,
-        body={
+        data={
             "name": name,
             "description": description,
             "isActive": is_active,
@@ -44,8 +42,7 @@ def update_definition(
     if is_active is not None:
         definition['isActive'] = is_active
 
-    call_api(
-        method=put,
-        path=f'{JOB_DEFINITION_PATH}/{definition["jobDefinitionId"]}',
-        body=definition
+    api_put(
+        path=f'{JOB_DEFINITION_PATH}/{name}',
+        data=definition
     )

@@ -16,7 +16,7 @@ from .funcs import update_org
 @click.pass_context
 def org(ctx):
     '''Commands related to organisations'''
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @org.command('list')

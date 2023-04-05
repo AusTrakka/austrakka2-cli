@@ -10,7 +10,7 @@ from ...utils.options import *
 @click.pass_context
 def field(ctx):
     """Commands related to metadata fields"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @field.command('list')

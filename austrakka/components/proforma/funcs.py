@@ -3,8 +3,10 @@ from typing import List
 import pandas as pd
 from loguru import logger
 
-from austrakka.utils.api import call_api
-from austrakka.utils.api import get, post, patch, put
+from austrakka.utils.api import api_get
+from austrakka.utils.api import api_post
+from austrakka.utils.api import api_patch
+from austrakka.utils.api import api_put
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
 from austrakka.utils.helpers.fields import get_system_field_names
@@ -15,8 +17,7 @@ from austrakka.utils.paths import PROFORMA_PATH
 def disable_proforma(abbrev: str):
     logger.info(f'Disabling pro forma: {abbrev}..')
 
-    call_api(
-        method=patch,
+    api_patch(
         path=f'{PROFORMA_PATH}/{abbrev}/disable',
     )
 
@@ -27,8 +28,7 @@ def disable_proforma(abbrev: str):
 def enable_proforma(abbrev: str):
     logger.info(f'Enabling pro forma: {abbrev}..')
 
-    call_api(
-        method=patch,
+    api_patch(
         path=f'{PROFORMA_PATH}/{abbrev}/enable',
     )
 
@@ -37,10 +37,9 @@ def enable_proforma(abbrev: str):
 
 @logger_wraps()
 def share_proforma(abbrev: str, group_names: List[str]):
-    call_api(
-        method=patch,
+    api_patch(
         path=f'{PROFORMA_PATH}/{abbrev}/share',
-        body=group_names
+        data=group_names
     )
 
     logger.info('Done.')
@@ -48,10 +47,9 @@ def share_proforma(abbrev: str, group_names: List[str]):
 
 @logger_wraps()
 def unshare_proforma(abbrev: str, group_names: List[str]):
-    call_api(
-        method=patch,
+    api_patch(
         path=f'{PROFORMA_PATH}/{abbrev}/unshare',
-        body=group_names
+        data=group_names
     )
 
     logger.info('Done.')
@@ -71,8 +69,7 @@ def update_proforma(
         fieldname for fieldname in system_fields if fieldname not in required_columns +
         optional_columns]
 
-    pf_resp = call_api(
-        method=get,
+    pf_resp = api_get(
         path=f'{PROFORMA_PATH}/abbrev/{abbrev}',
     )
 
@@ -96,10 +93,9 @@ def update_proforma(
 
     logger.info(f'Updating pro forma: {abbrev} with {total_columns} fields')
 
-    call_api(
-        method=put,
+    api_put(
         path=f'{PROFORMA_PATH}/{pf_id}',
-        body={
+        data={
             "abbreviation": abbrev,
             "columnNames": column_names
         })
@@ -134,10 +130,9 @@ def add_proforma(
     if len(column_names) == 0:
         raise ValueError("A pro forma must contain at least one field")
 
-    return call_api(
-        method=post,
+    return api_post(
         path=PROFORMA_PATH,
-        body={
+        data={
             "abbreviation": abbrev,
             "name": name,
             "description": description,
@@ -147,8 +142,7 @@ def add_proforma(
 
 @logger_wraps()
 def list_proformas(out_format: str):
-    response = call_api(
-        method=get,
+    response = api_get(
         path=PROFORMA_PATH,
         params={
             'includeall': False
@@ -178,8 +172,7 @@ def list_proformas(out_format: str):
 
 @logger_wraps()
 def show_proformas(abbrev: str, out_format: str):
-    response = call_api(
-        method=get,
+    response = api_get(
         path=f"{PROFORMA_PATH}/abbrev/{abbrev}"
     )
     data = response['data'] if ('data' in response) else response
@@ -207,8 +200,7 @@ def show_proformas(abbrev: str, out_format: str):
 
 @logger_wraps()
 def list_groups_proforma(abbrev: str, out_format: str):
-    response = call_api(
-        method=get,
+    response = api_get(
         path=f"{PROFORMA_PATH}/{abbrev}/listgroups"
     )
     data = response['data'] if ('data' in response) else response

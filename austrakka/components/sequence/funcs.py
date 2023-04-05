@@ -2,22 +2,21 @@ import os
 from io import BufferedReader
 from typing import BinaryIO, List, Dict
 
+import httpx
 import pandas as pd
 # pylint: disable=no-name-in-module
 from pandas._libs.parsers import STR_NA_VALUES
 from pandas.core.frame import DataFrame
 from loguru import logger
-from requests.exceptions import HTTPError
+from httpx import HTTPStatusError
 
 from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import call_api
-from austrakka.utils.api import call_api_with_retries
-from austrakka.utils.api import call_api_raw
-from austrakka.utils.api import call_get_api
-from austrakka.utils.api import post
-from austrakka.utils.api import RESPONSE_TYPE_ERROR
+from austrakka.utils.api import api_post_multipart
+from austrakka.utils.api import api_get
+from austrakka.utils.api import api_get_stream
+from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
 from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
 from austrakka.utils.paths import SEQUENCE_BY_ANALYSIS_PATH
@@ -29,6 +28,7 @@ from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.output import print_table
+from austrakka.utils.retry import retry
 
 FASTA_PATH = 'Fasta'
 FASTQ_PATH = 'Fastq'
@@ -59,17 +59,14 @@ def add_fasta_submission(csv: BufferedReader):
     if messages:
         raise FailedResponseException(messages)
 
-    body = [
+    files = [
         _get_file(filepath) for filepath in csv_dataframe[FASTA_CSV_FILENAME]
     ]
     csv.seek(0)
-    body.append(('files[]', (csv.name, csv)))
-
-    call_api(
-        method=post,
+    files.append(('files[]', (csv.name, csv)))
+    api_post_multipart(
         path="/".join([SEQUENCE_PATH, FASTA_PATH]),
-        body=body,
-        multipart=True,
+        files=files
     )
 
 
@@ -111,6 +108,14 @@ def _get_file(filepath: str) -> tuple[str, tuple[str, BinaryIO]]:
     return 'files[]', (os.path.basename(file.name), file)
 
 
+def _post_fastq(sample_files, custom_headers):
+    api_post_multipart(
+        path="/".join([SEQUENCE_PATH, FASTQ_PATH]),
+        files=sample_files,
+        custom_headers=custom_headers,
+    )
+
+
 @logger_wraps()
 def add_fastq_submission(csv: BufferedReader):
     usecols = [
@@ -137,18 +142,15 @@ def add_fastq_submission(csv: BufferedReader):
                 custom_headers[FASTQ_CSV_PATH_2_API] \
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
-
-            call_api_with_retries(
-                method=post,
-                path="/".join([SEQUENCE_PATH, FASTQ_PATH]),
-                body=sample_files,
-                multipart=True,
-                custom_headers=custom_headers,
-            )
+            retry(lambda s=sample_files, c=custom_headers: _post_fastq(s, c),
+                  1,
+                  "/".join([SEQUENCE_PATH, FASTQ_PATH]))
         except FailedResponseException as ex:
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             log_response(ex.parsed_resp)
-        except (PermissionError, UnknownResponseException, HTTPError) as ex:
+        except (
+                PermissionError, UnknownResponseException, HTTPStatusError
+        ) as ex:
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             logger.error(ex)
         except Exception as ex:
@@ -220,22 +222,26 @@ def _validate_fastq_submission(csv_dataframe: DataFrame):
 
 def _download_seq_file(file_path, filename, query_path, sample_dir):
     try:
-        resp = call_api_raw(
-            path=query_path,
-            stream=True,
-        )
+        def _write_chunks(resp: httpx.Response):
+            for chunk in resp.iter_raw(chunk_size=128):
+                file.write(chunk)
 
         if not os.path.exists(sample_dir):
             create_dir(sample_dir)
-
         with open(file_path, 'wb') as file:
-            for chunk in resp.iter_content(chunk_size=128):
-                file.write(chunk)
+            api_get_stream(query_path, _write_chunks)
 
         logger.success(f'Downloaded: {filename} To: {file_path}')
 
     except FailedResponseException as ex:
         log_response_compact(ex.parsed_resp)
+    except UnknownResponseException as ex:
+        log_response_compact(ex)
+    except HTTPStatusError as ex:
+        logger.error(
+            f'Failed downloading {filename} To: {file_path}. Error: {ex}'
+        )
+        os.remove(file_path)
 
 
 def _get_seq_download_path(sample_name: str, read: str, seq_type: str):
@@ -298,7 +304,7 @@ def _get_seq_data(
         analysis: str,
 ):
     api_path = _get_seq_api(group_name, analysis)
-    data = call_get_api(path=api_path)
+    data = api_get(path=api_path)['data']
     return _filter_sequences(data, seq_type, read)
 
 
