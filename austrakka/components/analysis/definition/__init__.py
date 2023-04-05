@@ -1,6 +1,6 @@
 import click
 
-from austrakka.utils.output import object_format_option
+from austrakka.utils.output import table_format_option
 from austrakka.components.analysis.definition.funcs import add_definition
 from austrakka.components.analysis.definition.funcs import update_definition
 from austrakka.components.analysis.definition.funcs import list_definitions
@@ -14,11 +14,11 @@ from austrakka.utils.options import opt_is_active
 @click.pass_context
 def definition(ctx):
     """Commands related to analyses"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @definition.command('list')
-@object_format_option()
+@table_format_option()
 def definition_list(out_format: str):
     """List analysis definitions in AusTrakka"""
     list_definitions(out_format)

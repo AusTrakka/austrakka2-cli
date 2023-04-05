@@ -6,6 +6,7 @@ import click
 from click.core import Context
 from loguru import logger
 
+from austrakka.utils.context import CxtKey
 from .components.auth import auth
 from .components.user import user
 from .components.org import org
@@ -24,8 +25,6 @@ from . import __version__ as VERSION
 from .utils.misc import AusTrakkaCliTopLevel
 from .utils.misc import is_dev_env
 from .utils.misc import HELP_OPTS
-from .utils.misc import TOKEN_OPT_NAME
-from .utils.misc import URI_OPT_NAME
 from .utils.exceptions import FailedResponseException
 from .utils.output import log_response
 from .utils.logger import setup_logger
@@ -34,7 +33,6 @@ from .utils.version import check_version
 
 CLI_PREFIX = 'AT'
 CLI_ENV = 'env'
-CTX_VERIFY_CERT = 'verify_cert'
 
 CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 
@@ -43,13 +41,13 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 # auto_envvar_prefix due to limitations with CliRunner tests
 @click.group(cls=AusTrakkaCliTopLevel, context_settings=CONTEXT_SETTINGS)
 @click.option(
-    f"--{URI_OPT_NAME}",
+    f"--{CxtKey.CTX_URI.value}",
     show_envvar=True,
     envvar='AT_URI',
     required=True
 )
 @click.option(
-    f"--{TOKEN_OPT_NAME}",
+    f"--{CxtKey.CTX_TOKEN.value}",
     show_envvar=True,
     envvar='AT_TOKEN',
     required=True
@@ -62,13 +60,22 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     show_default=True
 )
 @click.option(
-    f"--{CTX_VERIFY_CERT}",
+    f"--{CxtKey.CTX_VERIFY_CERT.value}",
     show_envvar=True,
     required=True,
     default=True,
     show_default=True,
     type=bool,
     help="Skip verification of certificate"
+)
+@click.option(
+    f"--{CxtKey.CTX_USE_HTTP2.value}",
+    show_envvar=True,
+    required=True,
+    default=False,
+    show_default=True,
+    type=bool,
+    help="Use HTTP2 (experimental)"
 )
 @click.option(
     '--log',
@@ -82,13 +89,19 @@ def cli(
         uri: str,
         token: str,
         env: str,
+        log: str,
         verify_cert: bool,
-        log: str
+        use_http2: bool,
 ):
     """
     A cli for interfacing with AusTrakka.
     """
-    ctx.creds = {'uri': uri, 'token': token, CTX_VERIFY_CERT: verify_cert}
+    ctx.context = {
+        CxtKey.CTX_URI.value: uri,
+        CxtKey.CTX_TOKEN.value: token,
+        CxtKey.CTX_VERIFY_CERT.value: verify_cert,
+        CxtKey.CTX_USE_HTTP2.value: use_http2,
+    }
     setup_logger(env, log)
     check_version(VERSION)
 
@@ -116,6 +129,7 @@ def main():
         # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         cli(auto_envvar_prefix=CLI_PREFIX)
     except FailedResponseException as ex:
+        logger.error("Request failed")
         log_response(ex.parsed_resp)
     except Exception as ex:  # pylint: disable=broad-except
         if is_dev_env(os.environ.get(f"{CLI_PREFIX}_{CLI_ENV.upper()}")):

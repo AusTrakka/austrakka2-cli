@@ -8,7 +8,7 @@ from .funcs import process_login
 @click.pass_context
 def auth(ctx):
     '''Commands related to auth'''
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @auth.command('user')

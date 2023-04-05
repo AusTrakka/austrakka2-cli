@@ -1,5 +1,4 @@
-from austrakka.utils.api import call_api
-from austrakka.utils.api import post
+from austrakka.utils.api import api_post
 from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import PROJECT_PATH
@@ -7,10 +6,9 @@ from austrakka.utils.paths import PROJECT_PATH
 
 @logger_wraps()
 def add_project(abbrev: str, name: str, description: str):
-    return call_api(
-        method=post,
+    return api_post(
         path=PROJECT_PATH,
-        body={
+        data={
             "abbreviation": abbrev,
             "name": name,
             "description": description,

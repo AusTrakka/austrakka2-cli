@@ -14,7 +14,7 @@ from .funcs import \
 @click.pass_context
 def sample(ctx):
     """Commands related to samples"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @sample.command('unshare')

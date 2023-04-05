@@ -2,8 +2,9 @@ from typing import List
 
 import pandas as pd
 
-from austrakka.utils.api import call_api
-from austrakka.utils.api import get, post, put
+from austrakka.utils.api import api_get
+from austrakka.utils.api import api_post
+from austrakka.utils.api import api_put
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table
 from austrakka.utils.paths import METADATACOLUMNTYPE_PATH
@@ -12,8 +13,7 @@ from austrakka.utils.helpers.fieldtype import get_fieldtype_by_name
 
 @logger_wraps()
 def list_fieldtypes(out_format: str):
-    response = call_api(
-        method=get,
+    response = api_get(
         path=METADATACOLUMNTYPE_PATH,
     )
 
@@ -38,10 +38,9 @@ def add_fieldtype(
     """
     Add a categorical fieldtype (MetaDataColumnType) and its valid values to AusTrakka.
     """
-    call_api(
-        method=post,
+    api_post(
         path=METADATACOLUMNTYPE_PATH,
-        body={
+        data={
             "Name": name,
             "Description": description,
             "ValidValues": valid_values,
@@ -66,8 +65,7 @@ def update_fieldtype(
 
     fieldtype['validValues'] = None
 
-    call_api(
-        method=put,
+    api_put(
         path=f'{METADATACOLUMNTYPE_PATH}/{fieldtype["metaDataColumnTypeId"]}',
-        body=fieldtype
+        data=fieldtype
     )

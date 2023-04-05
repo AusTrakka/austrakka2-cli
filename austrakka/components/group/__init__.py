@@ -20,7 +20,7 @@ from austrakka.components.group.funcs import unassign_groups
 @click.pass_context
 def group(ctx):
     """Commands related to groups"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 group.add_command(field) if show_admin_cmds() else None

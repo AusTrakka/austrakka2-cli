@@ -1,10 +1,9 @@
+from austrakka.utils.api import api_post
+from austrakka.utils.api import api_put
 from austrakka.utils.helpers.analysis import get_analysis_by_abbrev
+from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import ANALYSIS_PATH
-from austrakka.utils.helpers.output import call_get_and_print_table
-from austrakka.utils.api import call_api
-from austrakka.utils.api import post
-from austrakka.utils.api import put
 
 
 @logger_wraps()
@@ -22,10 +21,9 @@ def add_analysis(
         filter_str: str,
         is_active: bool,
 ):
-    call_api(
-        method=post,
+    api_post(
         path=ANALYSIS_PATH,
-        body={
+        data={
             'name': name,
             'description': description,
             'jobDefinition': {
@@ -66,8 +64,7 @@ def update_analysis(
     if definition_abbrev is not None:
         analysis['jobDefinition']['id'] = definition_abbrev
 
-    call_api(
-        method=put,
+    api_put(
         path=f'{ANALYSIS_PATH}/{abbrev}',
-        body=analysis
+        data=analysis
     )

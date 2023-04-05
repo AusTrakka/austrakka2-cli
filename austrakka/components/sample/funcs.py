@@ -1,6 +1,5 @@
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import call_api
-from austrakka.utils.api import patch
+from austrakka.utils.api import api_patch
 from austrakka.utils.paths import SAMPLE_PATH
 
 DISABLE = 'Disable'
@@ -14,10 +13,9 @@ def share_sample(
         sample_ids: [str],
         group_name: str
 ):
-    call_api(
-        method=patch,
+    api_patch(
         path="/".join([SAMPLE_PATH, SHARE]),
-        body={
+        data={
             "seqIds": sample_ids,
             "groupName": group_name
         },
@@ -29,10 +27,9 @@ def unshare_sample(
         sample_ids: [str],
         group_name: str
 ):
-    call_api(
-        method=patch,
+    api_patch(
         path="/".join([SAMPLE_PATH, UNSHARE]),
-        body={
+        data={
             "seqIds": sample_ids,
             "groupName": group_name
         },
@@ -43,10 +40,9 @@ def unshare_sample(
 def disable_sample(
         sample_ids: [str]
 ):
-    call_api(
-        method=patch,
+    api_patch(
         path="/".join([SAMPLE_PATH, DISABLE]),
-        body={
+        data={
             "seqIds": sample_ids
         },
     )
@@ -56,10 +52,9 @@ def disable_sample(
 def enable_sample(
         sample_ids: [str]
 ):
-    call_api(
-        method=patch,
+    api_patch(
         path="/".join([SAMPLE_PATH, ENABLE]),
-        body={
+        data={
             "seqIds": sample_ids
         },
     )

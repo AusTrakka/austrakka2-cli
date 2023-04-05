@@ -1,8 +1,7 @@
 from io import BufferedReader
 
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import call_api
-from austrakka.utils.api import post
+from austrakka.utils.api import api_post_multipart
 from austrakka.utils.paths import SUBMISSION_PATH
 
 SUBMISSION_UPLOAD = 'UploadSubmissions'
@@ -16,15 +15,8 @@ def add_metadata(
     file: BufferedReader,
     proforma_abbrev: str
 ):
-    call_api(
-        method=post,
-        path="/".join([SUBMISSION_PATH, SUBMISSION_UPLOAD]),
-        body={
-            'file': (file.name, file),
-            'proforma-abbrev': proforma_abbrev,
-        },
-        multipart=True,
-    )
+    path = "/".join([SUBMISSION_PATH, SUBMISSION_UPLOAD])
+    _call_submission(path, file, proforma_abbrev)
 
 
 @logger_wraps()
@@ -32,15 +24,8 @@ def append_metadata(
     file: BufferedReader,
     proforma_abbrev: str
 ):
-    call_api(
-        method=post,
-        path="/".join([SUBMISSION_PATH, SUBMISSION_UPLOAD_APPEND]),
-        body={
-            'file': (file.name, file),
-            'proforma-abbrev': proforma_abbrev,
-        },
-        multipart=True,
-    )
+    path = "/".join([SUBMISSION_PATH, SUBMISSION_UPLOAD_APPEND])
+    _call_submission(path, file, proforma_abbrev)
 
 
 @logger_wraps()
@@ -50,12 +35,19 @@ def validate_metadata(
     is_append: bool
 ):
     path = SUBMISSION_VALIDATE_APPEND if is_append else SUBMISSION_VALIDATE
-    call_api(
-        method=post,
-        path="/".join([SUBMISSION_PATH, path]),
-        body={
-            'file': (file.name, file),
+    path = "/".join([SUBMISSION_PATH, path])
+    _call_submission(path, file, proforma_abbrev)
+
+
+def _call_submission(
+        path: str,
+        file: BufferedReader,
+        proforma_abbrev: str,
+):
+    api_post_multipart(
+        path=path,
+        data={
             'proforma-abbrev': proforma_abbrev,
         },
-        multipart=True,
+        files={'file': (file.name, file)}
     )

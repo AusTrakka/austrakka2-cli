@@ -20,7 +20,7 @@ from ...utils.options import *
 @click.pass_context
 def proforma(ctx):
     """Commands related to metadata pro formas"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @proforma.command('add', hidden=hide_admin_cmds())
