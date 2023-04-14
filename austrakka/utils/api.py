@@ -124,6 +124,7 @@ def api_post_multipart(
         custom_headers: Dict = None,
         client: httpx.Client = None,
 ):
+    custom_headers = {} if custom_headers is None else custom_headers
     return client.post(
         _get_url(path),
         data=data,
