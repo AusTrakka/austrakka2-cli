@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.27.3] - 2023-04-14
+### Fixed
+- Error sending file upload requests.
+
 # [0.27.2] - 2023-04-05
 ### Added
 - Optional HTTP2 support.
