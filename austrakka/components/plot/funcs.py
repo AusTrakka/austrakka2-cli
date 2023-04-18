@@ -1,9 +1,10 @@
-from austrakka.utils.api import api_post, api_patch, api_get
-from austrakka.utils.api import api_put
+
+from loguru import logger
+
+from austrakka.utils.api import api_post, api_patch, api_get, api_put
 from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.helpers.project import get_project_by_abbrev
 from austrakka.utils.misc import logger_wraps
-from loguru import logger
 from austrakka.utils.paths import PLOT_PATH
 
 
@@ -34,7 +35,6 @@ def add_plot(
         spec: str,
         is_active: bool,
 ):
-    print(plottype)
     api_post(
         path=PLOT_PATH,
         data={
@@ -116,8 +116,8 @@ def list_plot_types():
     response = api_get(
         path=f'{PLOT_PATH}/plottypes'
     )
-    for pt in response['data']:
-        print(pt['name'])
+    for plottype in response['data']:
+        print(plottype['name'])
 
 
 def _get_plot_by_abbrev(abbrev: str):

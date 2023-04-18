@@ -45,7 +45,6 @@ def plot_add(
         is_active: bool,
 ):
     """Add plot to a project in AusTrakka"""
-    print(plottype)
     add_plot(
         abbrev,
         name,
