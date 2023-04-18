@@ -55,7 +55,8 @@ def add_fasta_submission(fasta_file: BufferedReader):
         logger.info(f"Uploading {seqid}")
         csv_filename = f"{seqid}_splitbyCLI.csv"
         single_contig_filename = f"{seqid}_splitbyCLI.fasta"
-        csv = BytesIO(f"SampleId,FileName,FastaId\n{seqid},{single_contig_filename},\n".encode())
+        csv = BytesIO(
+            f"SampleId,FileName,FastaId\n{seqid},{single_contig_filename},\n".encode())
         single_contig = StringIO()
         SeqIO.write([record], single_contig, "fasta")
         encode = codecs.getwriter('utf-8')
@@ -67,6 +68,7 @@ def add_fasta_submission(fasta_file: BufferedReader):
             path="/".join([SEQUENCE_PATH, FASTA_PATH]),
             files=files
         )
+
 
 def _get_and_validate_csv(csv: BufferedReader, usecols: List[str]):
     try:

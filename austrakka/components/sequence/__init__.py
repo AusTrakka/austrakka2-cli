@@ -15,6 +15,7 @@ from .funcs import get_sequences
 from .funcs import list_sequences
 from .add import add
 
+
 def _check_mutex_group_analysis(group, analysis):
     if group is None and analysis is None:
         raise click.UsageError("Either 'group' or 'analysis' must be provided")
@@ -29,6 +30,7 @@ def _check_mutex_group_analysis(group, analysis):
 def seq(ctx):
     """Commands related to sequences"""
     ctx.context = ctx.parent.context
+
 
 seq.add_command(add)
 

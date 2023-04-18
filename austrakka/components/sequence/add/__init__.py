@@ -6,11 +6,13 @@ from ..funcs import add_fasta_submission
 from ..funcs import add_fastq_submission
 from austrakka.utils.options import opt_csv
 
+
 @click.group()
 @click.pass_context
 def add(ctx):
     """Commands to upload sequences"""
     ctx.context = ctx.parent.context
+
 
 @add.command('fastq')
 @opt_csv(help='CSV with mapping from Seq_ID to sequence files', required=True)
@@ -27,6 +29,7 @@ def seq_add_fastq(
     """
     add_fastq_submission(csv_file)
 
+
 @add.command('fasta')
 @click.argument('fasta_file', type=click.File('rb'))
 def seq_add_fasta(
@@ -34,12 +37,12 @@ def seq_add_fasta(
 ):
     """
     Upload FASTA submission to AusTrakka
-    
+
     A single FASTA file should be supplied.
     Contig names must correspond to known Seq_IDs.
-    
-    If no record exists for these Seq_IDs you can first add them with the 
-    `austrakka metadata add` command, and may use the minimal proforma if 
+
+    If no record exists for these Seq_IDs you can first add them with the
+    `austrakka metadata add` command, and may use the minimal proforma if
     you wish to specify no metadata other than sample ownership.
     """
     add_fasta_submission(fasta_file)
