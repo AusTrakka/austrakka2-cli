@@ -61,10 +61,10 @@ def plot_add(
 
 @plot.command('update', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=str)
-@click.option("-n","--name",type=click.STRING,required=True)  #click creates some kind of clash with @opt_name
+@click.option("-n","--name",type=click.STRING,required=False)  #click creates some kind of clash with @opt_name
 @opt_description(required=False)
 @opt_project(required=False)
-@opt_plottype()
+@opt_plottype(required=False)
 @opt_plotspec()
 @opt_is_active(is_update=True)
 def plot_update(
@@ -72,7 +72,7 @@ def plot_update(
         name: str,
         description: str,
         project: str,
-        plot_type: str,
+        plottype: str,
         spec: str,
         is_active: bool,
 ):
@@ -82,7 +82,7 @@ def plot_update(
         name,
         description,
         project,
-        plot_type,
+        plottype,
         spec,
         is_active,
     )
