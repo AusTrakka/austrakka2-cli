@@ -262,6 +262,29 @@ def opt_fieldtype(**attrs: t.Any):
         **attrs
     )
 
+@_default_option_params(
+    required=True,
+    help='Plot type. Use `austrakka plot types` to see options.'
+)
+def opt_plottype(**attrs: t.Any):
+    return _create_option(
+        '-pt',
+        '--plottype',
+        type=click.STRING,
+        **attrs
+    )
+
+@_default_option_params(
+    required=False,
+    help='Plot spec. If not provided, or empty, the default spec for the plot type will be used.'
+)
+def opt_plotspec(**attrs: t.Any):
+    return _create_option(
+        '-spec',
+        'spec',
+        type=click.STRING,
+        **attrs
+    )
 
 @_default_option_params(
     required=True,

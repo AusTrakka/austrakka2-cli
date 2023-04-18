@@ -15,3 +15,4 @@ SEQUENCE_BY_GROUP_PATH = 'by-group'
 SEQUENCE_BY_ANALYSIS_PATH = 'by-analysis'
 SAMPLE_PATH = 'Sample'
 GROUP_PATH = 'Group'
+PLOT_PATH = "Plots"
