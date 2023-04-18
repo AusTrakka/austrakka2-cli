@@ -1,5 +1,6 @@
 import os
-from io import BufferedReader
+from io import BufferedReader, StringIO, BytesIO, TextIOWrapper
+import codecs
 from typing import BinaryIO, List, Dict
 
 import httpx
@@ -9,6 +10,7 @@ from pandas._libs.parsers import STR_NA_VALUES
 from pandas.core.frame import DataFrame
 from loguru import logger
 from httpx import HTTPStatusError
+from Bio import SeqIO
 
 from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
@@ -47,41 +49,24 @@ FASTA_CSV_FASTA_ID = 'FastaId'
 
 
 @logger_wraps()
-def add_fasta_submission(csv: BufferedReader):
-    usecols = [
-        FASTA_CSV_SAMPLE,
-        FASTA_CSV_FILENAME,
-        FASTA_CSV_FASTA_ID
-    ]
-    csv_dataframe = _get_and_validate_csv(csv, usecols)
-
-    messages = _validate_fasta_submission(csv_dataframe)
-    if messages:
-        raise FailedResponseException(messages)
-
-    files = [
-        _get_file(filepath) for filepath in csv_dataframe[FASTA_CSV_FILENAME]
-    ]
-    csv.seek(0)
-    files.append(('files[]', (csv.name, csv)))
-    api_post_multipart(
-        path="/".join([SEQUENCE_PATH, FASTA_PATH]),
-        files=files
-    )
-
-
-def _validate_fasta_submission(csv_dataframe: DataFrame):
-    messages = []
-
-    for _, row in csv_dataframe.iterrows():
-        if not os.path.isfile(row[FASTA_CSV_FILENAME]):
-            messages.append(create_response_object(
-                f'File {row[FASTA_CSV_FILENAME]} not found',
-                RESPONSE_TYPE_ERROR
-            ))
-
-    return messages
-
+def add_fasta_submission(fasta_file: BufferedReader):
+    for record in SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'):
+        seqid = record.id
+        logger.info(f"Uploading {seqid}")
+        csv_filename = f"{seqid}_splitbyCLI.csv"
+        single_contig_filename = f"{seqid}_splitbyCLI.fasta"
+        csv = BytesIO(f"SampleId,FileName,FastaId\n{seqid},{single_contig_filename},\n".encode())
+        single_contig = StringIO()
+        SeqIO.write([record], single_contig, "fasta")
+        encode = codecs.getwriter('utf-8')
+        files = [
+            ('files[]', (csv_filename, csv)),
+            ('files[]', (single_contig_filename, encode(single_contig)))
+        ]
+        api_post_multipart(
+            path="/".join([SEQUENCE_PATH, FASTA_PATH]),
+            files=files
+        )
 
 def _get_and_validate_csv(csv: BufferedReader, usecols: List[str]):
     try:

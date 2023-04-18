@@ -134,6 +134,7 @@ setup(
         "click",
         "loguru",
         "pandas",
+	"biopython",
         "tabulate",
         "semver",
     ],  # Optional
