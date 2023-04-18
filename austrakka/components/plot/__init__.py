@@ -21,17 +21,19 @@ def plot(ctx):
     '''Commands related to plots'''
     ctx.context = ctx.parent.context
 
+
 @plot.command('list')
 @opt_project()
 @table_format_option()
-def plot_list(project:str, out_format: str):
+def plot_list(project: str, out_format: str):
     '''List plots in AusTrakka, by project'''
     list_plots(project, out_format)
 
 
 @plot.command('add', hidden=hide_admin_cmds())
 @opt_abbrev()
-@click.option("-n","--name",type=click.STRING,required=True)  #click creates some kind of clash with @opt_name
+# click creates some kind of clash with @opt_name
+@click.option("-n", "--name", type=click.STRING, required=True)
 @opt_description()
 @opt_project()
 @opt_plottype()
@@ -61,7 +63,8 @@ def plot_add(
 
 @plot.command('update', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=str)
-@click.option("-n","--name",type=click.STRING,required=True)  #click creates some kind of clash with @opt_name
+# click creates some kind of clash with @opt_name
+@click.option("-n", "--name", type=click.STRING, required=True)
 @opt_description(required=False)
 @opt_project(required=False)
 @opt_plottype()
@@ -86,6 +89,7 @@ def plot_update(
         spec,
         is_active,
     )
+
 
 @plot.command('disable', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=click.STRING)
@@ -113,8 +117,8 @@ def plot_enable(abbrev: str):
     ABBREV should be the abbreviated name of the pro forma.
     """
     enable_plot(abbrev)
-    
-    
+
+
 @plot.command('types')
 def plot_types():
     """

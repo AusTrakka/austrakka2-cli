@@ -14,11 +14,15 @@ def list_plots(
 ):
     # get project ID
     project = get_project_by_abbrev(project_abbrev)
-    call_get_and_print_table(f'{PLOT_PATH}/project/{project["projectId"]}', out_format)
+    call_get_and_print_table(
+        f'{PLOT_PATH}/project/{project["projectId"]}',
+        out_format)
+
 
 @logger_wraps()
 def show_plot():
     pass
+
 
 @logger_wraps()
 def add_plot(
@@ -56,7 +60,14 @@ def update_plot(
         is_active: bool,
 ):
     plot = _get_plot_by_abbrev(abbrev)
-    plot_put = {prop:plot[prop] for prop in ['abbreviation','name','description','spec','projectAbbreviation','isActive']}
+    plot_put = {
+        prop: plot[prop] for prop in [
+            'abbreviation',
+            'name',
+            'description',
+            'spec',
+            'projectAbbreviation',
+            'isActive']}
     plot_put['plotTypeName'] = plot['plotType']
 
     if name is not None:
@@ -76,6 +87,7 @@ def update_plot(
         path=f'{PLOT_PATH}/{abbrev}',
         data=plot_put
     )
+
 
 @logger_wraps()
 def disable_plot(abbrev: str):
@@ -98,6 +110,7 @@ def enable_plot(abbrev: str):
 
     logger.info('Done.')
 
+
 @logger_wraps()
 def list_plot_types():
     response = api_get(
@@ -105,7 +118,7 @@ def list_plot_types():
     )
     for pt in response['data']:
         print(pt['name'])
-    
+
 
 def _get_plot_by_abbrev(abbrev: str):
     response = api_get(
