@@ -2,8 +2,14 @@
 from io import BufferedReader
 import click
 
-from austrakka.utils.options import opt_proforma, opt_is_append
-from .funcs import add_metadata, validate_metadata, append_metadata
+from austrakka.utils.options import opt_proforma
+from austrakka.utils.options import opt_is_append
+from austrakka.utils.options import opt_group_name
+from austrakka.components.metadata.funcs import add_metadata
+from austrakka.components.metadata.funcs import validate_metadata
+from austrakka.components.metadata.funcs import append_metadata
+from austrakka.components.metadata.funcs import list_metadata
+from austrakka.utils.output import table_format_option
 
 
 @click.group()
@@ -42,3 +48,11 @@ def submission_validate(file: BufferedReader, proforma: str, is_append: bool):
     """Check uploaded content for errors and warnings. This is a read-only
     action. No data will modified."""
     validate_metadata(file, proforma, is_append)
+
+
+@metadata.command('list')
+@opt_group_name()
+@table_format_option()
+def metadata_list(group_name: str, out_format: str):
+    """List metadata for a specific group"""
+    list_metadata(group_name, out_format)
