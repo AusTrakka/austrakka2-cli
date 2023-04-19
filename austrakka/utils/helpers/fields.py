@@ -1,10 +1,9 @@
 from austrakka.utils.api import api_get
 from austrakka.utils.paths import METADATACOLUMN_PATH
-from austrakka.utils.helpers import _get_by_identifier
 
 
 def get_field_by_name(name: str):
-    return _get_by_identifier(f'{METADATACOLUMN_PATH}/name', name)
+    return api_get(path=f"{METADATACOLUMN_PATH}/name/{name}")['data']
 
 
 def get_system_field_names():
