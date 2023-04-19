@@ -11,6 +11,8 @@ from pandas.core.frame import DataFrame
 from loguru import logger
 from httpx import HTTPStatusError
 from Bio import SeqIO
+from time import sleep
+from pathlib import Path
 
 from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
@@ -50,11 +52,18 @@ FASTA_CSV_FASTA_ID = 'FastaId'
 
 @logger_wraps()
 def add_fasta_submission(fasta_file: BufferedReader):
+    original_filename = Path(fasta_file.name)
+    if not original_filename: 
+        original_filename = Path("unnamed.fasta")
+    if original_filename.suffix not in [".fa",".fasta"]:
+        raise ValueError("FASTA file suffix is expected to be .fa or .fasta")
+    name_prefix = original_filename.stem
+    
     for record in SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'):
         seqid = record.id
         logger.info(f"Uploading {seqid}")
-        csv_filename = f"{seqid}_splitbyCLI.csv"
-        single_contig_filename = f"{seqid}_splitbyCLI.fasta"
+        csv_filename = f"{name_prefix}_{seqid}_split.csv"
+        single_contig_filename = f"{name_prefix}_{seqid}_split.fasta"
         csv = BytesIO(
             f"SampleId,FileName,FastaId\n{seqid},{single_contig_filename},\n".encode())
         single_contig = StringIO()
