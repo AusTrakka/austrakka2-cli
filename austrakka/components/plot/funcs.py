@@ -117,6 +117,7 @@ def list_plot_types():
         path=f'{PLOT_PATH}/plottypes'
     )
     for plottype in response['data']:
+        # pylint: disable=print-function
         print(plottype['name'])
 
 
