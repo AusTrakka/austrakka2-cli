@@ -19,7 +19,7 @@ def plot(ctx):
 
 
 @plot.command('list')
-@opt_project()
+@opt_project(required=True)
 @table_format_option()
 def plot_list(project: str, out_format: str):
     '''List plots in AusTrakka, by project'''
