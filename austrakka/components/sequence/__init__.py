@@ -18,15 +18,6 @@ from .funcs import get_sequences
 from .funcs import list_sequences
 
 
-def _check_mutex_group_analysis(group, analysis):
-    if group is None and analysis is None:
-        raise click.UsageError("Either 'group' or 'analysis' must be provided")
-    if group is not None and analysis is not None:
-        raise click.UsageError(
-            "Both 'group' or 'analysis' cannot be provided simultaneously"
-        )
-
-
 @click.group()
 @click.pass_context
 def seq(ctx):
@@ -65,35 +56,26 @@ def submission_add(
 @opt_output_dir()
 @opt_seq_type()
 @opt_read()
-@opt_group(default=None, multiple=False, required=False)
-@opt_analysis(default=None, required=False)
+@opt_group(default=None, multiple=False, required=True)
 def get(
         output_dir,
         seq_type: str,
         read: str,
         group_name: str,
-        analysis: str,
 ):
     """Download sequence files to the local drive
 
-    EXAMPLE 1: Download Fastq with both Reads for species SARS-CoV-2
-
-        austrakka seq get -t fastq --species SARS-CoV-2 --outdir ~/Downloads/fastq-files
-
-
-    EXAMPLE 2: Download Fasta for group Example-Group
+    EXAMPLE: Download Fasta for group Example-Group
 
         austrakka seq get -t fasta --group-name Example-Group --outdir ~/Downloads/fasta-files
 
 
     """
-    _check_mutex_group_analysis(group_name, analysis)
     get_sequences(
         output_dir,
         seq_type,
         read,
         group_name,
-        analysis,
     )
 
 
@@ -101,20 +83,16 @@ def get(
 @table_format_option()
 @opt_seq_type(default=None, required=False)
 @opt_read()
-@opt_group(default=None, multiple=False, required=False)
-@opt_analysis(default=None, required=False)
+@opt_group(default=None, multiple=False, required=True)
 def seq_list(
         out_format: str,
         seq_type: str,
         read: str,
         group_name: str,
-        analysis: str,
 ):
-    _check_mutex_group_analysis(group_name, analysis)
     list_sequences(
         out_format,
         seq_type,
         read,
         group_name,
-        analysis,
     )
