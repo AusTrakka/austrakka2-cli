@@ -3,6 +3,9 @@ from io import BufferedReader
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_post_multipart
 from austrakka.utils.paths import SUBMISSION_PATH
+from austrakka.utils.paths import METADATA_SEARCH_PATH
+from austrakka.utils.helpers.groups import get_group_by_name
+from austrakka.utils.helpers.output import call_get_and_print_table
 
 SUBMISSION_UPLOAD = 'UploadSubmissions'
 SUBMISSION_UPLOAD_APPEND = 'UploadSubmissions?appendMode=True'
@@ -50,4 +53,16 @@ def _call_submission(
             'proforma-abbrev': proforma_abbrev,
         },
         files={'file': (file.name, file)}
+    )
+
+
+@logger_wraps()
+def list_metadata(group_name: str, out_format: str):
+    group_id: str = get_group_by_name(group_name)['groupId']
+    call_get_and_print_table(
+        f'{METADATA_SEARCH_PATH}',
+        out_format,
+        params={
+            'groupContext': group_id
+        }
     )
