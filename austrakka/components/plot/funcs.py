@@ -4,6 +4,7 @@ from loguru import logger
 from austrakka.utils.api import api_post, api_patch, api_get, api_put
 from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.helpers.project import get_project_by_abbrev
+from austrakka.utils.helpers.plots import get_plot_by_abbrev
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import PLOT_PATH
 
@@ -59,7 +60,7 @@ def update_plot(
         spec: str,
         is_active: bool,
 ):
-    plot = _get_plot_by_abbrev(abbrev)
+    plot = get_plot_by_abbrev(abbrev)
     plot_put = {
         prop: plot[prop] for prop in [
             'abbreviation',
@@ -119,10 +120,3 @@ def list_plot_types():
     for plottype in response['data']:
         # pylint: disable=print-function
         print(plottype['name'])
-
-
-def _get_plot_by_abbrev(abbrev: str):
-    response = api_get(
-        path=f"{PLOT_PATH}/abbrev/{abbrev}"
-    )
-    return response['data'] if ('data' in response) else response
