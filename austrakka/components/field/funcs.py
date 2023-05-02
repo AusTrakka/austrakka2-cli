@@ -2,7 +2,7 @@ import pandas as pd
 
 from loguru import logger
 
-from austrakka.utils.helpers.fields import get_fieldtype_by_name
+from austrakka.utils.helpers.fieldtype import get_fieldtype_by_name
 from austrakka.utils.helpers.fields import get_field_by_name
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post

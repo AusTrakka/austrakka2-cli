@@ -19,7 +19,6 @@ from austrakka.utils.api import api_get_stream
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
 from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
-from austrakka.utils.paths import SEQUENCE_BY_ANALYSIS_PATH
 from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
@@ -282,15 +281,10 @@ def _filter_sequences(data, seq_type, read) -> List[Dict]:
     return list(data)
 
 
-def _get_seq_api(
-        group_name: str,
-        analysis: str,
-):
+def _get_seq_api(group_name: str):
     api_path = SEQUENCE_PATH
     if group_name is not None:
         api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}'
-    elif analysis is not None:
-        api_path += f'/{SEQUENCE_BY_ANALYSIS_PATH}/{analysis}'
     else:
         raise ValueError("A filter has not been passed")
     return api_path
@@ -301,9 +295,8 @@ def _get_seq_data(
         seq_type: str,
         read: str,
         group_name: str,
-        analysis: str,
 ):
-    api_path = _get_seq_api(group_name, analysis)
+    api_path = _get_seq_api(group_name)
     data = api_get(path=api_path)['data']
     return _filter_sequences(data, seq_type, read)
 
@@ -314,7 +307,6 @@ def get_sequences(
         seq_type: str,
         read: str,
         group_name: str,
-        analysis: str,
 ):
     if not os.path.exists(output_dir):
         create_dir(output_dir)
@@ -323,7 +315,6 @@ def get_sequences(
         seq_type,
         read,
         group_name,
-        analysis,
     )
     _download_sequences(output_dir, data)
 
@@ -334,13 +325,11 @@ def list_sequences(
         seq_type: str,
         read: str,
         group_name: str,
-        analysis: str,
 ):
     data = _get_seq_data(
         seq_type,
         read,
         group_name,
-        analysis,
     )
     print_table(
         pd.DataFrame(data),
