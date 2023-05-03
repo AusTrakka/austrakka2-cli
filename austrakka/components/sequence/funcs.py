@@ -1,6 +1,8 @@
 import os
+import hashlib
+from dataclasses import dataclass
 from io import BufferedReader
-from typing import BinaryIO, List, Dict
+from typing import List, Dict
 
 import httpx
 import pandas as pd
@@ -12,6 +14,7 @@ from httpx import HTTPStatusError
 
 from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
+from austrakka.utils.exceptions import IncorrectHashException
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_post_multipart
 from austrakka.utils.api import api_get
@@ -45,6 +48,13 @@ FASTA_CSV_FILENAME = 'FileName'
 FASTA_CSV_FASTA_ID = 'FastaId'
 
 
+@dataclass
+class SeqFile:
+    multipart: tuple
+    sha256: str
+    filename: str
+
+
 @logger_wraps()
 def add_fasta_submission(csv: BufferedReader):
     usecols = [
@@ -59,7 +69,8 @@ def add_fasta_submission(csv: BufferedReader):
         raise FailedResponseException(messages)
 
     files = [
-        _get_file(filepath) for filepath in csv_dataframe[FASTA_CSV_FILENAME]
+        _get_file(filepath).multipart
+        for filepath in csv_dataframe[FASTA_CSV_FILENAME]
     ]
     csv.seek(0)
     files.append(('files[]', (csv.name, csv)))
@@ -101,18 +112,34 @@ def _fastq_file_2_is_present(row: pd.Series) -> bool:
     return str(row[FASTQ_CSV_PATH_2]) not in STR_NA_VALUES
 
 
-def _get_file(filepath: str) -> tuple[str, tuple[str, BinaryIO]]:
+def _get_file(filepath: str) -> SeqFile:
     # pylint: disable=consider-using-with
     file = open(filepath, 'rb')
-    return 'files[]', (os.path.basename(file.name), file)
+    filename = os.path.basename(file.name)
+    return SeqFile(
+        multipart=('files[]', (filename, file)),
+        sha256=hashlib.sha256(file.read()).hexdigest(),
+        filename=filename,
+    )
 
 
-def _post_fastq(sample_files, custom_headers):
-    api_post_multipart(
+def _post_fastq(sample_files: list[SeqFile], custom_headers):
+    files = [file.multipart for file in sample_files]
+    resp = api_post_multipart(
         path="/".join([SEQUENCE_PATH, FASTQ_PATH]),
-        files=sample_files,
+        files=files,
         custom_headers=custom_headers,
     )
+    errors = []
+    for seq in resp['data']:
+        if not any(
+                f.filename == seq['originalFileName']
+                and f.sha256.casefold() == seq['serverSha256'].casefold()
+                for f in sample_files
+        ):
+            errors.append(f'Hash for {seq["originalFileName"]} is not correct')
+    if any(errors):
+        raise IncorrectHashException(", ".join(errors))
 
 
 @logger_wraps()
@@ -148,7 +175,10 @@ def add_fastq_submission(csv: BufferedReader):
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             log_response(ex.parsed_resp)
         except (
-                PermissionError, UnknownResponseException, HTTPStatusError
+                PermissionError,
+                UnknownResponseException,
+                HTTPStatusError,
+                IncorrectHashException,
         ) as ex:
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             logger.error(ex)
