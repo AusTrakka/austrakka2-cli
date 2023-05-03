@@ -130,15 +130,16 @@ def _post_fastq(sample_files: list[SeqFile], custom_headers):
         files=files,
         custom_headers=custom_headers,
     )
+    errors = []
     for seq in resp['data']:
         if not any(
                 f.filename == seq['originalFileName']
                 and f.sha256.casefold() == seq['serverSha256'].casefold()
                 for f in sample_files
         ):
-            raise IncorrectHashException(
-                f'Hash for {seq["originalFileName"]} is not correct'
-            )
+            errors.append(f'Hash for {seq["originalFileName"]} is not correct')
+    if any(errors):
+        raise IncorrectHashException(", ".join(errors))
 
 
 @logger_wraps()
