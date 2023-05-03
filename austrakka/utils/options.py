@@ -11,8 +11,7 @@ from austrakka.utils.misc import AusTrakkaCliOption
 def opt_abbrev(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Abbreviated name, for use with the CLI and in metadata uploads'
-    }
+        'help': 'Abbreviated name, for use with the CLI and in metadata uploads'}
     return _create_option(
         "-a",
         "--abbrev",
