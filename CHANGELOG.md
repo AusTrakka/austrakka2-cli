@@ -5,6 +5,58 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.28.1] - 2023-05-03
+### Changed
+- seq add -t fastq command now verifies file hashes after upload, comparing server hash with the local file.
+
+# [0.28.0] - 2023-05-01
+### Added
+- Metadata list command.
+
+### Removed
+- seq list -a option
+- seq get -a option
+
+### Changed
+- Upgraded some cryptography dependency to 39.0.1
+
+# [0.27.3] - 2023-04-14
+### Fixed
+- Error sending file upload requests.
+
+# [0.27.2] - 2023-04-05
+### Added
+- Optional HTTP2 support.
+
+# [0.27.1] - 2023-03-30
+### Fixed
+- Error running CLI.
+
+# [0.27.0] - 2023-03-30
+### Added
+- Notify users if CLI is outdated.
+
+### Security
+- Strict host verification.
+
+# [0.26.0] - 2023-03-28
+### Changed
+- Changed `seq get -t fastq` command to save files with a different name format.
+- Make country optional for Organisations, to match endpoint change.
+- Fixed org retrieval for PUT.
+
+# [0.25.1] - 2023-03-15
+### Changed
+- Changed `seq add -t fastq` command to retry once on any errors.
+
+# [0.25.0] - 2023-03-02
+### Added
+- Added `proforma listgroups` command to show ProFormaEditors and AusTrakkaAdmins what group has access to a given pro forma.
+
+# [0.24.1] - 2023-02-23
+### Changed
+- Updates to facilitate process auth
+
 # [0.24.0] - 2023-02-16
 ### Added
 - Added `sample share` and `sample unshare` commands to change sharing outside of uploads.

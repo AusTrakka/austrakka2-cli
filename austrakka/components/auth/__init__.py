@@ -11,7 +11,7 @@ from .opts import opt_backend_app_uri
 @click.pass_context
 def auth(ctx):
     '''Commands related to auth'''
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @auth.command('user')

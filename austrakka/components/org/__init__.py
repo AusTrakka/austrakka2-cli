@@ -16,7 +16,7 @@ from .funcs import update_org
 @click.pass_context
 def org(ctx):
     '''Commands related to organisations'''
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @org.command('list')
@@ -30,7 +30,7 @@ def org_list(out_format: str):
 @opt_name(help="Organisation Name")
 @opt_abbrev(help="Organisation Abbreviation")
 @opt_state(required=False)
-@opt_country()
+@opt_country(required=False)
 @opt_is_active()
 def org_add(
     name: str,

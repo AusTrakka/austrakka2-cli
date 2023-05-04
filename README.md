@@ -107,13 +107,15 @@ to see the usage of the `metadata add` command to upload metadata files.
 
 ## Environment Variables Reference
 
-| Name         | Description                                                                                                                                     |
-|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| `AT_TOKEN`   | AusTrakka auth token                                                                                                                            |
-| `AT_URI`     | URI for API endpoint                                                                                                                            |
-| `AT_DEBUG`   | Set to `debug` to log debugging                                                                                                                 |
-| `AT_LOG`     | Set to `file` to redirecting logging to a temp file                                                                                             |
-| `AT_CMD_SET` | Set to `austrakka-admin` to display admin commands (these will not actually run successfully unless you have an appropriate role on the server) |
+| Name             | Description                                                                                                                                     |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `AT_TOKEN`       | AusTrakka auth token                                                                                                                            |
+| `AT_URI`         | URI for API endpoint                                                                                                                            |
+| `AT_DEBUG`       | Set to `debug` to log debugging                                                                                                                 |
+| `AT_LOG`         | Set to `file` to redirecting logging to a temp file                                                                                             |
+| `AT_CMD_SET`     | Set to `austrakka-admin` to display admin commands (these will not actually run successfully unless you have an appropriate role on the server) |
+| `AT_VERIFY_CERT` | Verifies the cert used by the AusTrakka backend                                                                                                 |
+| `AT_USE_HTTP2`   | Uses HTTP2 (experimental)                                                                                                                       |
 
 All commands require `AT_URI` and `AT_TOKEN` to be set, except for `auth` commands.
 

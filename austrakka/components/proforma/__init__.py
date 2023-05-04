@@ -1,6 +1,5 @@
 from typing import List
 
-from click_option_group import optgroup
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from .funcs import \
@@ -11,7 +10,8 @@ from .funcs import \
     disable_proforma, \
     enable_proforma, \
     share_proforma, \
-    unshare_proforma
+    unshare_proforma, \
+    list_groups_proforma
 
 from ...utils.options import *
 
@@ -20,7 +20,7 @@ from ...utils.options import *
 @click.pass_context
 def proforma(ctx):
     """Commands related to metadata pro formas"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @proforma.command('add', hidden=hide_admin_cmds())
@@ -170,3 +170,18 @@ def proforma_unshare(abbrev: str, group_names: List[str]):
     ABBREV should be the abbreviated name of the pro forma.
     """
     unshare_proforma(abbrev, group_names)
+
+
+@proforma.command('listgroups')
+@click.argument('abbrev', type=click.STRING)
+@table_format_option()
+def proforma_list_groups(abbrev: str, out_format: str):
+    """
+    List groups who have access to the given pro forma.
+
+    USAGE:
+    austrakka proforma listgroups [ABBREV]
+
+    ABBREV should be the abbreviated name of the pro forma.
+    """
+    list_groups_proforma(abbrev, out_format)

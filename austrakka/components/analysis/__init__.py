@@ -3,7 +3,6 @@ import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.components.analysis.definition import definition
-from austrakka.components.analysis.instance import instance
 from austrakka.components.analysis.funcs import list_analyses
 from austrakka.components.analysis.funcs import add_analysis
 from austrakka.components.analysis.funcs import update_analysis
@@ -22,11 +21,10 @@ from austrakka.utils.options import opt_filter_string
 @click.pass_context
 def analysis(ctx):
     '''Commands related to analyses'''
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 analysis.add_command(definition) if show_admin_cmds() else None
-analysis.add_command(instance) if show_admin_cmds() else None
 
 
 @analysis.command('list')

@@ -12,7 +12,7 @@ from austrakka.utils.options import opt_fieldtype_value
 @click.pass_context
 def value(ctx):
     """Commands related to fieldtype values"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @value.command('add', hidden=hide_admin_cmds())

@@ -3,15 +3,13 @@ import sys
 
 import click
 from loguru import logger
-from click_option_group import GroupedOption
 
-from ..components.auth import auth
+from austrakka.components.auth import auth
+from austrakka.utils.context import CxtKey
 
 DEBUG = 'debug'
 
 HELP_OPTS = ['-h', '--help']
-TOKEN_OPT_NAME = 'token'
-URI_OPT_NAME = 'uri'
 
 MISSING_TOKEN_HELP = '''Error: Environment variable AT_TOKEN is not set.
 
@@ -44,9 +42,9 @@ class AusTrakkaCliTopLevel(click.Group):
         except click.MissingParameter as exc:
             # If there is a missing top level parameter (eg. URI or TOKEN)
             # provide extended error message
-            if exc.param.name == TOKEN_OPT_NAME:
+            if exc.param.name == CxtKey.CTX_TOKEN.value:
                 click.echo(MISSING_TOKEN_HELP)
-            elif exc.param.name == URI_OPT_NAME:
+            elif exc.param.name == CxtKey.CTX_URI.value:
                 click.echo(MISSING_URI_HELP)
             else:
                 exc.ctx = None
@@ -67,12 +65,6 @@ def _get_custom_help_record(orig_help, multiple):
 
 
 class AusTrakkaCliOption(click.Option):
-    def get_help_record(self, ctx):
-        orig_help = super().get_help_record(ctx)
-        return _get_custom_help_record(orig_help, self.multiple)
-
-
-class AusTrakkaCliGroupOption(GroupedOption):
     def get_help_record(self, ctx):
         orig_help = super().get_help_record(ctx)
         return _get_custom_help_record(orig_help, self.multiple)

@@ -130,13 +130,12 @@ setup(
     install_requires=[
         "azure-identity",
         "azure-keyvault-secrets",
-        "requests-toolbelt",
-        "requests",
+        "httpx",
         "click",
         "loguru",
         "pandas",
         "tabulate",
-        "click-option-group"
+        "semver",
     ],  # Optional
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"

@@ -2,8 +2,6 @@
 from io import BufferedReader
 
 import click
-from click_option_group import optgroup
-from click_option_group import RequiredMutuallyExclusiveOptionGroup
 
 from austrakka.utils.output import table_format_option
 from austrakka.utils.options import opt_csv
@@ -11,7 +9,6 @@ from austrakka.utils.options import opt_seq_type
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_read
 from austrakka.utils.options import opt_group
-from austrakka.utils.options import opt_species
 from austrakka.utils.options import opt_analysis
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from .funcs import add_fasta_submission
@@ -25,7 +22,7 @@ from .funcs import list_sequences
 @click.pass_context
 def seq(ctx):
     """Commands related to sequences"""
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @seq.command('add')
@@ -40,7 +37,7 @@ def submission_add(
 
     The following CSV mapping fields are required:\n
         For FASTA:\n
-            SampleId: The sample name in AusTrakka\n
+            Seq_ID: The sample name in AusTrakka\n
             FileName: The local path of the fasta file to be uploaded\n
             FastaId: The sequence id in the fasta file\n
 
@@ -59,26 +56,16 @@ def submission_add(
 @opt_output_dir()
 @opt_seq_type()
 @opt_read()
-@optgroup.group('Filter', cls=RequiredMutuallyExclusiveOptionGroup)
-@opt_species(in_group=True, default=None)
-@opt_group(in_group=True, default=None, multiple=False)
-@opt_analysis(in_group=True, default=None)
+@opt_group(default=None, multiple=False, required=True)
 def get(
         output_dir,
         seq_type: str,
         read: str,
-        species: str,
         group_name: str,
-        analysis: str,
 ):
     """Download sequence files to the local drive
 
-    EXAMPLE 1: Download Fastq with both Reads for species SARS-CoV-2
-
-        austrakka seq get -t fastq --species SARS-CoV-2 --outdir ~/Downloads/fastq-files
-
-
-    EXAMPLE 2: Download Fasta for group Example-Group
+    EXAMPLE: Download Fasta for group Example-Group
 
         austrakka seq get -t fasta --group-name Example-Group --outdir ~/Downloads/fasta-files
 
@@ -88,9 +75,7 @@ def get(
         output_dir,
         seq_type,
         read,
-        species,
         group_name,
-        analysis,
     )
 
 
@@ -98,23 +83,16 @@ def get(
 @table_format_option()
 @opt_seq_type(default=None, required=False)
 @opt_read()
-@optgroup.group('Filter', cls=RequiredMutuallyExclusiveOptionGroup)
-@opt_species(in_group=True, default=None)
-@opt_group(in_group=True, default=None, multiple=False)
-@opt_analysis(in_group=True, default=None)
+@opt_group(default=None, multiple=False, required=True)
 def seq_list(
         out_format: str,
         seq_type: str,
         read: str,
-        species: str,
         group_name: str,
-        analysis: str,
 ):
     list_sequences(
         out_format,
         seq_type,
         read,
-        species,
         group_name,
-        analysis,
     )

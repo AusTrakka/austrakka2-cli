@@ -16,7 +16,7 @@ from .funcs import update_user
 @click.pass_context
 def user(ctx):
     '''Commands related to users'''
-    ctx.creds = ctx.parent.creds
+    ctx.context = ctx.parent.context
 
 
 @user.command('list')

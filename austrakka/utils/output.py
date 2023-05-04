@@ -151,6 +151,9 @@ def log_response_compact(response):
 
 
 def log_response(response):
+    if not response:
+        return
+
     def log_item(item):
         if item[RESPONSE_TYPE] == RESPONSE_TYPE_SUCCESS:
             log_dict({item.pop(RESPONSE_TYPE): item}, logger.success)

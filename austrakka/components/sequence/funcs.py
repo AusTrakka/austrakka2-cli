@@ -1,26 +1,27 @@
 import os
+import hashlib
+from dataclasses import dataclass
 from io import BufferedReader
-from typing import BinaryIO, List, Dict
+from typing import List, Dict
 
+import httpx
 import pandas as pd
 # pylint: disable=no-name-in-module
 from pandas._libs.parsers import STR_NA_VALUES
 from pandas.core.frame import DataFrame
 from loguru import logger
-from requests.exceptions import HTTPError
+from httpx import HTTPStatusError
 
 from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
+from austrakka.utils.exceptions import IncorrectHashException
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import call_api
-from austrakka.utils.api import call_api_raw
-from austrakka.utils.api import call_get_api
-from austrakka.utils.api import post
-from austrakka.utils.api import RESPONSE_TYPE_ERROR
+from austrakka.utils.api import api_post_multipart
+from austrakka.utils.api import api_get
+from austrakka.utils.api import api_get_stream
+from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
-from austrakka.utils.paths import SEQUENCE_BY_SPECIES_PATH
 from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
-from austrakka.utils.paths import SEQUENCE_BY_ANALYSIS_PATH
 from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
@@ -29,6 +30,7 @@ from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.output import print_table
+from austrakka.utils.retry import retry
 
 FASTA_PATH = 'Fasta'
 FASTQ_PATH = 'Fastq'
@@ -46,6 +48,13 @@ FASTA_CSV_FILENAME = 'FileName'
 FASTA_CSV_FASTA_ID = 'FastaId'
 
 
+@dataclass
+class SeqFile:
+    multipart: tuple
+    sha256: str
+    filename: str
+
+
 @logger_wraps()
 def add_fasta_submission(csv: BufferedReader):
     usecols = [
@@ -59,17 +68,15 @@ def add_fasta_submission(csv: BufferedReader):
     if messages:
         raise FailedResponseException(messages)
 
-    body = [
-        _get_file(filepath) for filepath in csv_dataframe[FASTA_CSV_FILENAME]
+    files = [
+        _get_file(filepath).multipart
+        for filepath in csv_dataframe[FASTA_CSV_FILENAME]
     ]
     csv.seek(0)
-    body.append(('files[]', (csv.name, csv)))
-
-    call_api(
-        method=post,
+    files.append(('files[]', (csv.name, csv)))
+    api_post_multipart(
         path="/".join([SEQUENCE_PATH, FASTA_PATH]),
-        body=body,
-        multipart=True,
+        files=files
     )
 
 
@@ -105,10 +112,34 @@ def _fastq_file_2_is_present(row: pd.Series) -> bool:
     return str(row[FASTQ_CSV_PATH_2]) not in STR_NA_VALUES
 
 
-def _get_file(filepath: str) -> tuple[str, tuple[str, BinaryIO]]:
+def _get_file(filepath: str) -> SeqFile:
     # pylint: disable=consider-using-with
     file = open(filepath, 'rb')
-    return 'files[]', (os.path.basename(file.name), file)
+    filename = os.path.basename(file.name)
+    return SeqFile(
+        multipart=('files[]', (filename, file)),
+        sha256=hashlib.sha256(file.read()).hexdigest(),
+        filename=filename,
+    )
+
+
+def _post_fastq(sample_files: list[SeqFile], custom_headers):
+    files = [file.multipart for file in sample_files]
+    resp = api_post_multipart(
+        path="/".join([SEQUENCE_PATH, FASTQ_PATH]),
+        files=files,
+        custom_headers=custom_headers,
+    )
+    errors = []
+    for seq in resp['data']:
+        if not any(
+                f.filename == seq['originalFileName']
+                and f.sha256.casefold() == seq['serverSha256'].casefold()
+                for f in sample_files
+        ):
+            errors.append(f'Hash for {seq["originalFileName"]} is not correct')
+    if any(errors):
+        raise IncorrectHashException(", ".join(errors))
 
 
 @logger_wraps()
@@ -137,18 +168,18 @@ def add_fastq_submission(csv: BufferedReader):
                 custom_headers[FASTQ_CSV_PATH_2_API] \
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
-
-            call_api(
-                method=post,
-                path="/".join([SEQUENCE_PATH, FASTQ_PATH]),
-                body=sample_files,
-                multipart=True,
-                custom_headers=custom_headers,
-            )
+            retry(lambda s=sample_files, c=custom_headers: _post_fastq(s, c),
+                  1,
+                  "/".join([SEQUENCE_PATH, FASTQ_PATH]))
         except FailedResponseException as ex:
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             log_response(ex.parsed_resp)
-        except (PermissionError, UnknownResponseException, HTTPError) as ex:
+        except (
+                PermissionError,
+                UnknownResponseException,
+                HTTPStatusError,
+                IncorrectHashException,
+        ) as ex:
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             logger.error(ex)
         except Exception as ex:
@@ -220,22 +251,26 @@ def _validate_fastq_submission(csv_dataframe: DataFrame):
 
 def _download_seq_file(file_path, filename, query_path, sample_dir):
     try:
-        resp = call_api_raw(
-            path=query_path,
-            stream=True,
-        )
+        def _write_chunks(resp: httpx.Response):
+            for chunk in resp.iter_raw(chunk_size=128):
+                file.write(chunk)
 
         if not os.path.exists(sample_dir):
             create_dir(sample_dir)
-
         with open(file_path, 'wb') as file:
-            for chunk in resp.iter_content(chunk_size=128):
-                file.write(chunk)
+            api_get_stream(query_path, _write_chunks)
 
         logger.success(f'Downloaded: {filename} To: {file_path}')
 
     except FailedResponseException as ex:
         log_response_compact(ex.parsed_resp)
+    except UnknownResponseException as ex:
+        log_response_compact(ex)
+    except HTTPStatusError as ex:
+        logger.error(
+            f'Failed downloading {filename} To: {file_path}. Error: {ex}'
+        )
+        os.remove(file_path)
 
 
 def _get_seq_download_path(sample_name: str, read: str, seq_type: str):
@@ -253,7 +288,7 @@ def _download_sequences(
     for ssi in samples_seq_info:
         sample_name = ssi['sampleName']
         dto_read = str(ssi['read'])
-        filename = ssi['fileName']
+        filename = ssi['fileNameOnDisk']
         seq_type = ssi['type']
 
         sample_dir = os.path.join(output_dir, sample_name)
@@ -276,18 +311,10 @@ def _filter_sequences(data, seq_type, read) -> List[Dict]:
     return list(data)
 
 
-def _get_seq_api(
-        species: str,
-        group_name: str,
-        analysis: str,
-):
+def _get_seq_api(group_name: str):
     api_path = SEQUENCE_PATH
-    if species is not None:
-        api_path += f'/{SEQUENCE_BY_SPECIES_PATH}/{species}'
-    elif group_name is not None:
+    if group_name is not None:
         api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}'
-    elif analysis is not None:
-        api_path += f'/{SEQUENCE_BY_ANALYSIS_PATH}/{analysis}'
     else:
         raise ValueError("A filter has not been passed")
     return api_path
@@ -297,12 +324,10 @@ def _get_seq_api(
 def _get_seq_data(
         seq_type: str,
         read: str,
-        species: str,
         group_name: str,
-        analysis: str,
 ):
-    api_path = _get_seq_api(species, group_name, analysis)
-    data = call_get_api(path=api_path)
+    api_path = _get_seq_api(group_name)
+    data = api_get(path=api_path)['data']
     return _filter_sequences(data, seq_type, read)
 
 
@@ -311,9 +336,7 @@ def get_sequences(
         output_dir,
         seq_type: str,
         read: str,
-        species: str,
         group_name: str,
-        analysis: str,
 ):
     if not os.path.exists(output_dir):
         create_dir(output_dir)
@@ -321,9 +344,7 @@ def get_sequences(
     data = _get_seq_data(
         seq_type,
         read,
-        species,
         group_name,
-        analysis,
     )
     _download_sequences(output_dir, data)
 
@@ -333,16 +354,12 @@ def list_sequences(
         out_format: str,
         seq_type: str,
         read: str,
-        species: str,
         group_name: str,
-        analysis: str,
 ):
     data = _get_seq_data(
         seq_type,
         read,
-        species,
         group_name,
-        analysis,
     )
     print_table(
         pd.DataFrame(data),

@@ -1,6 +1,5 @@
-from austrakka.utils.api import call_api
-from austrakka.utils.api import post
-from austrakka.utils.api import put
+from austrakka.utils.api import api_post
+from austrakka.utils.api import api_put
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import ORG_PATH
 from austrakka.utils.helpers.orgs import get_org_by_abbrev
@@ -21,10 +20,9 @@ def add_org(
         state: str,
         is_active: bool,
 ):
-    call_api(
-        method=post,
+    api_post(
         path=ORG_PATH,
-        body={
+        data={
             "Name": name,
             "Abbreviation": abbrev,
             "Country": country,
@@ -62,8 +60,7 @@ def update_org(
     if is_active is not None:
         put_org["IsActive"] = is_active
 
-    call_api(
-        method=put,
+    api_put(
         path=f'{ORG_PATH}/{abbrev}',
-        body=put_org
+        data=put_org
     )
