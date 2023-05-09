@@ -32,3 +32,7 @@ class FailedResponseException(Exception):
 
     def get_success_messages(self):
         return self.get_messages(RESPONSE_TYPE_SUCCESS)
+
+
+class IncorrectHashException(Exception):
+    pass

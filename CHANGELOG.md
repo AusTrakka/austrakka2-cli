@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.28.1] - 2023-05-03
+### Changed
+- seq add -t fastq command now verifies file hashes after upload, comparing server hash with the local file.
+
+# [0.28.0] - 2023-05-01
+### Added
+- Metadata list command.
+
+### Removed
+- seq list -a option
+- seq get -a option
+
+### Changed
+- Upgraded some cryptography dependency to 39.0.1
+
 # [0.27.3] - 2023-04-14
 ### Fixed
 - Error sending file upload requests.

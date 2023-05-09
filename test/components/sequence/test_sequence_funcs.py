@@ -88,10 +88,6 @@ class TestSequenceFuncs:
         api_path = _get_seq_api('test-group', None)
         assert api_path == 'Sequence/by-group/test-group'
 
-    def test_get_seq_api__pass_analysis__expect_analysis_path(self):
-        api_path = _get_seq_api(None, 'test-analysis')
-        assert api_path == 'Sequence/by-analysis/test-analysis'
-
     def test_get_seq_api__pass_none_params__expect_value_error(self):
         with pytest.raises(ValueError) as ex:
             _ = _get_seq_api(None, None)

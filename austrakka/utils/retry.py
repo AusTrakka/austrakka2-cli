@@ -12,9 +12,10 @@ def retry(func, retries, desc, delay=0):
             succeeded = True
         # pylint: disable=broad-exception-caught
         except Exception as ex:
-            logger.warning(f"Retry failed for '{desc}'")
+            logger.warning(f"Retry failed for '{desc}'. Error: '{ex}'")
             if tried >= retries:
                 logger.warning(
-                    f"Exhausted all retries for '{desc}'. Giving up.")
+                    f"Exhausted all retries for '{desc}'. Error: '{ex}'. "
+                    f"Giving up.")
                 raise ex
             tried = tried + 1
