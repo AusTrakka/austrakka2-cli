@@ -2,6 +2,7 @@
 from time import sleep
 from loguru import logger
 
+
 def retry(func, retries, desc, delay=0):
     succeeded = False
     tried = 0

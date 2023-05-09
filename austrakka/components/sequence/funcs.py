@@ -63,7 +63,7 @@ def add_fasta_submission(fasta_file: BufferedReader):
     original_filename = Path(fasta_file.name)
     if not original_filename:
         original_filename = Path("unnamed.fasta")
-    if original_filename.suffix not in [".fa",".fasta"]:
+    if original_filename.suffix not in [".fa", ".fasta"]:
         raise ValueError("FASTA file suffix is expected to be .fa or .fasta")
     name_prefix = original_filename.stem
 
@@ -85,7 +85,7 @@ def add_fasta_submission(fasta_file: BufferedReader):
             retry(
                 func=lambda: _post_fasta(files),
                 retries=2,
-                desc=f"{seqid} at "+"/".join([SEQUENCE_PATH, FASTA_PATH]),
+                desc=f"{seqid} at " + "/".join([SEQUENCE_PATH, FASTA_PATH]),
                 delay=0.1
             )
         except FailedResponseException as ex:
@@ -180,7 +180,7 @@ def add_fastq_submission(csv: BufferedReader):
                 custom_headers[FASTQ_CSV_PATH_2_API] \
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
-            retry(lambda : _post_fastq(sample_files, custom_headers),
+            retry(lambda: _post_fastq(sample_files, custom_headers),
                   1,
                   "/".join([SEQUENCE_PATH, FASTQ_PATH]))
         except FailedResponseException as ex:
