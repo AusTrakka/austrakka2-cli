@@ -1,7 +1,10 @@
+
 import os
+from pathlib import Path
 from io import BufferedReader, StringIO, BytesIO, TextIOWrapper
 import codecs
 from typing import BinaryIO, List, Dict
+from time import sleep
 
 import httpx
 import pandas as pd
@@ -11,8 +14,6 @@ from pandas.core.frame import DataFrame
 from loguru import logger
 from httpx import HTTPStatusError
 from Bio import SeqIO
-from time import sleep
-from pathlib import Path
 
 from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
@@ -73,11 +74,21 @@ def add_fasta_submission(fasta_file: BufferedReader):
             ('files[]', (csv_filename, csv)),
             ('files[]', (single_contig_filename, encode(single_contig)))
         ]
-        api_post_multipart(
-            path="/".join([SEQUENCE_PATH, FASTA_PATH]),
-            files=files
-        )
-
+        try:
+            retry(
+                func = lambda : _post_fasta(files), 
+                retries = 2,
+                desc = f"{seqid} at "+"/".join([SEQUENCE_PATH, FASTA_PATH]),
+                delay = 0.1
+            )
+        except FailedResponseException as ex:
+            logger.error(f'Sample {seqid} failed upload')
+            log_response(ex.parsed_resp)
+        except (
+                PermissionError, UnknownResponseException, HTTPStatusError
+        ) as ex:
+            logger.error(f'Sample {seqid} failed upload')
+            logger.error(ex)
 
 def _get_and_validate_csv(csv: BufferedReader, usecols: List[str]):
     try:
@@ -111,6 +122,11 @@ def _post_fastq(sample_files, custom_headers):
         custom_headers=custom_headers,
     )
 
+def _post_fasta(sample_files):
+    api_post_multipart(
+        path="/".join([SEQUENCE_PATH, FASTA_PATH]),
+        files=sample_files
+    )
 
 @logger_wraps()
 def add_fastq_submission(csv: BufferedReader):
@@ -138,7 +154,7 @@ def add_fastq_submission(csv: BufferedReader):
                 custom_headers[FASTQ_CSV_PATH_2_API] \
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
-            retry(lambda s=sample_files, c=custom_headers: _post_fastq(s, c),
+            retry(lambda : _post_fastq(sample_files, custom_headers),
                   1,
                   "/".join([SEQUENCE_PATH, FASTQ_PATH]))
         except FailedResponseException as ex:

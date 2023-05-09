@@ -1,10 +1,11 @@
 
-import click
 from io import BufferedReader
 
+import click
+
+from austrakka.utils.options import opt_csv
 from ..funcs import add_fasta_submission
 from ..funcs import add_fastq_submission
-from austrakka.utils.options import opt_csv
 
 
 @click.group()
