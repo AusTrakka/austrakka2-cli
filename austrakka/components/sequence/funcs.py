@@ -2,11 +2,8 @@ import os
 from pathlib import Path
 from io import BufferedReader, StringIO, BytesIO, TextIOWrapper
 import codecs
-from typing import BinaryIO, List, Dict
-from time import sleep
 import hashlib
 from dataclasses import dataclass
-from io import BufferedReader
 from typing import List, Dict
 
 import httpx
@@ -64,12 +61,12 @@ class SeqFile:
 @logger_wraps()
 def add_fasta_submission(fasta_file: BufferedReader):
     original_filename = Path(fasta_file.name)
-    if not original_filename: 
+    if not original_filename:
         original_filename = Path("unnamed.fasta")
     if original_filename.suffix not in [".fa",".fasta"]:
         raise ValueError("FASTA file suffix is expected to be .fa or .fasta")
     name_prefix = original_filename.stem
-    
+
     for record in SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'):
         seqid = record.id
         logger.info(f"Uploading {seqid}")
@@ -86,10 +83,10 @@ def add_fasta_submission(fasta_file: BufferedReader):
         ]
         try:
             retry(
-                func = lambda : _post_fasta(files), 
-                retries = 2,
-                desc = f"{seqid} at "+"/".join([SEQUENCE_PATH, FASTA_PATH]),
-                delay = 0.1
+                func=lambda: _post_fasta(files),
+                retries=2,
+                desc=f"{seqid} at "+"/".join([SEQUENCE_PATH, FASTA_PATH]),
+                delay=0.1
             )
         except FailedResponseException as ex:
             logger.error(f'Sample {seqid} failed upload')
@@ -99,6 +96,7 @@ def add_fasta_submission(fasta_file: BufferedReader):
         ) as ex:
             logger.error(f'Sample {seqid} failed upload')
             logger.error(ex)
+
 
 def _get_and_validate_csv(csv: BufferedReader, usecols: List[str]):
     try:
@@ -148,11 +146,13 @@ def _post_fastq(sample_files: list[SeqFile], custom_headers):
     if any(errors):
         raise IncorrectHashException(", ".join(errors))
 
+
 def _post_fasta(sample_files):
     api_post_multipart(
         path="/".join([SEQUENCE_PATH, FASTA_PATH]),
         files=sample_files
     )
+
 
 @logger_wraps()
 def add_fastq_submission(csv: BufferedReader):
