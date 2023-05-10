@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.28.1] - 2023-05-03
+### Changed
+- seq add -t fastq command now verifies file hashes after upload, comparing server hash with the local file.
+
 # [0.28.0] - 2023-05-01
 ### Added
 - Metadata list command.
