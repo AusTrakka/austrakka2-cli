@@ -19,7 +19,7 @@ def project(ctx):
 @opt_abbrev(help="Project Abbreviation")
 @opt_name(help="Project name")
 @opt_description(required=False)
-@opt_organisation(help="Requesting organisation abbreviation")
+@opt_organisation(help="Requesting organisation abbreviation", required=False)
 def project_add(abbrev: str, name: str, description: str, org: str):
     '''
     Add a new project to AusTrakka.
