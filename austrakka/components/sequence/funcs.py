@@ -90,7 +90,7 @@ def add_fasta_submission(fasta_file: BufferedReader):
             retry(
                 func=lambda: _post_fasta(files, file_hash),
                 retries=2,
-                desc=f"{seq_id} at "+"/".join([SEQUENCE_PATH, FASTA_PATH]),
+                desc=f"{seq_id} at " + "/".join([SEQUENCE_PATH, FASTA_PATH]),
                 delay=0.0
             )
         except FailedResponseException as ex:
@@ -177,7 +177,8 @@ def _post_fastq(sample_files: list[SeqFile], custom_headers):
         custom_headers=custom_headers,
     )
 
-    hashes = [FileHash(filename=f.filename, sha256=f.sha256) for f in sample_files]
+    hashes = [FileHash(filename=f.filename, sha256=f.sha256)
+              for f in sample_files]
     _verify_hash(hashes, resp)
 
 
