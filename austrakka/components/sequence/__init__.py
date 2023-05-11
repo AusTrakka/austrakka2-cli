@@ -4,18 +4,16 @@ from io import BufferedReader
 import click
 
 from austrakka.utils.output import table_format_option
-from austrakka.utils.options import opt_csv
 from austrakka.utils.options import opt_seq_type
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_read
 from austrakka.utils.options import opt_group
 from austrakka.utils.options import opt_analysis
-from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
-from .funcs import add_fasta_submission
-from .funcs import add_fastq_submission
+
 from .funcs import take_sample_names
 from .funcs import get_sequences
 from .funcs import list_sequences
+from .add import add
 
 
 @click.group()
@@ -25,31 +23,7 @@ def seq(ctx):
     ctx.context = ctx.parent.context
 
 
-@seq.command('add')
-@opt_csv(help='CSV with mapping from Seq_ID to sequence files', required=True)
-@opt_seq_type()
-def submission_add(
-        csv_file: BufferedReader,
-        seq_type: str
-):
-    """
-    Upload sequence submission to AusTrakka
-
-    The following CSV mapping fields are required:\n
-        For FASTA:\n
-            Seq_ID: The sample name in AusTrakka\n
-            FileName: The local path of the fasta file to be uploaded\n
-            FastaId: The sequence id in the fasta file\n
-
-        For FASTQ:\n
-            Seq_ID: The sample name in AusTrakka\n
-            filepath1: The local path of the first read to be uploaded\n
-            filepath2: The local path of the second read to be uploaded
-    """
-    # pylint: disable=expression-not-assigned
-    add_fasta_submission(csv_file) \
-        if seq_type == FASTA_UPLOAD_TYPE \
-        else add_fastq_submission(csv_file)
+seq.add_command(add)
 
 
 @seq.command('get')
