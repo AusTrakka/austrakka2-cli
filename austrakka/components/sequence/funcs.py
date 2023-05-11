@@ -230,9 +230,8 @@ def add_fastq_submission(csv: BufferedReader):
                 custom_headers[FASTQ_CSV_PATH_2_API] \
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
-            retry(lambda sf=sample_files, ch=custom_headers: _post_fastq(sf, ch),
-                  1,
-                  "/".join([SEQUENCE_PATH, FASTQ_PATH]))
+            retry(lambda sf=sample_files, ch=custom_headers: _post_fastq(
+                sf, ch), 1, "/".join([SEQUENCE_PATH, FASTQ_PATH]))
         except FailedResponseException as ex:
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             log_response(ex.parsed_resp)
