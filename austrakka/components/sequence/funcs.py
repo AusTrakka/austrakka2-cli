@@ -88,7 +88,7 @@ def add_fasta_submission(fasta_file: BufferedReader):
 
         try:
             retry(
-                func=lambda: _post_fasta(files, file_hash),
+                func=lambda f=files, fh=file_hash: _post_fasta(f, fh),
                 retries=2,
                 desc=f"{seq_id} at " + "/".join([SEQUENCE_PATH, FASTA_PATH]),
                 delay=0.0
@@ -230,7 +230,7 @@ def add_fastq_submission(csv: BufferedReader):
                 custom_headers[FASTQ_CSV_PATH_2_API] \
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
-            retry(lambda: _post_fastq(sample_files, custom_headers),
+            retry(lambda sf=sample_files, ch=custom_headers: _post_fastq(sf, ch),
                   1,
                   "/".join([SEQUENCE_PATH, FASTQ_PATH]))
         except FailedResponseException as ex:
