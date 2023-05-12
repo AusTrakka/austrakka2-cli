@@ -1,3 +1,4 @@
+from io import BufferedReader
 
 from loguru import logger
 
@@ -33,9 +34,13 @@ def add_plot(
         description: str,
         project: str,
         plottype: str,
-        spec: str,
+        spec: BufferedReader,
         is_active: bool,
 ):
+    if spec is not None:
+        spec_string = spec.read()
+    else:
+        spec_string = None
     api_post(
         path=PLOT_PATH,
         data={
@@ -44,7 +49,7 @@ def add_plot(
             'description': description,
             'projectAbbreviation': project,
             'plotTypeName': plottype,
-            'spec': spec,
+            'spec': spec_string,
             'isActive': is_active,
         }
     )

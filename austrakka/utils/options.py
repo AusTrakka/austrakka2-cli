@@ -274,7 +274,7 @@ def opt_plotspec(**attrs: t.Any):
     return _create_option(
         '-spec',
         'spec',
-        type=click.STRING,
+        type=click.File('r'),
         **{**defaults, **attrs}
     )
 

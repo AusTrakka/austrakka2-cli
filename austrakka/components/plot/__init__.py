@@ -1,4 +1,6 @@
 # pylint: disable=expression-not-assigned,duplicate-code
+from io import BufferedReader
+
 import click
 
 from austrakka.components.plot.funcs import add_plot, update_plot, disable_plot, enable_plot, \
@@ -41,7 +43,7 @@ def plot_add(
         description: str,
         project: str,
         plottype: str,
-        spec: str,
+        spec: BufferedReader,
         is_active: bool,
 ):
     """Add plot to a project in AusTrakka"""
