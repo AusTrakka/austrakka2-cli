@@ -253,38 +253,32 @@ def opt_fieldtype(**attrs: t.Any):
     )
 
 
-@_default_option_params(
-    required=True,
-    help='Plot type. Use `austrakka plot types` to see options.'
-)
 def opt_plottype(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Plot type. Use `austrakka plot types` to see options.'
+    }
     return _create_option(
         '-pt',
         '--plottype',
         type=click.STRING,
-        **attrs
+        **{**defaults, **attrs}
     )
 
 
-@_default_option_params(
-    required=False,
-    help='Plot spec. If not provided, or empty, the default spec for the plot type will be used.'
-)
 def opt_plotspec(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Plot spec. If not provided, or empty, the default spec for the plot type will be used.'
+    }
     return _create_option(
         '-spec',
         'spec',
         type=click.STRING,
-        **attrs
+        **{**defaults, **attrs}
     )
 
 
-@_default_option_params(
-    required=True,
-    multiple=True,
-    help='The user''s Owner group and role assignment. Exclude ' +
-         'this option if the user is not an owner.',
-)
 def opt_owner_group_roles(**attrs: t.Any):
     defaults = {
         'required': True,
