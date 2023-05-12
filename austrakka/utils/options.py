@@ -270,8 +270,7 @@ def opt_plotspec(**attrs: t.Any):
     defaults = {
         'required': False,
         'help': 'Plot spec. If not provided, or empty, the default spec for the'
-                ' plot type will be used.'
-    }
+        ' plot type will be used.'}
     return _create_option(
         '-spec',
         'spec',
