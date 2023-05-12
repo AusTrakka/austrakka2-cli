@@ -11,6 +11,7 @@ from austrakka.utils.options import opt_abbrev, opt_plottype, opt_plotspec
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_is_active
 from austrakka.utils.options import opt_project
+from austrakka.utils.options import opt_name
 
 
 @click.group()
@@ -30,8 +31,7 @@ def plot_list(project: str, out_format: str):
 
 @plot.command('add', hidden=hide_admin_cmds())
 @opt_abbrev()
-# click creates some kind of clash with @opt_name
-@click.option("-n", "--name", type=click.STRING, required=True)
+@opt_name()
 @opt_description()
 @opt_project()
 @opt_plottype()
@@ -60,8 +60,7 @@ def plot_add(
 
 @plot.command('update', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=str)
-# click creates some kind of clash with @opt_name
-@click.option("-n", "--name", type=click.STRING, required=False)
+@opt_name()
 @opt_description(required=False)
 @opt_project(required=False)
 @opt_plottype(required=False)
