@@ -253,6 +253,32 @@ def opt_fieldtype(**attrs: t.Any):
     )
 
 
+def opt_plottype(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Plot type. Use `austrakka plot types` to see options.'
+    }
+    return _create_option(
+        '-pt',
+        '--plottype',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_plotspec(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Plot spec. If not provided, or empty, the default spec for the'
+        ' plot type will be used.'}
+    return _create_option(
+        '-spec',
+        'spec',
+        type=click.File('r'),
+        **{**defaults, **attrs}
+    )
+
+
 def opt_owner_group_roles(**attrs: t.Any):
     defaults = {
         'required': True,
