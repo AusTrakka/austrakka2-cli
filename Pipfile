@@ -9,6 +9,8 @@ autopep8 = "*"
 pycodestyle = "*"
 pylint-print = "*"
 pytest = "*"
+pipenv-setup = "==3.2.0"
+vistir = "==0.6.1"
 
 [packages]
 austrakka = {editable = true, path = "."}
