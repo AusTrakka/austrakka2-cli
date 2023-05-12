@@ -29,5 +29,5 @@ jobs:
         run: |
           git config --global user.name 'austrakka-bot'
           git config --global user.email 'austrakka-bot@austrakka.net.au'
-          git commit -am "Sync setup.py"
+          git diff-index --quiet HEAD || git commit -am "Sync setup.py"
           git push
