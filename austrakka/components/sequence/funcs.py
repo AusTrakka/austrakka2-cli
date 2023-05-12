@@ -1,6 +1,10 @@
 import os
-from io import BufferedReader
-from typing import BinaryIO, List, Dict
+from pathlib import Path
+from io import BufferedReader, StringIO, BytesIO, TextIOWrapper
+import codecs
+import hashlib
+from dataclasses import dataclass
+from typing import List, Dict
 
 import httpx
 import pandas as pd
@@ -9,9 +13,11 @@ from pandas._libs.parsers import STR_NA_VALUES
 from pandas.core.frame import DataFrame
 from loguru import logger
 from httpx import HTTPStatusError
+from Bio import SeqIO
 
 from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
+from austrakka.utils.exceptions import IncorrectHashException
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_post_multipart
 from austrakka.utils.api import api_get
@@ -19,7 +25,6 @@ from austrakka.utils.api import api_get_stream
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
 from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
-from austrakka.utils.paths import SEQUENCE_BY_ANALYSIS_PATH
 from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
@@ -46,41 +51,92 @@ FASTA_CSV_FILENAME = 'FileName'
 FASTA_CSV_FASTA_ID = 'FastaId'
 
 
+@dataclass
+class SeqFile:
+    multipart: tuple
+    sha256: str
+    filename: str
+
+
+@dataclass
+class FileHash:
+    filename: str
+    sha256: str
+
+
 @logger_wraps()
-def add_fasta_submission(csv: BufferedReader):
-    usecols = [
-        FASTA_CSV_SAMPLE,
-        FASTA_CSV_FILENAME,
-        FASTA_CSV_FASTA_ID
-    ]
-    csv_dataframe = _get_and_validate_csv(csv, usecols)
+def add_fasta_submission(fasta_file: BufferedReader):
+    name_prefix = _calc_name_prefix(fasta_file)
 
-    messages = _validate_fasta_submission(csv_dataframe)
-    if messages:
-        raise FailedResponseException(messages)
+    for record in SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'):
+        seq_id = record.id
+        logger.info(f"Uploading {seq_id}")
 
+        csv, csv_filename, single_contig_filename = _gen_csv(
+            name_prefix,
+            seq_id)
+
+        single_contig, files = _fasta_payload(
+            csv,
+            csv_filename,
+            record,
+            single_contig_filename)
+
+        file_hash = _fasta_hash(
+            single_contig,
+            single_contig_filename)
+
+        try:
+            retry(
+                func=lambda f=files, fh=file_hash: _post_fasta(f, fh),
+                retries=2,
+                desc=f"{seq_id} at " + "/".join([SEQUENCE_PATH, FASTA_PATH]),
+                delay=0.0
+            )
+        except FailedResponseException as ex:
+            logger.error(f'Sample {seq_id} failed upload')
+            log_response(ex.parsed_resp)
+        except (
+                PermissionError, UnknownResponseException, HTTPStatusError
+        ) as ex:
+            logger.error(f'Sample {seq_id} failed upload')
+            logger.error(ex)
+
+
+def _calc_name_prefix(fasta_file):
+    original_filename = Path(fasta_file.name)
+    if not original_filename:
+        original_filename = Path("unnamed.fasta")
+    if original_filename.suffix not in [".fa", ".fasta"]:
+        raise ValueError("FASTA file suffix is expected to be .fa or .fasta")
+    name_prefix = original_filename.stem
+    return name_prefix
+
+
+def _fasta_hash(single_contig, single_contig_filename):
+    content = single_contig.getvalue()
+    return FileHash(
+        filename=single_contig_filename,
+        sha256=hashlib.sha256(bytearray(content, 'utf-8')).hexdigest())
+
+
+def _fasta_payload(csv, csv_filename, record, single_contig_filename):
+    single_contig = StringIO()
+    SeqIO.write([record], single_contig, "fasta")
+    encode = codecs.getwriter('utf-8')
     files = [
-        _get_file(filepath) for filepath in csv_dataframe[FASTA_CSV_FILENAME]
+        ('files[]', (csv_filename, csv)),
+        ('files[]', (single_contig_filename, encode(single_contig)))
     ]
-    csv.seek(0)
-    files.append(('files[]', (csv.name, csv)))
-    api_post_multipart(
-        path="/".join([SEQUENCE_PATH, FASTA_PATH]),
-        files=files
-    )
+    return single_contig, files
 
 
-def _validate_fasta_submission(csv_dataframe: DataFrame):
-    messages = []
-
-    for _, row in csv_dataframe.iterrows():
-        if not os.path.isfile(row[FASTA_CSV_FILENAME]):
-            messages.append(create_response_object(
-                f'File {row[FASTA_CSV_FILENAME]} not found',
-                RESPONSE_TYPE_ERROR
-            ))
-
-    return messages
+def _gen_csv(name_prefix, seq_id):
+    csv_filename = f"{name_prefix}_{seq_id}_split.csv"
+    single_contig_filename = f"{name_prefix}_{seq_id}_split.fasta"
+    csv = BytesIO(
+        f"SampleId,FileName,FastaId\n{seq_id},{single_contig_filename},\n".encode())
+    return csv, csv_filename, single_contig_filename
 
 
 def _get_and_validate_csv(csv: BufferedReader, usecols: List[str]):
@@ -102,18 +158,50 @@ def _fastq_file_2_is_present(row: pd.Series) -> bool:
     return str(row[FASTQ_CSV_PATH_2]) not in STR_NA_VALUES
 
 
-def _get_file(filepath: str) -> tuple[str, tuple[str, BinaryIO]]:
+def _get_file(filepath: str) -> SeqFile:
     # pylint: disable=consider-using-with
     file = open(filepath, 'rb')
-    return 'files[]', (os.path.basename(file.name), file)
+    filename = os.path.basename(file.name)
+    return SeqFile(
+        multipart=('files[]', (filename, file)),
+        sha256=hashlib.sha256(file.read()).hexdigest(),
+        filename=filename,
+    )
 
 
-def _post_fastq(sample_files, custom_headers):
-    api_post_multipart(
+def _post_fastq(sample_files: list[SeqFile], custom_headers):
+    files = [file.multipart for file in sample_files]
+    resp = api_post_multipart(
         path="/".join([SEQUENCE_PATH, FASTQ_PATH]),
-        files=sample_files,
+        files=files,
         custom_headers=custom_headers,
     )
+
+    hashes = [FileHash(filename=f.filename, sha256=f.sha256)
+              for f in sample_files]
+    _verify_hash(hashes, resp)
+
+
+def _verify_hash(hashes: list[FileHash], resp: dict):
+    errors = []
+    for seq in resp['data']:
+        if not any(
+                f.filename == seq['originalFileName']
+                and f.sha256.casefold() == seq['serverSha256'].casefold()
+                for f in hashes
+        ):
+            errors.append(f'Hash for {seq["originalFileName"]} is not correct')
+    if any(errors):
+        raise IncorrectHashException(", ".join(errors))
+
+
+def _post_fasta(sample_files, file_hash: FileHash):
+    resp = api_post_multipart(
+        path="/".join([SEQUENCE_PATH, FASTA_PATH]),
+        files=sample_files
+    )
+
+    _verify_hash(list([file_hash]), resp)
 
 
 @logger_wraps()
@@ -142,14 +230,16 @@ def add_fastq_submission(csv: BufferedReader):
                 custom_headers[FASTQ_CSV_PATH_2_API] \
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
-            retry(lambda s=sample_files, c=custom_headers: _post_fastq(s, c),
-                  1,
-                  "/".join([SEQUENCE_PATH, FASTQ_PATH]))
+            retry(lambda sf=sample_files, ch=custom_headers: _post_fastq(
+                sf, ch), 1, "/".join([SEQUENCE_PATH, FASTQ_PATH]))
         except FailedResponseException as ex:
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             log_response(ex.parsed_resp)
         except (
-                PermissionError, UnknownResponseException, HTTPStatusError
+                PermissionError,
+                UnknownResponseException,
+                HTTPStatusError,
+                IncorrectHashException,
         ) as ex:
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             logger.error(ex)
@@ -282,15 +372,10 @@ def _filter_sequences(data, seq_type, read) -> List[Dict]:
     return list(data)
 
 
-def _get_seq_api(
-        group_name: str,
-        analysis: str,
-):
+def _get_seq_api(group_name: str):
     api_path = SEQUENCE_PATH
     if group_name is not None:
         api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}'
-    elif analysis is not None:
-        api_path += f'/{SEQUENCE_BY_ANALYSIS_PATH}/{analysis}'
     else:
         raise ValueError("A filter has not been passed")
     return api_path
@@ -301,9 +386,8 @@ def _get_seq_data(
         seq_type: str,
         read: str,
         group_name: str,
-        analysis: str,
 ):
-    api_path = _get_seq_api(group_name, analysis)
+    api_path = _get_seq_api(group_name)
     data = api_get(path=api_path)['data']
     return _filter_sequences(data, seq_type, read)
 
@@ -314,7 +398,6 @@ def get_sequences(
         seq_type: str,
         read: str,
         group_name: str,
-        analysis: str,
 ):
     if not os.path.exists(output_dir):
         create_dir(output_dir)
@@ -323,7 +406,6 @@ def get_sequences(
         seq_type,
         read,
         group_name,
-        analysis,
     )
     _download_sequences(output_dir, data)
 
@@ -334,13 +416,11 @@ def list_sequences(
         seq_type: str,
         read: str,
         group_name: str,
-        analysis: str,
 ):
     data = _get_seq_data(
         seq_type,
         read,
         group_name,
-        analysis,
     )
     print_table(
         pd.DataFrame(data),
