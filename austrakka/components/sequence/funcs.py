@@ -122,7 +122,7 @@ def _fasta_hash(single_contig, single_contig_filename):
 
 def _fasta_payload(csv, csv_filename, record, single_contig_filename):
     single_contig = StringIO()
-    SeqIO.write([record], single_contig, "fasta")
+    SeqIO.write([record], single_contig, 'fasta-2line')
     encode = codecs.getwriter('utf-8')
     files = [
         ('files[]', (csv_filename, csv)),
