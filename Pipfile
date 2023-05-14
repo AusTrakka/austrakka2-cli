@@ -9,6 +9,8 @@ autopep8 = "*"
 pycodestyle = "*"
 pylint-print = "*"
 pytest = "*"
+pipenv-setup = "==3.2.0"
+vistir = "==0.6.1"
 
 [packages]
 austrakka = {editable = true, path = "."}
@@ -21,6 +23,7 @@ tabulate = "==0.8.9"
 cryptography = "==39.0.1"
 semver = "==2.13.0"
 httpx = {extras = ["http2"], version = "==0.23.3"}
+biopython = "==1.81"
 
 [requires]
 python_version = "3.9"
