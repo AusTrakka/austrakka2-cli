@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.29.0] - 2023-05-14
+### Changed
+- `seq add` now split into subcommands `seq add fastq` and `seq add fasta`, intended for Illumina FASTQ and single-contig FASTA consensus sequences respectively
+- `seq add` commands now carry out a hash check to ensure correctness of upload
+- `seq add fasta` requires only a FASTA file as input; FASTA IDs must match known Seq_IDs
+- `seq add fasta` now uploads sequences individually to separate Seq_IDs
+
+### Added
+- plot subcommands
+- Parameter `project add --org` parameter to specify requesting org for a project
+
 # [0.28.1] - 2023-05-03
 ### Changed
 - seq add -t fastq command now verifies file hashes after upload, comparing server hash with the local file.
