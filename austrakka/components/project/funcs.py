@@ -5,14 +5,17 @@ from austrakka.utils.paths import PROJECT_PATH
 
 
 @logger_wraps()
-def add_project(abbrev: str, name: str, description: str):
+def add_project(abbrev: str, name: str, description: str, org: str):
     return api_post(
         path=PROJECT_PATH,
         data={
             "abbreviation": abbrev,
             "name": name,
             "description": description,
-            "isActive": True
+            "isActive": True,
+            "requestingOrg": {
+                "abbreviation": org
+            }
         }
     )
 
