@@ -32,6 +32,7 @@ from austrakka.utils.fs import create_dir
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import READ_BOTH
+from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
 from austrakka.utils.output import print_table
 from austrakka.utils.retry import retry
 
@@ -49,6 +50,8 @@ FASTQ_CSV_PATH_2_API = 'filename2'
 FASTA_CSV_SAMPLE = 'SampleId'
 FASTA_CSV_FILENAME = 'FileName'
 FASTA_CSV_FASTA_ID = 'FastaId'
+
+USE_IS_ACTIVE_FLAG = 'useIsActiveFlag'
 
 
 @dataclass
@@ -372,10 +375,11 @@ def _filter_sequences(data, seq_type, read) -> List[Dict]:
     return list(data)
 
 
-def _get_seq_api(group_name: str):
+def _get_seq_api(group_name: str, use_is_active_flag: bool):
     api_path = SEQUENCE_PATH
     if group_name is not None:
-        api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}'
+        api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}' \
+                    f'?{USE_IS_ACTIVE_FLAG}={use_is_active_flag}'
     else:
         raise ValueError("A filter has not been passed")
     return api_path
@@ -386,8 +390,10 @@ def _get_seq_data(
         seq_type: str,
         read: str,
         group_name: str,
+        sub_query_type: str,
 ):
-    api_path = _get_seq_api(group_name)
+    use_is_active_flag = sub_query_type == BY_IS_ACTIVE_FLAG
+    api_path = _get_seq_api(group_name, use_is_active_flag)
     data = api_get(path=api_path)['data']
     return _filter_sequences(data, seq_type, read)
 
@@ -398,6 +404,7 @@ def get_sequences(
         seq_type: str,
         read: str,
         group_name: str,
+        sub_query_type: str,
 ):
     if not os.path.exists(output_dir):
         create_dir(output_dir)
@@ -406,6 +413,7 @@ def get_sequences(
         seq_type,
         read,
         group_name,
+        sub_query_type,
     )
     _download_sequences(output_dir, data)
 
@@ -416,11 +424,13 @@ def list_sequences(
         seq_type: str,
         read: str,
         group_name: str,
+        sub_query_type: str,
 ):
     data = _get_seq_data(
         seq_type,
         read,
         group_name,
+        sub_query_type,
     )
     print_table(
         pd.DataFrame(data),

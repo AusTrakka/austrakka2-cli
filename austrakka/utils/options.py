@@ -2,8 +2,8 @@ import typing as t
 
 import click
 
-from austrakka.utils.enums.seq import SEQ_TYPES
-from austrakka.utils.enums.seq import READS
+from austrakka.utils.enums.seq import SEQ_TYPES, SEQ_FILTERS
+from austrakka.utils.enums.seq import READS, BY_LATEST_DATE
 from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.misc import AusTrakkaCliOption
 
@@ -193,6 +193,21 @@ def opt_seq_type(**attrs: t.Any):
         '--type',
         'seq_type',
         type=click.Choice(SEQ_TYPES),
+        **{**defaults, **attrs}
+    )
+
+
+def opt_seq_filter(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'default': BY_LATEST_DATE,
+        'help': 'addition filter for sequence.',
+    }
+    return _create_option(
+        "-q",
+        '--sub-seq-query',
+        'sub_query_type',
+        type=click.Choice(SEQ_FILTERS),
         **{**defaults, **attrs}
     )
 
