@@ -127,17 +127,18 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=["anyio==3.6.2; python_full_version >= '3.6.2'", 'azure-common==1.1.28', "azure-core==1.26.4; python_version >= '3.7'", 'azure-identity==1.6.1', 'azure-keyvault-secrets==4.3.0', 'biopython==1.81', "certifi==2023.5.7; python_version >= '3.6'", 'cffi==1.15.1', "charset-normalizer==3.1.0; python_full_version >= '3.7.0'", 'click==8.1.3', 'cryptography==39.0.1', "h11==0.14.0; python_version >= '3.7'", 'h2==4.1.0', "hpack==4.0.0; python_full_version >= '3.6.1'", "httpcore==0.16.3; python_version >= '3.7'", 'httpx[http2]==0.23.3', "hyperframe==6.0.1; python_full_version >= '3.6.1'", 'idna==3.4', 'isodate==0.6.1', 'loguru==0.5.3', 'msal==1.22.0', 'msal-extensions==0.3.1', "msrest==0.7.1; python_version >= '3.6'", "numpy==1.24.3; python_version >= '3.8'", "oauthlib==3.2.2; python_version >= '3.6'", 'pandas==1.3.3', "portalocker==2.7.0; python_version >= '3.5' and platform_system != 'Windows'", 'pycparser==2.21', "pyjwt[crypto]==2.7.0; python_version >= '3.7'", "python-dateutil==2.8.2; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'", 'pytz==2023.3', "requests==2.30.0; python_version >= '3.7'", "requests-oauthlib==1.3.1; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'", 'rfc3986[idna2008]==1.5.0', 'semver==2.13.0', "six==1.16.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'", "sniffio==1.3.0; python_version >= '3.7'", 'tabulate==0.8.9', "typing-extensions==4.5.0; python_version >= '3.7'", "urllib3==2.0.2; python_version >= '3.7'"
-
-
-
-
-
-
-
-
-
-                      ],  # Optional
+    install_requires=[
+        "azure-identity",
+        "azure-keyvault-secrets",
+        "click",
+        "loguru",
+        "pandas",
+        "tabulate",
+        "cryptography",
+        "semver",
+        "httpx",
+        "biopython",
+    ],  # Optional
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
     # syntax, for example:
