@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.29.1] - 2023-05-25
+### Changed
+- `seq get` and `seq list` accepts optional flag to get sequences by IsActive flag rather than most recent.
+
 # [0.29.0] - 2023-05-14
 ### Changed
 - `seq add` now split into subcommands `seq add fastq` and `seq add fasta`, intended for Illumina FASTQ and single-contig FASTA consensus sequences respectively
