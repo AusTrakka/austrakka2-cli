@@ -337,17 +337,24 @@ def _download_seq_file(file_path, filename, query_path, sample_dir):
         os.remove(file_path)
 
 
-def _get_seq_download_path(sample_name: str, read: str, seq_type: str):
+def _get_seq_download_path(
+        sample_name: str,
+        read: str,
+        seq_type: str,
+        sub_query_type: str,):
+
+    by_is_active = BY_IS_ACTIVE_FLAG == sub_query_type
     download_path = f'{SEQUENCE_PATH}/{DOWNLOAD}'
-    download_path += f'/{FASTQ_PATH}/{sample_name}/{read}' \
+    download_path += f'/{FASTQ_PATH}/{sample_name}/{read}?{USE_IS_ACTIVE_FLAG}={by_is_active}' \
         if seq_type == FASTQ_UPLOAD_TYPE \
-        else f'/{FASTA_PATH}/{sample_name}'
+        else f'/{FASTA_PATH}/{sample_name}?{USE_IS_ACTIVE_FLAG}={by_is_active}'
     return download_path
 
 
 def _download_sequences(
         output_dir: str,
         samples_seq_info: list[Dict],
+        sub_query_type: str,
 ):
     for ssi in samples_seq_info:
         sample_name = ssi['sampleName']
@@ -363,7 +370,12 @@ def _download_sequences(
                 f'Found a local copy of {filename}.  Skipping...')
             continue
 
-        query_path = _get_seq_download_path(sample_name, dto_read, seq_type)
+        query_path = _get_seq_download_path(
+            sample_name,
+            dto_read,
+            seq_type,
+            sub_query_type)
+
         _download_seq_file(file_path, filename, query_path, sample_dir)
 
 
@@ -415,7 +427,7 @@ def get_sequences(
         group_name,
         sub_query_type,
     )
-    _download_sequences(output_dir, data)
+    _download_sequences(output_dir, data, sub_query_type)
 
 
 # pylint: disable=duplicate-code
