@@ -26,4 +26,4 @@ httpx = {extras = ["http2"], version = "==0.23.3"}
 biopython = "==1.81"
 
 [requires]
-python_version = "3.9"
+python_version = "3"
