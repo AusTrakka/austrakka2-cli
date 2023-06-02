@@ -9,7 +9,7 @@ from austrakka.utils.paths import WIDGET_PATH
 @logger_wraps()
 def add_widget(name: str):
     """
-    Add widgets for later inclusion in a dashboard.
+    Add a widget for later inclusion in a dashboard.
     """
     api_post(
         path=WIDGET_PATH,

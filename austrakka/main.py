@@ -21,6 +21,7 @@ from .components.fieldtype import fieldtype
 from .components.group import group
 from .components.sample import sample
 from .components.widget import widget
+from .components.dashboard import dashboard
 from .components.plot import plot
 
 from . import __version__ as VERSION
@@ -118,6 +119,7 @@ def get_cli():
     cli.add_command(tree) if show_admin_cmds() else None
     cli.add_command(plot) if show_admin_cmds() else None
     cli.add_command(widget) if show_admin_cmds() else None
+    cli.add_command(dashboard) if show_admin_cmds() else None
     cli.add_command(metadata)
     cli.add_command(sample)
     cli.add_command(seq)
