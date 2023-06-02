@@ -75,6 +75,20 @@ def opt_field_name(**attrs: t.Any):
     )
 
 
+def opt_new_name(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'multiple': False,
+        'help': 'New name to assign to an entity.',
+    }
+    return _create_option(
+        "-nn",
+        "--new-name",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_description(**attrs: t.Any):
     defaults = {
         'required': True,
