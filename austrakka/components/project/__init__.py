@@ -12,7 +12,6 @@ from austrakka.components.project.funcs import list_projects, \
     get_dashboard
 
 
-
 @click.group()
 @click.pass_context
 def project(ctx):
