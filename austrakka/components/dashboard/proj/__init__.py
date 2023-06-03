@@ -5,6 +5,7 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.components.dashboard.proj.funcs import add_dashboard
 from austrakka.components.dashboard.proj.funcs import update_dashboard
 from austrakka.components.dashboard.proj.funcs import list_dashboards
+from austrakka.components.dashboard.proj.funcs import rename_dashboard
 from ....utils.options import *
 
 
@@ -38,3 +39,11 @@ def dashboard_update(dashboard_id: int, name: str, widget_details: [str]):
 def project_list(out_format: str):
     """List dashboards available for use in a given project."""
     list_dashboards(out_format)
+
+
+@proj.command('rename', hidden=hide_admin_cmds())
+@click.argument('dashboard-id', type=int)
+@opt_new_name(help="New name of dashoard.", )
+def dashboard_rename(dashboard_id: int, new_name: str):
+    """Define a dashboard, including what widgets to show."""
+    rename_dashboard(dashboard_id, new_name)
