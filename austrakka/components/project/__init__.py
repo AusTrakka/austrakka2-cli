@@ -7,7 +7,9 @@ from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_organisation
 from austrakka.components.project.funcs import list_projects, \
     add_project, \
-    set_dashboard
+    set_dashboard, \
+    get_dashboard
+
 
 
 @click.group()
@@ -38,6 +40,16 @@ def dashboard_set(project_id: int, name: str):
     Assign a dashboard to a project.
     '''
     set_dashboard(project_id, name)
+
+
+@project.command('get-dashboard', hidden=hide_admin_cmds())
+@click.argument('project-id', type=int)
+@table_format_option()
+def dashboard_get(project_id: int, out_format: str):
+    '''
+    Get all widgets of the dashboard currently assigned to a project.
+    '''
+    get_dashboard(project_id, out_format)
 
 
 @project.command('list')
