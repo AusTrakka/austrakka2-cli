@@ -10,7 +10,12 @@ DASHBOARD_WIDGETS = 'dashboard-widgets'
 
 
 @logger_wraps()
-def add_project(abbrev: str, name: str, description: str, org: str, dashboard_name: str):
+def add_project(
+        abbrev: str,
+        name: str,
+        description: str,
+        org: str,
+        dashboard_name: str):
     return api_post(
         path=PROJECT_PATH,
         data={

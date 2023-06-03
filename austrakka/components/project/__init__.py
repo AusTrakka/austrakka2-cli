@@ -25,7 +25,12 @@ def project(ctx):
 @opt_description(required=False)
 @opt_organisation(help="Requesting organisation abbreviation", required=False)
 @click.argument('dashboard-name', type=str)
-def project_add(abbrev: str, name: str, description: str, org: str, dashboard_name: str):
+def project_add(
+        abbrev: str,
+        name: str,
+        description: str,
+        org: str,
+        dashboard_name: str):
     '''
     Add a new project to AusTrakka.
     '''
