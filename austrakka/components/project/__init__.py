@@ -3,6 +3,7 @@ from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_abbrev
 from austrakka.utils.options import opt_name
+from austrakka.utils.options import opt_dashboard_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_organisation
 from austrakka.components.project.funcs import list_projects, \
@@ -24,7 +25,7 @@ def project(ctx):
 @opt_name(help="Project name")
 @opt_description(required=False)
 @opt_organisation(help="Requesting organisation abbreviation", required=False)
-@click.argument('dashboard-name', type=str)
+@opt_dashboard_name(required=False)
 def project_add(
         abbrev: str,
         name: str,
