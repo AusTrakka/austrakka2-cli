@@ -1,4 +1,3 @@
-from os import path
 from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
@@ -25,7 +24,7 @@ def update_widget(widget_id: int, new_name: str):
     Update an existing widget.
     """
     api_put(
-        path=path.join(WIDGET_PATH, str(widget_id)),
+        path=f'{WIDGET_PATH}/{widget_id}',
         data={
             "name": new_name
         }
@@ -45,5 +44,5 @@ def get_widget(widget_id: int, out_format: str):
     """
     List widgets available for inclusion in a dashboard.
     """
-    full_path = path.join(WIDGET_PATH, str(widget_id))
+    full_path = f'{WIDGET_PATH}/{widget_id}'
     call_get_and_print_table(full_path, out_format)
