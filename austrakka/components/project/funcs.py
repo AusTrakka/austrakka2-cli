@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 from os import path
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
