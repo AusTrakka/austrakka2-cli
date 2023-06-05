@@ -1,4 +1,3 @@
-from os import path
 from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
@@ -56,7 +55,7 @@ def update_dashboard(dashboard_id: int, name: str, widget_details: [str]):
     }
 
     api_put(
-        path=path.join(PROJECT_DASHBOARD_PATH, str(dashboard_id)),
+        path=f'{PROJECT_DASHBOARD_PATH}/{dashboard_id}',
         data=payload
     )
 
@@ -75,6 +74,6 @@ def rename_dashboard(dashboard_id: int, new_name: str):
     List dashboards available for use in a project.
     """
     api_patch(
-        path=path.join(PROJECT_DASHBOARD_PATH, RENAME, str(dashboard_id)),
+        path=f'{PROJECT_DASHBOARD_PATH}/{RENAME}/{dashboard_id}',
         data=new_name
     )
