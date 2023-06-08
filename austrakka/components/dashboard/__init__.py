@@ -1,7 +1,7 @@
 # pylint: disable=expression-not-assigned
 import click
 
-from austrakka.components.dashboard.proj import proj
+from austrakka.components.dashboard.project import project
 from austrakka.utils.cmd_filter import show_admin_cmds
 
 
@@ -12,4 +12,4 @@ def dashboard(ctx):
     ctx.context = ctx.parent.context
 
 
-dashboard.add_command(proj) if show_admin_cmds() else None
+dashboard.add_command(project) if show_admin_cmds() else None
