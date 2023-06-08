@@ -16,3 +16,5 @@ SEQUENCE_BY_GROUP_PATH = 'by-group'
 SAMPLE_PATH = 'Sample'
 GROUP_PATH = 'Group'
 PLOT_PATH = "Plots"
+WIDGET_PATH = "Widgets"
+PROJECT_DASHBOARD_PATH = 'ProjectDashboards'
