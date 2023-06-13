@@ -33,6 +33,20 @@ def opt_name(var_name='name', **attrs: t.Any):
     )
 
 
+def opt_dashboard_name(var_name='dashboard_name', **attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Dashboard name to assign to project',
+    }
+    return _create_option(
+        "-dn",
+        "--dashboard-name",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_group_name(var_name='group_name', **attrs: t.Any):
     defaults = {
         'required': True,
