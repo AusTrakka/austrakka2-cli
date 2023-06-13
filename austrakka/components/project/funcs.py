@@ -5,9 +5,8 @@ from austrakka.utils.api import api_patch
 from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import PROJECT_PATH
-
-SET_DASHBOARD = 'set-dashboard'
-DASHBOARD_WIDGETS = 'dashboard-widgets'
+from austrakka.utils.paths import SET_DASHBOARD
+from austrakka.utils.paths import DASHBOARD_WIDGETS
 
 
 @logger_wraps()
