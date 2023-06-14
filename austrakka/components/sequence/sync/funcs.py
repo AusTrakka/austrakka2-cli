@@ -7,7 +7,7 @@ from .state_machine import build_state_machine, SName, Action
 
 MANIFEST_FILE_NAME = 'manifest.csv'
 INTERMEDIATE_MANIFEST_FILE = 'intermediate-manifest.csv'
-OBSOLETE_OBJECTS_FILE = 'obsolete-objects.json'
+OBSOLETE_OBJECTS_FILE = 'delete-targets.csv'
 SYNC_STATE_FILE = 'sync-state.json'
 FASTQ = 'fastq'
 

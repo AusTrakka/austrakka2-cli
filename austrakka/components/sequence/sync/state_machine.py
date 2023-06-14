@@ -9,6 +9,7 @@ from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
 from austrakka.components.sequence.funcs import _download_seq_file
 from austrakka.components.sequence.funcs import _get_seq_download_path
+from austrakka.utils.retry import retry
 
 
 class SName:
@@ -20,6 +21,7 @@ class SName:
     DONE_DOWNLOADING = 'DONE_DOWNLOADING'
     FINALISING = 'FINALISING'
     DONE_FINALISING = 'DONE_FINALISING'
+    FINALISATION_FAILED = 'FINALISATION_FAILED'
     PURGING = 'PURGING'
     DONE_PURGING = 'DONE_PURGING'
     UP_TO_DATE = 'UP_TO_DATE'
@@ -122,6 +124,7 @@ def build_state_machine() -> StateMachine:
             SName.DONE_DOWNLOADING: State(SName.DONE_DOWNLOADING),
             SName.FINALISING: State(SName.FINALISING),
             SName.DONE_FINALISING: State(SName.DONE_FINALISING),
+            SName.FINALISATION_FAILED: State(SName.FINALISATION_FAILED, is_end_state=True),
             SName.PURGING: State(SName.PURGING),
             SName.DONE_PURGING: State(SName.DONE_PURGING),
             SName.UP_TO_DATE: State(SName.UP_TO_DATE, is_end_state=True),
@@ -178,7 +181,6 @@ def _analyse(sync_state: dict):
         df['status'] = ""
 
     for index, row in df.iterrows():
-        print("here")
         seq_path = os.path.join(
             sync_state["output_dir"],
             str(row["sampleName"]),
@@ -199,11 +201,7 @@ def _analyse(sync_state: dict):
 
             file.close()
 
-    path = get_path_from_state(sync_state, 'intermediate_manifest_file')
-    with open(path, 'w') as f:
-        df.to_csv(f, index=False)
-        f.close()
-
+    save_int_manifest(df, sync_state)
     sync_state['current_state'] = SName.DONE_ANALYSING
     sync_state['current_action'] = Action.set_state_downloading
 
@@ -218,10 +216,15 @@ def _download(sync_state: dict):
     print(Action.download)
     df = read_from_csv(sync_state, 'intermediate_manifest_file')
 
+    if 'hot_swap_name' not in df.columns:
+        df["hot_swap_name"] = ""
+
+    save_int_manifest(df, sync_state)
+
     path = get_path_from_state(sync_state, 'intermediate_manifest_file')
     with open(path, 'w') as f:
         for index, row in df.iterrows():
-            if row['status'] == 'new' or row['status'] == 'drifted':
+            if row['status'] != 'downloaded' and row['status'] != 'match':
                 try:
                     filename = row['fileNameOnDisk']
                     sample_name = row['sampleName']
@@ -238,8 +241,15 @@ def _download(sync_state: dict):
 
                     if row['status'] == 'drifted':
                         logger.warning(f'Drifted from server: {file_path}. Fixing..')
+                        fresh_name = f'{row["fileNameOnDisk"]}.fresh'
+                        df.at[index, 'hot_swap_name'] = fresh_name
+                        file_path = os.path.join(sample_dir, fresh_name)
 
-                    _download_seq_file(file_path, filename, query_path, sample_dir)
+                    retry(lambda fp=file_path, fn=filename, qp=query_path, sd=sample_dir:
+                          _download_seq_file(file_path, filename, query_path, sample_dir),
+                          3,
+                          query_path)
+
                     df.at[index, 'status'] = 'downloaded'
                 except Exception as ex:
                     df.at[index, 'status'] = 'failed'
@@ -261,8 +271,29 @@ def _set_state_finalising(sync_state: dict):
 
 def _finalise(sync_state: dict):
     print(Action.finalise)
-    sync_state['current_state'] = SName.DONE_FINALISING
-    sync_state['current_action'] = Action.set_state_purging
+    df = read_from_csv(sync_state, 'intermediate_manifest_file')
+    errors = df.loc[(df["status"] != 'match') & (df['status'] != 'downloaded')]
+
+    if len(errors.index):
+        sync_state['current_state'] = SName.FINALISATION_FAILED
+        sync_state['current_action'] = Action.set_state_purging
+    else:
+        files_on_disk = []
+        obsoletes = pd.DataFrame({"file_path": []})
+        for (root_dir, dir_names, file_names) in os.walk(sync_state["output_dir"]):
+            for f in file_names:
+                files_on_disk.append((os.path.join(root_dir, f), f))
+
+        for tup in files_on_disk:
+            r = df.loc[(df['fileNameOnDisk'] == tup[-1])]
+            if len(r.index) == 0:
+                obsoletes.loc[len(df)] = tup[1]
+
+        p = get_path_from_state(sync_state, "obsolete_objects_file")
+        save_to_csv(obsoletes, p)
+
+        sync_state['current_state'] = SName.DONE_FINALISING
+        sync_state['current_action'] = Action.set_state_analysing
 
 
 def _set_state_purging(sync_state: dict):
@@ -295,3 +326,16 @@ def read_from_csv(sync_state: dict, state_key: str):
     path = get_path_from_state(sync_state, state_key)
     df = pd.read_csv(path)
     return df
+
+
+def save_int_manifest(df, sync_state):
+    path = get_path_from_state(sync_state, 'intermediate_manifest_file')
+    with open(path, 'w') as f:
+        df.to_csv(f, index=False)
+        f.close()
+
+
+def save_to_csv(df, path):
+    with open(path, 'w') as f:
+        df.to_csv(f, index=False)
+        f.close()
