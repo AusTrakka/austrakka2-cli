@@ -345,9 +345,7 @@ def _finalise(sync_state: dict):
             keep = saved[~saved['file_name'].isin(int_med['fileNameOnDisk'])]
             obsoletes = obsoletes.append(keep)
 
-        print("obsolete")
-        print(obsoletes)
-
+        obsoletes.drop_duplicates(inplace=True)
         save_to_csv(obsoletes, p)
 
         sync_state['current_state'] = SName.DONE_FINALISING

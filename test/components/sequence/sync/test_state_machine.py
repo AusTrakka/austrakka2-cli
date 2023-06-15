@@ -235,6 +235,52 @@ class TestStateMachine:
         if os.path.exists(oof):
             os.remove(oof)
 
+    def test_finalise10_files_already_in_delete_target_expect_to_not_add_duplicates_to_list(self):
+        # Arrange
+        sync_state = {
+            "sync_state_file": "test-finalise10-sync-state.json",
+            "intermediate_manifest_file": "test-finalise10-int-manifest-clone.csv",
+            "output_dir": "test/components/sequence/sync/finalise10",
+            "obsolete_objects_file": "test-finalise10-delete-targets.csv",
+            "manifest": "test-finalise10-manifest.csv",
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        original = os.path.join(sync_state["output_dir"], "test-finalise10-int-manifest-original.csv")
+        clone = os.path.join(sync_state["output_dir"], "test-finalise10-int-manifest-clone.csv")
+        shutil.copy(original, clone)
+
+        a = os.path.join(sync_state["output_dir"], "test-finalise10-delete-targets.csv.original")
+        b = os.path.join(sync_state["output_dir"], sync_state['obsolete_objects_file'])
+        shutil.copy(a, b)
+
+        # Check that the test data start out clean
+        df = pd.read_csv(clone)
+        assert 'status' in df.columns
+
+        # Act
+        _finalise(sync_state)
+
+        # Assert
+        assert sync_state['current_state'] == SName.DONE_FINALISING
+
+        # Sample60 is the extra
+        path = os.path.join(sync_state['output_dir'], sync_state["obsolete_objects_file"])
+        df = pd.read_csv(path)
+        r = df.loc[(df["file_name"] == "Sample60_20230614T00453848_a34d8705_R1.fastq")]
+        assert len(r.index) == 1
+
+        # Clean up
+        os.remove(clone)
+        os.remove(path)
+        if os.path.exists(b):
+            os.remove(b)
+        os.remove(os.path.join(sync_state['output_dir'], sync_state['manifest']))
+        oof = os.path.join(sync_state['output_dir'], sync_state['obsolete_objects_file'])
+        if os.path.exists(oof):
+            os.remove(oof)
+
     def test_finalise5_given_match_status_and_successful_finalise_expect_convert_int_manifest_to_live_manifest(self):
         # Arrange
         sync_state = {
