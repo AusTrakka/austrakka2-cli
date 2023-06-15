@@ -250,7 +250,10 @@ def _download(sync_state: dict):
                           3,
                           query_path)
 
-                    df.at[index, 'status'] = 'downloaded'
+                    # Drifted entries are left for finalisation to hot swap.
+                    # Otherwise mark the entry as successfully downloaded.
+                    if df.at[index, 'status'] != 'drifted':
+                        df.at[index, 'status'] = 'downloaded'
                 except Exception as ex:
                     df.at[index, 'status'] = 'failed'
                     logger.error(f'Failed to download: {file_path}. Error: {ex}')
@@ -271,29 +274,84 @@ def _set_state_finalising(sync_state: dict):
 
 def _finalise(sync_state: dict):
     print(Action.finalise)
-    df = read_from_csv(sync_state, 'intermediate_manifest_file')
-    errors = df.loc[(df["status"] != 'match') & (df['status'] != 'downloaded')]
+    int_med = read_from_csv(sync_state, 'intermediate_manifest_file')
+    errors = int_med.loc[(int_med["status"] != 'match') &
+                         (int_med['status'] != 'downloaded') &
+                         (int_med['status'] != 'drifted')]
 
-    if len(errors.index):
+    if len(errors.index) > 0:
         sync_state['current_state'] = SName.FINALISATION_FAILED
-        sync_state['current_action'] = Action.set_state_purging
+        sync_state['current_action'] = Action.set_state_analysing
     else:
+        for index, row in int_med.iterrows():
+            if int_med.at[index, 'status'] == 'drifted':
+                src = os.path.join(
+                    sync_state['output_dir'],
+                    int_med.at[index, 'sampleName'],
+                    int_med.at[index, 'hot_swap_name'])
+
+                dest = os.path.join(
+                    sync_state['output_dir'],
+                    int_med.at[index, 'sampleName'],
+                    int_med.at[index, 'fileNameOnDisk'])
+
+                logger.info(f'Hot swapped update for: {dest}')
+                os.rename(src, dest)
+                int_med.at[index, 'status'] = 'done'
+
+            elif int_med.at[index, 'status'] == 'match' or int_med.at[index, 'status'] == 'downloaded':
+                int_med.at[index, 'status'] = 'done'
+
+            else:
+                raise StateMachineError('Reach an impossible state during finalise.'
+                                        'Expecting only states "match", "downloaded", '
+                                        'or "drifted"')
+
+        save_int_manifest(int_med, sync_state)
+
+        sample_table = int_med.pivot(index="sampleName", columns=["type", "read"], values="fileNameOnDisk")
+        # Multiindex approach ok, but this format needs changing when dealing with FASTA in the same table
+        sample_table.columns = [f"{seq_type}_R{read}".upper()
+                                for (seq_type, read)
+                                in sample_table.columns.to_flat_index()]
+        sample_table.index.name = "Seq_ID"
+        sample_table.reset_index(inplace=True)
+        m_path = os.path.join(sync_state['output_dir'], sync_state["manifest"])
+        save_to_csv(sample_table, m_path)
+
+        # Get the list of files on disk. The array is a list of (full_path, file_name_only)
         files_on_disk = []
-        obsoletes = pd.DataFrame({"file_path": []})
+        obsoletes = pd.DataFrame({"file_path": [], "file_name": []})
         for (root_dir, dir_names, file_names) in os.walk(sync_state["output_dir"]):
             for f in file_names:
-                files_on_disk.append((os.path.join(root_dir, f), f))
+                if os.path.splitext(f)[-1] in ['.fastq', '.fasta', '.gz']:
+                    files_on_disk.append((os.path.join(root_dir, f), f))
 
+        # If files found on disk are not in the intermediate manifest,
+        # it is added to the list of obsolete files.
         for tup in files_on_disk:
-            r = df.loc[(df['fileNameOnDisk'] == tup[-1])]
+            r = int_med.loc[(int_med['fileNameOnDisk'] == tup[-1])]
             if len(r.index) == 0:
-                obsoletes.loc[len(df)] = tup[1]
+                obsoletes.loc[len(obsoletes.index)] = tup
 
+        # Check the reverse direction. If something is on the current obsolete list
+        # of file, and is also in the intermediate manifest, then it needs to be
+        # removed from the obsolete list. Additionally, if there is already an
+        # entry on the obsolete list and still isn't on the intermediate manifest,
+        # then it should be left on the obsolete list.
         p = get_path_from_state(sync_state, "obsolete_objects_file")
+        if os.path.exists(p):
+            saved = read_from_csv(sync_state, "obsolete_objects_file")
+            keep = saved[~saved['file_name'].isin(int_med['fileNameOnDisk'])]
+            obsoletes = obsoletes.append(keep)
+
+        print("obsolete")
+        print(obsoletes)
+
         save_to_csv(obsoletes, p)
 
         sync_state['current_state'] = SName.DONE_FINALISING
-        sync_state['current_action'] = Action.set_state_analysing
+        sync_state['current_action'] = Action.set_state_purging
 
 
 def _set_state_purging(sync_state: dict):
