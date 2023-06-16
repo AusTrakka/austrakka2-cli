@@ -22,6 +22,7 @@ from .constant import OBSOLETE_OBJECTS_FILE_KEY
 from .constant import CURRENT_STATE_KEY
 from .constant import CURRENT_ACTION_KEY
 from .constant import SYNC_STATE_FILE_KEY
+from .constant import SERVER_SHA_256_KEY
 
 from .constant import FASTQ
 from .constant import FASTA
@@ -29,17 +30,23 @@ from .constant import GZ
 
 from .constant import FILE_NAME_KEY
 from .constant import FILE_PATH_KEY
+from .constant import SEQ_ID_KEY
 
 from .constant import STATUS_KEY
 from .constant import HOT_SWAP_NAME_KEY
 from .constant import ORIGINAL_FILE_NAME_KEY
 from .constant import BLOB_FILE_PATH_KEY
+from .constant import SAMPLE_NAME_KEY
+from .constant import FILE_NAME_ON_DISK_KEY
+from .constant import READ_KEY
+from .constant import TYPE_KEY
 
 from .constant import DOWNLOADED
 from .constant import DRIFTED
 from .constant import FAILED
 from .constant import MATCH
 from .constant import MISSING
+from .constant import DONE
 
 
 class SName:
@@ -213,8 +220,8 @@ def analyse(sync_state: dict):
     for index, row in df.iterrows():
         seq_path = os.path.join(
             sync_state[OUTPUT_DIR_KEY],
-            str(row["sampleName"]),
-            str(row["fileNameOnDisk"]))
+            str(row[SAMPLE_NAME_KEY]),
+            str(row[FILE_NAME_ON_DISK_KEY]))
 
         if not os.path.exists(seq_path):
             logger.info(f'Missing: {seq_path}')
@@ -222,7 +229,7 @@ def analyse(sync_state: dict):
         elif do_hash_check:
             file = open(seq_path, 'rb')
             seq_hash = hashlib.sha256(file.read()).hexdigest().lower()
-            if seq_hash == row['serverSha256'].lower():
+            if seq_hash == row[SERVER_SHA_256_KEY].lower():
                 set_match_status(df, index, row, seq_path)
             else:
                 logger.info(f'Drifted: {seq_path}')
@@ -263,10 +270,10 @@ def download(sync_state: dict):
         for index, row in df.iterrows():
             if row[STATUS_KEY] != DOWNLOADED and row[STATUS_KEY] != MATCH:
                 try:
-                    filename = row['fileNameOnDisk']
-                    sample_name = row['sampleName']
-                    read = str(row['read'])
-                    seq_type = row['type']
+                    filename = row[FILE_NAME_ON_DISK_KEY]
+                    sample_name = row[SAMPLE_NAME_KEY]
+                    read = str(row[READ_KEY])
+                    seq_type = row[TYPE_KEY]
                     sample_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], sample_name)
                     file_path = os.path.join(sample_dir, filename)
 
@@ -278,7 +285,7 @@ def download(sync_state: dict):
 
                     if row[STATUS_KEY] == DRIFTED:
                         logger.warning(f'Drifted from server: {file_path}. Fixing..')
-                        fresh_name = f'{row["fileNameOnDisk"]}.fresh'
+                        fresh_name = f'{row[FILE_NAME_ON_DISK_KEY]}.fresh'
                         df.at[index, HOT_SWAP_NAME_KEY] = fresh_name
                         file_path = os.path.join(sample_dir, fresh_name)
 
@@ -324,20 +331,20 @@ def finalise(sync_state: dict):
             if int_med.at[index, STATUS_KEY] == DRIFTED:
                 src = os.path.join(
                     sync_state[OUTPUT_DIR_KEY],
-                    int_med.at[index, 'sampleName'],
+                    int_med.at[index, SAMPLE_NAME_KEY],
                     int_med.at[index, HOT_SWAP_NAME_KEY])
 
                 dest = os.path.join(
                     sync_state[OUTPUT_DIR_KEY],
-                    int_med.at[index, 'sampleName'],
-                    int_med.at[index, 'fileNameOnDisk'])
+                    int_med.at[index, SAMPLE_NAME_KEY],
+                    int_med.at[index, FILE_NAME_ON_DISK_KEY])
 
                 logger.info(f'Hot swapped update for: {dest}')
                 os.rename(src, dest)
-                int_med.at[index, STATUS_KEY] = 'done'
+                int_med.at[index, STATUS_KEY] = DONE
 
             elif int_med.at[index, STATUS_KEY] == MATCH or int_med.at[index, STATUS_KEY] == DOWNLOADED:
-                int_med.at[index, STATUS_KEY] = 'done'
+                int_med.at[index, STATUS_KEY] = DONE
 
             else:
                 raise StateMachineError('Reach an impossible state during finalise.'
@@ -346,12 +353,16 @@ def finalise(sync_state: dict):
 
         save_int_manifest(int_med, sync_state)
 
-        sample_table = int_med.pivot(index="sampleName", columns=["type", "read"], values="fileNameOnDisk")
+        sample_table = int_med.pivot(
+            index=SAMPLE_NAME_KEY,
+            columns=[TYPE_KEY, READ_KEY],
+            values=FILE_NAME_ON_DISK_KEY)
+
         # Multiindex approach ok, but this format needs changing when dealing with FASTA in the same table
         sample_table.columns = [f"{seq_type}_R{read}".upper()
                                 for (seq_type, read)
                                 in sample_table.columns.to_flat_index()]
-        sample_table.index.name = "Seq_ID"
+        sample_table.index.name = SEQ_ID_KEY
         sample_table.reset_index(inplace=True)
         m_path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY])
         save_to_csv(sample_table, m_path)
@@ -367,7 +378,7 @@ def finalise(sync_state: dict):
         # If files found on disk are not in the intermediate manifest,
         # it is added to the list of obsolete files.
         for tup in files_on_disk:
-            r = int_med.loc[(int_med['fileNameOnDisk'] == tup[-1])]
+            r = int_med.loc[(int_med[FILE_NAME_ON_DISK_KEY] == tup[-1])]
             if len(r.index) == 0:
                 obsoletes.loc[len(obsoletes.index)] = tup
 
@@ -379,7 +390,7 @@ def finalise(sync_state: dict):
         p = get_path_from_state(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
         if os.path.exists(p):
             saved = read_from_csv(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
-            keep = saved[~saved[FILE_NAME_KEY].isin(int_med['fileNameOnDisk'])]
+            keep = saved[~saved[FILE_NAME_KEY].isin(int_med[FILE_NAME_ON_DISK_KEY])]
             obsoletes = obsoletes.append(keep)
 
         obsoletes.drop_duplicates(inplace=True)
