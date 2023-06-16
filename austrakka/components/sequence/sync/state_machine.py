@@ -377,12 +377,14 @@ def save_obsolete_files_list(int_med, sync_state):
         for f in file_names:
             if os.path.splitext(f)[-1] in [FASTQ, FASTA, GZ]:
                 files_on_disk.append((os.path.join(root_dir, f), f))
+
     # If files found on disk are not in the intermediate manifest,
     # it is added to the list of obsolete files.
     for tup in files_on_disk:
         r = int_med.loc[(int_med[FILE_NAME_ON_DISK_KEY] == tup[-1])]
         if len(r.index) == 0:
             obsoletes.loc[len(obsoletes.index)] = tup
+
     # Check the reverse direction. If something is on the current obsolete list
     # of file, and is also in the intermediate manifest, then it needs to be
     # removed from the obsolete list. Additionally, if there is already an
@@ -405,6 +407,7 @@ def save_final_manifest(int_med, sync_state):
         index=SAMPLE_NAME_KEY,
         columns=[TYPE_KEY, READ_KEY],
         values=FILE_NAME_ON_DISK_KEY)
+
     # Multiindex approach ok, but this format needs changing when dealing with FASTA in the same table
     sample_table.columns = [f"{seq_type}_R{read}".upper()
                             for (seq_type, read)
