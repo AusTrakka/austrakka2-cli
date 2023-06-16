@@ -228,7 +228,7 @@ def analyse(sync_state: dict):
     save_int_manifest(df, sync_state)
     sync_state[CURRENT_STATE_KEY] = SName.DONE_ANALYSING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_downloading
-    logger.info(f'Finished: {Action.analyse}')
+    logger.success(f'Finished: {Action.analyse}')
 
 
 def set_state_downloading(sync_state: dict):
@@ -257,7 +257,7 @@ def download(sync_state: dict):
 
     sync_state[CURRENT_STATE_KEY] = SName.DONE_DOWNLOADING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_finalising
-    logger.info(f'Finished: {Action.download}')
+    logger.success(f'Finished: {Action.download}')
 
 
 def set_state_finalising(sync_state: dict):
@@ -285,14 +285,13 @@ def finalise(sync_state: dict):
         sync_state[CURRENT_ACTION_KEY] = Action.set_state_analysing
         logger.error('Finalise failed.')
     else:
-        finalise_intermediate_manifest(int_med, sync_state)
-        save_int_manifest(int_med, sync_state)
-        save_final_manifest(int_med, sync_state)
-        save_obsolete_files_list(int_med, sync_state)
+        finalise_each_file(int_med, sync_state)
+        publish_new_manifest(int_med, sync_state)
+        detect_and_record_obsolete_files(int_med, sync_state)
 
         sync_state[CURRENT_STATE_KEY] = SName.DONE_FINALISING
         sync_state[CURRENT_ACTION_KEY] = Action.set_state_purging
-        logger.info(f'Finished: {Action.finalise}')
+        logger.success(f'Finished: {Action.finalise}')
 
 
 def set_state_purging(sync_state: dict):
@@ -304,7 +303,7 @@ def purge(sync_state: dict):
     logger.info(f'Started: {Action.purge}')
     sync_state[CURRENT_STATE_KEY] = SName.DONE_PURGING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_up_to_date
-    logger.info(f'Finished: {Action.purge}')
+    logger.success(f'Finished: {Action.purge}')
 
 
 def set_state_up_to_date(sync_state: dict):
@@ -339,7 +338,7 @@ def save_to_csv(df, path):
         f.close()
 
 
-def finalise_intermediate_manifest(int_med, sync_state):
+def finalise_each_file(int_med, sync_state):
     for index, row in int_med.iterrows():
 
         dest = os.path.join(
@@ -366,8 +365,10 @@ def finalise_intermediate_manifest(int_med, sync_state):
                                     'Expecting only states "match", "downloaded", '
                                     'or "drifted"')
 
+    save_int_manifest(int_med, sync_state)
 
-def save_obsolete_files_list(int_med, sync_state):
+
+def detect_and_record_obsolete_files(int_med, sync_state):
     logger.info('Checking for obsolete files..')
 
     # Get the list of files on disk. The array is a list of (full_path, file_name_only)
@@ -395,6 +396,7 @@ def save_obsolete_files_list(int_med, sync_state):
         saved = read_from_csv(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
         keep = saved[~saved[FILE_NAME_KEY].isin(int_med[FILE_NAME_ON_DISK_KEY])]
         obsoletes = obsoletes.append(keep)
+
     obsoletes.drop_duplicates(inplace=True)
     save_to_csv(obsoletes, p)
 
@@ -402,7 +404,7 @@ def save_obsolete_files_list(int_med, sync_state):
     logger.info(f'Saving list to {p}')
 
 
-def save_final_manifest(int_med, sync_state):
+def publish_new_manifest(int_med, sync_state):
     sample_table = int_med.pivot(
         index=SAMPLE_NAME_KEY,
         columns=[TYPE_KEY, READ_KEY],
