@@ -4,12 +4,42 @@ import hashlib
 import pandas as pd
 from loguru import logger
 
+from .errors import StateMachineError
 from ..funcs import _get_seq_data
 from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
 from austrakka.components.sequence.funcs import _download_seq_file
 from austrakka.components.sequence.funcs import _get_seq_download_path
 from austrakka.utils.retry import retry
+
+from .constant import MANIFEST_KEY
+from .constant import INTERMEDIATE_MANIFEST_FILE_KEY
+from .constant import GROUP_NAME_KEY
+from .constant import SEQ_TYPE_KEY
+from .constant import OUTPUT_DIR_KEY
+from .constant import HASH_CHECK_KEY
+from .constant import OBSOLETE_OBJECTS_FILE_KEY
+from .constant import CURRENT_STATE_KEY
+from .constant import CURRENT_ACTION_KEY
+from .constant import SYNC_STATE_FILE_KEY
+
+from .constant import FASTQ
+from .constant import FASTA
+from .constant import GZ
+
+from .constant import FILE_NAME_KEY
+from .constant import FILE_PATH_KEY
+
+from .constant import STATUS_KEY
+from .constant import HOT_SWAP_NAME_KEY
+from .constant import ORIGINAL_FILE_NAME_KEY
+from .constant import BLOB_FILE_PATH_KEY
+
+from .constant import DOWNLOADED
+from .constant import DRIFTED
+from .constant import FAILED
+from .constant import MATCH
+from .constant import MISSING
 
 
 class SName:
@@ -56,14 +86,6 @@ class State:
         return self and self.name and not self.name.isspace()
 
 
-class StateGraphError(Exception):
-    pass
-
-
-class StateMachineError(Exception):
-    pass
-
-
 class StateMachine:
     def __init__(self, states: dict[str, State], handlers: dict):
         self.action_handlers = handlers
@@ -71,11 +93,11 @@ class StateMachine:
         self.actions: set[str] = set(handlers.keys())
 
     def run(self, sync_state: dict):
-        if sync_state['current_state'] not in self.states.keys():
+        if sync_state[CURRENT_STATE_KEY] not in self.states.keys():
             raise StateMachineError('The supplied current state is unknown '
                                     'to this state machine instance.')
 
-        action = sync_state['current_action']
+        action = sync_state[CURRENT_ACTION_KEY]
         if action is None or action.isspace():
             raise StateMachineError(
                 "Cannot set state. The current action is invalid. "
@@ -85,23 +107,27 @@ class StateMachine:
             raise StateMachineError("The action is unknown to this state machine instance.")
 
         active_sync_state = sync_state.copy()
-        current_state = self.states[active_sync_state['current_state']]
+        current_state = self.states[active_sync_state[CURRENT_STATE_KEY]]
+
+        logger.info('Start sync with args..')
+        logger.info(f'{OUTPUT_DIR_KEY}: {sync_state[OUTPUT_DIR_KEY]}')
+        logger.info(f'{GROUP_NAME_KEY}: {sync_state[GROUP_NAME_KEY]}')
+        logger.info(f'{SEQ_TYPE_KEY}: {sync_state[SEQ_TYPE_KEY]}')
+        logger.info(f'{HASH_CHECK_KEY}: {sync_state[HASH_CHECK_KEY]}')
 
         while not current_state.is_end_state:
-            print("looped")
             self.action_handlers[action](active_sync_state)
-            print(f'next_state_name: {active_sync_state["current_state"]}')
 
             path = os.path.join(
-                active_sync_state['output_dir'],
-                active_sync_state['sync_state_file'],
+                active_sync_state[OUTPUT_DIR_KEY],
+                active_sync_state[SYNC_STATE_FILE_KEY],
             )
             with open(path, 'w') as f:
                 json.dump(active_sync_state, f)
                 f.close()
 
-            current_state = self.states[active_sync_state['current_state']]
-            action = active_sync_state['current_action']
+            current_state = self.states[active_sync_state[CURRENT_STATE_KEY]]
+            action = active_sync_state[CURRENT_ACTION_KEY]
 
     def get_state(self, name: str) -> State:
         return self.states[name]
@@ -129,108 +155,119 @@ def build_state_machine() -> StateMachine:
             SName.DONE_PURGING: State(SName.DONE_PURGING),
             SName.UP_TO_DATE: State(SName.UP_TO_DATE, is_end_state=True),
         }, {
-        Action.set_state_pulling_manifest: _set_state_pulling_manifest,
-        Action.pull_manifest: _pull_manifest,
-        Action.set_state_analysing: _set_state_analysing,
-        Action.analyse: _analyse,
-        Action.set_state_downloading: _set_state_downloading,
-        Action.download: _download,
-        Action.set_state_finalising: _set_state_finalising,
-        Action.finalise: _finalise,
-        Action.set_state_purging: _set_state_purging,
-        Action.purge: _purge,
-        Action.set_state_up_to_date: _set_state_up_to_date
+        Action.set_state_pulling_manifest: set_state_pulling_manifest,
+        Action.pull_manifest: pull_manifest,
+        Action.set_state_analysing: set_state_analysing,
+        Action.analyse: analyse,
+        Action.set_state_downloading: set_state_downloading,
+        Action.download: download,
+        Action.set_state_finalising: set_state_finalising,
+        Action.finalise: finalise,
+        Action.set_state_purging: set_state_purging,
+        Action.purge: purge,
+        Action.set_state_up_to_date: set_state_up_to_date
         }
     )
 
 
-def _set_state_pulling_manifest(sync_state: dict):
-    print(Action.set_state_pulling_manifest)
-    sync_state['current_state'] = SName.PULLING_MANIFEST
-    sync_state['current_action'] = Action.pull_manifest
+def set_state_pulling_manifest(sync_state: dict):
+    sync_state[CURRENT_STATE_KEY] = SName.PULLING_MANIFEST
+    sync_state[CURRENT_ACTION_KEY] = Action.pull_manifest
 
 
-def _pull_manifest(sync_state: dict):
-    print(Action.pull_manifest)
+def pull_manifest(sync_state: dict):
+    logger.info(f'Started: {Action.pull_manifest}')
     data = _get_seq_data(
-        sync_state['seq_type'],
+        sync_state[SEQ_TYPE_KEY],
         READ_BOTH,
-        sync_state["group_name"],
+        sync_state[GROUP_NAME_KEY],
         BY_IS_ACTIVE_FLAG,
     )
 
-    path = get_path_from_state(sync_state, 'intermediate_manifest_file')
+    logger.info(f'Freshly pulled manifest has {len(data)} entries.')
+    path = get_path_from_state(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
+    logger.info(f'Saving to intermediate manifest: {path}')
+
     with open(path, 'w') as f:
         pd.DataFrame(data).to_csv(f, index=False)
 
-    sync_state['current_state'] = SName.DONE_PULLING_MANIFEST
-    sync_state['current_action'] = Action.set_state_analysing
+    sync_state[CURRENT_STATE_KEY] = SName.DONE_PULLING_MANIFEST
+    sync_state[CURRENT_ACTION_KEY] = Action.set_state_analysing
+    logger.info(f'Finished: {Action.pull_manifest}')
 
 
-def _set_state_analysing(sync_state: dict):
-    print(Action.set_state_analysing)
-    sync_state['current_state'] = SName.ANALYSING
-    sync_state['current_action'] = Action.analyse
+def set_state_analysing(sync_state: dict):
+    sync_state[CURRENT_STATE_KEY] = SName.ANALYSING
+    sync_state[CURRENT_ACTION_KEY] = Action.analyse
 
 
-def _analyse(sync_state: dict):
-    print(Action.analyse)
-    df = read_from_csv(sync_state, 'intermediate_manifest_file')
+def analyse(sync_state: dict):
+    logger.info(f'Started: {Action.analyse}')
+    df = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
+    do_hash_check = (HASH_CHECK_KEY not in sync_state) or\
+                    (HASH_CHECK_KEY in sync_state and sync_state[HASH_CHECK_KEY] is True)
 
-    if 'status' not in df.columns:
-        df['status'] = ""
+    if STATUS_KEY not in df.columns:
+        df[STATUS_KEY] = ""
 
     for index, row in df.iterrows():
         seq_path = os.path.join(
-            sync_state["output_dir"],
+            sync_state[OUTPUT_DIR_KEY],
             str(row["sampleName"]),
             str(row["fileNameOnDisk"]))
 
-        print(seq_path)
         if not os.path.exists(seq_path):
-            df.at[index, 'status'] = 'new'
-        else:
+            logger.info(f'Missing: {seq_path}')
+            df.at[index, STATUS_KEY] = MISSING
+        elif do_hash_check:
             file = open(seq_path, 'rb')
             seq_hash = hashlib.sha256(file.read()).hexdigest().lower()
-            print(f'local hash:{seq_hash}')
-            print(f'server hash: {row["serverSha256"].lower()}')
             if seq_hash == row['serverSha256'].lower():
-                df.at[index, 'status'] = 'match'
+                set_match_status(df, index, row, seq_path)
             else:
-                df.at[index, 'status'] = 'drifted'
+                logger.info(f'Drifted: {seq_path}')
+                df.at[index, STATUS_KEY] = DRIFTED
 
             file.close()
+        else:
+            set_match_status(df, index, row, seq_path)
 
     save_int_manifest(df, sync_state)
-    sync_state['current_state'] = SName.DONE_ANALYSING
-    sync_state['current_action'] = Action.set_state_downloading
+    sync_state[CURRENT_STATE_KEY] = SName.DONE_ANALYSING
+    sync_state[CURRENT_ACTION_KEY] = Action.set_state_downloading
+    logger.info(f'Finished: {Action.analyse}')
 
 
-def _set_state_downloading(sync_state: dict):
-    print(Action.set_state_downloading)
-    sync_state['current_state'] = SName.DOWNLOADING
-    sync_state['current_action'] = Action.download
+def set_match_status(df, index, row, seq_path):
+    azure_path = os.path.join(row[BLOB_FILE_PATH_KEY], row[ORIGINAL_FILE_NAME_KEY])
+    logger.info(f'Matched: {seq_path} ==> Azure: {azure_path}')
+    df.at[index, STATUS_KEY] = MATCH
 
 
-def _download(sync_state: dict):
-    print(Action.download)
-    df = read_from_csv(sync_state, 'intermediate_manifest_file')
+def set_state_downloading(sync_state: dict):
+    sync_state[CURRENT_STATE_KEY] = SName.DOWNLOADING
+    sync_state[CURRENT_ACTION_KEY] = Action.download
 
-    if 'hot_swap_name' not in df.columns:
-        df["hot_swap_name"] = ""
+
+def download(sync_state: dict):
+    logger.info(f'Started: {Action.download}')
+    df = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
+
+    if HOT_SWAP_NAME_KEY not in df.columns:
+        df[HOT_SWAP_NAME_KEY] = ""
 
     save_int_manifest(df, sync_state)
 
-    path = get_path_from_state(sync_state, 'intermediate_manifest_file')
+    path = get_path_from_state(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     with open(path, 'w') as f:
         for index, row in df.iterrows():
-            if row['status'] != 'downloaded' and row['status'] != 'match':
+            if row[STATUS_KEY] != DOWNLOADED and row[STATUS_KEY] != MATCH:
                 try:
                     filename = row['fileNameOnDisk']
                     sample_name = row['sampleName']
                     read = str(row['read'])
                     seq_type = row['type']
-                    sample_dir = os.path.join(sync_state['output_dir'], sample_name)
+                    sample_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], sample_name)
                     file_path = os.path.join(sample_dir, filename)
 
                     query_path = _get_seq_download_path(
@@ -239,10 +276,10 @@ def _download(sync_state: dict):
                         seq_type,
                         BY_IS_ACTIVE_FLAG)
 
-                    if row['status'] == 'drifted':
+                    if row[STATUS_KEY] == DRIFTED:
                         logger.warning(f'Drifted from server: {file_path}. Fixing..')
                         fresh_name = f'{row["fileNameOnDisk"]}.fresh'
-                        df.at[index, 'hot_swap_name'] = fresh_name
+                        df.at[index, HOT_SWAP_NAME_KEY] = fresh_name
                         file_path = os.path.join(sample_dir, fresh_name)
 
                     retry(lambda fp=file_path, fn=filename, qp=query_path, sd=sample_dir:
@@ -252,55 +289,55 @@ def _download(sync_state: dict):
 
                     # Drifted entries are left for finalisation to hot swap.
                     # Otherwise mark the entry as successfully downloaded.
-                    if df.at[index, 'status'] != 'drifted':
-                        df.at[index, 'status'] = 'downloaded'
+                    if df.at[index, STATUS_KEY] != DRIFTED:
+                        df.at[index, STATUS_KEY] = DOWNLOADED
                 except Exception as ex:
-                    df.at[index, 'status'] = 'failed'
+                    df.at[index, STATUS_KEY] = FAILED
                     logger.error(f'Failed to download: {file_path}. Error: {ex}')
 
             df.to_csv(f, index=False)
             f.seek(0)
         f.close()
 
-    sync_state['current_state'] = SName.DONE_DOWNLOADING
-    sync_state['current_action'] = Action.set_state_finalising
+    sync_state[CURRENT_STATE_KEY] = SName.DONE_DOWNLOADING
+    sync_state[CURRENT_ACTION_KEY] = Action.set_state_finalising
+    logger.info(f'Finished: {Action.download}')
 
 
-def _set_state_finalising(sync_state: dict):
-    print(Action.set_state_finalising)
-    sync_state['current_state'] = SName.FINALISING
-    sync_state['current_action'] = Action.finalise
+def set_state_finalising(sync_state: dict):
+    sync_state[CURRENT_STATE_KEY] = SName.FINALISING
+    sync_state[CURRENT_ACTION_KEY] = Action.finalise
 
 
-def _finalise(sync_state: dict):
-    print(Action.finalise)
-    int_med = read_from_csv(sync_state, 'intermediate_manifest_file')
-    errors = int_med.loc[(int_med["status"] != 'match') &
-                         (int_med['status'] != 'downloaded') &
-                         (int_med['status'] != 'drifted')]
+def finalise(sync_state: dict):
+    logger.info(f'Started: {Action.finalise}')
+    int_med = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
+    errors = int_med.loc[(int_med[STATUS_KEY] != MATCH) &
+                         (int_med[STATUS_KEY] != DOWNLOADED) &
+                         (int_med[STATUS_KEY] != DRIFTED)]
 
     if len(errors.index) > 0:
-        sync_state['current_state'] = SName.FINALISATION_FAILED
-        sync_state['current_action'] = Action.set_state_analysing
+        sync_state[CURRENT_STATE_KEY] = SName.FINALISATION_FAILED
+        sync_state[CURRENT_ACTION_KEY] = Action.set_state_analysing
     else:
         for index, row in int_med.iterrows():
-            if int_med.at[index, 'status'] == 'drifted':
+            if int_med.at[index, STATUS_KEY] == DRIFTED:
                 src = os.path.join(
-                    sync_state['output_dir'],
+                    sync_state[OUTPUT_DIR_KEY],
                     int_med.at[index, 'sampleName'],
-                    int_med.at[index, 'hot_swap_name'])
+                    int_med.at[index, HOT_SWAP_NAME_KEY])
 
                 dest = os.path.join(
-                    sync_state['output_dir'],
+                    sync_state[OUTPUT_DIR_KEY],
                     int_med.at[index, 'sampleName'],
                     int_med.at[index, 'fileNameOnDisk'])
 
                 logger.info(f'Hot swapped update for: {dest}')
                 os.rename(src, dest)
-                int_med.at[index, 'status'] = 'done'
+                int_med.at[index, STATUS_KEY] = 'done'
 
-            elif int_med.at[index, 'status'] == 'match' or int_med.at[index, 'status'] == 'downloaded':
-                int_med.at[index, 'status'] = 'done'
+            elif int_med.at[index, STATUS_KEY] == MATCH or int_med.at[index, STATUS_KEY] == DOWNLOADED:
+                int_med.at[index, STATUS_KEY] = 'done'
 
             else:
                 raise StateMachineError('Reach an impossible state during finalise.'
@@ -316,15 +353,15 @@ def _finalise(sync_state: dict):
                                 in sample_table.columns.to_flat_index()]
         sample_table.index.name = "Seq_ID"
         sample_table.reset_index(inplace=True)
-        m_path = os.path.join(sync_state['output_dir'], sync_state["manifest"])
+        m_path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY])
         save_to_csv(sample_table, m_path)
 
         # Get the list of files on disk. The array is a list of (full_path, file_name_only)
         files_on_disk = []
-        obsoletes = pd.DataFrame({"file_path": [], "file_name": []})
-        for (root_dir, dir_names, file_names) in os.walk(sync_state["output_dir"]):
+        obsoletes = pd.DataFrame({FILE_PATH_KEY: [], FILE_NAME_KEY: []})
+        for (root_dir, dir_names, file_names) in os.walk(sync_state[OUTPUT_DIR_KEY]):
             for f in file_names:
-                if os.path.splitext(f)[-1] in ['.fastq', '.fasta', '.gz']:
+                if os.path.splitext(f)[-1] in [FASTQ, FASTA, GZ]:
                     files_on_disk.append((os.path.join(root_dir, f), f))
 
         # If files found on disk are not in the intermediate manifest,
@@ -339,40 +376,40 @@ def _finalise(sync_state: dict):
         # removed from the obsolete list. Additionally, if there is already an
         # entry on the obsolete list and still isn't on the intermediate manifest,
         # then it should be left on the obsolete list.
-        p = get_path_from_state(sync_state, "obsolete_objects_file")
+        p = get_path_from_state(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
         if os.path.exists(p):
-            saved = read_from_csv(sync_state, "obsolete_objects_file")
-            keep = saved[~saved['file_name'].isin(int_med['fileNameOnDisk'])]
+            saved = read_from_csv(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
+            keep = saved[~saved[FILE_NAME_KEY].isin(int_med['fileNameOnDisk'])]
             obsoletes = obsoletes.append(keep)
 
         obsoletes.drop_duplicates(inplace=True)
         save_to_csv(obsoletes, p)
 
-        sync_state['current_state'] = SName.DONE_FINALISING
-        sync_state['current_action'] = Action.set_state_purging
+        sync_state[CURRENT_STATE_KEY] = SName.DONE_FINALISING
+        sync_state[CURRENT_ACTION_KEY] = Action.set_state_purging
+        logger.info(f'Finished: {Action.finalise}')
 
 
-def _set_state_purging(sync_state: dict):
-    print(Action.set_state_purging)
-    sync_state['current_state'] = SName.PURGING
-    sync_state['current_action'] = Action.purge
+def set_state_purging(sync_state: dict):
+    sync_state[CURRENT_STATE_KEY] = SName.PURGING
+    sync_state[CURRENT_ACTION_KEY] = Action.purge
 
 
-def _purge(sync_state: dict):
-    print(Action.purge)
-    sync_state['current_state'] = SName.DONE_PURGING
-    sync_state['current_action'] = Action.set_state_up_to_date
+def purge(sync_state: dict):
+    logger.info(f'Started: {Action.purge}')
+    sync_state[CURRENT_STATE_KEY] = SName.DONE_PURGING
+    sync_state[CURRENT_ACTION_KEY] = Action.set_state_up_to_date
+    logger.info(f'Finished: {Action.purge}')
 
 
-def _set_state_up_to_date(sync_state: dict):
-    print(Action.set_state_up_to_date)
-    sync_state['current_state'] = SName.UP_TO_DATE
-    sync_state['current_action'] = Action.set_state_pulling_manifest
+def set_state_up_to_date(sync_state: dict):
+    sync_state[CURRENT_STATE_KEY] = SName.UP_TO_DATE
+    sync_state[CURRENT_ACTION_KEY] = Action.set_state_pulling_manifest
 
 
 def get_path_from_state(sync_state: dict, key_to_file: str):
     path = os.path.join(
-        sync_state['output_dir'],
+        sync_state[OUTPUT_DIR_KEY],
         sync_state[key_to_file],
     )
     return path
@@ -385,7 +422,7 @@ def read_from_csv(sync_state: dict, state_key: str):
 
 
 def save_int_manifest(df, sync_state):
-    path = get_path_from_state(sync_state, 'intermediate_manifest_file')
+    path = get_path_from_state(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     with open(path, 'w') as f:
         df.to_csv(f, index=False)
         f.close()

@@ -2,6 +2,7 @@ import click
 
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_group
+from austrakka.utils.options import opt_hash_check
 from .funcs import fastq_sync
 
 
@@ -15,5 +16,6 @@ def sync(ctx):
 @sync.command('get')
 @opt_output_dir()
 @opt_group(default=None, multiple=False, required=True)
-def get_fastq(output_dir: str, group_name: str,):
-    fastq_sync(output_dir, group_name)
+@opt_hash_check()
+def get_fastq(output_dir: str, group_name: str, hash_check: bool):
+    fastq_sync(output_dir, group_name, hash_check)
