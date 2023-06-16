@@ -4,6 +4,7 @@ import hashlib
 import pandas as pd
 from loguru import logger
 
+from .constant import *
 from .errors import StateMachineError
 from ..funcs import _get_seq_data
 from austrakka.utils.enums.seq import READ_BOTH
@@ -11,42 +12,6 @@ from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
 from austrakka.components.sequence.funcs import _download_seq_file
 from austrakka.components.sequence.funcs import _get_seq_download_path
 from austrakka.utils.retry import retry
-
-from .constant import MANIFEST_KEY
-from .constant import INTERMEDIATE_MANIFEST_FILE_KEY
-from .constant import GROUP_NAME_KEY
-from .constant import SEQ_TYPE_KEY
-from .constant import OUTPUT_DIR_KEY
-from .constant import HASH_CHECK_KEY
-from .constant import OBSOLETE_OBJECTS_FILE_KEY
-from .constant import CURRENT_STATE_KEY
-from .constant import CURRENT_ACTION_KEY
-from .constant import SYNC_STATE_FILE_KEY
-from .constant import SERVER_SHA_256_KEY
-
-from .constant import FASTQ
-from .constant import FASTA
-from .constant import GZ
-
-from .constant import FILE_NAME_KEY
-from .constant import FILE_PATH_KEY
-from .constant import SEQ_ID_KEY
-
-from .constant import STATUS_KEY
-from .constant import HOT_SWAP_NAME_KEY
-from .constant import ORIGINAL_FILE_NAME_KEY
-from .constant import BLOB_FILE_PATH_KEY
-from .constant import SAMPLE_NAME_KEY
-from .constant import FILE_NAME_ON_DISK_KEY
-from .constant import READ_KEY
-from .constant import TYPE_KEY
-
-from .constant import DOWNLOADED
-from .constant import DRIFTED
-from .constant import FAILED
-from .constant import MATCH
-from .constant import MISSING
-from .constant import DONE
 
 
 class SName:
@@ -101,8 +66,9 @@ class StateMachine:
 
     def run(self, sync_state: dict):
         if sync_state[CURRENT_STATE_KEY] not in self.states.keys():
-            raise StateMachineError('The supplied current state is unknown '
-                                    'to this state machine instance.')
+            raise StateMachineError(f'The supplied current state '
+                                    f'"{sync_state[CURRENT_STATE_KEY]}" is '
+                                    f'unknown to this state machine instance.')
 
         action = sync_state[CURRENT_ACTION_KEY]
         if action is None or action.isspace():
@@ -116,14 +82,18 @@ class StateMachine:
         active_sync_state = sync_state.copy()
         current_state = self.states[active_sync_state[CURRENT_STATE_KEY]]
 
-        logger.info('Start sync with args..')
-        logger.info(f'{OUTPUT_DIR_KEY}: {sync_state[OUTPUT_DIR_KEY]}')
-        logger.info(f'{GROUP_NAME_KEY}: {sync_state[GROUP_NAME_KEY]}')
-        logger.info(f'{SEQ_TYPE_KEY}: {sync_state[SEQ_TYPE_KEY]}')
-        logger.info(f'{HASH_CHECK_KEY}: {sync_state[HASH_CHECK_KEY]}')
-
         while not current_state.is_end_state:
             self.action_handlers[action](active_sync_state)
+
+            # Expect action_handler call to have moved the current
+            # state at the end of the call by mutation.
+            next_state = active_sync_state[CURRENT_STATE_KEY]
+            self._ensure_is_known_state(
+                next_state,
+                f'The proposed next state is not a known state: "{next_state}". '
+                f'Aborting. The unknown state has to be added to the list of '
+                f'allowed states.'
+            )
 
             path = os.path.join(
                 active_sync_state[OUTPUT_DIR_KEY],
@@ -140,10 +110,10 @@ class StateMachine:
         return self.states[name]
 
     def is_known_state(self, name: str):
-        return self.get_state(name) is not None
+        return name in self.states.keys()
 
-    def _ensure_is_known_state(self, s: State, msg: str):
-        if not self.is_known_state(s.name):
+    def _ensure_is_known_state(self, name: str, msg: str):
+        if not self.is_known_state(name):
             raise StateMachineError(msg)
 
 
@@ -162,17 +132,17 @@ def build_state_machine() -> StateMachine:
             SName.DONE_PURGING: State(SName.DONE_PURGING),
             SName.UP_TO_DATE: State(SName.UP_TO_DATE, is_end_state=True),
         }, {
-        Action.set_state_pulling_manifest: set_state_pulling_manifest,
-        Action.pull_manifest: pull_manifest,
-        Action.set_state_analysing: set_state_analysing,
-        Action.analyse: analyse,
-        Action.set_state_downloading: set_state_downloading,
-        Action.download: download,
-        Action.set_state_finalising: set_state_finalising,
-        Action.finalise: finalise,
-        Action.set_state_purging: set_state_purging,
-        Action.purge: purge,
-        Action.set_state_up_to_date: set_state_up_to_date
+            Action.set_state_pulling_manifest: set_state_pulling_manifest,
+            Action.pull_manifest: pull_manifest,
+            Action.set_state_analysing: set_state_analysing,
+            Action.analyse: analyse,
+            Action.set_state_downloading: set_state_downloading,
+            Action.download: download,
+            Action.set_state_finalising: set_state_finalising,
+            Action.finalise: finalise,
+            Action.set_state_purging: set_state_purging,
+            Action.purge: purge,
+            Action.set_state_up_to_date: set_state_up_to_date
         }
     )
 
@@ -301,6 +271,7 @@ def set_state_purging(sync_state: dict):
 
 def purge(sync_state: dict):
     logger.info(f'Started: {Action.purge}')
+    logger.info('Nothing to purge..')
     sync_state[CURRENT_STATE_KEY] = SName.DONE_PURGING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_up_to_date
     logger.success(f'Finished: {Action.purge}')
@@ -418,9 +389,8 @@ def publish_new_manifest(int_med, sync_state):
     sample_table.reset_index(inplace=True)
     m_path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY])
 
-    logger.info(f'Saving final manifest: {m_path}')
-
     save_to_csv(sample_table, m_path)
+    logger.success(f'Published final manifest: {m_path}')
 
 
 def get_file_from_server(df, index, row, sync_state):

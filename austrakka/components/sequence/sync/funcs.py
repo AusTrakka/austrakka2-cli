@@ -62,9 +62,15 @@ def fastq_sync(output_dir: str, group_name: str, hash_check: bool):
         set_to_start_state(sync_state)
         save_json(sync_state, state_file_path)
 
+    logger.info('Starting sync with args..')
+    logger.info(f'{OUTPUT_DIR_KEY}: {sync_state[OUTPUT_DIR_KEY]}')
+    logger.info(f'{GROUP_NAME_KEY}: {sync_state[GROUP_NAME_KEY]}')
+    logger.info(f'{SEQ_TYPE_KEY}: {sync_state[SEQ_TYPE_KEY]}')
+    logger.info(f'{HASH_CHECK_KEY}: {sync_state[HASH_CHECK_KEY]}')
+
     sm = build_state_machine()
     sm.run(sync_state)
-    logger.info("Sync completed")
+    logger.success("Sync completed")
 
 
 def set_if_not_in(sync_state):

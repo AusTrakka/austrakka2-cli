@@ -2,37 +2,11 @@ import os.path
 import json
 import pandas as pd
 import shutil
+
 from austrakka.components.sequence.sync.state_machine import analyse
 from austrakka.components.sequence.sync.state_machine import finalise
 from austrakka.components.sequence.sync.state_machine import SName
-
-from austrakka.components.sequence.sync.constant import MANIFEST_KEY
-from austrakka.components.sequence.sync.constant import INTERMEDIATE_MANIFEST_FILE_KEY
-from austrakka.components.sequence.sync.constant import OUTPUT_DIR_KEY
-from austrakka.components.sequence.sync.constant import HASH_CHECK_KEY
-from austrakka.components.sequence.sync.constant import OBSOLETE_OBJECTS_FILE_KEY
-from austrakka.components.sequence.sync.constant import CURRENT_STATE_KEY
-from austrakka.components.sequence.sync.constant import SYNC_STATE_FILE_KEY
-
-from austrakka.components.sequence.sync.constant import FILE_NAME_KEY
-from austrakka.components.sequence.sync.constant import FILE_PATH_KEY
-
-from austrakka.components.sequence.sync.constant import STATUS_KEY
-from austrakka.components.sequence.sync.constant import HOT_SWAP_NAME_KEY
-from austrakka.components.sequence.sync.constant import FILE_NAME_ON_DISK_KEY
-from austrakka.components.sequence.sync.constant import SAMPLE_NAME_KEY
-from austrakka.components.sequence.sync.constant import READ_KEY
-
-from austrakka.components.sequence.sync.constant import DRIFTED
-from austrakka.components.sequence.sync.constant import MATCH
-from austrakka.components.sequence.sync.constant import MISSING
-from austrakka.components.sequence.sync.constant import DONE
-
-from austrakka.components.sequence.sync.constant import SEQ_ID_KEY
-from austrakka.components.sequence.sync.constant import FASTQ_R1_KEY
-from austrakka.components.sequence.sync.constant import FASTQ_R2_KEY
-
-from austrakka.components.sequence.sync.constant import FASTQ
+from austrakka.components.sequence.sync.constant import *
 
 
 class TestStateMachine:
