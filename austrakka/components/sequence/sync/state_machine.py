@@ -223,32 +223,12 @@ def analyse(sync_state: dict):
             str(row[SAMPLE_NAME_KEY]),
             str(row[FILE_NAME_ON_DISK_KEY]))
 
-        if not os.path.exists(seq_path):
-            logger.info(f'Missing: {seq_path}')
-            df.at[index, STATUS_KEY] = MISSING
-        elif do_hash_check:
-            file = open(seq_path, 'rb')
-            seq_hash = hashlib.sha256(file.read()).hexdigest().lower()
-            if seq_hash == row[SERVER_SHA_256_KEY].lower():
-                set_match_status(df, index, row, seq_path)
-            else:
-                logger.info(f'Drifted: {seq_path}')
-                df.at[index, STATUS_KEY] = DRIFTED
-
-            file.close()
-        else:
-            set_match_status(df, index, row, seq_path)
+        analyse_status(df, do_hash_check, index, row, seq_path)
 
     save_int_manifest(df, sync_state)
     sync_state[CURRENT_STATE_KEY] = SName.DONE_ANALYSING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_downloading
     logger.info(f'Finished: {Action.analyse}')
-
-
-def set_match_status(df, index, row, seq_path):
-    azure_path = os.path.join(row[BLOB_FILE_PATH_KEY], row[ORIGINAL_FILE_NAME_KEY])
-    logger.info(f'Matched: {seq_path} ==> Azure: {azure_path}')
-    df.at[index, STATUS_KEY] = MATCH
 
 
 def set_state_downloading(sync_state: dict):
@@ -269,38 +249,7 @@ def download(sync_state: dict):
     with open(path, 'w') as f:
         for index, row in df.iterrows():
             if row[STATUS_KEY] != DOWNLOADED and row[STATUS_KEY] != MATCH:
-                try:
-                    filename = row[FILE_NAME_ON_DISK_KEY]
-                    sample_name = row[SAMPLE_NAME_KEY]
-                    read = str(row[READ_KEY])
-                    seq_type = row[TYPE_KEY]
-                    sample_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], sample_name)
-                    file_path = os.path.join(sample_dir, filename)
-
-                    query_path = _get_seq_download_path(
-                        sample_name,
-                        read,
-                        seq_type,
-                        BY_IS_ACTIVE_FLAG)
-
-                    if row[STATUS_KEY] == DRIFTED:
-                        logger.warning(f'Drifted from server: {file_path}. Fixing..')
-                        fresh_name = f'{row[FILE_NAME_ON_DISK_KEY]}.fresh'
-                        df.at[index, HOT_SWAP_NAME_KEY] = fresh_name
-                        file_path = os.path.join(sample_dir, fresh_name)
-
-                    retry(lambda fp=file_path, fn=filename, qp=query_path, sd=sample_dir:
-                          _download_seq_file(file_path, filename, query_path, sample_dir),
-                          3,
-                          query_path)
-
-                    # Drifted entries are left for finalisation to hot swap.
-                    # Otherwise mark the entry as successfully downloaded.
-                    if df.at[index, STATUS_KEY] != DRIFTED:
-                        df.at[index, STATUS_KEY] = DOWNLOADED
-                except Exception as ex:
-                    df.at[index, STATUS_KEY] = FAILED
-                    logger.error(f'Failed to download: {file_path}. Error: {ex}')
+                get_file_from_server(df, index, row, sync_state)
 
             df.to_csv(f, index=False)
             f.seek(0)
@@ -324,77 +273,22 @@ def finalise(sync_state: dict):
                          (int_med[STATUS_KEY] != DRIFTED)]
 
     if len(errors.index) > 0:
+        im_path = os.path.join(
+            sync_state[OUTPUT_DIR_KEY],
+            sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
+
+        logger.error(f'Found entries which are failed or missing after the '
+                     f'download stage. Check the intermediate manifest for '
+                     f'specific file entries: {im_path}')
+
         sync_state[CURRENT_STATE_KEY] = SName.FINALISATION_FAILED
         sync_state[CURRENT_ACTION_KEY] = Action.set_state_analysing
+        logger.error('Finalise failed.')
     else:
-        for index, row in int_med.iterrows():
-            if int_med.at[index, STATUS_KEY] == DRIFTED:
-                src = os.path.join(
-                    sync_state[OUTPUT_DIR_KEY],
-                    int_med.at[index, SAMPLE_NAME_KEY],
-                    int_med.at[index, HOT_SWAP_NAME_KEY])
-
-                dest = os.path.join(
-                    sync_state[OUTPUT_DIR_KEY],
-                    int_med.at[index, SAMPLE_NAME_KEY],
-                    int_med.at[index, FILE_NAME_ON_DISK_KEY])
-
-                logger.info(f'Hot swapped update for: {dest}')
-                os.rename(src, dest)
-                int_med.at[index, STATUS_KEY] = DONE
-
-            elif int_med.at[index, STATUS_KEY] == MATCH or int_med.at[index, STATUS_KEY] == DOWNLOADED:
-                int_med.at[index, STATUS_KEY] = DONE
-
-            else:
-                raise StateMachineError('Reach an impossible state during finalise.'
-                                        'Expecting only states "match", "downloaded", '
-                                        'or "drifted"')
-
+        finalise_intermediate_manifest(int_med, sync_state)
         save_int_manifest(int_med, sync_state)
-
-        sample_table = int_med.pivot(
-            index=SAMPLE_NAME_KEY,
-            columns=[TYPE_KEY, READ_KEY],
-            values=FILE_NAME_ON_DISK_KEY)
-
-        # Multiindex approach ok, but this format needs changing when dealing with FASTA in the same table
-        sample_table.columns = [f"{seq_type}_R{read}".upper()
-                                for (seq_type, read)
-                                in sample_table.columns.to_flat_index()]
-        sample_table.index.name = SEQ_ID_KEY
-        sample_table.reset_index(inplace=True)
-        m_path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY])
-        save_to_csv(sample_table, m_path)
-
-        # Get the list of files on disk. The array is a list of (full_path, file_name_only)
-        files_on_disk = []
-        obsoletes = pd.DataFrame({FILE_PATH_KEY: [], FILE_NAME_KEY: []})
-        for (root_dir, dir_names, file_names) in os.walk(sync_state[OUTPUT_DIR_KEY]):
-            for f in file_names:
-                if os.path.splitext(f)[-1] in [FASTQ, FASTA, GZ]:
-                    files_on_disk.append((os.path.join(root_dir, f), f))
-
-        # If files found on disk are not in the intermediate manifest,
-        # it is added to the list of obsolete files.
-        for tup in files_on_disk:
-            r = int_med.loc[(int_med[FILE_NAME_ON_DISK_KEY] == tup[-1])]
-            if len(r.index) == 0:
-                obsoletes.loc[len(obsoletes.index)] = tup
-
-        # Check the reverse direction. If something is on the current obsolete list
-        # of file, and is also in the intermediate manifest, then it needs to be
-        # removed from the obsolete list. Additionally, if there is already an
-        # entry on the obsolete list and still isn't on the intermediate manifest,
-        # then it should be left on the obsolete list.
-        p = get_path_from_state(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
-        if os.path.exists(p):
-            saved = read_from_csv(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
-            keep = saved[~saved[FILE_NAME_KEY].isin(int_med[FILE_NAME_ON_DISK_KEY])]
-            obsoletes = obsoletes.append(keep)
-
-        obsoletes.drop_duplicates(inplace=True)
-        save_to_csv(obsoletes, p)
+        save_final_manifest(int_med, sync_state)
+        save_obsolete_files_list(int_med, sync_state)
 
         sync_state[CURRENT_STATE_KEY] = SName.DONE_FINALISING
         sync_state[CURRENT_ACTION_KEY] = Action.set_state_purging
@@ -443,3 +337,141 @@ def save_to_csv(df, path):
     with open(path, 'w') as f:
         df.to_csv(f, index=False)
         f.close()
+
+
+def finalise_intermediate_manifest(int_med, sync_state):
+    for index, row in int_med.iterrows():
+
+        dest = os.path.join(
+            sync_state[OUTPUT_DIR_KEY],
+            int_med.at[index, SAMPLE_NAME_KEY],
+            int_med.at[index, FILE_NAME_ON_DISK_KEY])
+
+        if int_med.at[index, STATUS_KEY] == DRIFTED:
+            src = os.path.join(
+                sync_state[OUTPUT_DIR_KEY],
+                int_med.at[index, SAMPLE_NAME_KEY],
+                int_med.at[index, HOT_SWAP_NAME_KEY])
+
+            logger.info(f'Hot swapped update for: {dest}')
+            os.rename(src, dest)
+            int_med.at[index, STATUS_KEY] = DONE
+
+        elif int_med.at[index, STATUS_KEY] == MATCH or int_med.at[index, STATUS_KEY] == DOWNLOADED:
+            int_med.at[index, STATUS_KEY] = DONE
+            logger.success(f'Done: {dest}')
+
+        else:
+            raise StateMachineError('Reach an impossible state during finalise.'
+                                    'Expecting only states "match", "downloaded", '
+                                    'or "drifted"')
+
+
+def save_obsolete_files_list(int_med, sync_state):
+    logger.info('Checking for obsolete files..')
+
+    # Get the list of files on disk. The array is a list of (full_path, file_name_only)
+    files_on_disk = []
+    obsoletes = pd.DataFrame({FILE_PATH_KEY: [], FILE_NAME_KEY: []})
+    for (root_dir, dir_names, file_names) in os.walk(sync_state[OUTPUT_DIR_KEY]):
+        for f in file_names:
+            if os.path.splitext(f)[-1] in [FASTQ, FASTA, GZ]:
+                files_on_disk.append((os.path.join(root_dir, f), f))
+    # If files found on disk are not in the intermediate manifest,
+    # it is added to the list of obsolete files.
+    for tup in files_on_disk:
+        r = int_med.loc[(int_med[FILE_NAME_ON_DISK_KEY] == tup[-1])]
+        if len(r.index) == 0:
+            obsoletes.loc[len(obsoletes.index)] = tup
+    # Check the reverse direction. If something is on the current obsolete list
+    # of file, and is also in the intermediate manifest, then it needs to be
+    # removed from the obsolete list. Additionally, if there is already an
+    # entry on the obsolete list and still isn't on the intermediate manifest,
+    # then it should be left on the obsolete list.
+    p = get_path_from_state(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
+    if os.path.exists(p):
+        saved = read_from_csv(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
+        keep = saved[~saved[FILE_NAME_KEY].isin(int_med[FILE_NAME_ON_DISK_KEY])]
+        obsoletes = obsoletes.append(keep)
+    obsoletes.drop_duplicates(inplace=True)
+    save_to_csv(obsoletes, p)
+
+    logger.info(f'Found {len(obsoletes.index)} obsolete files.')
+    logger.info(f'Saving list to {p}')
+
+
+def save_final_manifest(int_med, sync_state):
+    sample_table = int_med.pivot(
+        index=SAMPLE_NAME_KEY,
+        columns=[TYPE_KEY, READ_KEY],
+        values=FILE_NAME_ON_DISK_KEY)
+    # Multiindex approach ok, but this format needs changing when dealing with FASTA in the same table
+    sample_table.columns = [f"{seq_type}_R{read}".upper()
+                            for (seq_type, read)
+                            in sample_table.columns.to_flat_index()]
+    sample_table.index.name = SEQ_ID_KEY
+    sample_table.reset_index(inplace=True)
+    m_path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY])
+
+    logger.info(f'Saving final manifest: {m_path}')
+
+    save_to_csv(sample_table, m_path)
+
+
+def get_file_from_server(df, index, row, sync_state):
+    try:
+        filename = row[FILE_NAME_ON_DISK_KEY]
+        sample_name = row[SAMPLE_NAME_KEY]
+        read = str(row[READ_KEY])
+        seq_type = row[TYPE_KEY]
+        sample_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], sample_name)
+        file_path = os.path.join(sample_dir, filename)
+
+        query_path = _get_seq_download_path(
+            sample_name,
+            read,
+            seq_type,
+            BY_IS_ACTIVE_FLAG)
+
+        if row[STATUS_KEY] == DRIFTED:
+            logger.warning(f'Drifted from server: {file_path}. Fixing..')
+            fresh_name = f'{row[FILE_NAME_ON_DISK_KEY]}.fresh'
+            df.at[index, HOT_SWAP_NAME_KEY] = fresh_name
+            file_path = os.path.join(sample_dir, fresh_name)
+
+        retry(lambda fp=file_path, fn=filename, qp=query_path, sd=sample_dir:
+              _download_seq_file(file_path, filename, query_path, sample_dir),
+              3,
+              query_path)
+
+        # Drifted entries are left for finalisation to hot swap.
+        # Otherwise mark the entry as successfully downloaded.
+        if df.at[index, STATUS_KEY] != DRIFTED:
+            df.at[index, STATUS_KEY] = DOWNLOADED
+    except Exception as ex:
+        df.at[index, STATUS_KEY] = FAILED
+        logger.error(f'Failed to download: {file_path}. Error: {ex}')
+
+
+def set_match_status(df, index, row, seq_path):
+    azure_path = os.path.join(row[BLOB_FILE_PATH_KEY], row[ORIGINAL_FILE_NAME_KEY])
+    logger.success(f'Matched: {seq_path} ==> Azure: {azure_path}')
+    df.at[index, STATUS_KEY] = MATCH
+
+
+def analyse_status(df, do_hash_check, index, row, seq_path):
+    if not os.path.exists(seq_path):
+        logger.info(f'Missing: {seq_path}')
+        df.at[index, STATUS_KEY] = MISSING
+    elif do_hash_check:
+        file = open(seq_path, 'rb')
+        seq_hash = hashlib.sha256(file.read()).hexdigest().lower()
+        if seq_hash == row[SERVER_SHA_256_KEY].lower():
+            set_match_status(df, index, row, seq_path)
+        else:
+            logger.info(f'Drifted: {seq_path}')
+            df.at[index, STATUS_KEY] = DRIFTED
+
+        file.close()
+    else:
+        set_match_status(df, index, row, seq_path)
