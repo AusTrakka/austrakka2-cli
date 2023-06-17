@@ -9,6 +9,7 @@ from austrakka.components.sequence.sync.sync_workflow import analyse
 from austrakka.components.sequence.sync.sync_workflow import finalise
 from austrakka.components.sequence.sync.sync_workflow import purge
 from austrakka.components.sequence.sync.state_machine import SName
+from austrakka.components.sequence.sync.state_machine import Action
 from austrakka.components.sequence.sync.constant import *
 
 
@@ -186,6 +187,110 @@ class TestSyncWorkflow:
         df2 = pd.read_csv(clone)
         status = df2.loc[0, [STATUS_KEY]][0]
         assert status == MATCH
+
+        # Clean up
+        clean_up_path(clone)
+
+    # Failure at the download stage. The file started partial download
+    # and then encountered an exception. The failure is picked up at
+    # the finalise stage.
+    def test_analyse7_when_resuming_from_finalise_failed_partial_download_expect_failed_file_marked_as_drifted(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-analyse7-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse7-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse7",
+            CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
+            CURRENT_ACTION_KEY: Action.analyse,
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        original = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse7-int-manifest-original.csv")
+        clone = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse7-int-manifest-clone.csv")
+        shutil.copy(original, clone)
+
+        # This is a restart analysis test. There should already be a status key
+        df = pd.read_csv(clone)
+        assert STATUS_KEY in df.columns
+
+        # Act
+        analyse(sync_state)
+
+        # Assert
+        df2 = pd.read_csv(clone)
+        status = df2.loc[0, [STATUS_KEY]][0]
+        assert status == DRIFTED
+
+        # Clean up
+        clean_up_path(clone)
+
+    # Failure at the download stage. The file download did not start
+    # and then encountered an exception. The failure is picked up at
+    # the finalise stage.
+    def test_analyse8_when_resuming_from_finalise_failed_no_download_expect_failed_file_marked_as_missing(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-analyse8-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse8-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse8",
+            CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
+            CURRENT_ACTION_KEY: Action.analyse,
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        original = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse8-int-manifest-original.csv")
+        clone = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse8-int-manifest-clone.csv")
+        shutil.copy(original, clone)
+
+        # This is a restart analysis test. There should already be a status key
+        df = pd.read_csv(clone)
+        assert STATUS_KEY in df.columns
+
+        # Act
+        analyse(sync_state)
+
+        # Assert
+        df2 = pd.read_csv(clone)
+        status = df2.loc[0, [STATUS_KEY]][0]
+        assert status == MISSING
+
+        # Clean up
+        clean_up_path(clone)
+
+    # Failure at the download stage. The file was partially downloaded
+    # and then encountered an exception. The failure is picked up at
+    # the finalise stage. Expect hash check to be forcefully performed
+    # even if the cli options says other wise.
+    def test_analyse9_when_resuming_from_finalise_failed_part_download_expect_forced_hash_check(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-analyse9-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse9-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse9",
+            CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
+            CURRENT_ACTION_KEY: Action.analyse,
+            HASH_CHECK_KEY: False
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        original = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse9-int-manifest-original.csv")
+        clone = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse9-int-manifest-clone.csv")
+        shutil.copy(original, clone)
+
+        # This is a restart analysis test. There should already be a status key
+        df = pd.read_csv(clone)
+        assert STATUS_KEY in df.columns
+
+        # Act
+        analyse(sync_state)
+
+        # Assert
+        df2 = pd.read_csv(clone)
+        status = df2.loc[0, [STATUS_KEY]][0]
+        assert status == DRIFTED
 
         # Clean up
         clean_up_path(clone)

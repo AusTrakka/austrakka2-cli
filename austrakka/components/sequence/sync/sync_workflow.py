@@ -364,7 +364,7 @@ def analyse_status(df, do_hash_check, index, row, seq_path):
         logger.info(f'Missing: {seq_path}')
         df.at[index, STATUS_KEY] = MISSING
 
-    elif do_hash_check and not previously_matched:
+    elif (do_hash_check and not previously_matched) or row[STATUS_KEY] == FAILED:
         file = open(seq_path, 'rb')
         seq_hash = hashlib.sha256(file.read()).hexdigest().lower()
 
