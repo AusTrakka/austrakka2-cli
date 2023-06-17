@@ -18,6 +18,7 @@ GZ_EXT = '.gz'
 # Obsolete file keys
 FILE_NAME_KEY = 'file_name'
 FILE_PATH_KEY = 'file_path'
+DETECTION_DATE_KEY = 'detection_date'
 
 # Intermediate manifest file keys
 STATUS_KEY = 'status'

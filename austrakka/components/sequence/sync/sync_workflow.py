@@ -1,5 +1,6 @@
 import hashlib
 from loguru import logger
+from datetime import datetime
 
 from .errors import WorkflowError
 from .sync_io import *
@@ -229,18 +230,27 @@ def detect_and_record_obsolete_files(int_med, sync_state):
 
     # Get the list of files on disk. The array is a list of (full_path, file_name_only)
     files_on_disk = []
-    obsoletes = pd.DataFrame({FILE_PATH_KEY: [], FILE_NAME_KEY: []})
+    obsoletes = pd.DataFrame({
+        FILE_PATH_KEY: [],
+        FILE_NAME_KEY: [],
+        DETECTION_DATE_KEY: []
+    })
+
     for (root_dir, dir_names, file_names) in os.walk(sync_state[OUTPUT_DIR_KEY]):
         for f in file_names:
             if os.path.splitext(f)[-1] in [FASTQ_EXT, FASTA_EXT, GZ_EXT]:
-                files_on_disk.append((os.path.join(root_dir, f), f))
+                files_on_disk.append((
+                    os.path.join(root_dir, f),
+                    f,
+                    datetime.now().strftime("%Y-%M-%d %H:%M:%S.%f")
+                ))
 
     # If files found on disk are not in the intermediate manifest,
     # it is added to the list of obsolete files.
-    for pair in files_on_disk:
-        r = int_med.loc[(int_med[FILE_NAME_ON_DISK_KEY] == pair[-1])]
+    for triplet in files_on_disk:
+        r = int_med.loc[(int_med[FILE_NAME_ON_DISK_KEY] == triplet[-2])]
         if len(r.index) == 0:
-            obsoletes.loc[len(obsoletes.index)] = pair
+            obsoletes.loc[len(obsoletes.index)] = triplet
 
     # Check the reverse direction. If something is on the current obsolete list
     # of file, and is also in the intermediate manifest, then it needs to be
@@ -253,7 +263,7 @@ def detect_and_record_obsolete_files(int_med, sync_state):
         keep = saved[~saved[FILE_NAME_KEY].isin(int_med[FILE_NAME_ON_DISK_KEY])]
         obsoletes = obsoletes.append(keep)
 
-    obsoletes.drop_duplicates(inplace=True)
+    obsoletes.drop_duplicates(subset=[FILE_PATH_KEY, FILE_NAME_KEY], inplace=True)
     save_to_csv(obsoletes, p)
 
     logger.info(f'Found {len(obsoletes.index)} obsolete files.')

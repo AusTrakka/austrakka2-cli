@@ -3,6 +3,8 @@ import json
 import pandas as pd
 import shutil
 
+from datetime import datetime
+
 from austrakka.components.sequence.sync.sync_workflow import analyse
 from austrakka.components.sequence.sync.sync_workflow import finalise
 from austrakka.components.sequence.sync.state_machine import SName
@@ -38,7 +40,7 @@ class TestSyncWorkflow:
         assert status == MISSING
 
         # Clean up
-        os.remove(clone)
+        clean_up_path(clone)
 
     def test_analyse2_new_manifest_hash_dont_match_local_expect_entries_marked_as_drifted(self):
         # Arrange
@@ -68,7 +70,7 @@ class TestSyncWorkflow:
         assert status == DRIFTED
 
         # Clean up
-        os.remove(clone)
+        clean_up_path(clone)
 
     def test_analyse3_new_manifest_hash_matches_local_expect_entries_marked_as_match(self):
         # Arrange
@@ -97,7 +99,7 @@ class TestSyncWorkflow:
         assert status == MATCH
 
         # Clean up
-        os.remove(clone)
+        clean_up_path(clone)
 
     def test_analyse4_given_skip_hash_check_option_expect_comparison_by_file_name_only(self):
         # Arrange
@@ -127,7 +129,7 @@ class TestSyncWorkflow:
         assert status == MATCH
 
         # Clean up
-        os.remove(clone)
+        clean_up_path(clone)
 
     def test_analyse5_hash_check_option_omitted_expect_hash_check_is_on_by_default(self):
         # Arrange
@@ -156,7 +158,7 @@ class TestSyncWorkflow:
         assert status == DRIFTED
 
         # Clean up
-        os.remove(clone)
+        clean_up_path(clone)
 
     def test_analyse6_restarting_analyse_expect_no_hash_check_for_entries_already_matched(self):
         # Arrange
@@ -185,7 +187,7 @@ class TestSyncWorkflow:
         assert status == MATCH
 
         # Clean up
-        os.remove(clone)
+        clean_up_path(clone)
 
     def test_finalise1_int_manifest_has_failures_expect_finalisation_failed_state(self):
         # Arrange
@@ -214,7 +216,7 @@ class TestSyncWorkflow:
         assert sync_state[CURRENT_STATE_KEY] == SName.FINALISATION_FAILED
 
         # Clean up
-        os.remove(clone)
+        clean_up_path(clone)
 
     def test_finalise2_int_manifest_has_only_downloaded_state_expect_done_finalising_state(self):
         # Arrange
@@ -243,9 +245,9 @@ class TestSyncWorkflow:
         assert sync_state[CURRENT_STATE_KEY] == SName.DONE_FINALISING
 
         # Clean up
-        os.remove(clone)
-        os.remove(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY]))
-        os.remove(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
+        clean_up_path(clone)
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY]))
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
 
     def test_finalise3_int_manifest_has_only_match_state_expect_done_finalising_state(self):
         # Arrange
@@ -274,11 +276,9 @@ class TestSyncWorkflow:
         assert sync_state[CURRENT_STATE_KEY] == SName.DONE_FINALISING
 
         # Clean up
-        path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
-        os.remove(clone)
-        os.remove(path)
-        m = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY])
-        os.remove(m)
+        clean_up_path(clone)
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY]))
 
     def test_finalise4_files_on_disk_not_in_int_manifest_expect_added_to_delete_target(self):
         # Arrange
@@ -300,6 +300,8 @@ class TestSyncWorkflow:
         df = pd.read_csv(clone)
         assert STATUS_KEY in df.columns
 
+        time_stamp_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S.%f")
+
         # Act
         finalise(sync_state)
 
@@ -317,59 +319,15 @@ class TestSyncWorkflow:
         ]
         assert len(r.index) == 4
 
-        # Clean up
-        os.remove(clone)
-        os.remove(path)
-        os.remove(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY]))
-        oof = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
-        if os.path.exists(oof):
-            os.remove(oof)
-
-    def test_finalise10_files_already_in_delete_target_expect_to_not_add_duplicates_to_list(self):
-        # Arrange
-        sync_state = {
-            SYNC_STATE_FILE_KEY: "test-finalise10-sync-state.json",
-            INTERMEDIATE_MANIFEST_FILE_KEY: "test-finalise10-int-manifest-clone.csv",
-            OUTPUT_DIR_KEY: "test/components/sequence/sync/finalise10",
-            OBSOLETE_OBJECTS_FILE_KEY: "test-finalise10-delete-targets.csv",
-            MANIFEST_KEY: "test-finalise10-manifest.csv",
-        }
-
-        # make a clone of the original test manifest because the test subject will
-        # be mutating it. The clone must be deleted by the test afterwards.
-        original = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-finalise10-int-manifest-original.csv")
-        clone = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-finalise10-int-manifest-clone.csv")
-        shutil.copy(original, clone)
-
-        a = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-finalise10-delete-targets.csv.original")
-        b = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
-        shutil.copy(a, b)
-
-        # Check that the test data start out clean
-        df = pd.read_csv(clone)
-        assert STATUS_KEY in df.columns
-
-        # Act
-        finalise(sync_state)
-
-        # Assert
-        assert sync_state[CURRENT_STATE_KEY] == SName.DONE_FINALISING
-
-        # Sample60 is the extra
-        path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
-        df = pd.read_csv(path)
-        r = df.loc[(df[FILE_NAME_KEY] == "Sample60_20230614T00453848_a34d8705_R1.fastq")]
-        assert len(r.index) == 1
+        # Note! This is a string order comparision and not date time.
+        d = df.loc[(df[DETECTION_DATE_KEY] > time_stamp_str)]
+        assert len(d.index) == 4
 
         # Clean up
-        os.remove(clone)
-        os.remove(path)
-        if os.path.exists(b):
-            os.remove(b)
-        os.remove(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY]))
-        oof = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
-        if os.path.exists(oof):
-            os.remove(oof)
+        clean_up_path(clone)
+        clean_up_path(path)
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY]))
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
 
     def test_finalise5_given_match_status_and_successful_finalise_expect_convert_int_manifest_to_live_manifest(self):
         # Arrange
@@ -414,9 +372,9 @@ class TestSyncWorkflow:
         assert m_df.at[0, SEQ_ID_KEY] == 'Sample5'
 
         # Clean up
-        os.remove(clone)
-        os.remove(m_path)
-        os.remove(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
+        clean_up_path(clone)
+        clean_up_path(m_path)
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
 
     def test_finalise6_given_downloaded_status_and_successful_finalise_expect_convert_int_manifest_to_live_manifest(self):
         # Arrange
@@ -461,9 +419,9 @@ class TestSyncWorkflow:
         assert m_df.at[0, SEQ_ID_KEY] == 'Sample5'
 
         # Clean up
-        os.remove(clone)
-        os.remove(m_path)
-        os.remove(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
+        clean_up_path(clone)
+        clean_up_path(m_path)
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
 
     def test_finalise7_given_drifted_status_expect_fresh_download_from_previous_step_is_hot_swapped(self):
         # Arrange
@@ -534,9 +492,9 @@ class TestSyncWorkflow:
         assert im_df.at[1, STATUS_KEY] == DONE
 
         # Clean up
-        os.remove(clone)
-        os.remove(m_path)
-        os.remove(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
+        clean_up_path(clone)
+        clean_up_path(m_path)
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
 
     def test_finalise8_file_on_delete_target_is_also_in_int_manifest_expect_removed_from_delete_target(self):
         # Arrange
@@ -581,10 +539,9 @@ class TestSyncWorkflow:
         assert len(r.index) == 0
 
         # Clean up
-        os.remove(clone)
-        os.remove(b)
-        m = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY])
-        os.remove(m)
+        clean_up_path(clone)
+        clean_up_path(b)
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY]))
 
     def test_finalise9_given_existing_delete_target_entries_expect_entries_preserved_after_finalisation(self):
         # Arrange
@@ -626,14 +583,59 @@ class TestSyncWorkflow:
         # Because it's a test environment with test artifacts, finalise() might pickup
         # strays. We just want to check that there are no fastq files in the list.
         r = dt2.loc[(dt2[FILE_NAME_KEY] == "something-to-be-deleted.fastq")]
-        print(r)
         assert len(r.index) == 1
 
+        d = dt2.loc[(dt2[DETECTION_DATE_KEY] == "2005-05-05")]
+        assert len(d.index) == 1
+
         # Clean up
-        os.remove(clone)
-        os.remove(b)
-        m = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY])
-        os.remove(m)
+        clean_up_path(clone)
+        clean_up_path(b)
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY]))
+
+    def test_finalise10_files_already_in_delete_target_expect_to_not_add_duplicates_to_list(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-finalise10-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-finalise10-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/finalise10",
+            OBSOLETE_OBJECTS_FILE_KEY: "test-finalise10-delete-targets.csv",
+            MANIFEST_KEY: "test-finalise10-manifest.csv",
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        original = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-finalise10-int-manifest-original.csv")
+        clone = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-finalise10-int-manifest-clone.csv")
+        shutil.copy(original, clone)
+
+        a = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-finalise10-delete-targets.csv.original")
+        b = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
+        shutil.copy(a, b)
+
+        # Check that the test data start out clean
+        df = pd.read_csv(clone)
+        assert STATUS_KEY in df.columns
+
+        # Act
+        finalise(sync_state)
+
+        # Assert
+        assert sync_state[CURRENT_STATE_KEY] == SName.DONE_FINALISING
+
+        # Sample60 is the extra
+        path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
+        df = pd.read_csv(path)
+        r = df.loc[(df[FILE_NAME_KEY] == "Sample60_20230614T00453848_a34d8705_R1.fastq")]
+        assert len(r.index) == 1
+        assert len(df.index) == 1
+
+        # Clean up
+        clean_up_path(clone)
+        clean_up_path(path)
+        clean_up_path(b)
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY]))
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
 
 
 def read_content(path_to_fresh):
@@ -666,3 +668,8 @@ def read_json(path: str) -> dict:
             return json.load(f)
     else:
         return {}
+
+
+def clean_up_path(b):
+    if os.path.exists(b):
+        os.remove(b)
