@@ -158,6 +158,35 @@ class TestStateMachine:
         # Clean up
         os.remove(clone)
 
+    def test_analyse6_restarting_analyse_expect_no_hash_check_for_entries_already_matched(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-analyse6-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse6-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse6",
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        original = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse6-int-manifest-original.csv")
+        clone = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse6-int-manifest-clone.csv")
+        shutil.copy(original, clone)
+
+        # This is a restart analysis test. There should already be a status key
+        df = pd.read_csv(clone)
+        assert STATUS_KEY in df.columns
+
+        # Act
+        analyse(sync_state)
+
+        # Assert
+        df2 = pd.read_csv(clone)
+        status = df2.loc[0, [STATUS_KEY]][0]
+        assert status == MATCH
+
+        # Clean up
+        os.remove(clone)
+
     def test_finalise1_int_manifest_has_failures_expect_finalisation_failed_state(self):
         # Arrange
         sync_state = {

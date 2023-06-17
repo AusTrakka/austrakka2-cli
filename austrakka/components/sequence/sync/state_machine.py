@@ -435,12 +435,16 @@ def set_match_status(df, index, row, seq_path):
 
 
 def analyse_status(df, do_hash_check, index, row, seq_path):
+    previously_matched = row[STATUS_KEY] == MATCH
+
     if not os.path.exists(seq_path):
         logger.info(f'Missing: {seq_path}')
         df.at[index, STATUS_KEY] = MISSING
-    elif do_hash_check:
+
+    elif do_hash_check and not previously_matched:
         file = open(seq_path, 'rb')
         seq_hash = hashlib.sha256(file.read()).hexdigest().lower()
+
         if seq_hash == row[SERVER_SHA_256_KEY].lower():
             set_match_status(df, index, row, seq_path)
         else:
@@ -448,5 +452,12 @@ def analyse_status(df, do_hash_check, index, row, seq_path):
             df.at[index, STATUS_KEY] = DRIFTED
 
         file.close()
+
     else:
+        # This happens in two cases:
+        # 1) The user chose to not do hash checks.
+        # 2) The entry was previously matched when the analysis
+        #    got interrupted. Don't want to redo the hash checks
+        #    again because the process could take hours. Just check
+        #    that the file is still there.
         set_match_status(df, index, row, seq_path)
