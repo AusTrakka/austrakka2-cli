@@ -1,29 +1,8 @@
-import json
-import os
-from loguru import logger
-from typing import Dict
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.fs import create_dir
-from .state_machine import build_state_machine, SName, Action
-from .sync_validator import ensure_valid_state
-from .sync_validator import ensure_group_names_match
-from .sync_validator import ensure_output_dir_match
-from .constant import SYNC_STATE_FILE_KEY
-from .constant import MANIFEST_KEY
-from .constant import INTERMEDIATE_MANIFEST_FILE_KEY
-from .constant import GROUP_NAME_KEY
-from .constant import SEQ_TYPE_KEY
-from .constant import OUTPUT_DIR_KEY
-from .constant import HASH_CHECK_KEY
-from .constant import OBSOLETE_OBJECTS_FILE_KEY
-from .constant import CURRENT_STATE_KEY
-from .constant import CURRENT_ACTION_KEY
-
-MANIFEST_FILE_NAME = 'manifest.csv'
-INTERMEDIATE_MANIFEST_FILE = 'intermediate-manifest.csv'
-OBSOLETE_OBJECTS_FILE = 'delete-targets.csv'
-SYNC_STATE_FILE = 'sync-state.json'
-FASTQ = 'fastq'
+from .sync_workflow import *
+from .sync_validator import *
+from .constant import *
 
 
 @logger_wraps()
@@ -68,12 +47,12 @@ def fastq_sync(output_dir: str, group_name: str, hash_check: bool):
     logger.info(f'{SEQ_TYPE_KEY}: {sync_state[SEQ_TYPE_KEY]}')
     logger.info(f'{HASH_CHECK_KEY}: {sync_state[HASH_CHECK_KEY]}')
 
-    sm = build_state_machine()
+    sm = configure_state_machine()
     sm.run(sync_state)
     logger.success("Sync completed")
 
 
-def set_if_not_in(sync_state):
+def set_if_not_present(sync_state):
     if SYNC_STATE_FILE_KEY not in sync_state:
         sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE
 
@@ -81,20 +60,3 @@ def set_if_not_in(sync_state):
 def set_to_start_state(sync_state):
     sync_state[CURRENT_STATE_KEY] = SName.PULLING_MANIFEST
     sync_state[CURRENT_ACTION_KEY] = Action.pull_manifest
-
-
-def save_json(dict_obj: Dict, path: str):
-    with open(path, 'w') as f:
-        json.dump(dict_obj, f)
-
-
-def read_sync_state(path: str) -> Dict:
-    if os.path.exists(path):
-        with open(path) as f:
-            return json.load(f)
-    else:
-        return {}
-
-
-class SyncError(Exception):
-    pass

@@ -11,9 +11,9 @@ CURRENT_STATE_KEY = 'current_state'
 CURRENT_ACTION_KEY = 'current_action'
 
 # File extensions
-FASTQ = '.fastq'
-FASTA = '.fasta'
-GZ = '.gz'
+FASTQ_EXT = '.fastq'
+FASTA_EXT = '.fasta'
+GZ_EXT = '.gz'
 
 # Obsolete file keys
 FILE_NAME_KEY = 'file_name'
@@ -35,10 +35,17 @@ SEQ_ID_KEY = 'Seq_ID'
 FASTQ_R1_KEY = 'FASTQ_R1'
 FASTQ_R2_KEY = 'FASTQ_R2'
 
-# State machine constants
+# Workflow value constants
 DOWNLOADED = 'downloaded'
 DRIFTED = 'drifted'
 FAILED = 'failed'
 MATCH = 'match'
 MISSING = 'missing'
 DONE = 'done'
+
+# Command level value constants
+MANIFEST_FILE_NAME = 'manifest.csv'
+INTERMEDIATE_MANIFEST_FILE = 'intermediate-manifest.csv'
+OBSOLETE_OBJECTS_FILE = 'delete-targets.csv'
+SYNC_STATE_FILE = 'sync-state.json'
+FASTQ = 'fastq'

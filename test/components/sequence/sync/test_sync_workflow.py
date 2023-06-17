@@ -3,13 +3,13 @@ import json
 import pandas as pd
 import shutil
 
-from austrakka.components.sequence.sync.state_machine import analyse
-from austrakka.components.sequence.sync.state_machine import finalise
+from austrakka.components.sequence.sync.sync_workflow import analyse
+from austrakka.components.sequence.sync.sync_workflow import finalise
 from austrakka.components.sequence.sync.state_machine import SName
 from austrakka.components.sequence.sync.constant import *
 
 
-class TestStateMachine:
+class TestSyncWorkflow:
 
     def test_analyse1_new_manifest_entries_expect_entries_marked_as_new(self):
         # Arrange
@@ -577,7 +577,7 @@ class TestStateMachine:
         dt2 = pd.read_csv(b)
         # Because it's a test environment with test artifacts, finalise() might pickup
         # strays. We just want to check that there are no fastq files in the list.
-        r = dt2.loc[(dt2[FILE_PATH_KEY].str.endswith(FASTQ))]
+        r = dt2.loc[(dt2[FILE_PATH_KEY].str.endswith(FASTQ_EXT))]
         assert len(r.index) == 0
 
         # Clean up

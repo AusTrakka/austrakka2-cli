@@ -4,3 +4,7 @@ class SyncError(Exception):
 
 class StateMachineError(Exception):
     pass
+
+
+class WorkflowError(Exception):
+    pass
