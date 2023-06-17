@@ -73,7 +73,8 @@ class StateMachine:
             # as the current and is just waiting for the next loop.
             # check that both are valid.
             self.ensure_valid_next_state(active_sync_state[CURRENT_STATE_KEY])
-            self.ensure_valid_next_action(active_sync_state[CURRENT_ACTION_KEY])
+            self.ensure_valid_next_action(
+                active_sync_state[CURRENT_ACTION_KEY])
 
             path = os.path.join(
                 active_sync_state[OUTPUT_DIR_KEY],
