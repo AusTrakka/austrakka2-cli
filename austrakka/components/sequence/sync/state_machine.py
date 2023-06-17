@@ -56,35 +56,24 @@ class StateMachine:
         self.actions: set[str] = set(handlers.keys())
 
     def run(self, sync_state: dict):
-        if sync_state[CURRENT_STATE_KEY] not in self.states.keys():
-            raise StateMachineError(f'The supplied current state '
-                                    f'"{sync_state[CURRENT_STATE_KEY]}" is '
-                                    f'unknown to this state machine instance.')
-
-        action = sync_state[CURRENT_ACTION_KEY]
-        if action is None or action.isspace():
-            raise StateMachineError(
-                "Cannot set state. The current action is invalid. "
-                "Accept only None or non-whitespace-only values.")
-
-        if action not in self.actions:
-            raise StateMachineError("The action is unknown to this state machine instance.")
+        self.ensure_valid_next_state(sync_state[CURRENT_STATE_KEY])
+        self.ensure_valid_next_action(sync_state[CURRENT_ACTION_KEY])
 
         active_sync_state = sync_state.copy()
         current_state = self.states[active_sync_state[CURRENT_STATE_KEY]]
 
         while not current_state.is_end_state:
-            self.action_handlers[action](active_sync_state)
+            self.action_handlers[
+                active_sync_state[CURRENT_ACTION_KEY]
+            ](active_sync_state)
 
             # Expect action_handler call to have moved the current
-            # state at the end of the call by mutation.
-            next_state = active_sync_state[CURRENT_STATE_KEY]
-            self._ensure_is_known_state(
-                next_state,
-                f'The proposed next state is not a known state: "{next_state}". '
-                f'Aborting. The unknown state has to be added to the list of '
-                f'allowed states.'
-            )
+            # state and action at the end of the call by mutation.
+            # So in effect, the next state/action is already set
+            # as the current and is just waiting for the next loop.
+            # check that both are valid.
+            self.ensure_valid_next_state(active_sync_state[CURRENT_STATE_KEY])
+            self.ensure_valid_next_action(active_sync_state[CURRENT_ACTION_KEY])
 
             path = os.path.join(
                 active_sync_state[OUTPUT_DIR_KEY],
@@ -95,11 +84,20 @@ class StateMachine:
                 f.close()
 
             current_state = self.states[active_sync_state[CURRENT_STATE_KEY]]
-            action = active_sync_state[CURRENT_ACTION_KEY]
+
+    def ensure_valid_next_state(self, next_state):
+        if next_state not in self.states:
+            raise StateMachineError(
+                f'The proposed next state is unknown: "{next_state}". '
+                f'Aborting. The unknown state has to be added to the '
+                f'allowed list at configuration time.')
+
+    def ensure_valid_next_action(self, next_action):
+        if next_action not in self.actions:
+            raise StateMachineError(
+                f'The proposed next action is unknown: "{next_action}". '
+                f'Aborting. The unknown action has to be added to the '
+                f'allowed list at configuration time.')
 
     def get_state(self, name: str) -> State:
         return None if name not in self.states else self.states[name]
-
-    def _ensure_is_known_state(self, name: str, msg: str):
-        if name not in self.states:
-            raise StateMachineError(msg)
