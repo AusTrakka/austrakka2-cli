@@ -9,6 +9,7 @@ HASH_CHECK_KEY = 'hash_check'
 OBSOLETE_OBJECTS_FILE_KEY = 'obsolete_objects_file'
 CURRENT_STATE_KEY = 'current_state'
 CURRENT_ACTION_KEY = 'current_action'
+TRASH_DIR_KEY = 'trash_dir'
 
 # File extensions
 FASTQ_EXT = '.fastq'
@@ -50,3 +51,4 @@ INTERMEDIATE_MANIFEST_FILE = 'intermediate-manifest.csv'
 OBSOLETE_OBJECTS_FILE = 'delete-targets.csv'
 SYNC_STATE_FILE = 'sync-state.json'
 FASTQ = 'fastq'
+TRASH_DIR = '.trash'

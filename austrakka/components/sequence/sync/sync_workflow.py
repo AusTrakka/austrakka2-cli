@@ -1,4 +1,7 @@
 import hashlib
+import os.path
+import shutil
+
 from loguru import logger
 from datetime import datetime
 
@@ -6,6 +9,7 @@ from .errors import WorkflowError
 from .sync_io import *
 from .state_machine import StateMachine, SName, State, Action
 from ..funcs import _get_seq_data
+from austrakka.utils.fs import remove_empty_dirs
 from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
 from austrakka.components.sequence.funcs import _download_seq_file
@@ -73,7 +77,7 @@ def pull_manifest(sync_state: dict):
 
     sync_state[CURRENT_STATE_KEY] = SName.DONE_PULLING_MANIFEST
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_analysing
-    logger.info(f'Finished: {Action.pull_manifest}')
+    logger.success(f'Finished: {Action.pull_manifest}')
 
 
 def set_state_analysing(sync_state: dict):
@@ -178,7 +182,26 @@ def set_state_purging(sync_state: dict):
 
 def purge(sync_state: dict):
     logger.info(f'Started: {Action.purge}')
-    logger.info('Nothing to purge..')
+
+    if not os.path.exists(sync_state[TRASH_DIR_KEY]):
+        os.mkdir(sync_state[TRASH_DIR_KEY])
+
+    move_delete_targets_to_trash(sync_state)
+
+    # Delete any empty directories beneath output_dir.
+    remove_empty_dirs(sync_state[OUTPUT_DIR_KEY], [TRASH_DIR])
+
+    # Remove the delete target file. It'll be recreated on the next run.
+    os.remove(os.path.join(
+        sync_state[OUTPUT_DIR_KEY],
+        sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
+
+    # Delete the intermediate manifest. It's no longer needed.
+    # It'll be recreated on the next run.
+    os.remove(os.path.join(
+        sync_state[OUTPUT_DIR_KEY],
+        sync_state[INTERMEDIATE_MANIFEST_FILE_KEY]))
+
     sync_state[CURRENT_STATE_KEY] = SName.DONE_PURGING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_up_to_date
     logger.success(f'Finished: {Action.purge}')
@@ -237,6 +260,7 @@ def detect_and_record_obsolete_files(int_med, sync_state):
     })
 
     for (root_dir, dir_names, file_names) in os.walk(sync_state[OUTPUT_DIR_KEY]):
+        dir_names[:] = [d for d in dir_names if d not in [TRASH_DIR]]
         for f in file_names:
             if os.path.splitext(f)[-1] in [FASTQ_EXT, FASTA_EXT, GZ_EXT]:
                 files_on_disk.append((
@@ -360,3 +384,31 @@ def analyse_status(df, do_hash_check, index, row, seq_path):
         #    again because the process could take hours. Just check
         #    that the file is still there.
         set_match_status(df, index, row, seq_path)
+
+
+def move_delete_targets_to_trash(sync_state):
+    trash = read_from_csv(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
+    output_dir = sync_state[OUTPUT_DIR_KEY]
+    logger.info(f'Found: {len(trash.index)} files to purge.')
+
+    for index, row in trash.iterrows():
+        if os.path.exists(row[FILE_PATH_KEY]):
+
+            # Get the file's parent directories not including output_dir
+            sub_paths = str(row[FILE_PATH_KEY]).removeprefix(output_dir)
+            sub_paths = sub_paths.removesuffix(row[FILE_NAME_KEY])
+
+            if sub_paths.startswith('/'):
+                sub_paths = sub_paths[1:]
+
+            # Make the destination directory structure
+            dest_dir = os.path.join(
+                sync_state[OUTPUT_DIR_KEY],
+                sync_state[TRASH_DIR_KEY],
+                sub_paths)
+
+            os.makedirs(dest_dir, exist_ok=True)
+
+            dest_file = os.path.join(dest_dir, row[FILE_NAME_KEY])
+            logger.info(f'Moving to trash: {row[FILE_PATH_KEY]} ==> {dest_file}')
+            shutil.move(row[FILE_PATH_KEY], dest_file)

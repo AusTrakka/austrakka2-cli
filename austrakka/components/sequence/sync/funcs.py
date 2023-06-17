@@ -1,3 +1,5 @@
+import os.path
+
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.fs import create_dir
 from .sync_workflow import *
@@ -16,6 +18,11 @@ def fastq_sync(output_dir: str, group_name: str, hash_check: bool):
         ensure_valid_state(sync_state)
         ensure_group_names_match(group_name, sync_state)
         ensure_output_dir_match(output_dir, sync_state)
+        ensure_is_present(
+            sync_state,
+            TRASH_DIR_KEY,
+            "No trash directory found in the current state file. "
+            "The state file might be corrupt. Ask an admin for help")
 
         # We just opened the file, so it has to be set to
         # the same file name for later use. It's probably
@@ -26,6 +33,8 @@ def fastq_sync(output_dir: str, group_name: str, hash_check: bool):
         create_dir(output_dir)
 
     if CURRENT_STATE_KEY not in sync_state:
+        trash = os.path.join(output_dir, TRASH_DIR)
+
         set_to_start_state(sync_state)
         sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE
         sync_state[MANIFEST_KEY] = MANIFEST_FILE_NAME
@@ -35,6 +44,7 @@ def fastq_sync(output_dir: str, group_name: str, hash_check: bool):
         sync_state[SEQ_TYPE_KEY] = FASTQ
         sync_state[HASH_CHECK_KEY] = hash_check
         sync_state[OUTPUT_DIR_KEY] = output_dir
+        sync_state[TRASH_DIR_KEY] = trash
         save_json(sync_state, state_file_path)
 
     if sync_state[CURRENT_STATE_KEY] == SName.UP_TO_DATE:

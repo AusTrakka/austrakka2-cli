@@ -7,6 +7,7 @@ from datetime import datetime
 
 from austrakka.components.sequence.sync.sync_workflow import analyse
 from austrakka.components.sequence.sync.sync_workflow import finalise
+from austrakka.components.sequence.sync.sync_workflow import purge
 from austrakka.components.sequence.sync.state_machine import SName
 from austrakka.components.sequence.sync.constant import *
 
@@ -637,6 +638,225 @@ class TestSyncWorkflow:
         clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY]))
         clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
 
+    def test_purge1_file_marked_as_obsolete_and_exists_expect_file_is_deleted(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-purge1-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-purge1-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/purge1",
+            OBSOLETE_OBJECTS_FILE_KEY: "test-purge1-delete-targets.csv",
+            TRASH_DIR_KEY: ".trash",
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        a = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "empty-intermediate-manifest-original.csv")
+        b = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
+        shutil.copy(a, b)
+
+        c = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "purge1-delete-targets.csv.original")
+        d = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
+        shutil.copy(c, d)
+
+        dest_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], "Sample60")
+        os.makedirs(dest_dir, exist_ok=True)
+        obsolete_fastq = "test/components/sequence/sync/test-assets/a.fastq"
+        shutil.copy(obsolete_fastq, dest_dir)
+
+        # Act
+        purge(sync_state)
+
+        # Assert
+        fastq_final_path = os.path.join(dest_dir, "a.fastq")
+        assert not os.path.exists(fastq_final_path)
+
+        # Clean up
+        clean_up_dir(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[TRASH_DIR_KEY]))
+
+    def test_purge2_given_empty_sub_dirs_in_output_dir_expect_dir_deleted(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-purge2-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-purge2-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/purge2",
+            OBSOLETE_OBJECTS_FILE_KEY: "test-purge2-delete-targets.csv",
+            TRASH_DIR_KEY: ".trash",
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        a = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "empty-intermediate-manifest-original.csv")
+        b = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
+        shutil.copy(a, b)
+
+        c = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "purge2-delete-targets.csv.original")
+        d = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
+        shutil.copy(c, d)
+
+        dest_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], "Sample60")
+        os.makedirs(dest_dir, exist_ok=True)
+        obsolete_fastq = "test/components/sequence/sync/test-assets/a.fastq"
+        shutil.copy(obsolete_fastq, dest_dir)
+
+        # Act
+        purge(sync_state)
+
+        # Assert
+        assert not os.path.exists(dest_dir)
+
+        # Clean up
+        clean_up_dir(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[TRASH_DIR_KEY]))
+
+    def test_purge3_given_trash_dir_is_empty_expect_dir_ignored(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-purge3-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-purge3-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/purge3",
+            OBSOLETE_OBJECTS_FILE_KEY: "test-purge3-delete-targets.csv",
+            TRASH_DIR_KEY: ".trash",
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        a = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "empty-intermediate-manifest-original.csv")
+        b = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
+        shutil.copy(a, b)
+
+        c = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "purge3-delete-targets.csv.original")
+        d = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
+        shutil.copy(c, d)
+
+        trash_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], TRASH_DIR)
+        os.makedirs(trash_dir, exist_ok=True)
+
+        # Act
+        purge(sync_state)
+
+        # Assert
+        assert os.path.exists(trash_dir)
+
+        # Clean up
+        clean_up_dir(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[TRASH_DIR_KEY]))
+
+    def test_purge4_given_file_is_moved_to_trash_expect_same_sub_dir_structures(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-purge4-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-purge4-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/purge4",
+            OBSOLETE_OBJECTS_FILE_KEY: "test-purge4-delete-targets.csv",
+            TRASH_DIR_KEY: ".trash",
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        a = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "empty-intermediate-manifest-original.csv")
+        b = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
+        shutil.copy(a, b)
+
+        c = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "purge4-delete-targets.csv.original")
+        d = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
+        shutil.copy(c, d)
+
+        dest_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], "dir1", "dir2")
+        os.makedirs(dest_dir, exist_ok=True)
+        obsolete_fastq = "test/components/sequence/sync/test-assets/a.fastq"
+        shutil.copy(obsolete_fastq, dest_dir)
+
+        # Act
+        purge(sync_state)
+
+        # Assert
+        assert os.path.exists(os.path.join(sync_state[OUTPUT_DIR_KEY], TRASH_DIR, "dir1"))
+        assert os.path.exists(os.path.join(sync_state[OUTPUT_DIR_KEY], TRASH_DIR, "dir1", "dir2"))
+        assert os.path.exists(os.path.join(sync_state[OUTPUT_DIR_KEY], TRASH_DIR, "dir1", "dir2", "a.fastq"))
+
+        # Clean up
+        clean_up_dir(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[TRASH_DIR_KEY]))
+
+    def test_purge5_when_successful_expect_obsolete_objects_file_deleted(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-purge5-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-purge5-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/purge5",
+            OBSOLETE_OBJECTS_FILE_KEY: "test-purge5-delete-targets.csv",
+            TRASH_DIR_KEY: ".trash",
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        a = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "empty-intermediate-manifest-original.csv")
+        b = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
+        shutil.copy(a, b)
+
+        c = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "purge5-delete-targets.csv.original")
+        delete_target_file = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
+        shutil.copy(c, delete_target_file)
+
+        # Act
+        purge(sync_state)
+
+        # Assert
+        assert not os.path.exists(delete_target_file)
+
+        # Clean up
+        clean_up_dir(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[TRASH_DIR_KEY]))
+
+    def test_purge6_when_successful_expect_int_manifest_deleted(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-purge6-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-purge6-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/purge6",
+            OBSOLETE_OBJECTS_FILE_KEY: "test-purge6-delete-targets.csv",
+            TRASH_DIR_KEY: ".trash",
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        a = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "empty-intermediate-manifest-original.csv")
+        int_man = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
+        shutil.copy(a, int_man)
+
+        c = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "purge6-delete-targets.csv.original")
+        d = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
+        shutil.copy(c, d)
+
+        # Act
+        purge(sync_state)
+
+        # Assert
+        assert not os.path.exists(int_man)
+
+        # Clean up
+        clean_up_dir(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[TRASH_DIR_KEY]))
+
 
 def read_content(path_to_fresh):
     f = open(path_to_fresh, 'r')
@@ -673,3 +893,8 @@ def read_json(path: str) -> dict:
 def clean_up_path(b):
     if os.path.exists(b):
         os.remove(b)
+
+
+def clean_up_dir(b):
+    if os.path.exists(b):
+        shutil.rmtree(b)
