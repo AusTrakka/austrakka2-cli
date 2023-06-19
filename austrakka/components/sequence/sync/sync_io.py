@@ -56,5 +56,5 @@ def get_output_dir(sync_state):
         raise SyncError("Found invalid output directory path while "
                         "building trash directory path. You should not be "
                         f"sending data to a system folder: {output_dir}.")
-    
+
     return output_dir
