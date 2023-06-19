@@ -1,7 +1,13 @@
+import json
+
+from .constant import CURRENT_STATE_KEY
+from .constant import CURRENT_ACTION_KEY
+from .constant import SYNC_STATE_FILE_KEY
 from .errors import StateMachineError
-from .sync_io import *
+from .sync_io import get_path
 
 
+# pylint: disable=too-few-public-methods
 class SName:
     PULLING_MANIFEST = 'PULLING_MANIFEST'
     DONE_PULLING_MANIFEST = 'DONE_PULLING_MANIFEST'
@@ -17,6 +23,7 @@ class SName:
     UP_TO_DATE = 'UP_TO_DATE'
 
 
+# pylint: disable=too-few-public-methods
 class Action:
     set_state_pulling_manifest = 'set-state/pulling-manifest'
     pull_manifest = 'pull-manifest'
@@ -74,9 +81,9 @@ class StateMachine:
                 active_sync_state[CURRENT_ACTION_KEY])
 
             path = get_path(active_sync_state, SYNC_STATE_FILE_KEY)
-            with open(path, 'w') as f:
-                json.dump(active_sync_state, f)
-                f.close()
+            with open(path, 'w', encoding='UTF-8') as file:
+                json.dump(active_sync_state, file)
+                file.close()
 
             current_state = self.states[active_sync_state[CURRENT_STATE_KEY]]
 

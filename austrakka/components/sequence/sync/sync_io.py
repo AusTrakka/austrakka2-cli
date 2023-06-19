@@ -2,7 +2,8 @@ import os
 import json
 import pandas as pd
 
-from .constant import *
+from .constant import INTERMEDIATE_MANIFEST_FILE_KEY
+from .constant import OUTPUT_DIR_KEY
 from .errors import SyncError
 
 invalid_output_dir = [
@@ -11,35 +12,35 @@ invalid_output_dir = [
 
 
 def save_json(dict_obj: dict, path: str):
-    with open(path, 'w') as f:
-        json.dump(dict_obj, f)
+    with open(path, 'w', encoding='UTF-8') as file:
+        json.dump(dict_obj, file)
 
 
 def read_sync_state(path: str) -> dict:
     if os.path.exists(path):
-        with open(path) as f:
-            return json.load(f)
+        with open(path, encoding='UTF-8') as file:
+            return json.load(file)
     else:
         return {}
 
 
 def read_from_csv(sync_state: dict, state_key: str):
     path = get_path(sync_state, state_key)
-    df = pd.read_csv(path)
-    return df
+    data_frame = pd.read_csv(path)
+    return data_frame
 
 
-def save_int_manifest(df, sync_state):
+def save_int_manifest(data_frame, sync_state):
     path = get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
-    with open(path, 'w') as f:
-        df.to_csv(f, index=False)
-        f.close()
+    with open(path, 'w', encoding='UTF-8') as file:
+        data_frame.to_csv(file, index=False)
+        file.close()
 
 
-def save_to_csv(df, path):
-    with open(path, 'w') as f:
-        df.to_csv(f, index=False)
-        f.close()
+def save_to_csv(data_frame, path):
+    with open(path, 'w', encoding='UTF-8') as file:
+        data_frame.to_csv(file, index=False)
+        file.close()
 
 
 def get_path(sync_state: dict, key_to_file: str):
@@ -56,5 +57,5 @@ def get_output_dir(sync_state):
         raise SyncError("Found invalid output directory path while "
                         "building trash directory path. You should not be "
                         f"sending data to a system folder: {output_dir}.")
-    
+
     return output_dir

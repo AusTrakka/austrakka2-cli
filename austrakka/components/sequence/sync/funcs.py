@@ -1,16 +1,41 @@
 import os.path
 
+from loguru import logger
+
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.fs import create_dir
-from .sync_workflow import *
-from .sync_validator import *
-from .constant import *
+from .sync_workflow import SName, Action, configure_state_machine
+from .sync_validator import \
+    ensure_valid_state, \
+    ensure_group_names_match, \
+    ensure_output_dir_match, \
+    ensure_is_present
+
+from .constant import SYNC_STATE_FILE
+from .constant import INTERMEDIATE_MANIFEST_FILE
+from .constant import MANIFEST_FILE_NAME
+from .constant import OBSOLETE_OBJECTS_FILE
+from .constant import TRASH_DIR
+from .constant import TRASH_DIR_KEY
+from .constant import OUTPUT_DIR_KEY
+from .constant import INTERMEDIATE_MANIFEST_FILE_KEY
+from .constant import SYNC_STATE_FILE_KEY
+from .constant import MANIFEST_KEY
+from .constant import OBSOLETE_OBJECTS_FILE_KEY
+from .constant import CURRENT_STATE_KEY
+from .constant import CURRENT_ACTION_KEY
+from .constant import GROUP_NAME_KEY
+from .constant import SEQ_TYPE_KEY
+from .constant import HASH_CHECK_KEY
+from .constant import FASTQ
+
+from .sync_io import read_sync_state, save_json
 
 
 @logger_wraps()
 def fastq_sync(output_dir: str, group_name: str, hash_check: bool):
 
-    sync_state = dict()
+    sync_state = {}
     state_file_path = os.path.join(output_dir, SYNC_STATE_FILE)
 
     if os.path.exists(state_file_path):
@@ -57,8 +82,8 @@ def fastq_sync(output_dir: str, group_name: str, hash_check: bool):
     logger.info(f'{SEQ_TYPE_KEY}: {sync_state[SEQ_TYPE_KEY]}')
     logger.info(f'{HASH_CHECK_KEY}: {sync_state[HASH_CHECK_KEY]}')
 
-    sm = configure_state_machine()
-    sm.run(sync_state)
+    state_machine = configure_state_machine()
+    state_machine.run(sync_state)
     logger.success("Sync completed")
 
 
