@@ -30,10 +30,11 @@ def ensure_valid_state(sync_state):
 
 def ensure_group_names_match(group_name, sync_state):
     if sync_state[GROUP_NAME_KEY] != group_name:
-        raise SyncError(f'{GROUP_NAME_KEY} in saved state: {sync_state[GROUP_NAME_KEY]} '
-                        f'differs from the parameter: {group_name}. You are '
-                        f'probably about to override files belonging to another '
-                        f'group. This is not allowed.')
+        raise SyncError(
+            f'{GROUP_NAME_KEY} in saved state: {sync_state[GROUP_NAME_KEY]} '
+            f'differs from the parameter: {group_name}. You are '
+            f'probably about to override files belonging to another '
+            f'group. This is not allowed.')
 
 
 def ensure_is_present(sync_state, key, msg):
@@ -43,9 +44,10 @@ def ensure_is_present(sync_state, key, msg):
 
 def ensure_output_dir_match(path, sync_state):
     if sync_state[OUTPUT_DIR_KEY] != path:
-        raise SyncError(f'{OUTPUT_DIR_KEY} in saved state: {sync_state[OUTPUT_DIR_KEY]} '
-                        f'differs from the parameter: {path}, but you obviously found '
-                        f'this file via the path. Your state file might be corrupt. '
-                        f'Your options are: 1) correct the parameters in the state file. '
-                        f'2) delete the state file - this will be destructive. 3) '
-                        f'start a fresh sync to a different folder.')
+        raise SyncError(
+            f'{OUTPUT_DIR_KEY} in saved state: {sync_state[OUTPUT_DIR_KEY]} '
+            f'differs from the parameter: {path}, but you obviously found '
+            f'this file via the path. Your state file might be corrupt. '
+            f'Your options are: 1) correct the parameters in the state file. '
+            f'2) delete the state file - this will be destructive. 3) '
+            f'start a fresh sync to a different folder.')

@@ -89,8 +89,8 @@ def analyse(sync_state: dict):
     logger.info(f'Started: {Action.analyse}')
 
     df = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
-    do_hash_check = (HASH_CHECK_KEY not in sync_state) or \
-                    (HASH_CHECK_KEY in sync_state and sync_state[HASH_CHECK_KEY] is True)
+    do_hash_check = (HASH_CHECK_KEY not in sync_state) or (
+        HASH_CHECK_KEY in sync_state and sync_state[HASH_CHECK_KEY] is True)
 
     if STATUS_KEY not in df.columns:
         df[STATUS_KEY] = ""
@@ -242,11 +242,12 @@ def finalise_each_file(int_med, sync_state):
             logger.success(f'Done: {dest}')
 
         else:
-            raise WorkflowError(f'Reach an impossible state in the depths of {Action.finalise}. '
-                                f'Expecting each file state to be only "{MATCH}", '
-                                f'"{DOWNLOADED}", or "{DRIFTED}" but got something else. '
-                                f'The caller, probably {Action.finalise}, should have checked '
-                                f'my inputs before calling me.')
+            raise WorkflowError(
+                f'Reach an impossible state in the depths of {Action.finalise}. '
+                f'Expecting each file state to be only "{MATCH}", '
+                f'"{DOWNLOADED}", or "{DRIFTED}" but got something else. '
+                f'The caller, probably {Action.finalise}, should have checked '
+                f'my inputs before calling me.')
 
     save_int_manifest(int_med, sync_state)
 
@@ -254,7 +255,8 @@ def finalise_each_file(int_med, sync_state):
 def detect_and_record_obsolete_files(int_med, sync_state):
     logger.info('Checking for obsolete files..')
 
-    # Get the list of files on disk. The array is a list of (full_path, file_name_only)
+    # Get the list of files on disk. The array is a list of (full_path,
+    # file_name_only)
     files_on_disk = []
     obsoletes = pd.DataFrame({
         FILE_PATH_KEY: [],
@@ -287,10 +289,15 @@ def detect_and_record_obsolete_files(int_med, sync_state):
     p = get_path(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
     if os.path.exists(p):
         saved = read_from_csv(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
-        keep = saved[~saved[FILE_NAME_KEY].isin(int_med[FILE_NAME_ON_DISK_KEY])]
+        keep = saved[~saved[FILE_NAME_KEY].isin(
+            int_med[FILE_NAME_ON_DISK_KEY])]
         obsoletes = obsoletes.append(keep)
 
-    obsoletes.drop_duplicates(subset=[FILE_PATH_KEY, FILE_NAME_KEY], inplace=True)
+    obsoletes.drop_duplicates(
+        subset=[
+            FILE_PATH_KEY,
+            FILE_NAME_KEY],
+        inplace=True)
     save_to_csv(obsoletes, p)
 
     logger.info(f'Found {len(obsoletes.index)} obsolete files.')
@@ -356,7 +363,9 @@ def get_file_from_server(df, index, row, sync_state):
 
 
 def set_match_status(df, index, row, seq_path):
-    azure_path = os.path.join(row[BLOB_FILE_PATH_KEY], row[ORIGINAL_FILE_NAME_KEY])
+    azure_path = os.path.join(
+        row[BLOB_FILE_PATH_KEY],
+        row[ORIGINAL_FILE_NAME_KEY])
     logger.success(f'Matched: {seq_path} ==> Azure: {azure_path}')
     df.at[index, STATUS_KEY] = MATCH
 
@@ -409,5 +418,6 @@ def move_delete_targets_to_trash(obsolete_objects_file_path, output_dir, trash_d
             os.makedirs(dest_dir, exist_ok=True)
 
             dest_file = os.path.join(dest_dir, row[FILE_NAME_KEY])
-            logger.info(f'Moving to trash: {row[FILE_PATH_KEY]} ==> {dest_file}')
+            logger.info(
+                f'Moving to trash: {row[FILE_PATH_KEY]} ==> {dest_file}')
             shutil.move(row[FILE_PATH_KEY], dest_file)
