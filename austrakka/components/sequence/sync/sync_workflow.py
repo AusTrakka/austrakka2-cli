@@ -69,7 +69,7 @@ def pull_manifest(sync_state: dict):
     )
 
     logger.info(f'Freshly pulled manifest has {len(data)} entries.')
-    path = get_path_from_state(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
+    path = get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     logger.info(f'Saving to intermediate manifest: {path}')
 
     with open(path, 'w') as f:
@@ -95,9 +95,10 @@ def analyse(sync_state: dict):
     if STATUS_KEY not in df.columns:
         df[STATUS_KEY] = ""
 
+    output_dir = get_output_dir(sync_state)
     for index, row in df.iterrows():
         seq_path = os.path.join(
-            sync_state[OUTPUT_DIR_KEY],
+            output_dir,
             str(row[SAMPLE_NAME_KEY]),
             str(row[FILE_NAME_ON_DISK_KEY]))
 
@@ -124,7 +125,7 @@ def download(sync_state: dict):
 
     save_int_manifest(df, sync_state)
 
-    path = get_path_from_state(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
+    path = get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     with open(path, 'w') as f:
         for index, row in df.iterrows():
             if row[STATUS_KEY] != DOWNLOADED and row[STATUS_KEY] != MATCH:
@@ -154,9 +155,7 @@ def finalise(sync_state: dict):
                          (int_med[STATUS_KEY] != DRIFTED)]
 
     if len(errors.index) > 0:
-        im_path = os.path.join(
-            sync_state[OUTPUT_DIR_KEY],
-            sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
+        im_path = get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
 
         logger.error(f'Found entries which are failed or missing after the '
                      f'download stage. Check the intermediate manifest for '
@@ -183,23 +182,26 @@ def set_state_purging(sync_state: dict):
 def purge(sync_state: dict):
     logger.info(f'Started: {Action.purge}')
 
-    if not os.path.exists(sync_state[TRASH_DIR_KEY]):
-        os.mkdir(sync_state[TRASH_DIR_KEY])
+    trash_dir_path = get_path(sync_state, TRASH_DIR_KEY)
+    os.makedirs(trash_dir_path, exist_ok=True)
 
-    move_delete_targets_to_trash(sync_state)
+    output_dir = get_output_dir(sync_state)
+    file_path = os.path.join(
+        output_dir,
+        sync_state[OBSOLETE_OBJECTS_FILE_KEY])
+
+    move_delete_targets_to_trash(file_path, output_dir, trash_dir_path)
 
     # Delete any empty directories beneath output_dir.
-    remove_empty_dirs(sync_state[OUTPUT_DIR_KEY], [TRASH_DIR])
+    remove_empty_dirs(output_dir, [TRASH_DIR])
 
     # Remove the delete target file. It'll be recreated on the next run.
-    os.remove(os.path.join(
-        sync_state[OUTPUT_DIR_KEY],
-        sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
+    os.remove(file_path)
 
     # Delete the intermediate manifest. It's no longer needed.
     # It'll be recreated on the next run.
     os.remove(os.path.join(
-        sync_state[OUTPUT_DIR_KEY],
+        output_dir,
         sync_state[INTERMEDIATE_MANIFEST_FILE_KEY]))
 
     sync_state[CURRENT_STATE_KEY] = SName.DONE_PURGING
@@ -213,16 +215,17 @@ def set_state_up_to_date(sync_state: dict):
 
 
 def finalise_each_file(int_med, sync_state):
+    output_dir = get_output_dir(sync_state)
     for index, row in int_med.iterrows():
 
         dest = os.path.join(
-            sync_state[OUTPUT_DIR_KEY],
+            output_dir,
             int_med.at[index, SAMPLE_NAME_KEY],
             int_med.at[index, FILE_NAME_ON_DISK_KEY])
 
         if int_med.at[index, STATUS_KEY] == DRIFTED:
             src = os.path.join(
-                sync_state[OUTPUT_DIR_KEY],
+                output_dir,
                 int_med.at[index, SAMPLE_NAME_KEY],
                 int_med.at[index, HOT_SWAP_NAME_KEY])
 
@@ -259,7 +262,7 @@ def detect_and_record_obsolete_files(int_med, sync_state):
         DETECTION_DATE_KEY: []
     })
 
-    for (root_dir, dir_names, file_names) in os.walk(sync_state[OUTPUT_DIR_KEY]):
+    for (root_dir, dir_names, file_names) in os.walk(get_output_dir(sync_state)):
         dir_names[:] = [d for d in dir_names if d not in [TRASH_DIR]]
         for f in file_names:
             if os.path.splitext(f)[-1] in [FASTQ_EXT, FASTA_EXT, GZ_EXT]:
@@ -281,7 +284,7 @@ def detect_and_record_obsolete_files(int_med, sync_state):
     # removed from the obsolete list. Additionally, if there is already an
     # entry on the obsolete list and still isn't on the intermediate manifest,
     # then it should be left on the obsolete list.
-    p = get_path_from_state(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
+    p = get_path(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
     if os.path.exists(p):
         saved = read_from_csv(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
         keep = saved[~saved[FILE_NAME_KEY].isin(int_med[FILE_NAME_ON_DISK_KEY])]
@@ -307,19 +310,20 @@ def publish_new_manifest(int_med, sync_state):
                             in sample_table.columns.to_flat_index()]
     sample_table.index.name = SEQ_ID_KEY
     sample_table.reset_index(inplace=True)
-    m_path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY])
+    m_path = get_path(sync_state, MANIFEST_KEY)
 
     save_to_csv(sample_table, m_path)
     logger.success(f'Published final manifest: {m_path}')
 
 
 def get_file_from_server(df, index, row, sync_state):
+    file_path = ""
     try:
         filename = row[FILE_NAME_ON_DISK_KEY]
         sample_name = row[SAMPLE_NAME_KEY]
         read = str(row[READ_KEY])
         seq_type = row[TYPE_KEY]
-        sample_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], sample_name)
+        sample_dir = os.path.join(get_output_dir(sync_state), sample_name)
         file_path = os.path.join(sample_dir, filename)
 
         query_path = _get_seq_download_path(
@@ -337,7 +341,7 @@ def get_file_from_server(df, index, row, sync_state):
             file_path = os.path.join(sample_dir, fresh_name)
 
         retry(lambda fp=file_path, fn=filename, qp=query_path, sd=sample_dir:
-              _download_seq_file(file_path, filename, query_path, sample_dir),
+              _download_seq_file(fp, fn, qp, sd),
               3,
               query_path)
 
@@ -386,9 +390,8 @@ def analyse_status(df, do_hash_check, index, row, seq_path):
         set_match_status(df, index, row, seq_path)
 
 
-def move_delete_targets_to_trash(sync_state):
-    trash = read_from_csv(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
-    output_dir = sync_state[OUTPUT_DIR_KEY]
+def move_delete_targets_to_trash(obsolete_objects_file_path, output_dir, trash_dir_path):
+    trash = pd.read_csv(obsolete_objects_file_path)
     logger.info(f'Found: {len(trash.index)} files to purge.')
 
     for index, row in trash.iterrows():
@@ -402,11 +405,7 @@ def move_delete_targets_to_trash(sync_state):
                 sub_paths = sub_paths[1:]
 
             # Make the destination directory structure
-            dest_dir = os.path.join(
-                sync_state[OUTPUT_DIR_KEY],
-                sync_state[TRASH_DIR_KEY],
-                sub_paths)
-
+            dest_dir = os.path.join(trash_dir_path, sub_paths)
             os.makedirs(dest_dir, exist_ok=True)
 
             dest_file = os.path.join(dest_dir, row[FILE_NAME_KEY])

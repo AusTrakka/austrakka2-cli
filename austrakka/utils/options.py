@@ -397,7 +397,7 @@ def opt_hash_check(**attrs: t.Any):
     return _create_option(
         '--hash-check/--no-hash-check',
         type=bool,
-        default=False,
+        default=True,
         **{**defaults, **attrs}
     )
 

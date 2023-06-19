@@ -1,8 +1,5 @@
-import os
-import json
-
-from .constant import *
 from .errors import StateMachineError
+from .sync_io import *
 
 
 class SName:
@@ -75,10 +72,7 @@ class StateMachine:
             self.ensure_valid_next_state(active_sync_state[CURRENT_STATE_KEY])
             self.ensure_valid_next_action(active_sync_state[CURRENT_ACTION_KEY])
 
-            path = os.path.join(
-                active_sync_state[OUTPUT_DIR_KEY],
-                active_sync_state[SYNC_STATE_FILE_KEY],
-            )
+            path = get_path(active_sync_state, SYNC_STATE_FILE_KEY)
             with open(path, 'w') as f:
                 json.dump(active_sync_state, f)
                 f.close()
