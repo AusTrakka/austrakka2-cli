@@ -308,7 +308,11 @@ def detect_and_record_obsolete_files(int_med, sync_state):
         DETECTION_DATE_KEY: []
     })
 
-    for (root_dir, dir_names, file_names) in os.walk(get_output_dir(sync_state)):
+    for (
+            root_dir,
+            dir_names,
+            file_names) in os.walk(
+            get_output_dir(sync_state)):
         dir_names[:] = [d for d in dir_names if d not in [TRASH_DIR]]
         for name in file_names:
             if os.path.splitext(name)[-1] in [FASTQ_EXT, FASTA_EXT, GZ_EXT]:
@@ -443,7 +447,10 @@ def analyse_status(data_frame, do_hash_check, index, row, seq_path):
         set_match_status(data_frame, index, row, seq_path)
 
 
-def move_delete_targets_to_trash(obsolete_objects_file_path, output_dir, trash_dir_path):
+def move_delete_targets_to_trash(
+        obsolete_objects_file_path,
+        output_dir,
+        trash_dir_path):
     trash = pd.read_csv(obsolete_objects_file_path)
     logger.info(f'Found: {len(trash.index)} files to purge.')
 
