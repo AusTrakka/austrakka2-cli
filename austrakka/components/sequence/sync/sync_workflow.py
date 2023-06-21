@@ -308,15 +308,17 @@ def detect_and_record_obsolete_files(int_med, sync_state):
         FILE_NAME_KEY: [],
         DETECTION_DATE_KEY: []
     })
-    
-    sample_subdirectories = [f.path for f in os.scandir(get_output_dir(sync_state)) if f.is_dir()]
-    files = sum([[f.path for f in os.scandir(subdir) if not f.is_dir()] 
-                     for subdir in sample_subdirectories], [])
-    
+
+    sample_subdirectories = [
+        f.path for f in os.scandir(
+            get_output_dir(sync_state)) if f.is_dir()]
+    files = sum([[f.path for f in os.scandir(subdir) if not f.is_dir()]
+                 for subdir in sample_subdirectories], [])
+
     seq_ext_regexstr = '|'.join(FASTQ_EXTS + FASTA_EXTS)
     seqfile_regex = re.compile(
         rf".+_[0-9TZ]+_[a-z0-9]{{8}}_R\d\.({seq_ext_regexstr})(\.({GZ_EXT}))?")
-    
+
     for path in files:
         if seqfile_regex.match(os.path.basename(path)):
             files_on_disk.append((
@@ -325,7 +327,8 @@ def detect_and_record_obsolete_files(int_med, sync_state):
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
             ))
         else:
-            logger.warning(f"Ignoring unexpected file {path} in sequence directory")
+            logger.warning(
+                f"Ignoring unexpected file {path} in sequence directory")
 
     # If files found on disk are not in the intermediate manifest,
     # it is added to the list of obsolete files.

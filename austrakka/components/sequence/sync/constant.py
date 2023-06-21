@@ -12,8 +12,8 @@ CURRENT_ACTION_KEY = 'current_action'
 TRASH_DIR_KEY = 'trash_dir'
 
 # File extensions
-FASTQ_EXTS = ['fastq','fq']
-FASTA_EXTS = ['fasta','fa']
+FASTQ_EXTS = ['fastq', 'fq']
+FASTA_EXTS = ['fasta', 'fa']
 GZ_EXT = 'gz'
 
 # Obsolete file keys
