@@ -414,23 +414,23 @@ class TestSyncWorkflow:
         # Assert
         assert sync_state[CURRENT_STATE_KEY] == SName.DONE_FINALISING
 
-        # Sample60 is the extra
         path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
         df = pd.read_csv(path)
         r = df.loc[
             (df[FILE_NAME_KEY] == "Sample60_20230614T00453848_a34d8705_R1.fastq") |
             (df[FILE_NAME_KEY] == "Sample70_20230614T00453848_a34d8705_R1.fastq.gz") |
             (df[FILE_NAME_KEY] == "Sample80_20230614T00453848_a34d8705_R1.fasta") |
-            (df[FILE_NAME_KEY] == "Sample90_20230614T00453848_a34d8705_R1.fasta.gz")
-        ]
-        assert len(r.index) == 4
+            (df[FILE_NAME_KEY] == "Sample90_20230614T00453848_a34d8705_R1.fasta.gz") |
+            (df[FILE_NAME_KEY] == "Sample100_20230614T00453848_a34d8705_R1.fq.gz")
+            ]
+        assert len(r.index) == 5
 
         print(df)
         print(time_stamp_str)
 
         # Note! This is a string order comparision and not date time.
         d = df.loc[(df[DETECTION_DATE_KEY] > time_stamp_str)]
-        assert len(d.index) == 4
+        assert len(d.index) == 5
 
         # Clean up
         clean_up_path(clone)
@@ -776,17 +776,21 @@ class TestSyncWorkflow:
 
         dest_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], "Sample60")
         os.makedirs(dest_dir, exist_ok=True)
-        obsolete_fastq = "test/components/sequence/sync/test-assets/a.fastq"
-        shutil.copy(obsolete_fastq, dest_dir)
+        obsolete_fastq1 = "test/components/sequence/sync/test-assets/a.fastq"
+        obsolete_fastq2 = "test/components/sequence/sync/test-assets/b.fq.gz"
+        shutil.copy(obsolete_fastq1, dest_dir)
+        shutil.copy(obsolete_fastq2, dest_dir)
 
         # Act
         purge(sync_state)
 
         # Assert
-        fastq_final_path = os.path.join(dest_dir, "a.fastq")
-        assert not os.path.exists(fastq_final_path)
+        fastq_final_path1 = os.path.join(dest_dir, "a.fastq")
+        fastq_final_path2 = os.path.join(dest_dir, "b.fq.gz")
+        assert not os.path.exists(fastq_final_path1)
+        assert not os.path.exists(fastq_final_path2)
 
-        # Clean up
+    # Clean up
         # It is not always safe to delete tree at the level of output_dir.
         # It's fine for this test.
         clean_up_dir(sync_state[OUTPUT_DIR_KEY])
