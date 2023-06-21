@@ -315,7 +315,7 @@ def detect_and_record_obsolete_files(int_med, sync_state):
     
     seq_ext_regexstr = '|'.join(FASTQ_EXTS + FASTA_EXTS)
     seqfile_regex = re.compile(
-        rf".+_[0-9TZ]+_[a-z0-9]{{8}}_R\d\.({seq_ext_regexstr})(\.({GZ_EXT}))?")
+        rf".+_[0-9TZ]+_[a-z0-9]{{8}}_R\d\.({seq_ext_regexstr})(\.({GZ_EXT}))?$")
     
     for path in files:
         if seqfile_regex.match(os.path.basename(path)):
