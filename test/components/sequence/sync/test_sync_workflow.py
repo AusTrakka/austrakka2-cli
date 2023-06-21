@@ -406,7 +406,7 @@ class TestSyncWorkflow:
         df = pd.read_csv(clone)
         assert STATUS_KEY in df.columns
 
-        time_stamp_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S.%f")
+        time_stamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
         # Act
         finalise(sync_state)
@@ -424,6 +424,9 @@ class TestSyncWorkflow:
             (df[FILE_NAME_KEY] == "Sample90_20230614T00453848_a34d8705_R1.fasta.gz")
         ]
         assert len(r.index) == 4
+
+        print(df)
+        print(time_stamp_str)
 
         # Note! This is a string order comparision and not date time.
         d = df.loc[(df[DETECTION_DATE_KEY] > time_stamp_str)]
@@ -753,6 +756,8 @@ class TestSyncWorkflow:
             TRASH_DIR_KEY: ".trash",
         }
 
+        make_output_dir(sync_state)
+
         # make a clone of the original test manifest because the test subject will
         # be mutating it. The clone must be deleted by the test afterwards.
         a = os.path.join(
@@ -780,7 +785,9 @@ class TestSyncWorkflow:
         assert not os.path.exists(fastq_final_path)
 
         # Clean up
-        clean_up_dir(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[TRASH_DIR_KEY]))
+        # It is not always safe to delete tree at the level of output_dir.
+        # It's fine for this test.
+        clean_up_dir(sync_state[OUTPUT_DIR_KEY])
 
     def test_purge2_given_empty_sub_dirs_in_output_dir_expect_dir_deleted(self):
         # Arrange
@@ -791,6 +798,8 @@ class TestSyncWorkflow:
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge2-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
         }
+
+        make_output_dir(sync_state)
 
         # make a clone of the original test manifest because the test subject will
         # be mutating it. The clone must be deleted by the test afterwards.
@@ -818,7 +827,9 @@ class TestSyncWorkflow:
         assert not os.path.exists(dest_dir)
 
         # Clean up
-        clean_up_dir(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[TRASH_DIR_KEY]))
+        # It is not always safe to delete tree at the level of output_dir.
+        # It's fine for this test.
+        clean_up_dir(sync_state[OUTPUT_DIR_KEY])
 
     def test_purge3_given_trash_dir_is_empty_expect_dir_ignored(self):
         # Arrange
@@ -829,6 +840,8 @@ class TestSyncWorkflow:
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge3-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
         }
+
+        make_output_dir(sync_state)
 
         # make a clone of the original test manifest because the test subject will
         # be mutating it. The clone must be deleted by the test afterwards.
@@ -854,7 +867,9 @@ class TestSyncWorkflow:
         assert os.path.exists(trash_dir)
 
         # Clean up
-        clean_up_dir(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[TRASH_DIR_KEY]))
+        # It is not always safe to delete tree at the level of output_dir.
+        # It's fine for this test.
+        clean_up_dir(sync_state[OUTPUT_DIR_KEY])
 
     def test_purge4_given_file_is_moved_to_trash_expect_same_sub_dir_structures(self):
         # Arrange
@@ -865,6 +880,8 @@ class TestSyncWorkflow:
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge4-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
         }
+
+        make_output_dir(sync_state)
 
         # make a clone of the original test manifest because the test subject will
         # be mutating it. The clone must be deleted by the test afterwards.
@@ -894,7 +911,9 @@ class TestSyncWorkflow:
         assert os.path.exists(os.path.join(sync_state[OUTPUT_DIR_KEY], TRASH_DIR, "dir1", "dir2", "a.fastq"))
 
         # Clean up
-        clean_up_dir(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[TRASH_DIR_KEY]))
+        # It is not always safe to delete tree at the level of output_dir.
+        # It's fine for this test.
+        clean_up_dir(sync_state[OUTPUT_DIR_KEY])
 
     def test_purge5_when_successful_expect_obsolete_objects_file_deleted(self):
         # Arrange
@@ -905,6 +924,8 @@ class TestSyncWorkflow:
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge5-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
         }
+
+        make_output_dir(sync_state)
 
         # make a clone of the original test manifest because the test subject will
         # be mutating it. The clone must be deleted by the test afterwards.
@@ -927,7 +948,9 @@ class TestSyncWorkflow:
         assert not os.path.exists(delete_target_file)
 
         # Clean up
-        clean_up_dir(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[TRASH_DIR_KEY]))
+        # It is not always safe to delete tree at the level of output_dir.
+        # It's fine for this test.
+        clean_up_dir(sync_state[OUTPUT_DIR_KEY])
 
     def test_purge6_when_successful_expect_int_manifest_deleted(self):
         # Arrange
@@ -938,6 +961,8 @@ class TestSyncWorkflow:
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge6-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
         }
+
+        make_output_dir(sync_state)
 
         # make a clone of the original test manifest because the test subject will
         # be mutating it. The clone must be deleted by the test afterwards.
@@ -960,7 +985,14 @@ class TestSyncWorkflow:
         assert not os.path.exists(int_man)
 
         # Clean up
-        clean_up_dir(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[TRASH_DIR_KEY]))
+        # It is not always safe to delete tree at the level of output_dir.
+        # It's fine for this test.
+        clean_up_dir(sync_state[OUTPUT_DIR_KEY])
+
+
+def make_output_dir(sync_state):
+    if not os.path.exists(sync_state[OUTPUT_DIR_KEY]):
+        os.mkdir(sync_state[OUTPUT_DIR_KEY])
 
 
 def read_content(path_to_fresh):

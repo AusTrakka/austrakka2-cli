@@ -319,7 +319,7 @@ def detect_and_record_obsolete_files(int_med, sync_state):
                 files_on_disk.append((
                     os.path.join(root_dir, name),
                     name,
-                    datetime.now().strftime("%Y-%M-%d %H:%M:%S.%f")
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
                 ))
 
     # If files found on disk are not in the intermediate manifest,
