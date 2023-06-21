@@ -58,8 +58,6 @@ def fastq_sync(output_dir: str, group_name: str, hash_check: bool):
         create_dir(output_dir)
 
     if CURRENT_STATE_KEY not in sync_state:
-        trash = os.path.join(output_dir, TRASH_DIR)
-
         set_to_start_state(sync_state)
         sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE
         sync_state[MANIFEST_KEY] = MANIFEST_FILE_NAME
@@ -69,7 +67,7 @@ def fastq_sync(output_dir: str, group_name: str, hash_check: bool):
         sync_state[SEQ_TYPE_KEY] = FASTQ
         sync_state[HASH_CHECK_KEY] = hash_check
         sync_state[OUTPUT_DIR_KEY] = output_dir
-        sync_state[TRASH_DIR_KEY] = trash
+        sync_state[TRASH_DIR_KEY] = TRASH_DIR
         save_json(sync_state, state_file_path)
 
     if sync_state[CURRENT_STATE_KEY] == SName.UP_TO_DATE:
