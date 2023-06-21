@@ -643,9 +643,11 @@ class TestSyncWorkflow:
 
         dt2 = pd.read_csv(b)
         # Because it's a test environment with test artifacts, finalise() might pickup
-        # strays. We just want to check that there are no fastq files in the list.
-        r = dt2.loc[(dt2[FILE_PATH_KEY].str.endswith(FASTQ_EXT))]
-        assert len(r.index) == 0
+        # strays. We just want to check that there are no sequence files in the list.
+        # Note not catching compressed files here.
+        seqcount = sum([dt2[FILE_PATH_KEY].str.endswith("."+seq_ext).sum()  
+                        for seq_ext in (FASTA_EXTS+FASTQ_EXTS)])
+        assert seqcount == 0
 
         # Clean up
         clean_up_path(clone)
