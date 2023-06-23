@@ -28,6 +28,15 @@ def ensure_valid_state(sync_state):
         'sync-state.json before continuing.')
 
 
+def ensure_seq_type_matches(seq_type, sync_state):
+    if sync_state[SEQ_TYPE_KEY] != seq_type:
+        raise SyncError(
+            f'{SEQ_TYPE_KEY} in saved state: "{sync_state[SEQ_TYPE_KEY]}" '
+            f'differs from the parameter: "{seq_type}". You are '
+            f'probably about to override data of a different purpose. '
+            f'This is not allowed. Please use a different output directory.')
+
+
 def ensure_group_names_match(group_name, sync_state):
     if sync_state[GROUP_NAME_KEY] != group_name:
         raise SyncError(

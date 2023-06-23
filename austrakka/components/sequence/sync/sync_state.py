@@ -3,6 +3,7 @@ from .sync_validator import \
     ensure_valid_state, \
     ensure_group_names_match, \
     ensure_output_dir_match, \
+    ensure_seq_type_matches, \
     ensure_is_present
 
 from .constant import SYNC_STATE_FILE
@@ -21,19 +22,18 @@ from .constant import CURRENT_ACTION_KEY
 from .constant import GROUP_NAME_KEY
 from .constant import SEQ_TYPE_KEY
 from .constant import HASH_CHECK_KEY
-from .constant import FASTQ
 
 from .sync_io import read_sync_state
 
 
-def initialise(group_name, hash_check, output_dir) -> dict:
+def initialise(group_name, hash_check, output_dir, seq_type) -> dict:
     sync_state = {}
     set_to_start_state(sync_state)
     sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE
     sync_state[MANIFEST_KEY] = MANIFEST_FILE_NAME
     sync_state[OBSOLETE_OBJECTS_FILE_KEY] = OBSOLETE_OBJECTS_FILE
     sync_state[INTERMEDIATE_MANIFEST_FILE_KEY] = INTERMEDIATE_MANIFEST_FILE
-    sync_state[SEQ_TYPE_KEY] = FASTQ
+    sync_state[SEQ_TYPE_KEY] = seq_type
     sync_state[GROUP_NAME_KEY] = group_name
     sync_state[HASH_CHECK_KEY] = hash_check
     sync_state[OUTPUT_DIR_KEY] = output_dir
@@ -41,11 +41,12 @@ def initialise(group_name, hash_check, output_dir) -> dict:
     return sync_state
 
 
-def load_state(group_name, output_dir, state_file_path):
+def load_state(group_name, output_dir, state_file_path, seq_type):
     sync_state = read_sync_state(state_file_path)
     ensure_valid_state(sync_state)
     ensure_group_names_match(group_name, sync_state)
     ensure_output_dir_match(output_dir, sync_state)
+    ensure_seq_type_matches(seq_type, sync_state)
     ensure_is_present(
         sync_state,
         TRASH_DIR_KEY,

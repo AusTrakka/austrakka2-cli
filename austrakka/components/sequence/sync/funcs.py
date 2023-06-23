@@ -19,13 +19,13 @@ from .sync_io import save_json
 
 
 @logger_wraps()
-def fastq_sync(output_dir: str, group_name: str, hash_check: bool):
+def seq_get(output_dir: str, group_name: str, hash_check: bool, seq_type: str):
 
     sync_state = {}
     state_file_path = os.path.join(output_dir, SYNC_STATE_FILE)
 
     if os.path.exists(state_file_path):
-        sync_state = load_state(group_name, output_dir, state_file_path)
+        sync_state = load_state(group_name, output_dir, state_file_path, seq_type)
 
         # We just opened the file, so it has to be set to
         # the same file name for later use. It's probably
@@ -40,7 +40,7 @@ def fastq_sync(output_dir: str, group_name: str, hash_check: bool):
         create_dir(output_dir)
 
     if CURRENT_STATE_KEY not in sync_state:
-        sync_state = initialise(group_name, hash_check, output_dir)
+        sync_state = initialise(group_name, hash_check, output_dir, seq_type)
         save_json(sync_state, state_file_path)
 
     if sync_state[CURRENT_STATE_KEY] == SName.UP_TO_DATE:

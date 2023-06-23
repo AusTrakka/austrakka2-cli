@@ -3,7 +3,8 @@ import click
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_group
 from austrakka.utils.options import opt_hash_check
-from .funcs import fastq_sync
+from austrakka.utils.options import opt_seq_type
+from .funcs import seq_get
 
 
 @click.group()
@@ -13,14 +14,15 @@ def sync(ctx):
     ctx.context = ctx.parent.context
 
 
-@sync.command('fastq')
+@sync.command('get')
 @opt_output_dir()
 @opt_group(default=None, multiple=False, required=True)
 @opt_hash_check()
-def get_fastq(output_dir: str, group_name: str, hash_check: bool):
+@opt_seq_type(required=True)
+def get_seq(output_dir: str, group_name: str, hash_check: bool, seq_type: str):
     """
-    Download fastq files from server to disk. Patches any local
+    Download sequence files from server to disk. Patches any local
     files that have drifted, and soft-purge local files which are
     no longer shared with the group.
     """
-    fastq_sync(output_dir, group_name, hash_check)
+    seq_get(output_dir, group_name, hash_check, seq_type)
