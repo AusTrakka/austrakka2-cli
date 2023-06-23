@@ -8,7 +8,6 @@ import pandas as pd
 
 from loguru import logger
 
-from austrakka.utils.fs import remove_empty_dirs
 from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
 from austrakka.components.sequence.funcs import _download_seq_file
@@ -57,7 +56,6 @@ from .constant import MISSING
 from .constant import FASTA_EXTS
 from .constant import FASTQ_EXTS
 from .constant import GZ_EXT
-from .constant import TRASH_DIR
 
 from ..funcs import _get_seq_data
 
@@ -461,7 +459,6 @@ def move_delete_targets_to_trash(
     logger.info(f'Found: {len(trash.index)} files to purge.')
 
     for _, row in trash.iterrows():
-        print(row[FILE_PATH_KEY])
         if os.path.exists(row[FILE_PATH_KEY]):
 
             # Get the file's parent directories not including output_dir
