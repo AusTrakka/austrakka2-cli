@@ -1,6 +1,7 @@
 # pylint: disable=broad-exception-caught
 import hashlib
 import os.path
+import re
 from datetime import datetime
 import shutil
 import pandas as pd
@@ -53,8 +54,8 @@ from .constant import DRIFTED
 from .constant import FAILED
 from .constant import DONE
 from .constant import MISSING
-from .constant import FASTA_EXT
-from .constant import FASTQ_EXT
+from .constant import FASTA_EXTS
+from .constant import FASTQ_EXTS
 from .constant import GZ_EXT
 from .constant import TRASH_DIR
 
@@ -308,19 +309,26 @@ def detect_and_record_obsolete_files(int_med, sync_state):
         DETECTION_DATE_KEY: []
     })
 
-    for (
-            root_dir,
-            dir_names,
-            file_names) in os.walk(
-            get_output_dir(sync_state)):
-        dir_names[:] = [d for d in dir_names if d not in [TRASH_DIR]]
-        for name in file_names:
-            if os.path.splitext(name)[-1] in [FASTQ_EXT, FASTA_EXT, GZ_EXT]:
-                files_on_disk.append((
-                    os.path.join(root_dir, name),
-                    name,
-                    datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-                ))
+    sample_subdirectories = [
+        f.path for f in os.scandir(
+            get_output_dir(sync_state)) if f.is_dir()]
+    files = sum([[f.path for f in os.scandir(subdir) if not f.is_dir()]
+                 for subdir in sample_subdirectories], [])
+
+    seq_ext_regexstr = '|'.join(FASTQ_EXTS + FASTA_EXTS)
+    seqfile_regex = re.compile(
+        rf".+_[0-9TZ]+_[a-z0-9]{{8}}_R\d\.({seq_ext_regexstr})(\.({GZ_EXT}))?$")
+
+    for path in files:
+        if seqfile_regex.match(os.path.basename(path)):
+            files_on_disk.append((
+                path,
+                os.path.basename(path),
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+            ))
+        else:
+            logger.warning(
+                f"Ignoring unexpected file {path} in sequence directory")
 
     # If files found on disk are not in the intermediate manifest,
     # it is added to the list of obsolete files.
@@ -389,7 +397,7 @@ def get_file_from_server(data_frame, index, row, sync_state):
 
         if row[STATUS_KEY] == DRIFTED:
             fresh_name = f'{row[FILE_NAME_ON_DISK_KEY]}.fresh'
-            logger.warning(f'Drifted from server: {file_path}. ')
+            logger.warning(f'Drifted from server: {file_path}')
             logger.info(f'Downloading fresh copy to temp file: {fresh_name}')
 
             data_frame.at[index, HOT_SWAP_NAME_KEY] = fresh_name
