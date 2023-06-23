@@ -467,7 +467,8 @@ def move_delete_targets_to_trash(
             # Get the file's parent directories not including output_dir
             dest_dir = mirror_parent_sub_dirs(output_dir, row, trash_dir_path)
             dest_file = os.path.join(dest_dir, row[FILE_NAME_KEY])
-            logger.info(f'Moving to trash: {row[FILE_PATH_KEY]} ==> {dest_file}')
+            logger.info(
+                f'Moving to trash: {row[FILE_PATH_KEY]} ==> {dest_file}')
             shutil.move(row[FILE_PATH_KEY], dest_file)
 
             src_dir = os.path.dirname(row[FILE_PATH_KEY])
