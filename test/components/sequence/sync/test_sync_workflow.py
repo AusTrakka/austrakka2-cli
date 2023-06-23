@@ -795,7 +795,7 @@ class TestSyncWorkflow:
         # It's fine for this test.
         clean_up_dir(sync_state[OUTPUT_DIR_KEY])
 
-    def test_purge2_given_empty_sub_dirs_in_output_dir_expect_dir_deleted(self):
+    def test_purge2_given_empty_sub_dir_after_file_purge_expect_dir_deleted(self):
         # Arrange
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-purge2-sync-state.json",
@@ -836,6 +836,56 @@ class TestSyncWorkflow:
         # It is not always safe to delete tree at the level of output_dir.
         # It's fine for this test.
         clean_up_dir(sync_state[OUTPUT_DIR_KEY])
+
+    def test_purge22_given_empty_sub_dir_unrelated_to_file_purge_expect_dir_not_deleted(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-purge2-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-purge2-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/purge2",
+            OBSOLETE_OBJECTS_FILE_KEY: "test-purge2-delete-targets.csv",
+            TRASH_DIR_KEY: ".trash",
+        }
+
+        make_output_dir(sync_state)
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        a = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "empty-intermediate-manifest-original.csv")
+        b = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
+        shutil.copy(a, b)
+
+        c = os.path.join(
+            "test/components/sequence/sync/test-assets",
+            "purge2-delete-targets.csv.original")
+        d = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
+        shutil.copy(c, d)
+
+        # Place an obsolete file which should be deleted by purge() directory and all
+        dest_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], "Sample60")
+        os.makedirs(dest_dir, exist_ok=True)
+        obsolete_fastq = "test/components/sequence/sync/test-assets/a.fastq"
+        shutil.copy(obsolete_fastq, dest_dir)
+
+        # Place an empty directory. Obviously, a file could not have been purged
+        # from this location. It should be left intact.
+        safe_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], "dont-delete")
+        os.mkdir(safe_dir)
+
+        # Act
+        purge(sync_state)
+
+        # Assert
+        assert not os.path.exists(dest_dir)
+        assert os.path.exists(safe_dir)
+
+        # Clean up
+        # It is not always safe to delete tree at the level of output_dir.
+        # It's fine for this test.
+        clean_up_dir(sync_state[OUTPUT_DIR_KEY])
+        clean_up_dir(safe_dir)
 
     def test_purge3_given_trash_dir_is_empty_expect_dir_ignored(self):
         # Arrange

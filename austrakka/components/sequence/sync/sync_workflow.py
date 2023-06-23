@@ -237,9 +237,6 @@ def purge(sync_state: dict):
 
     move_delete_targets_to_trash(file_path, output_dir, trash_dir_path)
 
-    # Delete any empty directories beneath output_dir.
-    remove_empty_dirs(output_dir, [TRASH_DIR])
-
     # Remove the delete target file. It'll be recreated on the next run.
     os.remove(file_path)
 
@@ -459,24 +456,31 @@ def move_delete_targets_to_trash(
         obsolete_objects_file_path,
         output_dir,
         trash_dir_path):
+
     trash = pd.read_csv(obsolete_objects_file_path)
     logger.info(f'Found: {len(trash.index)} files to purge.')
 
     for _, row in trash.iterrows():
+        print(row[FILE_PATH_KEY])
         if os.path.exists(row[FILE_PATH_KEY]):
 
             # Get the file's parent directories not including output_dir
-            sub_paths = str(row[FILE_PATH_KEY]).removeprefix(output_dir)
-            sub_paths = sub_paths.removesuffix(row[FILE_NAME_KEY])
-
-            if sub_paths.startswith('/'):
-                sub_paths = sub_paths[1:]
-
-            # Make the destination directory structure
-            dest_dir = os.path.join(trash_dir_path, sub_paths)
-            os.makedirs(dest_dir, exist_ok=True)
-
+            dest_dir = mirror_parent_sub_dirs(output_dir, row, trash_dir_path)
             dest_file = os.path.join(dest_dir, row[FILE_NAME_KEY])
-            logger.info(
-                f'Moving to trash: {row[FILE_PATH_KEY]} ==> {dest_file}')
+            logger.info(f'Moving to trash: {row[FILE_PATH_KEY]} ==> {dest_file}')
             shutil.move(row[FILE_PATH_KEY], dest_file)
+
+            src_dir = os.path.dirname(row[FILE_PATH_KEY])
+            if len(os.listdir(src_dir)) == 0:
+                os.rmdir(src_dir)
+
+
+def mirror_parent_sub_dirs(output_dir, row, trash_dir_path):
+    sub_paths = os.path.dirname(row[FILE_PATH_KEY]).removeprefix(output_dir)
+    if sub_paths.startswith('/'):
+        sub_paths = sub_paths[1:]
+
+    # Make the destination directory structure
+    dest_dir = os.path.join(trash_dir_path, sub_paths)
+    os.makedirs(dest_dir, exist_ok=True)
+    return dest_dir
