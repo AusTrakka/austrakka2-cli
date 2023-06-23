@@ -25,7 +25,11 @@ def seq_get(output_dir: str, group_name: str, hash_check: bool, seq_type: str):
     state_file_path = os.path.join(output_dir, SYNC_STATE_FILE)
 
     if os.path.exists(state_file_path):
-        sync_state = load_state(group_name, output_dir, state_file_path, seq_type)
+        sync_state = load_state(
+            group_name,
+            output_dir,
+            state_file_path,
+            seq_type)
 
         # We just opened the file, so it has to be set to
         # the same file name for later use. It's probably
