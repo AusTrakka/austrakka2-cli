@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.30.0] - 2023-06-29
+### Added
+- `seq sync get` to support hash-based download of sequences. Resume on failure, repair drifted files, and soft-purge files no longer shared with the project.
+
 # [0.29.1] - 2023-05-25
 ### Changed
 - `seq get` and `seq list` accepts optional flag to get sequences by IsActive flag rather than most recent.
