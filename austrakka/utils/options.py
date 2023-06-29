@@ -390,6 +390,18 @@ def opt_is_append(**attrs: t.Any):
     )
 
 
+def opt_hash_check(**attrs: t.Any):
+    defaults = {
+        'help': 'Specify whether to do a hash check when searching for files.'
+    }
+    return _create_option(
+        '--hash-check/--no-hash-check',
+        type=bool,
+        default=True,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_country(**attrs: t.Any):
     defaults = {
         'required': True,
