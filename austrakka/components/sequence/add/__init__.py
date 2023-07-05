@@ -3,7 +3,7 @@ from io import BufferedReader
 
 import click
 
-from austrakka.utils.options import opt_csv
+from austrakka.utils.options import opt_csv, opt_upload_mode
 from ..funcs import add_fasta_submission
 from ..funcs import add_fastq_submission
 
@@ -17,8 +17,9 @@ def add(ctx):
 
 @add.command('fastq')
 @opt_csv(help='CSV with mapping from Seq_ID to sequence files', required=True)
+@opt_upload_mode()
 def seq_add_fastq(
-        csv_file: BufferedReader
+        csv_file: BufferedReader, mode: str = ''
 ):
     """
     Upload FASTQ submission to AusTrakka
@@ -28,7 +29,7 @@ def seq_add_fastq(
             filepath1: The local path of the first read to be uploaded\n
             filepath2: The local path of the second read to be uploaded
     """
-    add_fastq_submission(csv_file)
+    add_fastq_submission(csv_file, mode)
 
 
 @add.command('fasta')

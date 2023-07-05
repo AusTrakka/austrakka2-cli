@@ -46,6 +46,7 @@ FASTQ_CSV_PATH_1 = 'filepath1'
 FASTQ_CSV_PATH_2 = 'filepath2'
 FASTQ_CSV_PATH_1_API = 'filename1'
 FASTQ_CSV_PATH_2_API = 'filename2'
+MODE = 'mode'
 
 FASTA_CSV_SAMPLE = 'SampleId'
 FASTA_CSV_FILENAME = 'FileName'
@@ -179,10 +180,10 @@ def _post_fastq(sample_files: list[SeqFile], custom_headers):
         files=files,
         custom_headers=custom_headers,
     )
-
-    hashes = [FileHash(filename=f.filename, sha256=f.sha256)
-              for f in sample_files]
-    _verify_hash(hashes, resp)
+    if len(resp['messages']) == 0:
+        hashes = [FileHash(filename=f.filename, sha256=f.sha256)
+                  for f in sample_files]
+        _verify_hash(hashes, resp)
 
 
 def _verify_hash(hashes: list[FileHash], resp: dict):
@@ -208,7 +209,7 @@ def _post_fasta(sample_files, file_hash: FileHash):
 
 
 @logger_wraps()
-def add_fastq_submission(csv: BufferedReader):
+def add_fastq_submission(csv: BufferedReader, mode: str):
     usecols = [
         FASTQ_CSV_SAMPLE_ID,
         FASTQ_CSV_PATH_1,
@@ -233,6 +234,10 @@ def add_fastq_submission(csv: BufferedReader):
                 custom_headers[FASTQ_CSV_PATH_2_API] \
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
+
+            if mode:
+                custom_headers[MODE] = mode
+
             retry(lambda sf=sample_files, ch=custom_headers: _post_fastq(
                 sf, ch), 1, "/".join([SEQUENCE_PATH, FASTQ_PATH]))
         except FailedResponseException as ex:

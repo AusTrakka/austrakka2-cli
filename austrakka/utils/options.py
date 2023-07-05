@@ -5,6 +5,7 @@ import click
 from austrakka.utils.enums.seq import SEQ_TYPES, SEQ_FILTERS
 from austrakka.utils.enums.seq import READS, BY_LATEST_DATE
 from austrakka.utils.enums.seq import READ_BOTH
+from austrakka.utils.enums.seq import MODES
 from austrakka.utils.misc import AusTrakkaCliOption
 
 
@@ -280,6 +281,20 @@ def opt_read(**attrs: t.Any):
         '--read',
         'read',
         type=click.Choice(READS),
+        **{**defaults, **attrs}
+    )
+
+
+def opt_upload_mode(**attrs: t.Any):
+    defaults = {
+        'help': f'Overwrite or Skip if existing sequences are found. If omitted, you will get an error.',
+        'required': False,
+    }
+    return _create_option(
+        "-um",
+        '--upload-mode',
+        'mode',
+        type=click.Choice(MODES),
         **{**defaults, **attrs}
     )
 
