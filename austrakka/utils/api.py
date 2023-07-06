@@ -137,7 +137,8 @@ def api_post_multipart(
     )
 
 
-@_use_http_client(content_type=CONTENT_TYPE_MULTIPART, log_resp=True, parse_resp=False)
+@_use_http_client(content_type=CONTENT_TYPE_MULTIPART,
+                  log_resp=True, parse_resp=False)
 def api_post_multipart_raw(
         path: str,
         files,
