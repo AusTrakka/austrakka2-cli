@@ -287,7 +287,8 @@ def opt_read(**attrs: t.Any):
 
 def opt_upload_mode(**attrs: t.Any):
     defaults = {
-        'help': f'Overwrite or Skip if existing sequences are found. If omitted, you will get an error.',
+        'help': 'Overwrite or Skip if existing sequences are found. '
+                'If omitted, you will get an error.',
         'required': False,
     }
     return _create_option(
