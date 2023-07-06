@@ -20,7 +20,9 @@ from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.exceptions import IncorrectHashException
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_post_multipart
+from austrakka.utils.api import api_post_multipart_raw
 from austrakka.utils.api import api_get
+from austrakka.utils.api import get_response
 from austrakka.utils.api import api_get_stream
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
@@ -175,15 +177,18 @@ def _get_file(filepath: str) -> SeqFile:
 
 def _post_fastq(sample_files: list[SeqFile], custom_headers):
     files = [file.multipart for file in sample_files]
-    resp = api_post_multipart(
+    resp = api_post_multipart_raw(
         path="/".join([SEQUENCE_PATH, FASTQ_PATH]),
         files=files,
         custom_headers=custom_headers,
     )
-    if len(resp['messages']) == 0:
+
+    data = get_response(resp, True)
+
+    if resp.status_code == 200:
         hashes = [FileHash(filename=f.filename, sha256=f.sha256)
                   for f in sample_files]
-        _verify_hash(hashes, resp)
+        _verify_hash(hashes, data)
 
 
 def _verify_hash(hashes: list[FileHash], resp: dict):
