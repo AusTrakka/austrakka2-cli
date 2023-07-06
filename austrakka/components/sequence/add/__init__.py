@@ -65,4 +65,10 @@ def seq_add_fasta(
     """
     if len(shared_groups)>0 and owner_group is None:
         raise ValueError("--shared-groups requires --owner-group")
+    # For now we just forbid this completely via this mechanism
+    if owner_group is not None and len(shared_groups)==0:
+        raise ValueError("Owner group specified but no shared groups; these sequences will not be "
+                         "available within any projects. This is not usually what you want. "
+                         "If this is deliberate, please manually run "
+                         "`austrakka metadata add -p min`, or contact an AusTrakka admin.")
     add_fasta_submission(fasta_file, owner_group, shared_groups)
