@@ -67,20 +67,24 @@ class FileHash:
     filename: str
     sha256: str
 
+
 @logger_wraps()
 def add_fasta_submission(
         fasta_file: BufferedReader,
         owner_group: str,
         shared_groups: Tuple[str]):
-    
+
     fasta_stream = TextIOWrapper(fasta_file)
     # Handle minimal metadata creation if necessary
     if owner_group is not None:
-        fasta_ids = [record.id.split(' ')[0] for record in SeqIO.parse(fasta_stream, 'fasta')]
+        fasta_ids = [
+            record.id.split(' ')[0] for record in SeqIO.parse(
+                fasta_stream, 'fasta')]
         fasta_stream.seek(0)
         min_csv_name = f"generated_min_metadata_for_{fasta_file.name}.csv"
-        _create_minimal_metadata_records(fasta_ids, min_csv_name, owner_group, shared_groups)
-        
+        _create_minimal_metadata_records(
+            fasta_ids, min_csv_name, owner_group, shared_groups)
+
     name_prefix = _calc_name_prefix(fasta_file)
 
     logger.info("Uploading sequences")
@@ -124,7 +128,8 @@ def _create_minimal_metadata_records(
         generated_csv_name: str,
         owner_group: str,
         shared_groups: Tuple[str]):
-    logger.info(f"Will create minimal metadata records for {len(seq_ids)} IDs found in FASTA file")
+    logger.info(
+        f"Will create minimal metadata records for {len(seq_ids)} IDs found in FASTA file")
     logger.info(f"Seq_IDs to create: {', '.join(seq_ids)}")
     for seq_id in seq_ids:
         # Any checking for validity of Seq_IDs here
@@ -134,7 +139,8 @@ def _create_minimal_metadata_records(
     metadata_csv.name = generated_csv_name
     metadata_csv.write(f"Seq_ID,Owner_group,Shared_groups\n".encode('utf-8'))
     for seq_id in seq_ids:
-        metadata_csv.write(f"{seq_id},{owner_group},{','.join(shared_groups)}\n".encode('utf-8'))
+        metadata_csv.write(
+            f"{seq_id},{owner_group},{','.join(shared_groups)}\n".encode('utf-8'))
     logger.info("Uploading minimal metadata")
     add_metadata(metadata_csv, 'min')
 
@@ -259,7 +265,8 @@ def add_fastq_submission(csv: BufferedReader,
     if owner_group is not None:
         seq_ids = list(csv_dataframe[FASTQ_CSV_SAMPLE_ID])
         min_csv_name = f"generated_min_metadata_for_{csv.name}.csv"
-        _create_minimal_metadata_records(seq_ids, min_csv_name, owner_group, shared_groups)
+        _create_minimal_metadata_records(
+            seq_ids, min_csv_name, owner_group, shared_groups)
 
     logger.info("Uploading sequences")
     for _, row in csv_dataframe.iterrows():
