@@ -470,6 +470,40 @@ def opt_group_role(**attrs: t.Any):
     )
 
 
+
+def opt_owner_group_for_record_creation():
+    defaults = {
+        'required': False,
+        'help': """Create new entries and set the owner for all records in the upload.
+If this option is provided, new Seq_ID entries will be created for all
+provided sequences, with Owner_group set to this value. The effect is
+the same as as if `austrakka metadata add -p min` had been run.
+If any of the provided Seq_IDs already exist and have an Owner_group
+that differs from this value, this will result in an error. """
+    }
+    return _create_option(
+        '-O',
+        '--owner-group',
+        type=click.STRING,
+        **defaults
+    )
+
+def opt_shared_groups_for_record_creation():
+    defaults = {
+        'required': False,
+        'help': """Must be used in conjunction with --owner-group.
+If this option is provided, the new records created will have Shared_groups
+values set to the groups specified."""
+    }
+    return _create_option(
+        '-S',
+        '--shared-groups',
+        multiple=True,
+        type=click.STRING,
+        **defaults
+    )
+        
+
 def _create_option(*param_decls: str, **attrs: t.Any):
     def inner_func(func):
         return click.option(

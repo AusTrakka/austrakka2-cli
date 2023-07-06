@@ -4,7 +4,7 @@ from io import BufferedReader, StringIO, BytesIO, TextIOWrapper
 import codecs
 import hashlib
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 import httpx
 import pandas as pd
@@ -35,6 +35,7 @@ from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
 from austrakka.utils.output import print_table
 from austrakka.utils.retry import retry
+from austrakka.components.metadata.funcs import add_metadata
 
 FASTA_PATH = 'Fasta'
 FASTQ_PATH = 'Fastq'
@@ -66,12 +67,21 @@ class FileHash:
     filename: str
     sha256: str
 
-
 @logger_wraps()
-def add_fasta_submission(fasta_file: BufferedReader):
+def add_fasta_submission(
+        fasta_file: BufferedReader,
+        owner_group: str,
+        shared_groups: Tuple[str]):
+    
+    fasta_stream = TextIOWrapper(fasta_file)
+    # Handle minimal metadata creation if necessary
+    if owner_group is not None:
+        _create_minimal_metadata_records(fasta_stream, owner_group, shared_groups)
+        
     name_prefix = _calc_name_prefix(fasta_file)
 
-    for record in SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'):
+    logger.info("Uploading sequences")
+    for record in SeqIO.parse(fasta_stream, 'fasta'):
         seq_id = record.id
         logger.info(f"Uploading {seq_id}")
 
@@ -104,6 +114,28 @@ def add_fasta_submission(fasta_file: BufferedReader):
         ) as ex:
             logger.error(f'Sample {seq_id} failed upload')
             logger.error(ex)
+
+
+def _create_minimal_metadata_records(
+        fasta_stream: BufferedReader,
+        owner_group: str,
+        shared_groups: Tuple[str]):
+    fasta_ids = [record.id.split(' ')[0] for record in SeqIO.parse(fasta_stream, 'fasta')]
+    fasta_stream.seek(0)
+    logger.info(f"Will create minimal metadata records for {len(fasta_ids)} IDs found in FASTA file")
+    logger.info(f"Seq_IDs to create: {', '.join(fasta_ids)}")
+    for fasta_id in fasta_ids:
+        # Any checking for validity of Seq_IDs here
+        if '/' in fasta_id:
+            raise ValueError("Seq_ID values may not contain '/' characters. "
+                             "Check that FASTA IDs correspond exactly to desired SeqIDs.")
+    metadata_csv = BytesIO()
+    metadata_csv.name = f"generated_min_metadata_for_{fasta_stream.name}.csv"
+    metadata_csv.write(f"Seq_ID,Owner_group,Shared_groups\n".encode('utf-8'))
+    for fasta_id in fasta_ids:
+        metadata_csv.write(f"{fasta_id},{owner_group},{','.join(shared_groups)}\n".encode('utf-8'))
+    logger.info("Uploading minimal metadata")
+    add_metadata(metadata_csv, 'min')
 
 
 def _calc_name_prefix(fasta_file):

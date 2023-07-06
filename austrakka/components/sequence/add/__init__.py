@@ -3,7 +3,8 @@ from io import BufferedReader
 
 import click
 
-from austrakka.utils.options import opt_csv
+from austrakka.utils.options import opt_csv, \
+    opt_owner_group_for_record_creation, opt_shared_groups_for_record_creation
 from ..funcs import add_fasta_submission
 from ..funcs import add_fastq_submission
 
@@ -27,14 +28,26 @@ def seq_add_fastq(
             Seq_ID: The sample name in AusTrakka\n
             filepath1: The local path of the first read to be uploaded\n
             filepath2: The local path of the second read to be uploaded
+    
+    If no record exists for these Seq_IDs you can first add them with the
+    `austrakka metadata add` command, and may use the minimal proforma if
+    you wish to specify no metadata other than sample ownership.
+    
+    Alternatively, if no record exists for these Seq_IDs and all will have
+    the same ownership and sharing settings, you can use the --owner-goup 
+    and --shared-groups options.
     """
     add_fastq_submission(csv_file)
 
 
 @add.command('fasta')
 @click.argument('fasta_file', type=click.File('rb'))
+@opt_owner_group_for_record_creation()
+@opt_shared_groups_for_record_creation()
 def seq_add_fasta(
-        fasta_file: BufferedReader
+        fasta_file: BufferedReader,
+        owner_group,
+        shared_groups
 ):
     """
     Upload FASTA submission to AusTrakka
@@ -45,5 +58,11 @@ def seq_add_fasta(
     If no record exists for these Seq_IDs you can first add them with the
     `austrakka metadata add` command, and may use the minimal proforma if
     you wish to specify no metadata other than sample ownership.
+    
+    Alternatively, if no record exists for these Seq_IDs and all will have
+    the same ownership and sharing settings, you can use the --owner-group 
+    and --shared-groups options.
     """
-    add_fasta_submission(fasta_file)
+    if len(shared_groups)>0 and owner_group is None:
+        raise ValueError("--shared-groups requires --owner-group")
+    add_fasta_submission(fasta_file, owner_group, shared_groups)
