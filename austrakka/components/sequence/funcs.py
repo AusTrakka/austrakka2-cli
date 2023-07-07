@@ -35,6 +35,8 @@ from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
+from austrakka.utils.enums.seq import UPLOAD_MODE_SKIP
+from austrakka.utils.enums.seq import UPLOAD_MODE_OVERWRITE
 from austrakka.utils.output import print_table
 from austrakka.utils.retry import retry
 
@@ -214,7 +216,7 @@ def _post_fasta(sample_files, file_hash: FileHash):
 
 
 @logger_wraps()
-def add_fastq_submission(csv: BufferedReader, mode: str):
+def add_fastq_submission(csv: BufferedReader, skip: bool = False, force: bool = False):
     usecols = [
         FASTQ_CSV_SAMPLE_ID,
         FASTQ_CSV_PATH_1,
@@ -240,8 +242,7 @@ def add_fastq_submission(csv: BufferedReader, mode: str):
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
 
-            if mode:
-                custom_headers[MODE] = mode
+            set_upload_mode(custom_headers, force, skip)
 
             retry(lambda sf=sample_files, ch=custom_headers: _post_fastq(
                 sf, ch), 1, "/".join([SEQUENCE_PATH, FASTQ_PATH]))
@@ -258,6 +259,13 @@ def add_fastq_submission(csv: BufferedReader, mode: str):
             logger.error(ex)
         except Exception as ex:
             raise ex from ex
+
+
+def set_upload_mode(custom_headers, force, skip):
+    if skip:
+        custom_headers[MODE] = UPLOAD_MODE_SKIP
+    if force:
+        custom_headers[MODE] = UPLOAD_MODE_OVERWRITE
 
 
 def take_sample_names(data, filter_prop):
