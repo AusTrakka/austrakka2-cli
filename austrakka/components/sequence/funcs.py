@@ -216,7 +216,10 @@ def _post_fasta(sample_files, file_hash: FileHash):
 
 
 @logger_wraps()
-def add_fastq_submission(csv: BufferedReader, skip: bool = False, force: bool = False):
+def add_fastq_submission(
+        csv: BufferedReader,
+        skip: bool = False,
+        force: bool = False):
     usecols = [
         FASTQ_CSV_SAMPLE_ID,
         FASTQ_CSV_PATH_1,

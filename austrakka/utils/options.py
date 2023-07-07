@@ -16,7 +16,7 @@ class MutuallyExclusiveOption(Option):
         if self.mutually_exclusive:
             ex_str = ', '.join(self.mutually_exclusive)
             kwargs['help'] = help_text + (
-                    ' Mutually exclusive with [' + ex_str + '].'
+                ' Mutually exclusive with [' + ex_str + '].'
             )
         super().__init__(*args, **kwargs)
 
