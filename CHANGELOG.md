@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.30.2] - 2023-07-07
+### Changed
+- Updated installation and usage instructions.
+
 # [0.30.1] - 2023-07-03
 ### Changed
 - Upgraded package dependencies.
