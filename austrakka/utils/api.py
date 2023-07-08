@@ -57,7 +57,7 @@ def _get_url(path: str):
     return f'{get_ctx_value(CxtKey.CTX_URI)}/api/{path}'
 
 
-def _get_response(response: httpx.Response, log_resp: bool = False) -> Dict:
+def get_response(response: httpx.Response, log_resp: bool = False) -> Dict:
     _check_response(response)
     parsed_resp = {} \
         if response.status_code == HTTPStatus.NO_CONTENT else response.json()
@@ -80,12 +80,15 @@ def _get_client(
 def _use_http_client(
         content_type: str = CONTENT_TYPE_JSON,
         log_resp: bool = False,
+        parse_resp: bool = True
 ):
     def decorator(func):
         def inner_func(*args, **kwargs):
             with _get_client(content_type) as client:
                 response = func(*args, **kwargs, client=client)
-                return _get_response(response, log_resp)
+                if parse_resp:
+                    return get_response(response, log_resp)
+                return response
         return inner_func
     return decorator
 
@@ -117,6 +120,26 @@ def api_get_stream(
 
 @_use_http_client(content_type=CONTENT_TYPE_MULTIPART, log_resp=True)
 def api_post_multipart(
+        path: str,
+        files,
+        params: Dict = None,
+        data: Union[Dict, List] = None,
+        custom_headers: Dict = None,
+        client: httpx.Client = None,
+):
+    custom_headers = {} if custom_headers is None else custom_headers
+    return client.post(
+        _get_url(path),
+        data=data,
+        params=params,
+        files=files,
+        headers=dict(client.headers) | custom_headers
+    )
+
+
+@_use_http_client(content_type=CONTENT_TYPE_MULTIPART,
+                  log_resp=True, parse_resp=False)
+def api_post_multipart_raw(
         path: str,
         files,
         params: Dict = None,
