@@ -428,6 +428,18 @@ def opt_hash_check(**attrs: t.Any):
     )
 
 
+def opt_hash_cache(**attrs: t.Any):
+    defaults = {
+        'help': 'Specify whether to use cached hashes after initial check.'
+    }
+    return _create_option(
+        '--hash-cache/--no-hash-cache',
+        type=bool,
+        default=True,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_country(**attrs: t.Any):
     defaults = {
         'required': True,

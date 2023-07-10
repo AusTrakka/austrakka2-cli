@@ -14,12 +14,18 @@ from .constant import CURRENT_STATE_KEY
 from .constant import GROUP_NAME_KEY
 from .constant import SEQ_TYPE_KEY
 from .constant import HASH_CHECK_KEY
+from .constant import USE_HASH_CACHE_KEY
 
 from .sync_io import save_json
 
 
 @logger_wraps()
-def seq_get(output_dir: str, group_name: str, hash_check: bool, seq_type: str):
+def seq_get(
+        output_dir: str,
+        group_name: str,
+        hash_check: bool,
+        use_hash_cache: bool,
+        seq_type: str):
 
     sync_state = {}
     state_file_path = os.path.join(output_dir, SYNC_STATE_FILE)
@@ -38,13 +44,20 @@ def seq_get(output_dir: str, group_name: str, hash_check: bool, seq_type: str):
 
         # Hash check setting is allowed to be overriden between runs.
         sync_state[HASH_CHECK_KEY] = hash_check
+        sync_state[USE_HASH_CACHE_KEY] = use_hash_cache
         save_json(sync_state, state_file_path)
 
     elif not os.path.exists(output_dir):
         create_dir(output_dir)
 
     if CURRENT_STATE_KEY not in sync_state:
-        sync_state = initialise(group_name, hash_check, output_dir, seq_type)
+        sync_state = initialise(
+            group_name,
+            hash_check,
+            use_hash_cache,
+            output_dir,
+            seq_type)
+
         save_json(sync_state, state_file_path)
 
     if sync_state[CURRENT_STATE_KEY] == SName.UP_TO_DATE:

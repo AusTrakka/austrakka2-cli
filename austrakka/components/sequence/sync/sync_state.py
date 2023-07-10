@@ -22,11 +22,12 @@ from .constant import CURRENT_ACTION_KEY
 from .constant import GROUP_NAME_KEY
 from .constant import SEQ_TYPE_KEY
 from .constant import HASH_CHECK_KEY
+from .constant import USE_HASH_CACHE_KEY
 
 from .sync_io import read_sync_state
 
 
-def initialise(group_name, hash_check, output_dir, seq_type) -> dict:
+def initialise(group_name, hash_check, use_hash_cache, output_dir, seq_type) -> dict:
     sync_state = {}
     set_to_start_state(sync_state)
     sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE
@@ -36,6 +37,7 @@ def initialise(group_name, hash_check, output_dir, seq_type) -> dict:
     sync_state[SEQ_TYPE_KEY] = seq_type
     sync_state[GROUP_NAME_KEY] = group_name
     sync_state[HASH_CHECK_KEY] = hash_check
+    sync_state[USE_HASH_CACHE_KEY] = use_hash_cache
     sync_state[OUTPUT_DIR_KEY] = output_dir
     sync_state[TRASH_DIR_KEY] = TRASH_DIR
     return sync_state

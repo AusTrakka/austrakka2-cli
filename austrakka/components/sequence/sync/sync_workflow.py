@@ -1,5 +1,4 @@
 # pylint: disable=broad-exception-caught
-import hashlib
 import os.path
 import re
 from datetime import datetime
@@ -18,8 +17,10 @@ from .errors import WorkflowError
 from .sync_io import \
     get_output_dir, \
     read_from_csv, \
+    read_from_csv_or_empty, \
     get_path, \
     save_int_manifest, \
+    calc_hash, \
     save_to_csv
 
 from .state_machine import StateMachine, SName, State, Action
@@ -27,6 +28,7 @@ from .state_machine import StateMachine, SName, State, Action
 from .constant import CURRENT_STATE_KEY
 from .constant import CURRENT_ACTION_KEY
 from .constant import HASH_CHECK_KEY
+from .constant import USE_HASH_CACHE_KEY
 from .constant import STATUS_KEY
 from .constant import TRASH_DIR_KEY
 from .constant import SAMPLE_NAME_KEY
@@ -46,6 +48,10 @@ from .constant import GROUP_NAME_KEY
 from .constant import BLOB_FILE_PATH_KEY
 from .constant import ORIGINAL_FILE_NAME_KEY
 from .constant import SERVER_SHA_256_KEY
+from .constant import FASTQ_R1_KEY
+from .constant import FASTQ_R2_KEY
+from .constant import HASH_FASTQ_R1_KEY
+from .constant import HASH_FASTQ_R2_KEY
 
 from .constant import MATCH
 from .constant import DOWNLOADED
@@ -59,6 +65,11 @@ from .constant import GZ_EXT
 
 from ..funcs import _get_seq_data
 
+USE_CACHE = "use_cache"
+CHECK_HASH = "check_hash"
+DF = "df"
+IDX = "idx"
+ROW = "row"
 
 def configure_state_machine() -> StateMachine:
 
@@ -132,25 +143,38 @@ def analyse(sync_state: dict):
     logger.info(f'Started: {Action.analyse}')
 
     data_frame = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
-    do_hash_check = (HASH_CHECK_KEY not in sync_state) or (
-        HASH_CHECK_KEY in sync_state and sync_state[HASH_CHECK_KEY] is True)
+    published_manifest = read_from_csv_or_empty(sync_state, MANIFEST_KEY)
+    hash_opt = calc_hash_opt(sync_state)
 
     if STATUS_KEY not in data_frame.columns:
         data_frame[STATUS_KEY] = ""
 
     output_dir = get_output_dir(sync_state)
+
     for index, row in data_frame.iterrows():
         seq_path = os.path.join(
             output_dir,
             str(row[SAMPLE_NAME_KEY]),
             str(row[FILE_NAME_ON_DISK_KEY]))
 
-        analyse_status(data_frame, do_hash_check, index, row, seq_path)
+        ctx = {DF: data_frame, IDX: index, ROW: row}
+        analyse_status(ctx, hash_opt, seq_path, published_manifest)
 
     save_int_manifest(data_frame, sync_state)
     sync_state[CURRENT_STATE_KEY] = SName.DONE_ANALYSING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_downloading
     logger.success(f'Finished: {Action.analyse}')
+
+
+def calc_hash_opt(sync_state):
+    use_hash_cache = sync_state[USE_HASH_CACHE_KEY]
+    do_hash_check = (HASH_CHECK_KEY not in sync_state) or (
+            HASH_CHECK_KEY in sync_state and sync_state[HASH_CHECK_KEY] is True)
+    hash_opt = {
+        CHECK_HASH: do_hash_check,
+        USE_CACHE: use_hash_cache
+    }
+    return hash_opt
 
 
 def set_state_downloading(sync_state: dict):
@@ -359,13 +383,15 @@ def publish_new_manifest(int_med, sync_state):
     sample_table = int_med.pivot(
         index=SAMPLE_NAME_KEY,
         columns=[TYPE_KEY, READ_KEY],
-        values=FILE_NAME_ON_DISK_KEY)
+        values=[FILE_NAME_ON_DISK_KEY, SERVER_SHA_256_KEY])
 
     # Multiindex approach ok, but this format needs changing
     # when dealing with FASTA in the same table
-    sample_table.columns = [f"{seq_type}_R{read}".upper()
-                            for (seq_type, read)
+    sample_table.columns = [("" if file_or_hash.lower() == FILE_NAME_ON_DISK_KEY.lower() else "HASH_")
+                            + f"{seq_type}_R{read}".upper()
+                            for (file_or_hash, seq_type, read)
                             in sample_table.columns.to_flat_index()]
+
     sample_table.index.name = SEQ_ID_KEY
     sample_table.reset_index(inplace=True)
     m_path = get_path(sync_state, MANIFEST_KEY)
@@ -413,32 +439,39 @@ def get_file_from_server(data_frame, index, row, sync_state):
         logger.error(f'Failed to download: {file_path}. Error: {ex}')
 
 
-def set_match_status(data_frame, index, row, seq_path):
+def set_match_status(ctx, seq_path):
     azure_path = os.path.join(
-        row[BLOB_FILE_PATH_KEY],
-        row[ORIGINAL_FILE_NAME_KEY])
+        ctx[ROW][BLOB_FILE_PATH_KEY],
+        ctx[ROW][ORIGINAL_FILE_NAME_KEY])
     logger.success(f'Matched: {seq_path} ==> Azure: {azure_path}')
-    data_frame.at[index, STATUS_KEY] = MATCH
+    ctx[DF].at[ctx[IDX], STATUS_KEY] = MATCH
 
 
-def analyse_status(data_frame, do_hash_check, index, row, seq_path):
-    previously_matched = row[STATUS_KEY] == MATCH
+def analyse_status(ctx, hash_opt, seq_path, published_manifest):
+    previously_matched = ctx[ROW][STATUS_KEY] == MATCH
+    pm = published_manifest
 
     if not os.path.exists(seq_path):
         logger.info(f'Missing: {seq_path}')
-        data_frame.at[index, STATUS_KEY] = MISSING
+        ctx[DF].at[ctx[IDX], STATUS_KEY] = MISSING
 
-    elif (do_hash_check and not previously_matched) or row[STATUS_KEY] == FAILED:
-        with open(seq_path, 'rb') as file:
-            seq_hash = hashlib.sha256(file.read()).hexdigest().lower()
+    elif (hash_opt[CHECK_HASH] and not previously_matched) or ctx[ROW][STATUS_KEY] == FAILED:
 
-            if seq_hash == row[SERVER_SHA_256_KEY].lower():
-                set_match_status(data_frame, index, row, seq_path)
-            else:
-                logger.info(f'Drifted: {seq_path}')
-                data_frame.at[index, STATUS_KEY] = DRIFTED
+        cache_row = search_cache(ctx, pm)
 
-            file.close()
+        # If told to use cache and there is a cache hit.
+        if hash_opt[USE_CACHE] and len(cache_row.index):
+            logger.info("Hash cache hit.")
+            hash_col_key = build_cache_key(ctx)
+            seq_hash = cache_row.at[0, hash_col_key]
+        else:
+            seq_hash = calc_hash(seq_path)
+
+        if seq_hash.casefold() == ctx[ROW][SERVER_SHA_256_KEY].casefold():
+            set_match_status(ctx, seq_path)
+        else:
+            logger.info(f'Drifted: {seq_path}')
+            ctx[DF].at[ctx[IDX], STATUS_KEY] = DRIFTED
 
     else:
         # This happens in two cases:
@@ -447,7 +480,23 @@ def analyse_status(data_frame, do_hash_check, index, row, seq_path):
         #    got interrupted. Don't want to redo the hash checks
         #    again because the process could take hours. Just check
         #    that the file is still there.
-        set_match_status(data_frame, index, row, seq_path)
+        set_match_status(ctx, seq_path)
+
+
+def search_cache(ctx, pm):
+    cache_row = pm.loc[
+        (pm[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
+        ((pm[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]) |
+         (pm[FASTQ_R2_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]))
+        ]
+    return cache_row
+
+
+def build_cache_key(ctx):
+    read = ctx[ROW][READ_KEY]
+    seq_type = ctx[ROW][TYPE_KEY]
+    hash_col_key = f"HASH_" + f"{seq_type}_R{read}".upper()
+    return hash_col_key
 
 
 def move_delete_targets_to_trash(
