@@ -20,6 +20,8 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse1-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse1-int-manifest-clone.csv",
+            MANIFEST_KEY: "manifest.csv",
+            USE_HASH_CACHE_KEY: False,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
         }
 
@@ -49,6 +51,8 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse2-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse2-int-manifest-clone.csv",
+            MANIFEST_KEY: "manifest.csv",
+            USE_HASH_CACHE_KEY: False,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
             HASH_CHECK_KEY: True,
         }
@@ -79,6 +83,8 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse3-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse3-int-manifest-clone.csv",
+            MANIFEST_KEY: "manifest.csv",
+            USE_HASH_CACHE_KEY: False,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
         }
 
@@ -109,6 +115,8 @@ class TestSyncWorkflow:
             SYNC_STATE_FILE_KEY: "test-analyse4-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse4-int-manifest-clone.csv",
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse4",
+            MANIFEST_KEY: "manifest.csv",
+            USE_HASH_CACHE_KEY: False,
             HASH_CHECK_KEY: False
         }
 
@@ -138,6 +146,8 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse5-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse5-int-manifest-clone.csv",
+            MANIFEST_KEY: "manifest.csv",
+            USE_HASH_CACHE_KEY: False,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
         }
 
@@ -167,6 +177,8 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse6-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse6-int-manifest-clone.csv",
+            MANIFEST_KEY: "manifest.csv",
+            USE_HASH_CACHE_KEY: False,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse6",
         }
 
@@ -201,6 +213,8 @@ class TestSyncWorkflow:
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse7-int-manifest-clone.csv",
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse7",
             CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
+            MANIFEST_KEY: "manifest.csv",
+            USE_HASH_CACHE_KEY: False,
             CURRENT_ACTION_KEY: Action.analyse,
         }
 
@@ -235,6 +249,8 @@ class TestSyncWorkflow:
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse8-int-manifest-clone.csv",
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse8",
             CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
+            MANIFEST_KEY: "manifest.csv",
+            USE_HASH_CACHE_KEY: False,
             CURRENT_ACTION_KEY: Action.analyse,
         }
 
@@ -271,6 +287,8 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse9",
             CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
             CURRENT_ACTION_KEY: Action.analyse,
+            MANIFEST_KEY: "manifest.csv",
+            USE_HASH_CACHE_KEY: False,
             HASH_CHECK_KEY: False
         }
 
