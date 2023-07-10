@@ -51,8 +51,8 @@ from .constant import ORIGINAL_FILE_NAME_KEY
 from .constant import SERVER_SHA_256_KEY
 from .constant import FASTQ_R1_KEY
 from .constant import FASTQ_R2_KEY
-from .constant import HASH_FASTQ_R1_KEY
-from .constant import HASH_FASTQ_R2_KEY
+from .constant import FASTQ
+from .constant import FASTA
 
 from .constant import MATCH
 from .constant import DOWNLOADED
@@ -148,6 +148,8 @@ def analyse(sync_state: dict):
     published_manifest = read_from_csv_or_empty(sync_state, MANIFEST_KEY)
     hash_opt = calc_hash_opt(sync_state)
 
+    ensure_valid(published_manifest, hash_opt, sync_state[SEQ_TYPE_KEY])
+
     if STATUS_KEY not in data_frame.columns:
         data_frame[STATUS_KEY] = ""
 
@@ -166,6 +168,32 @@ def analyse(sync_state: dict):
     sync_state[CURRENT_STATE_KEY] = SName.DONE_ANALYSING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_downloading
     logger.success(f'Finished: {Action.analyse}')
+
+
+def ensure_valid(manifest, hash_opt, seq_type):
+    if hash_opt[USE_CACHE] and \
+        seq_type == FASTQ and \
+        manifest is not None and \
+        len(manifest.index) > 0 and \
+        not (
+             SEQ_ID_KEY in manifest.columns and
+             manifest_column_key(FILE_NAME_ON_DISK_KEY, seq_type, "1") in manifest.columns and
+             manifest_column_key(FILE_NAME_ON_DISK_KEY, seq_type, "2") in manifest.columns and
+             manifest_column_key("", seq_type, "1") in manifest.columns and
+             manifest_column_key("", seq_type, "2") in manifest.columns):
+
+        raise WorkflowError("Cannot parse published manifest for fastq. It is missing some columns.")
+
+    if hash_opt[USE_CACHE] and \
+        seq_type == FASTA and \
+        manifest is not None and \
+        len(manifest.index) > 0 and \
+        not (
+             SEQ_ID_KEY in manifest.columns and
+             manifest_column_key(FILE_NAME_ON_DISK_KEY, seq_type, "1") in manifest.columns and
+             manifest_column_key("", seq_type, "1") in manifest.columns):
+
+        raise WorkflowError("Cannot parse published manifest for fasta. It is missing some columns.")
 
 
 def calc_hash_opt(sync_state):
@@ -396,8 +424,7 @@ def publish_new_manifest(int_med, sync_state):
 
     # Multiindex approach ok, but this format needs changing
     # when dealing with FASTA in the same table
-    sample_table.columns = [("" if file_or_hash.lower() == FILE_NAME_ON_DISK_KEY.lower() else "HASH_")
-                            + f"{seq_type}_R{read}".upper()
+    sample_table.columns = [manifest_column_key(file_or_hash, seq_type, read)
                             for (file_or_hash, seq_type, read)
                             in sample_table.columns.to_flat_index()]
 
@@ -407,6 +434,11 @@ def publish_new_manifest(int_med, sync_state):
 
     save_to_csv(sample_table, m_path)
     logger.success(f'Published final manifest: {m_path}')
+
+
+def manifest_column_key(file_or_hash, seq_type, read):
+    return ("" if file_or_hash.casefold() == FILE_NAME_ON_DISK_KEY.casefold() else "HASH_") \
+        + f"{seq_type}_R{read}".upper()
 
 
 def get_file_from_server(data_frame, index, row, sync_state):
