@@ -21,7 +21,8 @@ from .sync_io import \
     get_path, \
     save_int_manifest, \
     calc_hash, \
-    save_to_csv
+    save_to_csv, \
+    save_json
 
 from .state_machine import StateMachine, SName, State, Action
 
@@ -70,6 +71,7 @@ CHECK_HASH = "check_hash"
 DF = "df"
 IDX = "idx"
 ROW = "row"
+
 
 def configure_state_machine() -> StateMachine:
 
@@ -264,13 +266,20 @@ def purge(sync_state: dict):
 
     # Delete the intermediate manifest. It's no longer needed.
     # It'll be recreated on the next run.
-    os.remove(os.path.join(
-        output_dir,
-        sync_state[INTERMEDIATE_MANIFEST_FILE_KEY]))
+    remove_int_manifest(output_dir, sync_state)
 
     sync_state[CURRENT_STATE_KEY] = SName.DONE_PURGING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_up_to_date
     logger.success(f'Finished: {Action.purge}')
+
+
+def remove_int_manifest(output_dir, sync_state):
+    p = os.path.join(
+        output_dir,
+        sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
+
+    if os.path.exists(p):
+        os.remove(p)
 
 
 def set_state_up_to_date(sync_state: dict):
@@ -420,23 +429,35 @@ def get_file_from_server(data_frame, index, row, sync_state):
             fresh_name = f'{row[FILE_NAME_ON_DISK_KEY]}.fresh'
             logger.warning(f'Drifted from server: {file_path}')
             logger.info(f'Downloading fresh copy to temp file: {fresh_name}')
-
             data_frame.at[index, HOT_SWAP_NAME_KEY] = fresh_name
             file_path = os.path.join(sample_dir, fresh_name)
 
         retry(lambda fp=file_path, fn=filename, qp=query_path, sd=sample_dir:
               _download_seq_file(fp, fn, qp, sd),
-              3,
+              1,
               query_path)
+
+        check_download_hash(data_frame, file_path, index, row)
 
         # Drifted entries are left for finalisation to hot swap.
         # Otherwise mark the entry as successfully downloaded.
-        if data_frame.at[index, STATUS_KEY] != DRIFTED:
+        if data_frame.at[index, STATUS_KEY] != DRIFTED and \
+                data_frame.at[index, STATUS_KEY] != FAILED:
+
             data_frame.at[index, STATUS_KEY] = DOWNLOADED
 
     except Exception as ex:
         data_frame.at[index, STATUS_KEY] = FAILED
         logger.error(f'Failed to download: {file_path}. Error: {ex}')
+
+
+def check_download_hash(data_frame, file_path, index, row):
+    local_hash = calc_hash(file_path)
+    server_hash = row[SERVER_SHA_256_KEY]
+
+    if local_hash.casefold() != server_hash.casefold():
+        logger.error(f"Bad hash. Invalidating: {file_path}")
+        data_frame.at[index, STATUS_KEY] = FAILED
 
 
 def set_match_status(ctx, seq_path):
@@ -484,12 +505,13 @@ def analyse_status(ctx, hash_opt, seq_path, published_manifest):
 
 
 def search_cache(ctx, pm):
-    cache_row = pm.loc[
-        (pm[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
-        ((pm[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]) |
-         (pm[FASTQ_R2_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]))
-        ]
-    return cache_row
+    if len(pm.index) > 0:
+        return pm.loc[
+            (pm[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
+            ((pm[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]) |
+             (pm[FASTQ_R2_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]))
+            ]
+    return pm
 
 
 def build_cache_key(ctx):
@@ -531,3 +553,20 @@ def mirror_parent_sub_dirs(output_dir, row, trash_dir_path):
     dest_dir = os.path.join(trash_dir_path, sub_paths)
     os.makedirs(dest_dir, exist_ok=True)
     return dest_dir
+
+
+def select_start_state(state_file_path, sync_state):
+    if sync_state[CURRENT_STATE_KEY] == SName.UP_TO_DATE:
+        set_state_pulling_manifest(sync_state)
+        save_json(sync_state, state_file_path)
+
+    elif sync_state[CURRENT_STATE_KEY] == SName.FINALISATION_FAILED:
+        set_state_analysing(sync_state)
+        save_json(sync_state, state_file_path)
+
+
+def reset(state_file_path, sync_state):
+    output_dir = get_output_dir(sync_state)
+    remove_int_manifest(output_dir, sync_state)
+    set_state_pulling_manifest(sync_state)
+    save_json(sync_state, state_file_path)

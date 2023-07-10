@@ -17,19 +17,18 @@ from .constant import INTERMEDIATE_MANIFEST_FILE_KEY
 from .constant import SYNC_STATE_FILE_KEY
 from .constant import MANIFEST_KEY
 from .constant import OBSOLETE_OBJECTS_FILE_KEY
-from .constant import CURRENT_STATE_KEY
-from .constant import CURRENT_ACTION_KEY
 from .constant import GROUP_NAME_KEY
 from .constant import SEQ_TYPE_KEY
 from .constant import HASH_CHECK_KEY
 from .constant import USE_HASH_CACHE_KEY
 
 from .sync_io import read_sync_state
+from .sync_workflow import set_state_pulling_manifest
 
 
 def initialise(group_name, hash_check, use_hash_cache, output_dir, seq_type) -> dict:
     sync_state = {}
-    set_to_start_state(sync_state)
+    set_state_pulling_manifest(sync_state)
     sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE
     sync_state[MANIFEST_KEY] = MANIFEST_FILE_NAME
     sync_state[OBSOLETE_OBJECTS_FILE_KEY] = OBSOLETE_OBJECTS_FILE
@@ -56,8 +55,3 @@ def load_state(group_name, output_dir, state_file_path, seq_type):
         "The state file might be corrupt. Ask an admin for help")
 
     return sync_state
-
-
-def set_to_start_state(sync_state):
-    sync_state[CURRENT_STATE_KEY] = SName.PULLING_MANIFEST
-    sync_state[CURRENT_ACTION_KEY] = Action.pull_manifest

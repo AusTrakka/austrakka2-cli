@@ -1,4 +1,5 @@
 import click
+from click import option
 
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_group
@@ -21,12 +22,14 @@ def sync(ctx):
 @opt_hash_check()
 @opt_hash_cache()
 @opt_seq_type(required=True)
+@option('--reset', help="Reset state to run from the start.", is_flag=True)
 def get_seq(
         output_dir: str,
         group_name: str,
         hash_check: bool,
         hash_cache: bool,
-        seq_type: str):
+        seq_type: str,
+        reset: bool):
     """
     Download sequence files from server to disk. Patches any local
     files that have drifted, and soft-purge local files which are
@@ -37,4 +40,5 @@ def get_seq(
         group_name,
         hash_check,
         hash_cache,
-        seq_type)
+        seq_type,
+        reset)

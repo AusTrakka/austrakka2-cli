@@ -4,8 +4,8 @@ from loguru import logger
 
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.fs import create_dir
-from .sync_state import initialise, set_to_start_state, load_state
-from .sync_workflow import SName, configure_state_machine
+from .sync_state import initialise, load_state
+from .sync_workflow import select_start_state, configure_state_machine, reset
 
 from .constant import SYNC_STATE_FILE
 from .constant import OUTPUT_DIR_KEY
@@ -25,7 +25,8 @@ def seq_get(
         group_name: str,
         hash_check: bool,
         use_hash_cache: bool,
-        seq_type: str):
+        seq_type: str,
+        reset_opt: bool):
 
     sync_state = {}
     state_file_path = os.path.join(output_dir, SYNC_STATE_FILE)
@@ -60,15 +61,17 @@ def seq_get(
 
         save_json(sync_state, state_file_path)
 
-    if sync_state[CURRENT_STATE_KEY] == SName.UP_TO_DATE:
-        set_to_start_state(sync_state)
-        save_json(sync_state, state_file_path)
+    if reset_opt:
+        reset(state_file_path, sync_state)
+    else:
+        select_start_state(state_file_path, sync_state)
 
     logger.info('Starting sync with args..')
     logger.info(f'{OUTPUT_DIR_KEY}: {sync_state[OUTPUT_DIR_KEY]}')
     logger.info(f'{GROUP_NAME_KEY}: {sync_state[GROUP_NAME_KEY]}')
     logger.info(f'{SEQ_TYPE_KEY}: {sync_state[SEQ_TYPE_KEY]}')
     logger.info(f'{HASH_CHECK_KEY}: {sync_state[HASH_CHECK_KEY]}')
+    logger.info(f'{USE_HASH_CACHE_KEY}: {sync_state[USE_HASH_CACHE_KEY]}')
 
     state_machine = configure_state_machine()
     state_machine.run(sync_state)
