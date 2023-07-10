@@ -25,7 +25,12 @@ from .sync_io import read_sync_state
 from .sync_workflow import set_state_pulling_manifest
 
 
-def initialise(group_name, hash_check, use_hash_cache, output_dir, seq_type) -> dict:
+def initialise(
+        group_name,
+        hash_check,
+        use_hash_cache,
+        output_dir,
+        seq_type) -> dict:
     sync_state = {}
     set_state_pulling_manifest(sync_state)
     sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE
