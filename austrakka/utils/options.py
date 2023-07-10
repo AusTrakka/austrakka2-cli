@@ -1,11 +1,37 @@
 import typing as t
 
 import click
+from click import Option, UsageError
 
 from austrakka.utils.enums.seq import SEQ_TYPES, SEQ_FILTERS
 from austrakka.utils.enums.seq import READS, BY_LATEST_DATE
 from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.misc import AusTrakkaCliOption
+
+
+class MutuallyExclusiveOption(Option):
+    def __init__(self, *args, **kwargs):
+        self.mutually_exclusive = set(kwargs.pop('mutually_exclusive', []))
+        help_text = kwargs.get('help', '')
+        if self.mutually_exclusive:
+            ex_str = ', '.join(self.mutually_exclusive)
+            kwargs['help'] = help_text + (
+                ' Mutually exclusive with [' + ex_str + '].'
+            )
+        super().__init__(*args, **kwargs)
+
+    def handle_parse_result(self, ctx, opts, args):
+        if self.mutually_exclusive.intersection(opts) and self.name in opts:
+            raise UsageError(
+                f"`{self.name}` is mutually exclusive "
+                f"with `{', '.join(self.mutually_exclusive)}`."
+            )
+
+        return super().handle_parse_result(
+            ctx,
+            opts,
+            args
+        )
 
 
 def opt_abbrev(**attrs: t.Any):
