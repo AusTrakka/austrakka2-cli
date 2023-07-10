@@ -4,7 +4,9 @@ Command line interface for AusTrakka V2.
 
 ## Installation
 
-Install with 
+The AusTrakka CLI requires Python to run. Installation into a conda environment (see below) is the recommended method.
+
+To install without conda, simply install with 
 ```
 python -m pip install austrakka
 ```
@@ -13,14 +15,14 @@ You will need to set the environment variable `AT_URI` to the value provided by 
 You may wish to add this to your `.bashrc` or `.zshrc` file.
 
 To use the CLI, you must log in by setting the `AT_TOKEN` environment variable using the 
-`austrakka user auth` command (see User Authorisation, below). You may wish to configure 
+`austrakka auth user` command (see User Authentication, below). You may wish to configure 
 a login command for convenience:
 ```
 alias at-login="export AT_TOKEN=\$(austrakka auth user)"
 ```
 You may wish to add this to your `.bashrc` or `.zshrc` file.
 
-### Install into a conda environment (optional)
+### Install into a conda environment (optional but recommended)
 
 If you wish to create a conda environment named `austrakka` with the necessary environment 
 variables set and the `at-login` alias, run:
@@ -32,13 +34,14 @@ conda env config vars set AT_URI="[value provided by AusTrakka team]"
 mkdir -p ${CONDA_PREFIX}/etc/conda/activate.d
 echo "alias at-login=\"export AT_TOKEN=\\\$(austrakka auth user)\"" > ${CONDA_PREFIX}/etc/conda/activate.d/austrakka-alias.sh
 ```
+Note that the last two lines are valid only for Linux/Mac and will not work on Windows.
 
 You can then use
 ```
 conda activate austrakka
 at-login
 ```
-in order to use the CLI.
+in order to use the CLI. See _User Authentication_ below for alternative login methods.
 
 ### Updating the CLI
 
@@ -53,7 +56,7 @@ If you have installed the CLI into a conda environment, you should first activat
 Before you can use the CLI, you must log in as described below, to allow the CLI to use your AusTrakka credentials. 
 Your authorisation will expire after a period and you will need to log in again.
 
-### User Authorisation
+### User Authentication
 
 Most users will want to use the CLI this way.
 
@@ -67,13 +70,23 @@ If you have configured a login command as described above, you can instead run
 at-login
 ```
 
-Either way, you should be directed to log in via a browser and enter a code to authorise the CLI.
+In Windows, you can set the AT_TOKEN environment variable by first running
+```
+austrakka auth user
+```
+to obtain a token string, and then running 
+```
+set AT_TOKEN=<output of previous command>
+```
+to set the environment variable.
 
-### Process Authorisation
+For any of these methods, you should be directed to log in via a browser and enter a code to authorise the CLI.
 
-This authorisation mode is intended for long-term automated processes. Most users will not need it. 
+### Process Authentication
 
-To authorise a process, you'll need to set the following environment variables:
+This authentication mode is intended for long-term automated processes. Most users will not need it. 
+
+To authenticate a process, you'll need to set the following environment variables:
 ```bash
 AT_AUTH_PROCESS_ID
 AT_AUTH_PROCESS_SECRET

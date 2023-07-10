@@ -1,11 +1,37 @@
 import typing as t
 
 import click
+from click import Option, UsageError
 
 from austrakka.utils.enums.seq import SEQ_TYPES, SEQ_FILTERS
 from austrakka.utils.enums.seq import READS, BY_LATEST_DATE
 from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.misc import AusTrakkaCliOption
+
+
+class MutuallyExclusiveOption(Option):
+    def __init__(self, *args, **kwargs):
+        self.mutually_exclusive = set(kwargs.pop('mutually_exclusive', []))
+        help_text = kwargs.get('help', '')
+        if self.mutually_exclusive:
+            ex_str = ', '.join(self.mutually_exclusive)
+            kwargs['help'] = help_text + (
+                ' Mutually exclusive with [' + ex_str + '].'
+            )
+        super().__init__(*args, **kwargs)
+
+    def handle_parse_result(self, ctx, opts, args):
+        if self.mutually_exclusive.intersection(opts) and self.name in opts:
+            raise UsageError(
+                f"`{self.name}` is mutually exclusive "
+                f"with `{', '.join(self.mutually_exclusive)}`."
+            )
+
+        return super().handle_parse_result(
+            ctx,
+            opts,
+            args
+        )
 
 
 def opt_abbrev(**attrs: t.Any):
@@ -27,6 +53,20 @@ def opt_name(var_name='name', **attrs: t.Any):
     return _create_option(
         "-n",
         "--name",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_dashboard_name(var_name='dashboard_name', **attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Dashboard name to assign to project',
+    }
+    return _create_option(
+        "-dn",
+        "--dashboard-name",
         var_name,
         type=click.STRING,
         **{**defaults, **attrs}
@@ -70,6 +110,35 @@ def opt_field_name(**attrs: t.Any):
     return _create_option(
         "-fn",
         "--field-names",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_widget(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'multiple': True,
+        'help': 'Comma separated definition of a widgets to assign to a dashboard.'
+                'The format is [name,order,width]. eg. widget1,3,4',
+    }
+    return _create_option(
+        "-wd",
+        "--widget-details",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_new_name(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'multiple': False,
+        'help': 'New name to assign to an entity.',
+    }
+    return _create_option(
+        "-nn",
+        "--new-name",
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -343,6 +412,18 @@ def opt_is_append(**attrs: t.Any):
         '--is-append/--not-append',
         type=bool,
         default=False,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_hash_check(**attrs: t.Any):
+    defaults = {
+        'help': 'Specify whether to do a hash check when searching for files.'
+    }
+    return _create_option(
+        '--hash-check/--no-hash-check',
+        type=bool,
+        default=True,
         **{**defaults, **attrs}
     )
 

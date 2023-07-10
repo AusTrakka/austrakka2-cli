@@ -13,6 +13,7 @@ from .funcs import take_sample_names
 from .funcs import get_sequences
 from .funcs import list_sequences
 from .add import add
+from .sync import sync
 
 
 @click.group()
@@ -23,6 +24,7 @@ def seq(ctx):
 
 
 seq.add_command(add)
+seq.add_command(sync)
 
 
 @seq.command('get')

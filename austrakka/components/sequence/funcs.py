@@ -20,7 +20,9 @@ from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.exceptions import IncorrectHashException
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_post_multipart
+from austrakka.utils.api import api_post_multipart_raw
 from austrakka.utils.api import api_get
+from austrakka.utils.api import get_response
 from austrakka.utils.api import api_get_stream
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
@@ -33,6 +35,8 @@ from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
+from austrakka.utils.enums.seq import UPLOAD_MODE_SKIP
+from austrakka.utils.enums.seq import UPLOAD_MODE_OVERWRITE
 from austrakka.utils.output import print_table
 from austrakka.utils.retry import retry
 
@@ -46,6 +50,7 @@ FASTQ_CSV_PATH_1 = 'filepath1'
 FASTQ_CSV_PATH_2 = 'filepath2'
 FASTQ_CSV_PATH_1_API = 'filename1'
 FASTQ_CSV_PATH_2_API = 'filename2'
+MODE = 'mode'
 
 FASTA_CSV_SAMPLE = 'SampleId'
 FASTA_CSV_FILENAME = 'FileName'
@@ -174,15 +179,18 @@ def _get_file(filepath: str) -> SeqFile:
 
 def _post_fastq(sample_files: list[SeqFile], custom_headers):
     files = [file.multipart for file in sample_files]
-    resp = api_post_multipart(
+    resp = api_post_multipart_raw(
         path="/".join([SEQUENCE_PATH, FASTQ_PATH]),
         files=files,
         custom_headers=custom_headers,
     )
 
-    hashes = [FileHash(filename=f.filename, sha256=f.sha256)
-              for f in sample_files]
-    _verify_hash(hashes, resp)
+    data = get_response(resp, True)
+
+    if resp.status_code == 200:
+        hashes = [FileHash(filename=f.filename, sha256=f.sha256)
+                  for f in sample_files]
+        _verify_hash(hashes, data)
 
 
 def _verify_hash(hashes: list[FileHash], resp: dict):
@@ -208,7 +216,10 @@ def _post_fasta(sample_files, file_hash: FileHash):
 
 
 @logger_wraps()
-def add_fastq_submission(csv: BufferedReader):
+def add_fastq_submission(
+        csv: BufferedReader,
+        skip: bool = False,
+        force: bool = False):
     usecols = [
         FASTQ_CSV_SAMPLE_ID,
         FASTQ_CSV_PATH_1,
@@ -233,6 +244,9 @@ def add_fastq_submission(csv: BufferedReader):
                 custom_headers[FASTQ_CSV_PATH_2_API] \
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
+
+            set_upload_mode(custom_headers, force, skip)
+
             retry(lambda sf=sample_files, ch=custom_headers: _post_fastq(
                 sf, ch), 1, "/".join([SEQUENCE_PATH, FASTQ_PATH]))
         except FailedResponseException as ex:
@@ -248,6 +262,13 @@ def add_fastq_submission(csv: BufferedReader):
             logger.error(ex)
         except Exception as ex:
             raise ex from ex
+
+
+def set_upload_mode(custom_headers, force, skip):
+    if skip:
+        custom_headers[MODE] = UPLOAD_MODE_SKIP
+    if force:
+        custom_headers[MODE] = UPLOAD_MODE_OVERWRITE
 
 
 def take_sample_names(data, filter_prop):
