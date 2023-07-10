@@ -1,7 +1,8 @@
+# pylint: disable=broad-exception-caught
 import os
 import json
-import pandas as pd
 import hashlib
+import pandas as pd
 
 from .constant import INTERMEDIATE_MANIFEST_FILE_KEY
 from .constant import OUTPUT_DIR_KEY
@@ -36,7 +37,7 @@ def read_from_csv_or_empty(sync_state: dict, state_key: str):
     try:
         data_frame = pd.read_csv(path)
         return data_frame
-    except Exception as ex:
+    except Exception:
         return pd.DataFrame()
 
 
@@ -73,6 +74,6 @@ def get_output_dir(sync_state):
 
 def calc_hash(path):
     with open(path, 'rb') as file:
-        h = hashlib.sha256(file.read()).hexdigest().lower()
+        file_hash = hashlib.sha256(file.read()).hexdigest().lower()
         file.close()
-    return h
+    return file_hash

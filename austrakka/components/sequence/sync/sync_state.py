@@ -1,4 +1,3 @@
-from .sync_workflow import SName, Action
 from .sync_validator import \
     ensure_valid_state, \
     ensure_group_names_match, \

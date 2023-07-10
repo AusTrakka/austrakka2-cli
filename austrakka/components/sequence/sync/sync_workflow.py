@@ -182,7 +182,8 @@ def ensure_valid(manifest, hash_opt, seq_type):
              manifest_column_key("", seq_type, "1") in manifest.columns and
              manifest_column_key("", seq_type, "2") in manifest.columns):
 
-        raise WorkflowError("Cannot parse published manifest for fastq. It is missing some columns.")
+        raise WorkflowError("Cannot parse published manifest "
+                            "for fastq. It is missing some columns.")
 
     if hash_opt[USE_CACHE] and \
         seq_type == FASTA and \
@@ -193,7 +194,8 @@ def ensure_valid(manifest, hash_opt, seq_type):
              manifest_column_key(FILE_NAME_ON_DISK_KEY, seq_type, "1") in manifest.columns and
              manifest_column_key("", seq_type, "1") in manifest.columns):
 
-        raise WorkflowError("Cannot parse published manifest for fasta. It is missing some columns.")
+        raise WorkflowError("Cannot parse published manifest "
+                            "for fasta. It is missing some columns.")
 
 
 def calc_hash_opt(sync_state):
@@ -302,12 +304,12 @@ def purge(sync_state: dict):
 
 
 def remove_int_manifest(output_dir, sync_state):
-    p = os.path.join(
+    int_m_path = os.path.join(
         output_dir,
         sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
 
-    if os.path.exists(p):
-        os.remove(p)
+    if os.path.exists(int_m_path):
+        os.remove(int_m_path)
 
 
 def set_state_up_to_date(sync_state: dict):
@@ -502,7 +504,7 @@ def set_match_status(ctx, seq_path):
 
 def analyse_status(ctx, hash_opt, seq_path, published_manifest):
     previously_matched = ctx[ROW][STATUS_KEY] == MATCH
-    pm = published_manifest
+    p_manifest = published_manifest
 
     if not os.path.exists(seq_path):
         logger.info(f'Missing: {seq_path}')
@@ -510,7 +512,7 @@ def analyse_status(ctx, hash_opt, seq_path, published_manifest):
 
     elif (hash_opt[CHECK_HASH] and not previously_matched) or ctx[ROW][STATUS_KEY] == FAILED:
 
-        cache_row = search_cache(ctx, pm)
+        cache_row = search_cache(ctx, p_manifest)
 
         # If told to use cache and there is a cache hit.
         if hash_opt[USE_CACHE] and len(cache_row.index):
@@ -536,20 +538,20 @@ def analyse_status(ctx, hash_opt, seq_path, published_manifest):
         set_match_status(ctx, seq_path)
 
 
-def search_cache(ctx, pm):
-    if len(pm.index) > 0:
-        return pm.loc[
-            (pm[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
-            ((pm[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]) |
-             (pm[FASTQ_R2_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]))
+def search_cache(ctx, manifest):
+    if len(manifest.index) > 0:
+        return manifest.loc[
+            (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
+            ((manifest[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]) |
+             (manifest[FASTQ_R2_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]))
             ]
-    return pm
+    return manifest
 
 
 def build_cache_key(ctx):
     read = ctx[ROW][READ_KEY]
     seq_type = ctx[ROW][TYPE_KEY]
-    hash_col_key = f"HASH_" + f"{seq_type}_R{read}".upper()
+    hash_col_key = "HASH_" + f"{seq_type}_R{read}".upper()
     return hash_col_key
 
 
