@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.31.0] - 2023-07-10
+### Changed
+- Changed `seq add` to accept --skip and --force for dealing with samples which already have sequences.
+
 # [0.30.2] - 2023-07-07
 ### Changed
 - Updated installation and usage instructions.
