@@ -514,12 +514,12 @@ def analyse_status(ctx, hash_opt, seq_path, published_manifest):
     elif (hash_opt[CHECK_HASH] and not previously_matched) or ctx[ROW][STATUS_KEY] == FAILED:
 
         cache_row = search_cache(ctx, p_manifest)
+        hash_col_key = build_cache_key(ctx)
 
         # If told to use cache and there is a cache hit.
         if hash_opt[USE_CACHE] and len(cache_row.index):
             logger.info("Hash cache hit.")
-            hash_col_key = build_cache_key(ctx)
-            seq_hash = cache_row.at[0, hash_col_key]
+            seq_hash = cache_row.iloc[0, cache_row.columns.get_loc(hash_col_key)]
         else:
             seq_hash = calc_hash(seq_path)
 
@@ -541,11 +541,17 @@ def analyse_status(ctx, hash_opt, seq_path, published_manifest):
 
 def search_cache(ctx, manifest):
     if len(manifest.index) > 0 and ctx[ROW][TYPE_KEY] == FASTQ:
+        if len(manifest[FASTQ_R2_KEY].index) > 0:
+            # Pair of fastq
+            return manifest.loc[
+                (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
+                ((manifest[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]) |
+                 (manifest[FASTQ_R2_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]))]
+
+        # Single fastq
         return manifest.loc[
             (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
-            ((manifest[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]) |
-             (manifest[FASTQ_R2_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]))
-            ]
+            (manifest[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY])]
 
     if len(manifest.index) > 0 and ctx[ROW][TYPE_KEY] == FASTA:
         return manifest.loc[
