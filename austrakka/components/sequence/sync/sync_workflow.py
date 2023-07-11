@@ -202,7 +202,7 @@ def ensure_valid(manifest, hash_opt, seq_type):
 def calc_hash_opt(sync_state):
     use_hash_cache = sync_state[USE_HASH_CACHE_KEY]
     do_hash_check = (HASH_CHECK_KEY not in sync_state) or (
-            HASH_CHECK_KEY in sync_state and sync_state[HASH_CHECK_KEY] is True)
+        HASH_CHECK_KEY in sync_state and sync_state[HASH_CHECK_KEY] is True)
     hash_opt = {
         CHECK_HASH: do_hash_check,
         USE_CACHE: use_hash_cache
@@ -440,8 +440,8 @@ def publish_new_manifest(int_med, sync_state):
 
 
 def manifest_column_key(file_or_hash, seq_type, read):
-    return ("" if file_or_hash.casefold() == FILE_NAME_ON_DISK_KEY.casefold() else "HASH_") \
-        + f"{seq_type}_R{read}".upper()
+    return ("" if file_or_hash.casefold() == FILE_NAME_ON_DISK_KEY.casefold()
+            else "HASH_") + f"{seq_type}_R{read}".upper()
 
 
 def get_file_from_server(data_frame, index, row, sync_state):
