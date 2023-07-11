@@ -51,6 +51,7 @@ from .constant import ORIGINAL_FILE_NAME_KEY
 from .constant import SERVER_SHA_256_KEY
 from .constant import FASTQ_R1_KEY
 from .constant import FASTQ_R2_KEY
+from .constant import FASTA_R1_KEY
 from .constant import FASTQ
 from .constant import FASTA
 
@@ -539,12 +540,18 @@ def analyse_status(ctx, hash_opt, seq_path, published_manifest):
 
 
 def search_cache(ctx, manifest):
-    if len(manifest.index) > 0:
+    if len(manifest.index) > 0 and ctx[ROW][TYPE_KEY] == FASTQ:
         return manifest.loc[
             (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
             ((manifest[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]) |
              (manifest[FASTQ_R2_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]))
             ]
+
+    if len(manifest.index) > 0 and ctx[ROW][TYPE_KEY] == FASTA:
+        return manifest.loc[
+            (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
+            (manifest[FASTA_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY])]
+
     return manifest
 
 
