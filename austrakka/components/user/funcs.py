@@ -10,11 +10,11 @@ from austrakka.utils.output import print_table
 
 
 @logger_wraps()
-def list_users(out_format: str):
+def list_users(show_disabled: bool, out_format: str):
     response = api_get(
         path=USER_PATH,
         params={
-            'includeall': False
+            'includeall': show_disabled
         }
     )
 
