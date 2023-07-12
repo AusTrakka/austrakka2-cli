@@ -25,7 +25,8 @@ def metadata(ctx):
 @opt_proforma()
 @option('--blanks-will-delete',
         help="Blank cells in the CSV / Excel file will "
-             "be treated as a delete command for that cell.",
+             "be treated as a delete command for that cell. By "
+             "default, blank cells are ignored.",
         is_flag=True)
 def submission_add(file: BufferedReader, proforma: str, blanks_will_delete: bool = False):
     """Upload metadata submission to AusTrakka"""
@@ -37,7 +38,8 @@ def submission_add(file: BufferedReader, proforma: str, blanks_will_delete: bool
 @opt_proforma()
 @option('--blanks-will-delete',
         help="Blank cells in the CSV / Excel file will "
-             "be treated as a delete command for that cell.",
+             "be treated as a delete command for that cell. By "
+             "default, blank cells are ignored.",
         is_flag=True)
 def submission_append(file: BufferedReader, proforma: str, blanks_will_delete: bool = False):
     """
