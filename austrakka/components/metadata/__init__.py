@@ -1,5 +1,6 @@
 # pylint: disable=redefined-outer-name
 from io import BufferedReader
+from click import option
 import click
 
 from austrakka.utils.options import opt_proforma
@@ -22,22 +23,30 @@ def metadata(ctx):
 @metadata.command('add')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
-def submission_add(file: BufferedReader, proforma: str):
+@option('--blanks-will-delete',
+        help="Blank cells in the CSV / Excel file will "
+             "be treated as a delete command for that cell.",
+        is_flag=True)
+def submission_add(file: BufferedReader, proforma: str, blanks_will_delete: bool = False):
     """Upload metadata submission to AusTrakka"""
-    add_metadata(file, proforma)
+    add_metadata(file, proforma, blanks_will_delete)
 
 
 @metadata.command('append')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
-def submission_append(file: BufferedReader, proforma: str):
+@option('--blanks-will-delete',
+        help="Blank cells in the CSV / Excel file will "
+             "be treated as a delete command for that cell.",
+        is_flag=True)
+def submission_append(file: BufferedReader, proforma: str, blanks_will_delete: bool = False):
     """
     Upload metadata to be appended to existing samples.
     The append operation does not require (or accept) Owner_group.
     The specified pro forma must contain Seq_ID and metadata fields
     to be updated. All samples must already exist in AusTrakka.
     """
-    append_metadata(file, proforma)
+    append_metadata(file, proforma, blanks_will_delete)
 
 
 @metadata.command('validate')
