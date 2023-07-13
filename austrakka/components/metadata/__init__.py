@@ -1,11 +1,11 @@
 # pylint: disable=redefined-outer-name
 from io import BufferedReader
-from click import option
 import click
 
 from austrakka.utils.options import opt_proforma
 from austrakka.utils.options import opt_is_append
 from austrakka.utils.options import opt_group_name
+from austrakka.utils.options import opt_blanks_delete
 from austrakka.components.metadata.funcs import add_metadata
 from austrakka.components.metadata.funcs import validate_metadata
 from austrakka.components.metadata.funcs import append_metadata
@@ -23,11 +23,7 @@ def metadata(ctx):
 @metadata.command('add')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
-@option('--blanks-will-delete',
-        help="Blank cells in the CSV / Excel file will "
-             "be treated as a delete command for that cell. By "
-             "default, blank cells are ignored.",
-        is_flag=True)
+@opt_blanks_delete()
 def submission_add(file: BufferedReader, proforma: str, blanks_will_delete: bool = False):
     """Upload metadata submission to AusTrakka"""
     add_metadata(file, proforma, blanks_will_delete)
@@ -36,11 +32,7 @@ def submission_add(file: BufferedReader, proforma: str, blanks_will_delete: bool
 @metadata.command('append')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
-@option('--blanks-will-delete',
-        help="Blank cells in the CSV / Excel file will "
-             "be treated as a delete command for that cell. By "
-             "default, blank cells are ignored.",
-        is_flag=True)
+@opt_blanks_delete()
 def submission_append(file: BufferedReader, proforma: str, blanks_will_delete: bool = False):
     """
     Upload metadata to be appended to existing samples.
