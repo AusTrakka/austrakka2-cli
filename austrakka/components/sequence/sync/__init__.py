@@ -22,7 +22,8 @@ def sync(ctx):
 @opt_hash_check()
 @opt_hash_cache()
 @opt_seq_type(required=True)
-@option('--reset', help="Reset state to run from the start.", is_flag=True)
+@option('--reset', help="Reset sync state; do not try to resume an "
+                        "interrupted sync", is_flag=True)
 def get_seq(
         output_dir: str,
         group_name: str,

@@ -430,7 +430,16 @@ def opt_hash_check(**attrs: t.Any):
 
 def opt_hash_cache(**attrs: t.Any):
     defaults = {
-        'help': 'Specify whether to use cached hashes after initial check.'
+        'help': 'Specify whether to reuse previous file hashes after '
+                'initial check. If --no-hash-cache is specified, all existing '
+                'file hashes will be re-checked for consistency with the server '
+                'on every sync. If --hash-cache is specified, file hashes will '
+                'be checked when they are first downloaded; the successful hashes '
+                'are remembered; future hash checks will compare the server hash '
+                'against the locally memorized values. This optimizes the time '
+                'it takes to hash check large files on repeat runs. When a cache '
+                'miss is detected the file is download again and the new hash is '
+                'memorized locally.'
     }
     return _create_option(
         '--hash-cache/--no-hash-cache',
