@@ -11,6 +11,8 @@ from austrakka.utils.options import opt_show_disabled
 from .funcs import list_users
 from .funcs import add_user
 from .funcs import update_user
+from .funcs import enable_user
+from .funcs import disable_user
 
 
 @click.group()
@@ -52,3 +54,17 @@ def user_update(
 ):
     """Add users in AusTrakka"""
     update_user(user_id, org, owner_group_roles)
+
+
+@user.command('enable')
+@opt_user_object_id()
+def user_update(user_id: str):
+    """Re-enable a user in AusTrakka"""
+    enable_user(user_id)
+
+
+@user.command('disable')
+@opt_user_object_id()
+def user_update(user_id: str):
+    """Disable a user in AusTrakka"""
+    disable_user(user_id)
