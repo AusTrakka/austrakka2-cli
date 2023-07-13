@@ -19,7 +19,6 @@ from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.exceptions import IncorrectHashException
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import api_post_multipart
 from austrakka.utils.api import api_post_multipart_raw
 from austrakka.utils.api import api_get
 from austrakka.utils.api import get_response
@@ -73,7 +72,11 @@ class FileHash:
 
 
 @logger_wraps()
-def add_fasta_submission(fasta_file: BufferedReader):
+def add_fasta_submission(
+        fasta_file: BufferedReader,
+        skip: bool = False,
+        force: bool = False):
+
     name_prefix = _calc_name_prefix(fasta_file)
 
     for record in SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'):
@@ -94,10 +97,13 @@ def add_fasta_submission(fasta_file: BufferedReader):
             single_contig,
             single_contig_filename)
 
+        custom_headers = {}
+        set_upload_mode(custom_headers, force, skip)
+
         try:
             retry(
-                func=lambda f=files, fh=file_hash: _post_fasta(f, fh),
-                retries=2,
+                func=lambda f=files, fh=file_hash, ch=custom_headers: _post_fasta(f, fh, ch),
+                retries=1,
                 desc=f"{seq_id} at " + "/".join([SEQUENCE_PATH, FASTA_PATH]),
                 delay=0.0
             )
@@ -206,13 +212,16 @@ def _verify_hash(hashes: list[FileHash], resp: dict):
         raise IncorrectHashException(", ".join(errors))
 
 
-def _post_fasta(sample_files, file_hash: FileHash):
-    resp = api_post_multipart(
+def _post_fasta(sample_files, file_hash: FileHash, custom_headers: dict):
+    resp = api_post_multipart_raw(
         path="/".join([SEQUENCE_PATH, FASTA_PATH]),
-        files=sample_files
+        files=sample_files,
+        custom_headers=custom_headers,
     )
 
-    _verify_hash(list([file_hash]), resp)
+    data = get_response(resp, True)
+    if resp.status_code == 200:
+        _verify_hash(list([file_hash]), data)
 
 
 @logger_wraps()
