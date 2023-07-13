@@ -58,13 +58,13 @@ def user_update(
 
 @user.command('enable')
 @opt_user_object_id()
-def user_update(user_id: str):
+def user_enable(user_id: str):
     """Re-enable a user in AusTrakka"""
     enable_user(user_id)
 
 
 @user.command('disable')
 @opt_user_object_id()
-def user_update(user_id: str):
+def user_disable(user_id: str):
     """Disable a user in AusTrakka"""
     disable_user(user_id)
