@@ -496,6 +496,18 @@ def opt_group_role(**attrs: t.Any):
     )
 
 
+def opt_show_disabled(**attrs: t.Any):
+    defaults = {
+        'help': 'Shows or hides disabled entities [default: --hide-disabled]'
+    }
+    return _create_option(
+        '--show-disabled/--hide-disabled',
+        type=bool,
+        default=False,
+        **{**defaults, **attrs}
+    )
+
+
 def _create_option(*param_decls: str, **attrs: t.Any):
     def inner_func(func):
         return click.option(
