@@ -18,8 +18,7 @@ from .constant import MANIFEST_KEY
 from .constant import OBSOLETE_OBJECTS_FILE_KEY
 from .constant import GROUP_NAME_KEY
 from .constant import SEQ_TYPE_KEY
-from .constant import HASH_CHECK_KEY
-from .constant import USE_HASH_CACHE_KEY
+from .constant import RECALCULATE_HASH_KEY
 
 from .sync_io import read_sync_state
 from .sync_workflow import set_state_pulling_manifest
@@ -27,8 +26,7 @@ from .sync_workflow import set_state_pulling_manifest
 
 def initialise(
         group_name,
-        hash_check,
-        use_hash_cache,
+        recalc_hash,
         output_dir,
         seq_type) -> dict:
     sync_state = {}
@@ -39,8 +37,7 @@ def initialise(
     sync_state[INTERMEDIATE_MANIFEST_FILE_KEY] = INTERMEDIATE_MANIFEST_FILE
     sync_state[SEQ_TYPE_KEY] = seq_type
     sync_state[GROUP_NAME_KEY] = group_name
-    sync_state[HASH_CHECK_KEY] = hash_check
-    sync_state[USE_HASH_CACHE_KEY] = use_hash_cache
+    sync_state[RECALCULATE_HASH_KEY] = recalc_hash
     sync_state[OUTPUT_DIR_KEY] = output_dir
     sync_state[TRASH_DIR_KEY] = TRASH_DIR
     return sync_state

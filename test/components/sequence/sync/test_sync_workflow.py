@@ -21,7 +21,7 @@ class TestSyncWorkflow:
             SYNC_STATE_FILE_KEY: "test-analyse1-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse1-int-manifest-clone.csv",
             MANIFEST_KEY: "manifest.csv",
-            USE_HASH_CACHE_KEY: False,
+            RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
             SEQ_TYPE_KEY: FASTQ
         }
@@ -53,9 +53,8 @@ class TestSyncWorkflow:
             SYNC_STATE_FILE_KEY: "test-analyse2-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse2-int-manifest-clone.csv",
             MANIFEST_KEY: "manifest.csv",
-            USE_HASH_CACHE_KEY: False,
+            RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
-            HASH_CHECK_KEY: True,
             SEQ_TYPE_KEY: FASTQ
         }
 
@@ -86,7 +85,7 @@ class TestSyncWorkflow:
             SYNC_STATE_FILE_KEY: "test-analyse3-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse3-int-manifest-clone.csv",
             MANIFEST_KEY: "manifest.csv",
-            USE_HASH_CACHE_KEY: False,
+            RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
             SEQ_TYPE_KEY: FASTQ
         }
@@ -112,46 +111,13 @@ class TestSyncWorkflow:
         # Clean up
         clean_up_path(clone)
 
-    def test_analyse4_given_skip_hash_check_option_expect_comparison_by_file_name_only(self):
-        # Arrange
-        sync_state = {
-            SYNC_STATE_FILE_KEY: "test-analyse4-sync-state.json",
-            INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse4-int-manifest-clone.csv",
-            OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse4",
-            MANIFEST_KEY: "manifest.csv",
-            USE_HASH_CACHE_KEY: False,
-            HASH_CHECK_KEY: False,
-            SEQ_TYPE_KEY: FASTQ
-        }
-
-        # make a clone of the original test manifest because the test subject will
-        # be mutating it. The clone must be deleted by the test afterwards.
-        original = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse4-int-manifest-original.csv")
-        clone = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse4-int-manifest-clone.csv")
-        shutil.copy(original, clone)
-
-        # Check that the test data start out clean
-        df = pd.read_csv(clone)
-        assert STATUS_KEY not in df.columns
-
-        # Act
-        analyse(sync_state)
-
-        # Assert
-        df2 = pd.read_csv(clone)
-        status = df2.loc[0, [STATUS_KEY]][0]
-        assert status == MATCH
-
-        # Clean up
-        clean_up_path(clone)
-
     def test_analyse5_hash_check_option_omitted_expect_hash_check_is_on_by_default(self):
         # Arrange
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse5-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse5-int-manifest-clone.csv",
             MANIFEST_KEY: "manifest.csv",
-            USE_HASH_CACHE_KEY: False,
+            RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
             SEQ_TYPE_KEY: FASTQ
         }
@@ -183,7 +149,7 @@ class TestSyncWorkflow:
             SYNC_STATE_FILE_KEY: "test-analyse6-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse6-int-manifest-clone.csv",
             MANIFEST_KEY: "manifest.csv",
-            USE_HASH_CACHE_KEY: False,
+            RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse6",
             SEQ_TYPE_KEY: FASTQ
         }
@@ -220,7 +186,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse7",
             CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
             MANIFEST_KEY: "manifest.csv",
-            USE_HASH_CACHE_KEY: False,
+            RECALCULATE_HASH_KEY: True,
             CURRENT_ACTION_KEY: Action.analyse,
             SEQ_TYPE_KEY: FASTQ
         }
@@ -257,7 +223,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse8",
             CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
             MANIFEST_KEY: "manifest.csv",
-            USE_HASH_CACHE_KEY: False,
+            RECALCULATE_HASH_KEY: True,
             CURRENT_ACTION_KEY: Action.analyse,
             SEQ_TYPE_KEY: FASTQ
         }
@@ -296,8 +262,7 @@ class TestSyncWorkflow:
             CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
             CURRENT_ACTION_KEY: Action.analyse,
             MANIFEST_KEY: "manifest.csv",
-            USE_HASH_CACHE_KEY: False,
-            HASH_CHECK_KEY: False,
+            RECALCULATE_HASH_KEY: True,
             SEQ_TYPE_KEY: FASTQ
         }
 
@@ -328,7 +293,7 @@ class TestSyncWorkflow:
             SYNC_STATE_FILE_KEY: "test-analyse10-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse10-int-manifest-clone.csv",
             MANIFEST_KEY: "test-analyse10-manifest-clone.csv",
-            USE_HASH_CACHE_KEY: True,
+            RECALCULATE_HASH_KEY: False,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse10",
             SEQ_TYPE_KEY: FASTQ
         }
@@ -366,7 +331,7 @@ class TestSyncWorkflow:
             SYNC_STATE_FILE_KEY: "test-analyse11-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse11-int-manifest-clone.csv",
             MANIFEST_KEY: "manifest.csv",
-            USE_HASH_CACHE_KEY: True,
+            RECALCULATE_HASH_KEY: False,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
             SEQ_TYPE_KEY: FASTQ
         }
@@ -387,7 +352,7 @@ class TestSyncWorkflow:
         # Assert
         df2 = pd.read_csv(clone)
         status = df2.loc[0, [STATUS_KEY]][0]
-        assert status == MATCH
+        assert status == DRIFTED
 
         # Clean up
         clean_up_path(clone)

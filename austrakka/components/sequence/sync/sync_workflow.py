@@ -28,8 +28,7 @@ from .state_machine import StateMachine, SName, State, Action
 
 from .constant import CURRENT_STATE_KEY
 from .constant import CURRENT_ACTION_KEY
-from .constant import HASH_CHECK_KEY
-from .constant import USE_HASH_CACHE_KEY
+from .constant import RECALCULATE_HASH_KEY
 from .constant import STATUS_KEY
 from .constant import TRASH_DIR_KEY
 from .constant import SAMPLE_NAME_KEY
@@ -147,9 +146,9 @@ def analyse(sync_state: dict):
 
     data_frame = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     published_manifest = read_from_csv_or_empty(sync_state, MANIFEST_KEY)
-    hash_opt = calc_hash_opt(sync_state)
+    use_hash_cache = not sync_state[RECALCULATE_HASH_KEY]
 
-    ensure_valid(published_manifest, hash_opt, sync_state[SEQ_TYPE_KEY])
+    ensure_valid(published_manifest, use_hash_cache, sync_state[SEQ_TYPE_KEY])
 
     if STATUS_KEY not in data_frame.columns:
         data_frame[STATUS_KEY] = ""
@@ -163,7 +162,7 @@ def analyse(sync_state: dict):
             str(row[FILE_NAME_ON_DISK_KEY]))
 
         ctx = {DF: data_frame, IDX: index, ROW: row}
-        analyse_status(ctx, hash_opt, seq_path, published_manifest)
+        analyse_status(ctx, use_hash_cache, seq_path, published_manifest)
 
     save_int_manifest(data_frame, sync_state)
     sync_state[CURRENT_STATE_KEY] = SName.DONE_ANALYSING
@@ -171,8 +170,8 @@ def analyse(sync_state: dict):
     logger.success(f'Finished: {Action.analyse}')
 
 
-def ensure_valid(manifest, hash_opt, seq_type):
-    if hash_opt[USE_CACHE] and \
+def ensure_valid(manifest, use_hash_cache, seq_type):
+    if use_hash_cache and \
         seq_type == FASTQ and \
         manifest is not None and \
         len(manifest.index) > 0 and \
@@ -186,7 +185,7 @@ def ensure_valid(manifest, hash_opt, seq_type):
         raise WorkflowError("Cannot parse published manifest "
                             "for fastq. It is missing some columns.")
 
-    if hash_opt[USE_CACHE] and \
+    if use_hash_cache and \
         seq_type == FASTA and \
         manifest is not None and \
         len(manifest.index) > 0 and \
@@ -197,17 +196,6 @@ def ensure_valid(manifest, hash_opt, seq_type):
 
         raise WorkflowError("Cannot parse published manifest "
                             "for fasta. It is missing some columns.")
-
-
-def calc_hash_opt(sync_state):
-    use_hash_cache = sync_state[USE_HASH_CACHE_KEY]
-    do_hash_check = (HASH_CHECK_KEY not in sync_state) or (
-        HASH_CHECK_KEY in sync_state and sync_state[HASH_CHECK_KEY] is True)
-    hash_opt = {
-        CHECK_HASH: do_hash_check,
-        USE_CACHE: use_hash_cache
-    }
-    return hash_opt
 
 
 def set_state_downloading(sync_state: dict):
@@ -503,7 +491,7 @@ def set_match_status(ctx, seq_path):
     ctx[DF].at[ctx[IDX], STATUS_KEY] = MATCH
 
 
-def analyse_status(ctx, hash_opt, seq_path, published_manifest):
+def analyse_status(ctx, use_hash_cache, seq_path, published_manifest):
     previously_matched = ctx[ROW][STATUS_KEY] == MATCH
     p_manifest = published_manifest
 
@@ -511,13 +499,13 @@ def analyse_status(ctx, hash_opt, seq_path, published_manifest):
         logger.info(f'Missing: {seq_path}')
         ctx[DF].at[ctx[IDX], STATUS_KEY] = MISSING
 
-    elif (hash_opt[CHECK_HASH] and not previously_matched) or ctx[ROW][STATUS_KEY] == FAILED:
+    elif (not previously_matched) or ctx[ROW][STATUS_KEY] == FAILED:
 
         cache_row = search_cache(ctx, p_manifest)
         hash_col_key = build_cache_key(ctx)
 
         # If told to use cache and there is a cache hit.
-        if hash_opt[USE_CACHE] and len(cache_row.index):
+        if use_hash_cache and len(cache_row.index):
             logger.info("Hash cache hit.")
             seq_hash = cache_row.iloc[0, cache_row.columns.get_loc(hash_col_key)]
         else:

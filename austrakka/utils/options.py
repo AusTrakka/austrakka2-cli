@@ -416,35 +416,21 @@ def opt_is_append(**attrs: t.Any):
     )
 
 
-def opt_hash_check(**attrs: t.Any):
+def opt_recalc_hash(**attrs: t.Any):
     defaults = {
-        'help': 'Specify whether to do a hash check when searching for files.'
+        'help': 'When comparing server file hashes to local file hashes, '
+                'recalculate local file hashes for previously-downloaded '
+                'files; do not use cached hashes. This can take a long '
+                'time to run. This option may be useful if local files or '
+                'hashed cache values have been corrupted. If this option is '
+                'not specified, cached local hashes will be used for '
+                'previously-downloaded files, but hashes will still be '
+                'calculated for newly-downloaded files.'
     }
     return _create_option(
-        '--hash-check/--no-hash-check',
+        '--recalculate-hashes',
         type=bool,
-        default=True,
-        **{**defaults, **attrs}
-    )
-
-
-def opt_hash_cache(**attrs: t.Any):
-    defaults = {
-        'help': 'Specify whether to reuse previous file hashes after '
-                'initial check. If --no-hash-cache is specified, all existing '
-                'file hashes will be re-checked for consistency with the server '
-                'on every sync. If --hash-cache is specified, file hashes will '
-                'be checked when they are first downloaded; the successful hashes '
-                'are remembered; future hash checks will compare the server hash '
-                'against the locally memorized values. This optimizes the time '
-                'it takes to hash check large files on repeat runs. When a cache '
-                'miss is detected the file is download again and the new hash is '
-                'memorized locally.'
-    }
-    return _create_option(
-        '--hash-cache/--no-hash-cache',
-        type=bool,
-        default=True,
+        is_flag=True,
         **{**defaults, **attrs}
     )
 

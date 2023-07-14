@@ -13,8 +13,7 @@ from .constant import SYNC_STATE_FILE_KEY
 from .constant import CURRENT_STATE_KEY
 from .constant import GROUP_NAME_KEY
 from .constant import SEQ_TYPE_KEY
-from .constant import HASH_CHECK_KEY
-from .constant import USE_HASH_CACHE_KEY
+from .constant import RECALCULATE_HASH_KEY
 
 from .sync_io import save_json
 
@@ -23,8 +22,7 @@ from .sync_io import save_json
 def seq_get(
         output_dir: str,
         group_name: str,
-        hash_check: bool,
-        use_hash_cache: bool,
+        recalc_hash: bool,
         seq_type: str,
         reset_opt: bool):
 
@@ -44,8 +42,7 @@ def seq_get(
         sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE
 
         # Hash check setting is allowed to be overriden between runs.
-        sync_state[HASH_CHECK_KEY] = hash_check
-        sync_state[USE_HASH_CACHE_KEY] = use_hash_cache
+        sync_state[RECALCULATE_HASH_KEY] = recalc_hash
         save_json(sync_state, state_file_path)
 
     elif not os.path.exists(output_dir):
@@ -54,8 +51,7 @@ def seq_get(
     if CURRENT_STATE_KEY not in sync_state:
         sync_state = initialise(
             group_name,
-            hash_check,
-            use_hash_cache,
+            recalc_hash,
             output_dir,
             seq_type)
 
@@ -70,8 +66,7 @@ def seq_get(
     logger.info(f'{OUTPUT_DIR_KEY}: {sync_state[OUTPUT_DIR_KEY]}')
     logger.info(f'{GROUP_NAME_KEY}: {sync_state[GROUP_NAME_KEY]}')
     logger.info(f'{SEQ_TYPE_KEY}: {sync_state[SEQ_TYPE_KEY]}')
-    logger.info(f'{HASH_CHECK_KEY}: {sync_state[HASH_CHECK_KEY]}')
-    logger.info(f'{USE_HASH_CACHE_KEY}: {sync_state[USE_HASH_CACHE_KEY]}')
+    logger.info(f'{RECALCULATE_HASH_KEY}: {sync_state[RECALCULATE_HASH_KEY]}')
 
     state_machine = configure_state_machine()
     state_machine.run(sync_state)

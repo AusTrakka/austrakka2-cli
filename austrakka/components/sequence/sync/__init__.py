@@ -3,8 +3,7 @@ from click import option
 
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_group
-from austrakka.utils.options import opt_hash_check
-from austrakka.utils.options import opt_hash_cache
+from austrakka.utils.options import opt_recalc_hash
 from austrakka.utils.options import opt_seq_type
 from .funcs import seq_get
 
@@ -19,16 +18,14 @@ def sync(ctx):
 @sync.command('get')
 @opt_output_dir()
 @opt_group(default=None, multiple=False, required=True)
-@opt_hash_check()
-@opt_hash_cache()
+@opt_recalc_hash()
 @opt_seq_type(required=True)
 @option('--reset', help="Reset sync state; do not try to resume an "
                         "interrupted sync", is_flag=True)
 def get_seq(
         output_dir: str,
         group_name: str,
-        hash_check: bool,
-        hash_cache: bool,
+        recalculate_hashes: bool,
         seq_type: str,
         reset: bool):
     """
@@ -39,7 +36,6 @@ def get_seq(
     seq_get(
         output_dir,
         group_name,
-        hash_check,
-        hash_cache,
+        recalculate_hashes,
         seq_type,
         reset)
