@@ -422,7 +422,7 @@ def opt_recalc_hash(**attrs: t.Any):
                 'recalculate local file hashes for previously-downloaded '
                 'files; do not use cached hashes. This can take a long '
                 'time to run. This option may be useful if local files or '
-                'hashed cache values have been corrupted. If this option is '
+                'cached hash values have been corrupted. If this option is '
                 'not specified, cached local hashes will be used for '
                 'previously-downloaded files, but hashes will still be '
                 'calculated for newly-downloaded files.'
