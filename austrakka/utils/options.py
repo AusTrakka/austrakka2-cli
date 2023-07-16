@@ -416,14 +416,36 @@ def opt_is_append(**attrs: t.Any):
     )
 
 
-def opt_hash_check(**attrs: t.Any):
+def opt_recalc_hash(**attrs: t.Any):
     defaults = {
-        'help': 'Specify whether to do a hash check when searching for files.'
+        'help': 'When comparing server file hashes to local file hashes, '
+                'recalculate local file hashes for previously-downloaded '
+                'files; do not use cached hashes. This can take a long '
+                'time to run. This option may be useful if local files or '
+                'cached hash values have been corrupted. If this option is '
+                'not specified, cached local hashes will be used for '
+                'previously-downloaded files, but hashes will still be '
+                'calculated for newly-downloaded files.'
     }
     return _create_option(
-        '--hash-check/--no-hash-check',
+        '--recalculate-hashes',
         type=bool,
-        default=True,
+        is_flag=True,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_blanks_delete(**attrs: t.Any):
+    defaults = {
+        'help': "Blank cells in the CSV / Excel file will "
+                "be treated as a delete command for that cell. By "
+                "default, blank cells are ignored."
+    }
+    return _create_option(
+        '--blanks-will-delete',
+        type=bool,
+        is_flag=True,
+        default=False,
         **{**defaults, **attrs}
     )
 
@@ -492,6 +514,18 @@ def opt_group_role(**attrs: t.Any):
         '-gr',
         '--group-role',
         type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_show_disabled(**attrs: t.Any):
+    defaults = {
+        'help': 'Shows or hides disabled entities [default: --hide-disabled]'
+    }
+    return _create_option(
+        '--show-disabled/--hide-disabled',
+        type=bool,
+        default=False,
         **{**defaults, **attrs}
     )
 

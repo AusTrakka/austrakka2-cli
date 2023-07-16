@@ -1,5 +1,7 @@
+# pylint: disable=broad-exception-caught
 import os
 import json
+import hashlib
 import pandas as pd
 
 from .constant import INTERMEDIATE_MANIFEST_FILE_KEY
@@ -28,6 +30,15 @@ def read_from_csv(sync_state: dict, state_key: str):
     path = get_path(sync_state, state_key)
     data_frame = pd.read_csv(path)
     return data_frame
+
+
+def read_from_csv_or_empty(sync_state: dict, state_key: str):
+    path = get_path(sync_state, state_key)
+    try:
+        data_frame = pd.read_csv(path)
+        return data_frame
+    except Exception:
+        return pd.DataFrame()
 
 
 def save_int_manifest(data_frame, sync_state):
@@ -59,3 +70,10 @@ def get_output_dir(sync_state):
                         f"sending data to a system folder: {output_dir}.")
 
     return output_dir
+
+
+def calc_hash(path):
+    with open(path, 'rb') as file:
+        file_hash = hashlib.sha256(file.read()).hexdigest().lower()
+        file.close()
+    return file_hash

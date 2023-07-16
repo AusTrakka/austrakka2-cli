@@ -20,7 +20,10 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse1-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse1-int-manifest-clone.csv",
+            MANIFEST_KEY: "manifest.csv",
+            RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
+            SEQ_TYPE_KEY: FASTQ
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -49,8 +52,10 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse2-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse2-int-manifest-clone.csv",
+            MANIFEST_KEY: "manifest.csv",
+            RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
-            HASH_CHECK_KEY: True,
+            SEQ_TYPE_KEY: FASTQ
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -79,7 +84,10 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse3-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse3-int-manifest-clone.csv",
+            MANIFEST_KEY: "manifest.csv",
+            RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
+            SEQ_TYPE_KEY: FASTQ
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -103,42 +111,15 @@ class TestSyncWorkflow:
         # Clean up
         clean_up_path(clone)
 
-    def test_analyse4_given_skip_hash_check_option_expect_comparison_by_file_name_only(self):
-        # Arrange
-        sync_state = {
-            SYNC_STATE_FILE_KEY: "test-analyse4-sync-state.json",
-            INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse4-int-manifest-clone.csv",
-            OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse4",
-            HASH_CHECK_KEY: False
-        }
-
-        # make a clone of the original test manifest because the test subject will
-        # be mutating it. The clone must be deleted by the test afterwards.
-        original = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse4-int-manifest-original.csv")
-        clone = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse4-int-manifest-clone.csv")
-        shutil.copy(original, clone)
-
-        # Check that the test data start out clean
-        df = pd.read_csv(clone)
-        assert STATUS_KEY not in df.columns
-
-        # Act
-        analyse(sync_state)
-
-        # Assert
-        df2 = pd.read_csv(clone)
-        status = df2.loc[0, [STATUS_KEY]][0]
-        assert status == MATCH
-
-        # Clean up
-        clean_up_path(clone)
-
     def test_analyse5_hash_check_option_omitted_expect_hash_check_is_on_by_default(self):
         # Arrange
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse5-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse5-int-manifest-clone.csv",
+            MANIFEST_KEY: "manifest.csv",
+            RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
+            SEQ_TYPE_KEY: FASTQ
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -167,7 +148,10 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse6-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse6-int-manifest-clone.csv",
+            MANIFEST_KEY: "manifest.csv",
+            RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse6",
+            SEQ_TYPE_KEY: FASTQ
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -201,7 +185,10 @@ class TestSyncWorkflow:
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse7-int-manifest-clone.csv",
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse7",
             CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
+            MANIFEST_KEY: "manifest.csv",
+            RECALCULATE_HASH_KEY: True,
             CURRENT_ACTION_KEY: Action.analyse,
+            SEQ_TYPE_KEY: FASTQ
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -235,7 +222,10 @@ class TestSyncWorkflow:
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse8-int-manifest-clone.csv",
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse8",
             CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
+            MANIFEST_KEY: "manifest.csv",
+            RECALCULATE_HASH_KEY: True,
             CURRENT_ACTION_KEY: Action.analyse,
+            SEQ_TYPE_KEY: FASTQ
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -271,7 +261,9 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse9",
             CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
             CURRENT_ACTION_KEY: Action.analyse,
-            HASH_CHECK_KEY: False
+            MANIFEST_KEY: "manifest.csv",
+            RECALCULATE_HASH_KEY: True,
+            SEQ_TYPE_KEY: FASTQ
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -283,6 +275,76 @@ class TestSyncWorkflow:
         # This is a restart analysis test. There should already be a status key
         df = pd.read_csv(clone)
         assert STATUS_KEY in df.columns
+
+        # Act
+        analyse(sync_state)
+
+        # Assert
+        df2 = pd.read_csv(clone)
+        status = df2.loc[0, [STATUS_KEY]][0]
+        assert status == DRIFTED
+
+        # Clean up
+        clean_up_path(clone)
+
+    def test_analyse10_given_option_to_use_hash_cache_expect_will_not_calculate_hash_from_scratch(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-analyse10-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse10-int-manifest-clone.csv",
+            MANIFEST_KEY: "test-analyse10-manifest-clone.csv",
+            RECALCULATE_HASH_KEY: False,
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse10",
+            SEQ_TYPE_KEY: FASTQ
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        original = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse10-int-manifest-original.csv")
+        clone = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse10-int-manifest-clone.csv")
+        shutil.copy(original, clone)
+
+        # A previously published manifest is the cache of hashes.
+        original_manifest = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse10-manifest-original.csv")
+        clone_manifest = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse10-manifest-clone.csv")
+        shutil.copy(original_manifest, clone_manifest)
+
+        # Check that the test data start out clean
+        df = pd.read_csv(clone)
+        assert STATUS_KEY not in df.columns
+
+        # Act
+        analyse(sync_state)
+
+        # Assert
+        df2 = pd.read_csv(clone)
+        status = df2.loc[0, [STATUS_KEY]][0]
+        assert status == MATCH
+
+        # Clean up
+        clean_up_path(clone)
+        clean_up_path(clone_manifest)
+
+    def test_analyse11_given_option_to_use_cache_but_no_cache_exist_expect_will_calculate_hash_from_scratch(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-analyse11-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse11-int-manifest-clone.csv",
+            MANIFEST_KEY: "manifest.csv",
+            RECALCULATE_HASH_KEY: False,
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
+            SEQ_TYPE_KEY: FASTQ
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        original = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse11-int-manifest-original.csv")
+        clone = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-analyse11-int-manifest-clone.csv")
+        shutil.copy(original, clone)
+
+        # Check that the test data start out clean
+        df = pd.read_csv(clone)
+        assert STATUS_KEY not in df.columns
 
         # Act
         analyse(sync_state)

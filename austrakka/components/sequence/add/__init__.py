@@ -43,8 +43,17 @@ def seq_add_fastq(
 
 @add.command('fasta')
 @click.argument('fasta_file', type=click.File('rb'))
+@option('--skip', cls=MutuallyExclusiveOption,
+        help="Skip this command if the sample has existing fasta sequences.",
+        mutually_exclusive=["force"],
+        is_flag=True)
+@option('--force',
+        cls=MutuallyExclusiveOption,
+        help="Upload fasta sequences and supersede any existing fasta sequences.",
+        mutually_exclusive=["skip"],
+        is_flag=True)
 def seq_add_fasta(
-        fasta_file: BufferedReader
+        fasta_file: BufferedReader, skip: bool = False, force: bool = False
 ):
     """
     Upload FASTA submission to AusTrakka
@@ -56,4 +65,4 @@ def seq_add_fasta(
     `austrakka metadata add` command, and may use the minimal proforma if
     you wish to specify no metadata other than sample ownership.
     """
-    add_fasta_submission(fasta_file)
+    add_fasta_submission(fasta_file, skip, force)
