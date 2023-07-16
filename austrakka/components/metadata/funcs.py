@@ -11,23 +11,30 @@ SUBMISSION_UPLOAD = 'UploadSubmissions'
 SUBMISSION_UPLOAD_APPEND = 'UploadSubmissions?appendMode=True'
 SUBMISSION_VALIDATE = 'ValidateSubmissions'
 SUBMISSION_VALIDATE_APPEND = 'ValidateSubmissions?appendMode=True'
+DELETE_ON_BLANK_PARAM = 'deleteOnBlank=True'
 
 
 @logger_wraps()
 def add_metadata(
     file: BufferedReader,
-    proforma_abbrev: str
+    proforma_abbrev: str,
+        blanks_will_delete: bool,
 ):
     path = "/".join([SUBMISSION_PATH, SUBMISSION_UPLOAD])
+    if blanks_will_delete:
+        path = f"{path}?{DELETE_ON_BLANK_PARAM}"
     _call_submission(path, file, proforma_abbrev)
 
 
 @logger_wraps()
 def append_metadata(
     file: BufferedReader,
-    proforma_abbrev: str
+    proforma_abbrev: str,
+        blanks_will_delete: bool,
 ):
     path = "/".join([SUBMISSION_PATH, SUBMISSION_UPLOAD_APPEND])
+    if blanks_will_delete:
+        path = f"{path}&{DELETE_ON_BLANK_PARAM}"
     _call_submission(path, file, proforma_abbrev)
 
 

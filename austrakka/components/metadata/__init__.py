@@ -5,6 +5,7 @@ import click
 from austrakka.utils.options import opt_proforma
 from austrakka.utils.options import opt_is_append
 from austrakka.utils.options import opt_group_name
+from austrakka.utils.options import opt_blanks_delete
 from austrakka.components.metadata.funcs import add_metadata
 from austrakka.components.metadata.funcs import validate_metadata
 from austrakka.components.metadata.funcs import append_metadata
@@ -22,22 +23,24 @@ def metadata(ctx):
 @metadata.command('add')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
-def submission_add(file: BufferedReader, proforma: str):
+@opt_blanks_delete()
+def submission_add(file: BufferedReader, proforma: str, blanks_will_delete: bool = False):
     """Upload metadata submission to AusTrakka"""
-    add_metadata(file, proforma)
+    add_metadata(file, proforma, blanks_will_delete)
 
 
 @metadata.command('append')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
-def submission_append(file: BufferedReader, proforma: str):
+@opt_blanks_delete()
+def submission_append(file: BufferedReader, proforma: str, blanks_will_delete: bool = False):
     """
     Upload metadata to be appended to existing samples.
     The append operation does not require (or accept) Owner_group.
     The specified pro forma must contain Seq_ID and metadata fields
     to be updated. All samples must already exist in AusTrakka.
     """
-    append_metadata(file, proforma)
+    append_metadata(file, proforma, blanks_will_delete)
 
 
 @metadata.command('validate')

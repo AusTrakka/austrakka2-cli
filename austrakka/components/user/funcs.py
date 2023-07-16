@@ -4,17 +4,18 @@ import pandas as pd
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
+from austrakka.utils.api import api_patch
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import USER_PATH
 from austrakka.utils.output import print_table
 
 
 @logger_wraps()
-def list_users(out_format: str):
+def list_users(show_disabled: bool, out_format: str):
     response = api_get(
         path=USER_PATH,
         params={
-            'includeall': False
+            'includeall': show_disabled
         }
     )
 
@@ -28,7 +29,6 @@ def list_users(out_format: str):
         .pipe(lambda x: x.drop('lastUpdatedBy', axis=1))\
         .pipe(lambda x: x.drop('lastUpdated', axis=1))\
         .pipe(lambda x: x.drop('created', axis=1))\
-        .pipe(lambda x: x.drop('isActive', axis=1))\
         .pipe(lambda x: x.drop('userRoleGroup', axis=1))\
         .pipe(lambda x: x.drop('organisation.id', axis=1))\
         .pipe(lambda x: x.drop('createdBy', axis=1))
@@ -94,3 +94,13 @@ def update_user(
         path=f'{USER_PATH}/{user_id}',
         data=user
     )
+
+
+@logger_wraps()
+def enable_user(user_id: str):
+    api_patch(path=f'{USER_PATH}/enable/{user_id}')
+
+
+@logger_wraps()
+def disable_user(user_id: str):
+    api_patch(path=f'{USER_PATH}/disable/{user_id}')
