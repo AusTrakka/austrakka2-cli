@@ -5,6 +5,8 @@ from .funcs import process_login
 from .opts import opt_tenant_id
 from .opts import opt_client_id
 from .opts import opt_backend_app_uri
+from .opts import opt_process_auth_id
+from .opts import opt_process_auth_secret
 
 
 @click.group('auth')
@@ -30,21 +32,8 @@ def user(
 @auth.command('process')
 @opt_tenant_id
 @opt_backend_app_uri
-@click.option(
-    '--id',
-    'process_id',
-    show_envvar=True,
-    required=True,
-    envvar='AT_AUTH_PROCESS_ID',
-    help="Process account ID"
-)
-@click.option(
-    '--secret',
-    show_envvar=True,
-    required=True,
-    envvar='AT_AUTH_PROCESS_SECRET',
-    help='Process account secret'
-)
+@opt_process_auth_id
+@opt_process_auth_secret
 def process(
         tenant_id: str,
         app_uri: str,
