@@ -416,14 +416,21 @@ def opt_is_append(**attrs: t.Any):
     )
 
 
-def opt_hash_check(**attrs: t.Any):
+def opt_recalc_hash(**attrs: t.Any):
     defaults = {
-        'help': 'Specify whether to do a hash check when searching for files.'
+        'help': 'When comparing server file hashes to local file hashes, '
+                'recalculate local file hashes for previously-downloaded '
+                'files; do not use cached hashes. This can take a long '
+                'time to run. This option may be useful if local files or '
+                'cached hash values have been corrupted. If this option is '
+                'not specified, cached local hashes will be used for '
+                'previously-downloaded files, but hashes will still be '
+                'calculated for newly-downloaded files.'
     }
     return _create_option(
-        '--hash-check/--no-hash-check',
+        '--recalculate-hashes',
         type=bool,
-        default=True,
+        is_flag=True,
         **{**defaults, **attrs}
     )
 

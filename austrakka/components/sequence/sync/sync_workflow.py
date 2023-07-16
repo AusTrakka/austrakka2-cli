@@ -1,5 +1,4 @@
 # pylint: disable=broad-exception-caught
-import hashlib
 import os.path
 import re
 from datetime import datetime
@@ -18,15 +17,18 @@ from .errors import WorkflowError
 from .sync_io import \
     get_output_dir, \
     read_from_csv, \
+    read_from_csv_or_empty, \
     get_path, \
     save_int_manifest, \
-    save_to_csv
+    calc_hash, \
+    save_to_csv, \
+    save_json
 
 from .state_machine import StateMachine, SName, State, Action
 
 from .constant import CURRENT_STATE_KEY
 from .constant import CURRENT_ACTION_KEY
-from .constant import HASH_CHECK_KEY
+from .constant import RECALCULATE_HASH_KEY
 from .constant import STATUS_KEY
 from .constant import TRASH_DIR_KEY
 from .constant import SAMPLE_NAME_KEY
@@ -46,6 +48,11 @@ from .constant import GROUP_NAME_KEY
 from .constant import BLOB_FILE_PATH_KEY
 from .constant import ORIGINAL_FILE_NAME_KEY
 from .constant import SERVER_SHA_256_KEY
+from .constant import FASTQ_R1_KEY
+from .constant import FASTQ_R2_KEY
+from .constant import FASTA_R1_KEY
+from .constant import FASTQ
+from .constant import FASTA
 
 from .constant import MATCH
 from .constant import DOWNLOADED
@@ -58,6 +65,12 @@ from .constant import FASTQ_EXTS
 from .constant import GZ_EXT
 
 from ..funcs import _get_seq_data
+
+USE_CACHE = "use_cache"
+CHECK_HASH = "check_hash"
+DF = "df"
+IDX = "idx"
+ROW = "row"
 
 
 def configure_state_machine() -> StateMachine:
@@ -132,25 +145,57 @@ def analyse(sync_state: dict):
     logger.info(f'Started: {Action.analyse}')
 
     data_frame = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
-    do_hash_check = (HASH_CHECK_KEY not in sync_state) or (
-        HASH_CHECK_KEY in sync_state and sync_state[HASH_CHECK_KEY] is True)
+    published_manifest = read_from_csv_or_empty(sync_state, MANIFEST_KEY)
+    use_hash_cache = not sync_state[RECALCULATE_HASH_KEY]
+
+    ensure_valid(published_manifest, use_hash_cache, sync_state[SEQ_TYPE_KEY])
 
     if STATUS_KEY not in data_frame.columns:
         data_frame[STATUS_KEY] = ""
 
     output_dir = get_output_dir(sync_state)
+
     for index, row in data_frame.iterrows():
         seq_path = os.path.join(
             output_dir,
             str(row[SAMPLE_NAME_KEY]),
             str(row[FILE_NAME_ON_DISK_KEY]))
 
-        analyse_status(data_frame, do_hash_check, index, row, seq_path)
+        ctx = {DF: data_frame, IDX: index, ROW: row}
+        analyse_status(ctx, use_hash_cache, seq_path, published_manifest)
 
     save_int_manifest(data_frame, sync_state)
     sync_state[CURRENT_STATE_KEY] = SName.DONE_ANALYSING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_downloading
     logger.success(f'Finished: {Action.analyse}')
+
+
+def ensure_valid(manifest, use_hash_cache, seq_type):
+    if use_hash_cache and \
+        seq_type == FASTQ and \
+        manifest is not None and \
+        len(manifest.index) > 0 and \
+        not (
+             SEQ_ID_KEY in manifest.columns and
+             manifest_column_key(FILE_NAME_ON_DISK_KEY, seq_type, "1") in manifest.columns and
+             manifest_column_key(FILE_NAME_ON_DISK_KEY, seq_type, "2") in manifest.columns and
+             manifest_column_key("", seq_type, "1") in manifest.columns and
+             manifest_column_key("", seq_type, "2") in manifest.columns):
+
+        raise WorkflowError("Cannot parse published manifest "
+                            "for fastq. It is missing some columns.")
+
+    if use_hash_cache and \
+        seq_type == FASTA and \
+        manifest is not None and \
+        len(manifest.index) > 0 and \
+        not (
+             SEQ_ID_KEY in manifest.columns and
+             manifest_column_key(FILE_NAME_ON_DISK_KEY, seq_type, "1") in manifest.columns and
+             manifest_column_key("", seq_type, "1") in manifest.columns):
+
+        raise WorkflowError("Cannot parse published manifest "
+                            "for fasta. It is missing some columns.")
 
 
 def set_state_downloading(sync_state: dict):
@@ -240,13 +285,20 @@ def purge(sync_state: dict):
 
     # Delete the intermediate manifest. It's no longer needed.
     # It'll be recreated on the next run.
-    os.remove(os.path.join(
-        output_dir,
-        sync_state[INTERMEDIATE_MANIFEST_FILE_KEY]))
+    remove_int_manifest(output_dir, sync_state)
 
     sync_state[CURRENT_STATE_KEY] = SName.DONE_PURGING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_up_to_date
     logger.success(f'Finished: {Action.purge}')
+
+
+def remove_int_manifest(output_dir, sync_state):
+    int_m_path = os.path.join(
+        output_dir,
+        sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
+
+    if os.path.exists(int_m_path):
+        os.remove(int_m_path)
 
 
 def set_state_up_to_date(sync_state: dict):
@@ -312,7 +364,7 @@ def detect_and_record_obsolete_files(int_med, sync_state):
 
     seq_ext_regexstr = '|'.join(FASTQ_EXTS + FASTA_EXTS)
     seqfile_regex = re.compile(
-        rf".+_[0-9TZ]+_[a-z0-9]{{8}}_R\d\.({seq_ext_regexstr})(\.({GZ_EXT}))?$")
+        rf".+_[0-9TZ]+_[a-z0-9]{{8}}(_R\d)?\.({seq_ext_regexstr})(\.({GZ_EXT}))?$")
 
     for path in files:
         if seqfile_regex.match(os.path.basename(path)):
@@ -359,19 +411,25 @@ def publish_new_manifest(int_med, sync_state):
     sample_table = int_med.pivot(
         index=SAMPLE_NAME_KEY,
         columns=[TYPE_KEY, READ_KEY],
-        values=FILE_NAME_ON_DISK_KEY)
+        values=[FILE_NAME_ON_DISK_KEY, SERVER_SHA_256_KEY])
 
     # Multiindex approach ok, but this format needs changing
     # when dealing with FASTA in the same table
-    sample_table.columns = [f"{seq_type}_R{read}".upper()
-                            for (seq_type, read)
+    sample_table.columns = [manifest_column_key(file_or_hash, seq_type, read)
+                            for (file_or_hash, seq_type, read)
                             in sample_table.columns.to_flat_index()]
+
     sample_table.index.name = SEQ_ID_KEY
     sample_table.reset_index(inplace=True)
     m_path = get_path(sync_state, MANIFEST_KEY)
 
     save_to_csv(sample_table, m_path)
     logger.success(f'Published final manifest: {m_path}')
+
+
+def manifest_column_key(file_or_hash, seq_type, read):
+    return ("" if file_or_hash.casefold() == FILE_NAME_ON_DISK_KEY.casefold()
+            else "HASH_") + f"{seq_type}_R{read}".upper()
 
 
 def get_file_from_server(data_frame, index, row, sync_state):
@@ -394,18 +452,21 @@ def get_file_from_server(data_frame, index, row, sync_state):
             fresh_name = f'{row[FILE_NAME_ON_DISK_KEY]}.fresh'
             logger.warning(f'Drifted from server: {file_path}')
             logger.info(f'Downloading fresh copy to temp file: {fresh_name}')
-
             data_frame.at[index, HOT_SWAP_NAME_KEY] = fresh_name
             file_path = os.path.join(sample_dir, fresh_name)
 
         retry(lambda fp=file_path, fn=filename, qp=query_path, sd=sample_dir:
               _download_seq_file(fp, fn, qp, sd),
-              3,
+              1,
               query_path)
+
+        check_download_hash(data_frame, file_path, index, row)
 
         # Drifted entries are left for finalisation to hot swap.
         # Otherwise mark the entry as successfully downloaded.
-        if data_frame.at[index, STATUS_KEY] != DRIFTED:
+        if data_frame.at[index, STATUS_KEY] != DRIFTED and \
+                data_frame.at[index, STATUS_KEY] != FAILED:
+
             data_frame.at[index, STATUS_KEY] = DOWNLOADED
 
     except Exception as ex:
@@ -413,32 +474,48 @@ def get_file_from_server(data_frame, index, row, sync_state):
         logger.error(f'Failed to download: {file_path}. Error: {ex}')
 
 
-def set_match_status(data_frame, index, row, seq_path):
+def check_download_hash(data_frame, file_path, index, row):
+    local_hash = calc_hash(file_path)
+    server_hash = row[SERVER_SHA_256_KEY]
+
+    if local_hash.casefold() != server_hash.casefold():
+        logger.error(f"Bad hash. Invalidating: {file_path}")
+        data_frame.at[index, STATUS_KEY] = FAILED
+
+
+def set_match_status(ctx, seq_path):
     azure_path = os.path.join(
-        row[BLOB_FILE_PATH_KEY],
-        row[ORIGINAL_FILE_NAME_KEY])
+        ctx[ROW][BLOB_FILE_PATH_KEY],
+        ctx[ROW][ORIGINAL_FILE_NAME_KEY])
     logger.success(f'Matched: {seq_path} ==> Azure: {azure_path}')
-    data_frame.at[index, STATUS_KEY] = MATCH
+    ctx[DF].at[ctx[IDX], STATUS_KEY] = MATCH
 
 
-def analyse_status(data_frame, do_hash_check, index, row, seq_path):
-    previously_matched = row[STATUS_KEY] == MATCH
+def analyse_status(ctx, use_hash_cache, seq_path, published_manifest):
+    previously_matched = ctx[ROW][STATUS_KEY] == MATCH
+    p_manifest = published_manifest
 
     if not os.path.exists(seq_path):
         logger.info(f'Missing: {seq_path}')
-        data_frame.at[index, STATUS_KEY] = MISSING
+        ctx[DF].at[ctx[IDX], STATUS_KEY] = MISSING
 
-    elif (do_hash_check and not previously_matched) or row[STATUS_KEY] == FAILED:
-        with open(seq_path, 'rb') as file:
-            seq_hash = hashlib.sha256(file.read()).hexdigest().lower()
+    elif (not previously_matched) or ctx[ROW][STATUS_KEY] == FAILED:
 
-            if seq_hash == row[SERVER_SHA_256_KEY].lower():
-                set_match_status(data_frame, index, row, seq_path)
-            else:
-                logger.info(f'Drifted: {seq_path}')
-                data_frame.at[index, STATUS_KEY] = DRIFTED
+        cache_row = search_cache(ctx, p_manifest)
+        hash_col_key = build_cache_key(ctx)
 
-            file.close()
+        # If told to use cache and there is a cache hit.
+        if use_hash_cache and len(cache_row.index):
+            logger.info("Hash cache hit.")
+            seq_hash = cache_row.iloc[0, cache_row.columns.get_loc(hash_col_key)]
+        else:
+            seq_hash = calc_hash(seq_path)
+
+        if seq_hash.casefold() == ctx[ROW][SERVER_SHA_256_KEY].casefold():
+            set_match_status(ctx, seq_path)
+        else:
+            logger.info(f'Drifted: {seq_path}')
+            ctx[DF].at[ctx[IDX], STATUS_KEY] = DRIFTED
 
     else:
         # This happens in two cases:
@@ -447,7 +524,36 @@ def analyse_status(data_frame, do_hash_check, index, row, seq_path):
         #    got interrupted. Don't want to redo the hash checks
         #    again because the process could take hours. Just check
         #    that the file is still there.
-        set_match_status(data_frame, index, row, seq_path)
+        set_match_status(ctx, seq_path)
+
+
+def search_cache(ctx, manifest):
+    if len(manifest.index) > 0 and ctx[ROW][TYPE_KEY] == FASTQ:
+        if len(manifest[FASTQ_R2_KEY].index) > 0:
+            # Pair of fastq
+            return manifest.loc[
+                (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
+                ((manifest[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]) |
+                 (manifest[FASTQ_R2_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]))]
+
+        # Single fastq
+        return manifest.loc[
+            (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
+            (manifest[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY])]
+
+    if len(manifest.index) > 0 and ctx[ROW][TYPE_KEY] == FASTA:
+        return manifest.loc[
+            (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
+            (manifest[FASTA_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY])]
+
+    return manifest
+
+
+def build_cache_key(ctx):
+    read = ctx[ROW][READ_KEY]
+    seq_type = ctx[ROW][TYPE_KEY]
+    hash_col_key = "HASH_" + f"{seq_type}_R{read}".upper()
+    return hash_col_key
 
 
 def move_delete_targets_to_trash(
@@ -482,3 +588,20 @@ def mirror_parent_sub_dirs(output_dir, row, trash_dir_path):
     dest_dir = os.path.join(trash_dir_path, sub_paths)
     os.makedirs(dest_dir, exist_ok=True)
     return dest_dir
+
+
+def select_start_state(state_file_path, sync_state):
+    if sync_state[CURRENT_STATE_KEY] == SName.UP_TO_DATE:
+        set_state_pulling_manifest(sync_state)
+        save_json(sync_state, state_file_path)
+
+    elif sync_state[CURRENT_STATE_KEY] == SName.FINALISATION_FAILED:
+        set_state_analysing(sync_state)
+        save_json(sync_state, state_file_path)
+
+
+def reset(state_file_path, sync_state):
+    output_dir = get_output_dir(sync_state)
+    remove_int_manifest(output_dir, sync_state)
+    set_state_pulling_manifest(sync_state)
+    save_json(sync_state, state_file_path)
