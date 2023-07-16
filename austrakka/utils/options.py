@@ -435,6 +435,21 @@ def opt_recalc_hash(**attrs: t.Any):
     )
 
 
+def opt_blanks_delete(**attrs: t.Any):
+    defaults = {
+        'help': "Blank cells in the CSV / Excel file will "
+                "be treated as a delete command for that cell. By "
+                "default, blank cells are ignored."
+    }
+    return _create_option(
+        '--blanks-will-delete',
+        type=bool,
+        is_flag=True,
+        default=False,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_country(**attrs: t.Any):
     defaults = {
         'required': True,
