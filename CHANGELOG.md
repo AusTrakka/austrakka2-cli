@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.32.0] - 2023-07-17
+### Changed
+- `seq sync get` with options to use cached hashes.
+- `metadata add` will ignore blank cells by default. Previous default behaviour was to delete the cell content.
+
 # [0.31.0] - 2023-07-10
 ### Changed
 - Changed `seq add` to accept --skip and --force for dealing with samples which already have sequences.
