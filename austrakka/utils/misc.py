@@ -70,7 +70,8 @@ class AusTrakkaCliOption(click.Option):
         return _get_custom_help_record(orig_help, self.multiple)
 
 
-def is_debug(env: str): return env == DEBUG
+def is_debug(env: str):
+    return env == DEBUG
 
 
 def logger_wraps(*, entry=True, exit_func=True):

@@ -6,7 +6,8 @@ from azure.identity import DeviceCodeCredential
 from loguru import logger
 
 
-def _get_api_scope(app_uri): return f'{app_uri}/.default'
+def _get_api_scope(app_uri):
+    return f'{app_uri}/.default'
 
 
 def user_login(
