@@ -1,3 +1,5 @@
+from typing import List
+
 from io import BufferedReader
 
 from austrakka.utils.misc import logger_wraps
@@ -13,6 +15,7 @@ SUBMISSION_VALIDATE = 'ValidateSubmissions'
 SUBMISSION_VALIDATE_APPEND = 'ValidateSubmissions?appendMode=True'
 DELETE_ON_BLANK_PARAM = 'deleteOnBlank=True'
 
+METADATA_BY_FIELD_PATH = 'by-field'
 
 @logger_wraps()
 def add_metadata(
@@ -71,5 +74,17 @@ def list_metadata(group_name: str, out_format: str):
         out_format,
         params={
             'groupContext': group_id
+        }
+    )
+
+@logger_wraps()
+def list_metadata_by_field(group_name: str, field_names: List[str], out_format: str):
+    group_id: str = get_group_by_name(group_name)['groupId']
+    call_get_and_print_table(
+        f'{METADATA_SEARCH_PATH}/{METADATA_BY_FIELD_PATH}',
+        out_format,
+        params={
+            'groupContext': group_id,
+            'fields': field_names
         }
     )
