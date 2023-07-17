@@ -7,7 +7,6 @@ from loguru import logger
 from austrakka.components.auth import auth
 from austrakka.utils.context import CxtKey
 
-DEBUG = 'debug'
 
 HELP_OPTS = ['-h', '--help']
 
@@ -68,10 +67,6 @@ class AusTrakkaCliOption(click.Option):
     def get_help_record(self, ctx):
         orig_help = super().get_help_record(ctx)
         return _get_custom_help_record(orig_help, self.multiple)
-
-
-def is_debug(env: str):
-    return env == DEBUG
 
 
 def logger_wraps(*, entry=True, exit_func=True):
