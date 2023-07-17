@@ -391,6 +391,27 @@ def opt_user_object_id(**attrs: t.Any):
     )
 
 
+def opt_download_batch_size(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Specifies the number of sequence downloads to perform '
+                'in a single batch during sync. This could improve '
+                'performance depending on how many total sequences are expected. '
+                'When resuming from an interruption, the '
+                'entire batch would be re-tried even if some within a '
+                'batch might have succeeded. For large fastq files, the '
+                'recommended size is 1 to 10. For large numbers of small '
+                'fasta files, the recommended size is 1000. Default is 1.',
+    }
+    return _create_option(
+        '-bs',
+        '--batch-size',
+        type=click.INT,
+        default=1,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_is_active(is_update=False, **attrs: t.Any):
     defaults = {
         'help': 'Determines if the entry is active'

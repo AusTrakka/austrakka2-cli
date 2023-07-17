@@ -10,6 +10,7 @@ OBSOLETE_OBJECTS_FILE_KEY = 'obsolete_objects_file'
 CURRENT_STATE_KEY = 'current_state'
 CURRENT_ACTION_KEY = 'current_action'
 TRASH_DIR_KEY = 'trash_dir'
+DOWNLOAD_BATCH_SIZE_KEY = 'download_batch_size'
 
 # File extensions
 FASTQ_EXTS = ['fastq', 'fq']
