@@ -49,4 +49,4 @@ def setup_logger(log_level: str, log: str):
 
 
 def is_debug(log_level: str):
-    return log_level == LOG_LEVEL_DEBUG or log_level == LOG_LEVEL_TRACE
+    return log_level in [LOG_LEVEL_DEBUG, LOG_LEVEL_TRACE]
