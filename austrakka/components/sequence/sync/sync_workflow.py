@@ -36,6 +36,7 @@ from .constant import HOT_SWAP_NAME_KEY
 from .constant import FILE_PATH_KEY
 from .constant import DETECTION_DATE_KEY
 from .constant import OBSOLETE_OBJECTS_FILE_KEY
+from .constant import DOWNLOAD_BATCH_SIZE_KEY
 from .constant import INTERMEDIATE_MANIFEST_FILE_KEY
 from .constant import MANIFEST_KEY
 from .constant import FILE_NAME_ON_DISK_KEY
@@ -206,6 +207,7 @@ def set_state_downloading(sync_state: dict):
 def download(sync_state: dict):
     logger.info(f'Started: {Action.download}')
 
+    batch_size = sync_state[DOWNLOAD_BATCH_SIZE_KEY]
     data_frame = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
 
     if HOT_SWAP_NAME_KEY not in data_frame.columns:
@@ -219,8 +221,12 @@ def download(sync_state: dict):
             if row[STATUS_KEY] != DOWNLOADED and row[STATUS_KEY] != MATCH:
                 get_file_from_server(data_frame, index, row, sync_state)
 
-            data_frame.to_csv(file, index=False)
-            file.seek(0)
+            if index % batch_size == 0:
+                data_frame.to_csv(file, index=False)
+                file.seek(0)
+
+        # One final save.
+        data_frame.to_csv(file, index=False)
         file.close()
 
     sync_state[CURRENT_STATE_KEY] = SName.DONE_DOWNLOADING
