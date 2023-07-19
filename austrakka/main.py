@@ -26,16 +26,18 @@ from .components.plot import plot
 
 from . import __version__ as VERSION
 from .utils.misc import AusTrakkaCliTopLevel
-from .utils.misc import is_dev_env
+from .utils.logger import is_debug
 from .utils.misc import HELP_OPTS
 from .utils.exceptions import FailedResponseException
 from .utils.output import log_response
 from .utils.logger import setup_logger
+from .utils.logger import LOG_LEVEL_INFO
+from .utils.logger import LOG_LEVELS
 from .utils.cmd_filter import show_admin_cmds
 from .utils.version import check_version
 
 CLI_PREFIX = 'AT'
-CLI_ENV = 'env'
+CLI_LOG_LEVEL = 'LOG_LEVEL'
 
 CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 
@@ -56,10 +58,12 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     required=True
 )
 @click.option(
-    f"--{CLI_ENV}",
+    "--log-level",
     show_envvar=True,
+    envvar=f"{CLI_PREFIX}_{CLI_LOG_LEVEL}",
     required=True,
-    default='prod',
+    default=LOG_LEVEL_INFO,
+    type=click.Choice(LOG_LEVELS),
     show_default=True
 )
 @click.option(
@@ -91,7 +95,7 @@ def cli(
         ctx: Context,
         uri: str,
         token: str,
-        env: str,
+        log_level: str,
         log: str,
         verify_cert: bool,
         use_http2: bool,
@@ -105,7 +109,7 @@ def cli(
         CxtKey.CTX_VERIFY_CERT.value: verify_cert,
         CxtKey.CTX_USE_HTTP2.value: use_http2,
     }
-    setup_logger(env, log)
+    setup_logger(log_level, log)
     check_version(VERSION)
 
 
@@ -138,7 +142,7 @@ def main():
         logger.error("Request failed")
         log_response(ex.parsed_resp)
     except Exception as ex:  # pylint: disable=broad-except
-        if is_dev_env(os.environ.get(f"{CLI_PREFIX}_{CLI_ENV.upper()}")):
+        if is_debug(os.environ.get(f"{CLI_PREFIX}_{CLI_LOG_LEVEL}")):
             logger.exception(ex)
         else:
             logger.error(ex)
