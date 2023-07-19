@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.32.1] - 2023-07-19
+### Changed
+- Added batch size option for `seq sync get` to optimise saving of state.
+- Allow metadata list command to take field names
+- Refactor of process auth
+
 # [0.32.0] - 2023-07-17
 ### Changed
 - `seq sync get` with options to use cached hashes.
