@@ -14,6 +14,7 @@ from .constant import CURRENT_STATE_KEY
 from .constant import GROUP_NAME_KEY
 from .constant import SEQ_TYPE_KEY
 from .constant import RECALCULATE_HASH_KEY
+from .constant import DOWNLOAD_BATCH_SIZE_KEY
 
 from .sync_io import save_json
 
@@ -24,6 +25,7 @@ def seq_get(
         group_name: str,
         recalc_hash: bool,
         seq_type: str,
+        download_batch_size: int,
         reset_opt: bool):
 
     sync_state = {}
@@ -41,8 +43,9 @@ def seq_get(
         # already the same thing. This will guarantee that.
         sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE
 
-        # Hash check setting is allowed to be overriden between runs.
+        # Settings allowed to be overriden between runs.
         sync_state[RECALCULATE_HASH_KEY] = recalc_hash
+        sync_state[DOWNLOAD_BATCH_SIZE_KEY] = download_batch_size
         save_json(sync_state, state_file_path)
 
     elif not os.path.exists(output_dir):
@@ -53,7 +56,8 @@ def seq_get(
             group_name,
             recalc_hash,
             output_dir,
-            seq_type)
+            seq_type,
+            download_batch_size)
 
         save_json(sync_state, state_file_path)
 
