@@ -57,7 +57,10 @@ def validate_metadata(
 ):
     path = SUBMISSION_VALIDATE_APPEND if is_append else SUBMISSION_VALIDATE
     path = "/".join([SUBMISSION_PATH, path])
-    _call_batched_submission(path, file, proforma_abbrev, batch_size)
+    if batch_size > 0:
+        _call_batched_submission(path, file, proforma_abbrev, batch_size)
+    else:
+        _call_submission(path, file, proforma_abbrev)
 
 
 def _call_batched_submission(
