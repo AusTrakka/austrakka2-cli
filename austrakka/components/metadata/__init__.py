@@ -53,8 +53,7 @@ def submission_add(
                      'If the file size is below this value, the file will not be split. '
                      'An upload record will be recorded in the database per batch, and '
                      'validation and success messages will be returned per batch. '
-                     'Note that if an Excel file is batched, the only the submission '
-                     'worksheet will be uploaded.'
+                     'Only CSV files will be batched; Excel files will be uploaded as one file. '
                      'A negative or 0 value can be used to indicate no batching.',
                 default=5000)
 def submission_append(

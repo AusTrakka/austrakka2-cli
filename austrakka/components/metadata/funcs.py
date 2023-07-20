@@ -70,8 +70,9 @@ def _call_batched_submission(
     if  filepath.suffix == '.csv':
         df = pd.read_csv(file, dtype=str, index_col=False, keep_default_na=False, na_values='')
     elif filepath.suffix == '.xlsx':
-        # will read the first worksheet
-        df = pd.read_excel(file, dtype=str, index_col=False, keep_default_na=False, na_values='')
+        # Batching not currently supported, just upload the original file
+        _call_submission(path, file, proforma_abbrev)
+        return
     else:
         raise ValueError('File must be .csv or .xlsx')
     
@@ -84,9 +85,6 @@ def _call_batched_submission(
     
     logger.info(f"Uploading {num_rows} rows in batches of {batch_size}")
     encode = codecs.getwriter('utf-8')
-    if filepath.suffix == '.xlsx':
-        logger.info("XLSX file will be uploaded as CSV batches and only the first worksheet "
-                    "will be used")
     for index in range(0, num_rows, batch_size):
         logger.info(f"Uploading rows {index}-{index+batch_size-1}")
         chunk = df.iloc[index:index+batch_size, :]
