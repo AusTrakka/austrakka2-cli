@@ -147,7 +147,6 @@ def opt_new_name(**attrs: t.Any):
 def opt_description(**attrs: t.Any):
     defaults = {
         'required': True,
-        'default': '',
         'help': 'Human-readable description text',
     }
     return _create_option(
