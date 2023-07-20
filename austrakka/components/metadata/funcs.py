@@ -1,10 +1,10 @@
 from typing import List
 
-from loguru import logger
-
 from pathlib import Path
 from io import BufferedReader, StringIO
 import codecs
+
+from loguru import logger
 import pandas as pd
 
 from austrakka.utils.misc import logger_wraps
@@ -71,6 +71,7 @@ def _call_batched_submission(
 ):
     filepath = Path(file.name)
     if  filepath.suffix == '.csv':
+        # pylint: disable=C0103
         df = pd.read_csv(file, dtype=str, index_col=False, keep_default_na=False, na_values='')
     elif filepath.suffix == '.xlsx':
         # Batching not currently supported, just upload the original file
