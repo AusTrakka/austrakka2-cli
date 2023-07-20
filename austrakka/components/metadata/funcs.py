@@ -57,11 +57,8 @@ def validate_metadata(
 ):
     path = SUBMISSION_VALIDATE_APPEND if is_append else SUBMISSION_VALIDATE
     path = "/".join([SUBMISSION_PATH, path])
-    if batch_size > 0:
-        _call_batched_submission(path, file, proforma_abbrev, batch_size)
-    else:
-        _call_submission(path, file, proforma_abbrev)
-
+    _call_batched_submission(path, file, proforma_abbrev, batch_size)
+    
 
 def _call_batched_submission(
         path: str,
@@ -69,6 +66,10 @@ def _call_batched_submission(
         proforma_abbrev: str,
         batch_size: int
 ):
+    if batch_size < 1:
+        _call_submission(path, file, proforma_abbrev)
+        return
+    
     filepath = Path(file.name)
     if  filepath.suffix == '.csv':
         # pylint: disable=C0103
