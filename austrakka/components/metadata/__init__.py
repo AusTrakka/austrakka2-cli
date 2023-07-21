@@ -16,25 +16,28 @@ from austrakka.components.metadata.funcs import append_metadata
 from austrakka.components.metadata.funcs import list_metadata, list_metadata_by_field
 from austrakka.utils.output import table_format_option
 
+ADD_APPEND_BATCH_SIZE_HELP = (
+    'The number of rows to split the metadata upload into before uploading. '
+    'If the file size is below this value, the file will not be split. '
+    'An upload record will be recorded in the database per batch, and '
+    'validation and success messages will be returned per batch. '
+    'Only CSV files will be batched; Excel files will be uploaded as one file. '
+    'A negative or 0 value can be used to indicate no batching.'
+)
+
 
 @click.group()
 @click.pass_context
 def metadata(ctx):
     """Commands related to metadata submissions"""
     ctx.context = ctx.parent.context
-
+    
 
 @metadata.command('add')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
 @opt_blanks_delete()
-@opt_batch_size(help='The number of rows to split the metadata upload into before uploading. '
-                     'If the file size is below this value, the file will not be split. '
-                     'An upload record will be recorded in the database per batch, and '
-                     'validation and success messages will be returned per batch. '
-                     'Note that if an Excel file is batched, the only the submission '
-                     'worksheet will be uploaded. '
-                     'A negative or 0 value can be used to indicate no batching.',
+@opt_batch_size(help=ADD_APPEND_BATCH_SIZE_HELP,
                 default=5000)
 def submission_add(
         file: BufferedReader, 
@@ -49,12 +52,7 @@ def submission_add(
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
 @opt_blanks_delete()
-@opt_batch_size(help='The number of rows to split the metadata upload into before uploading. '
-                     'If the file size is below this value, the file will not be split. '
-                     'An upload record will be recorded in the database per batch, and '
-                     'validation and success messages will be returned per batch. '
-                     'Only CSV files will be batched; Excel files will be uploaded as one file. '
-                     'A negative or 0 value can be used to indicate no batching.',
+@opt_batch_size(help=ADD_APPEND_BATCH_SIZE_HELP,
                 default=5000)
 def submission_append(
         file: BufferedReader, 
