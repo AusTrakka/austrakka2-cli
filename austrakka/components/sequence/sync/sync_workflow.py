@@ -135,20 +135,20 @@ def aggregate(sync_state: dict):
     o_dir = get_output_dir(sync_state)
     int_all_fasta_path = os.path.join(o_dir, INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME)
 
-    with open(int_all_fasta_path, 'w') as int_aggr_file:
+    with open(int_all_fasta_path, 'w', encoding='UTF-8') as int_aggr_file:
         logger.info(f'Aggregating {len(p_man.index)} fasta files.')
         logger.info(f'Generating {INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME}..')
-        for index, row in p_man.iterrows():
-            p = os.path.join(o_dir, row[SEQ_ID_KEY], row[FASTA_R1_KEY])
-            if not os.path.exists(p):
-                logger.error(f'Fasta file not found. Cannot aggregate '
-                             f'fasta files listed in the published manifest.')
+        for _, row in p_man.iterrows():
+            single_fasta_path = os.path.join(o_dir, row[SEQ_ID_KEY], row[FASTA_R1_KEY])
+            if not os.path.exists(single_fasta_path):
+                logger.error('Fasta file not found. Cannot aggregate '
+                             'fasta files listed in the published manifest.')
                 raise WorkflowError('Aggregate failed.')
 
-            with open(p, 'r') as f:
-                lines = f.readlines()
+            with open(single_fasta_path, 'r', encoding='UTF-8') as fasta:
+                lines = fasta.readlines()
                 int_aggr_file.writelines(lines)
-                f.close()
+                fasta.close()
 
         int_aggr_file.close()
 
