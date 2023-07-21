@@ -5,7 +5,7 @@ from typing import List
 from io import BufferedReader
 import click
 
-from austrakka.utils.options import opt_proforma
+from austrakka.utils.options import opt_proforma, opt_batch_size
 from austrakka.utils.options import opt_is_append
 from austrakka.utils.options import opt_group_name
 from austrakka.utils.options import opt_blanks_delete
@@ -16,45 +16,71 @@ from austrakka.components.metadata.funcs import append_metadata
 from austrakka.components.metadata.funcs import list_metadata, list_metadata_by_field
 from austrakka.utils.output import table_format_option
 
+ADD_APPEND_BATCH_SIZE_HELP = (
+    'The number of rows to split the metadata upload into before uploading. '
+    'If the file size is below this value, the file will not be split. '
+    'An upload record will be recorded in the database per batch, and '
+    'validation and success messages will be returned per batch. '
+    'Only CSV files will be batched; Excel files will be uploaded as one file. '
+    'A negative or 0 value can be used to indicate no batching.'
+)
+
 
 @click.group()
 @click.pass_context
 def metadata(ctx):
     """Commands related to metadata submissions"""
     ctx.context = ctx.parent.context
-
+    
 
 @metadata.command('add')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
 @opt_blanks_delete()
-def submission_add(file: BufferedReader, proforma: str, blanks_will_delete: bool = False):
+@opt_batch_size(help=ADD_APPEND_BATCH_SIZE_HELP,
+                default=5000)
+def submission_add(
+        file: BufferedReader, 
+        proforma: str, 
+        blanks_will_delete: bool,
+        batch_size: int):
     """Upload metadata submission to AusTrakka"""
-    add_metadata(file, proforma, blanks_will_delete)
+    add_metadata(file, proforma, blanks_will_delete, batch_size)
 
 
 @metadata.command('append')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
 @opt_blanks_delete()
-def submission_append(file: BufferedReader, proforma: str, blanks_will_delete: bool = False):
+@opt_batch_size(help=ADD_APPEND_BATCH_SIZE_HELP,
+                default=5000)
+def submission_append(
+        file: BufferedReader, 
+        proforma: str, 
+        blanks_will_delete: bool,
+        batch_size: int):   
     """
     Upload metadata to be appended to existing samples.
     The append operation does not require (or accept) Owner_group.
     The specified pro forma must contain Seq_ID and metadata fields
     to be updated. All samples must already exist in AusTrakka.
     """
-    append_metadata(file, proforma, blanks_will_delete)
+    append_metadata(file, proforma, blanks_will_delete, batch_size)
 
 
 @metadata.command('validate')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
 @opt_is_append()
-def submission_validate(file: BufferedReader, proforma: str, is_append: bool):
+@opt_batch_size(help='The number of rows to split the metadata upload into before uploading. '
+                     'If the file size is below this value, the file will not be split. '
+                     'Validation messages will be returned per batch.'
+                     'A negative or 0 value can be used to indicate no batching.',
+                default=5000)
+def submission_validate(file: BufferedReader, proforma: str, is_append: bool, batch_size: int):
     """Check uploaded content for errors and warnings. This is a read-only
     action. No data will modified."""
-    validate_metadata(file, proforma, is_append)
+    validate_metadata(file, proforma, is_append, batch_size)
 
 
 @metadata.command('list')
