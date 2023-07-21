@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.32.2] - 2023-07-21
+- Added batch size option and default CSV batching for `metadata add`
+
 # [0.32.1] - 2023-07-19
 ### Changed
 - Added batch size option for `seq sync get` to optimise saving of state.
