@@ -38,7 +38,9 @@ from .constant import DETECTION_DATE_KEY
 from .constant import OBSOLETE_OBJECTS_FILE_KEY
 from .constant import DOWNLOAD_BATCH_SIZE_KEY
 from .constant import INTERMEDIATE_MANIFEST_FILE_KEY
+from .constant import INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME
 from .constant import MANIFEST_KEY
+from .constant import FASTA_AGGREGATE_FILE_NAME
 from .constant import FILE_NAME_ON_DISK_KEY
 from .constant import FILE_NAME_KEY
 from .constant import SEQ_ID_KEY
@@ -93,6 +95,8 @@ def configure_state_machine() -> StateMachine:
         SName.FINALISING: State(SName.FINALISING),
         SName.DONE_FINALISING: State(SName.DONE_FINALISING),
         SName.FINALISATION_FAILED: State(SName.FINALISATION_FAILED, is_end_state=True),
+        SName.AGGREGATING: State(SName.AGGREGATING),
+        SName.DONE_AGGREGATING: State(SName.AGGREGATING),
         SName.PURGING: State(SName.PURGING),
         SName.DONE_PURGING: State(SName.DONE_PURGING),
         SName.UP_TO_DATE: State(SName.UP_TO_DATE, is_end_state=True),
@@ -105,10 +109,56 @@ def configure_state_machine() -> StateMachine:
         Action.download: download,
         Action.set_state_finalising: set_state_finalising,
         Action.finalise: finalise,
+        Action.set_state_aggregating: set_state_aggregating,
+        Action.aggregate: aggregate,
         Action.set_state_purging: set_state_purging,
         Action.purge: purge,
         Action.set_state_up_to_date: set_state_up_to_date
     })
+
+
+def set_state_aggregating(sync_state: dict):
+    sync_state[CURRENT_STATE_KEY] = SName.AGGREGATING
+    sync_state[CURRENT_ACTION_KEY] = Action.aggregate
+
+
+def aggregate(sync_state: dict):
+    logger.info(f'Started: {Action.aggregate}')
+    if sync_state[SEQ_TYPE_KEY] == FASTQ:
+        logger.info(f'No aggregation for {FASTQ}')
+        sync_state[CURRENT_STATE_KEY] = SName.DONE_AGGREGATING
+        sync_state[CURRENT_ACTION_KEY] = Action.set_state_purging
+        logger.success(f'Finished: {Action.aggregate}')
+        return
+
+    p_man = read_from_csv(sync_state, MANIFEST_KEY)
+    o_dir = get_output_dir(sync_state)
+    int_all_fasta_path = os.path.join(o_dir, INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME)
+
+    with open(int_all_fasta_path, 'w', encoding='UTF-8') as int_aggr_file:
+        logger.info(f'Aggregating {len(p_man.index)} fasta files.')
+        logger.info(f'Generating {INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME}..')
+        for _, row in p_man.iterrows():
+            single_fasta_path = os.path.join(o_dir, row[SEQ_ID_KEY], row[FASTA_R1_KEY])
+            if not os.path.exists(single_fasta_path):
+                logger.error('Fasta file not found. Cannot aggregate '
+                             'fasta files listed in the published manifest.')
+                raise WorkflowError('Aggregate failed.')
+
+            with open(single_fasta_path, 'r', encoding='UTF-8') as fasta:
+                lines = fasta.readlines()
+                int_aggr_file.writelines(lines)
+                fasta.close()
+
+        int_aggr_file.close()
+
+    final_aggr_fasta_path = os.path.join(o_dir, FASTA_AGGREGATE_FILE_NAME)
+    logger.info(f'Publishing {INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME} to {final_aggr_fasta_path}')
+    shutil.move(int_all_fasta_path, final_aggr_fasta_path)
+
+    sync_state[CURRENT_STATE_KEY] = SName.DONE_AGGREGATING
+    sync_state[CURRENT_ACTION_KEY] = Action.set_state_purging
+    logger.success(f'Finished: {Action.aggregate}')
 
 
 def set_state_pulling_manifest(sync_state: dict):
@@ -145,27 +195,27 @@ def set_state_analysing(sync_state: dict):
 def analyse(sync_state: dict):
     logger.info(f'Started: {Action.analyse}')
 
-    data_frame = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
+    int_man = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     published_manifest = read_from_csv_or_empty(sync_state, MANIFEST_KEY)
     use_hash_cache = not sync_state[RECALCULATE_HASH_KEY]
 
     ensure_valid(published_manifest, use_hash_cache, sync_state[SEQ_TYPE_KEY])
 
-    if STATUS_KEY not in data_frame.columns:
-        data_frame[STATUS_KEY] = ""
+    if STATUS_KEY not in int_man.columns:
+        int_man[STATUS_KEY] = ""
 
     output_dir = get_output_dir(sync_state)
 
-    for index, row in data_frame.iterrows():
+    for index, row in int_man.iterrows():
         seq_path = os.path.join(
             output_dir,
             str(row[SAMPLE_NAME_KEY]),
             str(row[FILE_NAME_ON_DISK_KEY]))
 
-        ctx = {DF: data_frame, IDX: index, ROW: row}
+        ctx = {DF: int_man, IDX: index, ROW: row}
         analyse_status(ctx, use_hash_cache, seq_path, published_manifest)
 
-    save_int_manifest(data_frame, sync_state)
+    save_int_manifest(int_man, sync_state)
     sync_state[CURRENT_STATE_KEY] = SName.DONE_ANALYSING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_downloading
     logger.success(f'Finished: {Action.analyse}')
@@ -246,7 +296,8 @@ def finalise(sync_state: dict):
 
     errors = int_med.loc[(int_med[STATUS_KEY] != MATCH) &
                          (int_med[STATUS_KEY] != DOWNLOADED) &
-                         (int_med[STATUS_KEY] != DRIFTED)]
+                         (int_med[STATUS_KEY] != DRIFTED) &
+                         (int_med[STATUS_KEY] != DONE)]
 
     if len(errors.index) > 0:
         im_path = get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
@@ -264,7 +315,7 @@ def finalise(sync_state: dict):
         detect_and_record_obsolete_files(int_med, sync_state)
 
         sync_state[CURRENT_STATE_KEY] = SName.DONE_FINALISING
-        sync_state[CURRENT_ACTION_KEY] = Action.set_state_purging
+        sync_state[CURRENT_ACTION_KEY] = Action.set_state_aggregating
         logger.success(f'Finished: {Action.finalise}')
 
 
