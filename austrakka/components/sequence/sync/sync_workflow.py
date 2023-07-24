@@ -466,7 +466,7 @@ def detect_and_record_obsolete_files(int_med, sync_state):
         saved = read_from_csv(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
         keep = saved[~saved[FILE_NAME_KEY].isin(
             int_med[FILE_NAME_ON_DISK_KEY])]
-        obsoletes = obsoletes.append(keep)
+        obsoletes = pd.concat([obsoletes,keep])
 
     obsoletes.drop_duplicates(
         subset=[
