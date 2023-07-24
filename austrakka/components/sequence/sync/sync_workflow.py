@@ -227,7 +227,7 @@ def analyse(sync_state: dict):
 
 
 def build_hash_dict(published_manifest):
-    hash_dict = dict()
+    hash_dict = {}
     for _, row in published_manifest.iterrows():
         for filename_key in [FASTQ_R1_KEY, FASTQ_R2_KEY, FASTA_R1_KEY]:
             if filename_key in row:
