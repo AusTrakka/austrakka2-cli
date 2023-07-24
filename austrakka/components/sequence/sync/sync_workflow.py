@@ -123,7 +123,8 @@ def set_state_aggregating(sync_state: dict):
 
 
 def aggregate(sync_state: dict):
-    logger.info(f'Started: {Action.aggregate}')
+    logger.success(f'Started: {Action.aggregate}')
+
     if sync_state[SEQ_TYPE_KEY] == FASTQ:
         logger.info(f'No aggregation for {FASTQ}')
         sync_state[CURRENT_STATE_KEY] = SName.DONE_AGGREGATING
@@ -167,7 +168,7 @@ def set_state_pulling_manifest(sync_state: dict):
 
 
 def pull_manifest(sync_state: dict):
-    logger.info(f'Started: {Action.pull_manifest}')
+    logger.success(f'Started: {Action.pull_manifest}')
     data = _get_seq_data(
         sync_state[SEQ_TYPE_KEY],
         READ_BOTH,
@@ -175,7 +176,7 @@ def pull_manifest(sync_state: dict):
         BY_IS_ACTIVE_FLAG,
     )
 
-    logger.info(f'Freshly pulled manifest has {len(data)} entries.')
+    logger.success(f'Freshly pulled manifest has {len(data)} entries.')
     path = get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     logger.info(f'Saving to intermediate manifest: {path}')
 
@@ -193,7 +194,7 @@ def set_state_analysing(sync_state: dict):
 
 
 def analyse(sync_state: dict):
-    logger.info(f'Started: {Action.analyse}')
+    logger.success(f'Started: {Action.analyse}')
 
     int_man = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     published_manifest = read_from_csv_or_empty(sync_state, MANIFEST_KEY)
@@ -255,7 +256,7 @@ def set_state_downloading(sync_state: dict):
 
 
 def download(sync_state: dict):
-    logger.info(f'Started: {Action.download}')
+    logger.success(f'Started: {Action.download}')
 
     batch_size = sync_state[DOWNLOAD_BATCH_SIZE_KEY]
     data_frame = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
@@ -290,7 +291,7 @@ def set_state_finalising(sync_state: dict):
 
 
 def finalise(sync_state: dict):
-    logger.info(f'Started: {Action.finalise}')
+    logger.success(f'Started: {Action.finalise}')
 
     int_med = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
 
@@ -325,7 +326,7 @@ def set_state_purging(sync_state: dict):
 
 
 def purge(sync_state: dict):
-    logger.info(f'Started: {Action.purge}')
+    logger.success(f'Started: {Action.purge}')
 
     trash_dir_path = get_path(sync_state, TRASH_DIR_KEY)
     os.makedirs(trash_dir_path, exist_ok=True)
@@ -378,9 +379,9 @@ def finalise_each_file(int_med, sync_state):
                 int_med.at[index, SAMPLE_NAME_KEY],
                 int_med.at[index, HOT_SWAP_NAME_KEY])
 
-            logger.info(f'Hot swapping: {dest}')
+            logger.warning(f'Hot swapping: {dest}')
             os.rename(src, dest)
-            logger.success(f'Done hot swapping: {dest}')
+            logger.info(f'Done hot swapping: {dest}')
 
             int_med.at[index, STATUS_KEY] = DONE
 
@@ -388,7 +389,7 @@ def finalise_each_file(int_med, sync_state):
                 int_med.at[index, STATUS_KEY] == DOWNLOADED:
 
             int_med.at[index, STATUS_KEY] = DONE
-            logger.success(f'Done: {dest}')
+            logger.info(f'Done: {dest}')
 
         else:
             raise WorkflowError(
@@ -398,6 +399,7 @@ def finalise_each_file(int_med, sync_state):
                 f'The caller, probably {Action.finalise}, should have checked '
                 f'my inputs before calling me.')
 
+    logger.info(f'Finalized {len(int_med.index)} entries.')
     save_int_manifest(int_med, sync_state)
 
 
@@ -460,8 +462,15 @@ def detect_and_record_obsolete_files(int_med, sync_state):
         inplace=True)
     save_to_csv(obsoletes, path)
 
-    logger.info(f'Found {len(obsoletes.index)} obsolete files.')
+    log_warn_or_success(
+        len(obsoletes.index),
+        f'Found {len(obsoletes.index)} obsolete files.'
+    )
     logger.info(f'Saving list to {path}')
+
+
+def log_warn_or_success(count, msg):
+    logger.warning(msg) if count > 0 else logger.success(msg)
 
 
 def publish_new_manifest(int_med, sync_state):
@@ -507,7 +516,7 @@ def get_file_from_server(data_frame, index, row, sync_state):
 
         if row[STATUS_KEY] == DRIFTED:
             fresh_name = f'{row[FILE_NAME_ON_DISK_KEY]}.fresh'
-            logger.warning(f'Drifted from server: {file_path}')
+            logger.info(f'Drifted from server: {file_path}')
             logger.info(f'Downloading fresh copy to temp file: {fresh_name}')
             data_frame.at[index, HOT_SWAP_NAME_KEY] = fresh_name
             file_path = os.path.join(sample_dir, fresh_name)
@@ -544,7 +553,7 @@ def set_match_status(ctx, seq_path):
     azure_path = os.path.join(
         ctx[ROW][BLOB_FILE_PATH_KEY],
         ctx[ROW][ORIGINAL_FILE_NAME_KEY])
-    logger.success(f'Matched: {seq_path} ==> Azure: {azure_path}')
+    logger.info(f'Matched: {seq_path} ==> Azure: {azure_path}')
     ctx[DF].at[ctx[IDX], STATUS_KEY] = MATCH
 
 
@@ -553,7 +562,7 @@ def analyse_status(ctx, use_hash_cache, seq_path, published_manifest):
     p_manifest = published_manifest
 
     if not os.path.exists(seq_path):
-        logger.info(f'Missing: {seq_path}')
+        logger.warning(f'Missing: {seq_path}')
         ctx[DF].at[ctx[IDX], STATUS_KEY] = MISSING
 
     elif (not previously_matched) or ctx[ROW][STATUS_KEY] == FAILED:
@@ -571,7 +580,7 @@ def analyse_status(ctx, use_hash_cache, seq_path, published_manifest):
         if seq_hash.casefold() == ctx[ROW][SERVER_SHA_256_KEY].casefold():
             set_match_status(ctx, seq_path)
         else:
-            logger.info(f'Drifted: {seq_path}')
+            logger.warning(f'Drifted: {seq_path}')
             ctx[DF].at[ctx[IDX], STATUS_KEY] = DRIFTED
 
     else:
@@ -619,7 +628,11 @@ def move_delete_targets_to_trash(
         trash_dir_path):
 
     trash = pd.read_csv(obsolete_objects_file_path)
-    logger.info(f'Found: {len(trash.index)} files to purge.')
+
+    log_warn_or_success(
+        len(trash.index),
+        f'Found: {len(trash.index)} files to purge.'
+    )
 
     for _, row in trash.iterrows():
         if os.path.exists(row[FILE_PATH_KEY]):
@@ -627,7 +640,7 @@ def move_delete_targets_to_trash(
             # Get the file's parent directories not including output_dir
             dest_dir = mirror_parent_sub_dirs(output_dir, row, trash_dir_path)
             dest_file = os.path.join(dest_dir, row[FILE_NAME_KEY])
-            logger.info(
+            logger.warning(
                 f'Moving to trash: {row[FILE_PATH_KEY]} ==> {dest_file}')
             shutil.move(row[FILE_PATH_KEY], dest_file)
 
