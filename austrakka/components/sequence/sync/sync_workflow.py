@@ -470,7 +470,10 @@ def detect_and_record_obsolete_files(int_med, sync_state):
 
 
 def log_warn_or_success(count, msg):
-    logger.warning(msg) if count > 0 else logger.success(msg)
+    if count > 0:
+        logger.warning(msg)
+    else:
+        logger.success(msg)
 
 
 def publish_new_manifest(int_med, sync_state):
