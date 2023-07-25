@@ -200,6 +200,11 @@ def analyse(sync_state: dict):
     use_hash_cache = not sync_state[RECALCULATE_HASH_KEY]
 
     ensure_valid(published_manifest, use_hash_cache, sync_state[SEQ_TYPE_KEY])
+    
+    if use_hash_cache:
+        hash_cache = build_hash_dict(published_manifest)
+    else:
+        hash_cache = None
 
     if STATUS_KEY not in int_man.columns:
         int_man[STATUS_KEY] = ""
@@ -213,12 +218,22 @@ def analyse(sync_state: dict):
             str(row[FILE_NAME_ON_DISK_KEY]))
 
         ctx = {DF: int_man, IDX: index, ROW: row}
-        analyse_status(ctx, use_hash_cache, seq_path, published_manifest)
+        analyse_status(ctx, use_hash_cache, seq_path, hash_cache)
 
     save_int_manifest(int_man, sync_state)
     sync_state[CURRENT_STATE_KEY] = SName.DONE_ANALYSING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_downloading
     logger.success(f'Finished: {Action.analyse}')
+
+
+def build_hash_dict(published_manifest):
+    hash_dict = {}
+    for _, row in published_manifest.iterrows():
+        for filename_key in [FASTQ_R1_KEY, FASTQ_R2_KEY, FASTA_R1_KEY]:
+            if filename_key in row:
+                hash_key = f"HASH_{filename_key}"
+                hash_dict[row[filename_key]] = row[hash_key]
+    return hash_dict
 
 
 def ensure_valid(manifest, use_hash_cache, seq_type):
@@ -451,7 +466,7 @@ def detect_and_record_obsolete_files(int_med, sync_state):
         saved = read_from_csv(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
         keep = saved[~saved[FILE_NAME_KEY].isin(
             int_med[FILE_NAME_ON_DISK_KEY])]
-        obsoletes = obsoletes.append(keep)
+        obsoletes = pd.concat([obsoletes,keep])
 
     obsoletes.drop_duplicates(
         subset=[
@@ -548,9 +563,12 @@ def set_match_status(ctx, seq_path):
     ctx[DF].at[ctx[IDX], STATUS_KEY] = MATCH
 
 
-def analyse_status(ctx, use_hash_cache, seq_path, published_manifest):
+def analyse_status(
+        ctx: dict,
+        use_hash_cache: bool,
+        seq_path: str,
+        hash_cache: dict):
     previously_matched = ctx[ROW][STATUS_KEY] == MATCH
-    p_manifest = published_manifest
 
     if not os.path.exists(seq_path):
         logger.info(f'Missing: {seq_path}')
@@ -558,13 +576,10 @@ def analyse_status(ctx, use_hash_cache, seq_path, published_manifest):
 
     elif (not previously_matched) or ctx[ROW][STATUS_KEY] == FAILED:
 
-        cache_row = search_cache(ctx, p_manifest)
-        hash_col_key = build_cache_key(ctx)
-
         # If told to use cache and there is a cache hit.
-        if use_hash_cache and len(cache_row.index):
+        if use_hash_cache and ctx[ROW][FILE_NAME_ON_DISK_KEY] in hash_cache:
             logger.info("Hash cache hit.")
-            seq_hash = cache_row.iloc[0, cache_row.columns.get_loc(hash_col_key)]
+            seq_hash = hash_cache[ctx[ROW][FILE_NAME_ON_DISK_KEY]]
         else:
             seq_hash = calc_hash(seq_path)
 
@@ -582,35 +597,6 @@ def analyse_status(ctx, use_hash_cache, seq_path, published_manifest):
         #    again because the process could take hours. Just check
         #    that the file is still there.
         set_match_status(ctx, seq_path)
-
-
-def search_cache(ctx, manifest):
-    if len(manifest.index) > 0 and ctx[ROW][TYPE_KEY] == FASTQ:
-        if len(manifest[FASTQ_R2_KEY].index) > 0:
-            # Pair of fastq
-            return manifest.loc[
-                (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
-                ((manifest[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]) |
-                 (manifest[FASTQ_R2_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]))]
-
-        # Single fastq
-        return manifest.loc[
-            (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
-            (manifest[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY])]
-
-    if len(manifest.index) > 0 and ctx[ROW][TYPE_KEY] == FASTA:
-        return manifest.loc[
-            (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
-            (manifest[FASTA_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY])]
-
-    return manifest
-
-
-def build_cache_key(ctx):
-    read = ctx[ROW][READ_KEY]
-    seq_type = ctx[ROW][TYPE_KEY]
-    hash_col_key = "HASH_" + f"{seq_type}_R{read}".upper()
-    return hash_col_key
 
 
 def move_delete_targets_to_trash(

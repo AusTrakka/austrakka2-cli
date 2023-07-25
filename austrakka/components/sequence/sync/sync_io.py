@@ -35,7 +35,7 @@ def read_from_csv(sync_state: dict, state_key: str):
 def read_from_csv_or_empty(sync_state: dict, state_key: str):
     path = get_path(sync_state, state_key)
     try:
-        data_frame = pd.read_csv(path)
+        data_frame = pd.read_csv(path, dtype=str, index_col=False)
         return data_frame
     except Exception:
         return pd.DataFrame()
