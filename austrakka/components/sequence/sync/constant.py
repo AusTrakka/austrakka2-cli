@@ -29,7 +29,6 @@ FILE_NAME_ON_DISK_KEY = 'fileNameOnDisk'
 SAMPLE_NAME_KEY = 'sampleName'
 READ_KEY = 'read'
 BLOB_FILE_PATH_KEY = 'blobFilePath'
-ORIGINAL_FILE_NAME_KEY = 'originalFileName'
 SERVER_SHA_256_KEY = 'serverSha256'
 TYPE_KEY = 'type'
 
