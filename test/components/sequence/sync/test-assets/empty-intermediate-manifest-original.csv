@@ -1,1 +1,1 @@
-sequenceId,sampleName,fileName,fileNameOnDisk,blobFilePath,originalFileName,serverSha256,type,read,created,isActive,status
+sequenceId,sampleName,fileName,fileNameOnDisk,blobFilePath,serverSha256,type,read,created,isActive,status

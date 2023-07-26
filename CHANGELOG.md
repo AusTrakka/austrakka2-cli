@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.32.4] - 3023-07-26
+- `seq sync get` performance improvement and minor bug fixes.
+
 # [0.32.3] - 3023-07-22
 - Added FASTA concatenation functionality to `seq sync get`
 
