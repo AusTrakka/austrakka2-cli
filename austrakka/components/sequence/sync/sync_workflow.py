@@ -43,13 +43,13 @@ from .constant import MANIFEST_KEY
 from .constant import FASTA_AGGREGATE_FILE_NAME
 from .constant import FILE_NAME_ON_DISK_KEY
 from .constant import FILE_NAME_KEY
+from .constant import INT_FILE_NAME_KEY
 from .constant import SEQ_ID_KEY
 from .constant import SEQ_TYPE_KEY
 from .constant import TYPE_KEY
 from .constant import READ_KEY
 from .constant import GROUP_NAME_KEY
 from .constant import BLOB_FILE_PATH_KEY
-from .constant import ORIGINAL_FILE_NAME_KEY
 from .constant import SERVER_SHA_256_KEY
 from .constant import FASTQ_R1_KEY
 from .constant import FASTQ_R2_KEY
@@ -558,7 +558,7 @@ def check_download_hash(data_frame, file_path, index, row):
 def set_match_status(ctx, seq_path):
     azure_path = os.path.join(
         ctx[ROW][BLOB_FILE_PATH_KEY],
-        ctx[ROW][ORIGINAL_FILE_NAME_KEY])
+        ctx[ROW][INT_FILE_NAME_KEY])
     logger.success(f'Matched: {seq_path} ==> Azure: {azure_path}')
     ctx[DF].at[ctx[IDX], STATUS_KEY] = MATCH
 
