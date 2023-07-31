@@ -5,10 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-# [0.32.4] - 3023-07-26
+# [0.32.5] - 2023-07-31
+### Changed
+- Performance improvements for `seq sync get`
+
+### Fixed
+- Fixed bug in `seq sync get` where some deleted files were not being moved to .trash
+
+# [0.32.4] - 2023-07-26
 - `seq sync get` performance improvement and minor bug fixes.
 
-# [0.32.3] - 3023-07-22
+# [0.32.3] - 2023-07-22
 - Added FASTA concatenation functionality to `seq sync get`
 
 # [0.32.2] - 2023-07-21
