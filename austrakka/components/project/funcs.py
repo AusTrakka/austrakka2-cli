@@ -76,7 +76,7 @@ def update_project(
         put_project['dashboardName'] = dashboard_name
     
     return api_put(
-        path=path.join(PROJECT_PATH, str(project_abbreviation)),
+        path=f"{PROJECT_PATH}/{project_abbreviation}",
         data=put_project
     )
 
