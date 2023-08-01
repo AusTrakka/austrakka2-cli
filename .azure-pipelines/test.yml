@@ -1,4 +1,7 @@
-trigger: none
+trigger:
+  - Development
+  - UAT
+  - master
 
 pr:
   - Development
