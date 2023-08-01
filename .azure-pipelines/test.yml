@@ -19,7 +19,7 @@ steps:
   - script: python -m pip install pipenv==2022.11.30
     displayName: 'Install pipenv'
 
-  - script: pipenv requirements | tee requirements.txt
+  - script: pipenv requirements --dev | tee requirements.txt
     displayName: 'Create requirements.txt from Pipfile.lock'
 
   - script: pip install -r requirements.txt
