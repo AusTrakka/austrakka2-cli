@@ -11,6 +11,7 @@ pylint-print = "*"
 pytest = "*"
 pipenv-setup = "==3.2.0"
 vistir = "==0.6.1"
+pytest-azurepipelines = "*"
 
 [packages]
 austrakka = {editable = true, path = "."}
