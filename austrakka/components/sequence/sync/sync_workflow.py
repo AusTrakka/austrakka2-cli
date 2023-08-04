@@ -36,17 +36,20 @@ from .constant import HOT_SWAP_NAME_KEY
 from .constant import FILE_PATH_KEY
 from .constant import DETECTION_DATE_KEY
 from .constant import OBSOLETE_OBJECTS_FILE_KEY
+from .constant import DOWNLOAD_BATCH_SIZE_KEY
 from .constant import INTERMEDIATE_MANIFEST_FILE_KEY
+from .constant import INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME
 from .constant import MANIFEST_KEY
+from .constant import FASTA_AGGREGATE_FILE_NAME
 from .constant import FILE_NAME_ON_DISK_KEY
 from .constant import FILE_NAME_KEY
+from .constant import INT_FILE_NAME_KEY
 from .constant import SEQ_ID_KEY
 from .constant import SEQ_TYPE_KEY
 from .constant import TYPE_KEY
 from .constant import READ_KEY
 from .constant import GROUP_NAME_KEY
 from .constant import BLOB_FILE_PATH_KEY
-from .constant import ORIGINAL_FILE_NAME_KEY
 from .constant import SERVER_SHA_256_KEY
 from .constant import FASTQ_R1_KEY
 from .constant import FASTQ_R2_KEY
@@ -92,6 +95,8 @@ def configure_state_machine() -> StateMachine:
         SName.FINALISING: State(SName.FINALISING),
         SName.DONE_FINALISING: State(SName.DONE_FINALISING),
         SName.FINALISATION_FAILED: State(SName.FINALISATION_FAILED, is_end_state=True),
+        SName.AGGREGATING: State(SName.AGGREGATING),
+        SName.DONE_AGGREGATING: State(SName.AGGREGATING),
         SName.PURGING: State(SName.PURGING),
         SName.DONE_PURGING: State(SName.DONE_PURGING),
         SName.UP_TO_DATE: State(SName.UP_TO_DATE, is_end_state=True),
@@ -104,10 +109,57 @@ def configure_state_machine() -> StateMachine:
         Action.download: download,
         Action.set_state_finalising: set_state_finalising,
         Action.finalise: finalise,
+        Action.set_state_aggregating: set_state_aggregating,
+        Action.aggregate: aggregate,
         Action.set_state_purging: set_state_purging,
         Action.purge: purge,
         Action.set_state_up_to_date: set_state_up_to_date
     })
+
+
+def set_state_aggregating(sync_state: dict):
+    sync_state[CURRENT_STATE_KEY] = SName.AGGREGATING
+    sync_state[CURRENT_ACTION_KEY] = Action.aggregate
+
+
+def aggregate(sync_state: dict):
+    logger.success(f'Started: {Action.aggregate}')
+
+    if sync_state[SEQ_TYPE_KEY] == FASTQ:
+        logger.info(f'No aggregation for {FASTQ}')
+        sync_state[CURRENT_STATE_KEY] = SName.DONE_AGGREGATING
+        sync_state[CURRENT_ACTION_KEY] = Action.set_state_purging
+        logger.success(f'Finished: {Action.aggregate}')
+        return
+
+    p_man = read_from_csv(sync_state, MANIFEST_KEY)
+    o_dir = get_output_dir(sync_state)
+    int_all_fasta_path = os.path.join(o_dir, INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME)
+
+    with open(int_all_fasta_path, 'w', encoding='UTF-8') as int_aggr_file:
+        logger.info(f'Aggregating {len(p_man.index)} fasta files.')
+        logger.info(f'Generating {INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME}..')
+        for _, row in p_man.iterrows():
+            single_fasta_path = os.path.join(o_dir, row[SEQ_ID_KEY], row[FASTA_R1_KEY])
+            if not os.path.exists(single_fasta_path):
+                logger.error('Fasta file not found. Cannot aggregate '
+                             'fasta files listed in the published manifest.')
+                raise WorkflowError('Aggregate failed.')
+
+            with open(single_fasta_path, 'r', encoding='UTF-8') as fasta:
+                lines = fasta.readlines()
+                int_aggr_file.writelines(lines)
+                fasta.close()
+
+        int_aggr_file.close()
+
+    final_aggr_fasta_path = os.path.join(o_dir, FASTA_AGGREGATE_FILE_NAME)
+    logger.info(f'Publishing {INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME} to {final_aggr_fasta_path}')
+    shutil.move(int_all_fasta_path, final_aggr_fasta_path)
+
+    sync_state[CURRENT_STATE_KEY] = SName.DONE_AGGREGATING
+    sync_state[CURRENT_ACTION_KEY] = Action.set_state_purging
+    logger.success(f'Finished: {Action.aggregate}')
 
 
 def set_state_pulling_manifest(sync_state: dict):
@@ -116,7 +168,7 @@ def set_state_pulling_manifest(sync_state: dict):
 
 
 def pull_manifest(sync_state: dict):
-    logger.info(f'Started: {Action.pull_manifest}')
+    logger.success(f'Started: {Action.pull_manifest}')
     data = _get_seq_data(
         sync_state[SEQ_TYPE_KEY],
         READ_BOTH,
@@ -124,7 +176,7 @@ def pull_manifest(sync_state: dict):
         BY_IS_ACTIVE_FLAG,
     )
 
-    logger.info(f'Freshly pulled manifest has {len(data)} entries.')
+    logger.success(f'Freshly pulled manifest has {len(data)} entries.')
     path = get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     logger.info(f'Saving to intermediate manifest: {path}')
 
@@ -142,32 +194,47 @@ def set_state_analysing(sync_state: dict):
 
 
 def analyse(sync_state: dict):
-    logger.info(f'Started: {Action.analyse}')
+    logger.success(f'Started: {Action.analyse}')
 
-    data_frame = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
+    int_man = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     published_manifest = read_from_csv_or_empty(sync_state, MANIFEST_KEY)
     use_hash_cache = not sync_state[RECALCULATE_HASH_KEY]
 
     ensure_valid(published_manifest, use_hash_cache, sync_state[SEQ_TYPE_KEY])
+    
+    if use_hash_cache:
+        hash_cache = build_hash_dict(published_manifest)
+    else:
+        hash_cache = None
 
-    if STATUS_KEY not in data_frame.columns:
-        data_frame[STATUS_KEY] = ""
+    if STATUS_KEY not in int_man.columns:
+        int_man[STATUS_KEY] = ""
 
     output_dir = get_output_dir(sync_state)
 
-    for index, row in data_frame.iterrows():
+    for index, row in int_man.iterrows():
         seq_path = os.path.join(
             output_dir,
             str(row[SAMPLE_NAME_KEY]),
             str(row[FILE_NAME_ON_DISK_KEY]))
 
-        ctx = {DF: data_frame, IDX: index, ROW: row}
-        analyse_status(ctx, use_hash_cache, seq_path, published_manifest)
+        ctx = {DF: int_man, IDX: index, ROW: row}
+        analyse_status(ctx, use_hash_cache, seq_path, hash_cache)
 
-    save_int_manifest(data_frame, sync_state)
+    save_int_manifest(int_man, sync_state)
     sync_state[CURRENT_STATE_KEY] = SName.DONE_ANALYSING
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_downloading
     logger.success(f'Finished: {Action.analyse}')
+
+
+def build_hash_dict(published_manifest):
+    hash_dict = {}
+    for _, row in published_manifest.iterrows():
+        for filename_key in [FASTQ_R1_KEY, FASTQ_R2_KEY, FASTA_R1_KEY]:
+            if filename_key in row:
+                hash_key = f"HASH_{filename_key}"
+                hash_dict[row[filename_key]] = row[hash_key]
+    return hash_dict
 
 
 def ensure_valid(manifest, use_hash_cache, seq_type):
@@ -204,8 +271,9 @@ def set_state_downloading(sync_state: dict):
 
 
 def download(sync_state: dict):
-    logger.info(f'Started: {Action.download}')
+    logger.success(f'Started: {Action.download}')
 
+    batch_size = sync_state[DOWNLOAD_BATCH_SIZE_KEY]
     data_frame = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
 
     if HOT_SWAP_NAME_KEY not in data_frame.columns:
@@ -219,8 +287,12 @@ def download(sync_state: dict):
             if row[STATUS_KEY] != DOWNLOADED and row[STATUS_KEY] != MATCH:
                 get_file_from_server(data_frame, index, row, sync_state)
 
-            data_frame.to_csv(file, index=False)
-            file.seek(0)
+            if index % batch_size == 0:
+                data_frame.to_csv(file, index=False)
+                file.seek(0)
+
+        # One final save.
+        data_frame.to_csv(file, index=False)
         file.close()
 
     sync_state[CURRENT_STATE_KEY] = SName.DONE_DOWNLOADING
@@ -234,13 +306,14 @@ def set_state_finalising(sync_state: dict):
 
 
 def finalise(sync_state: dict):
-    logger.info(f'Started: {Action.finalise}')
+    logger.success(f'Started: {Action.finalise}')
 
     int_med = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
 
     errors = int_med.loc[(int_med[STATUS_KEY] != MATCH) &
                          (int_med[STATUS_KEY] != DOWNLOADED) &
-                         (int_med[STATUS_KEY] != DRIFTED)]
+                         (int_med[STATUS_KEY] != DRIFTED) &
+                         (int_med[STATUS_KEY] != DONE)]
 
     if len(errors.index) > 0:
         im_path = get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
@@ -258,7 +331,7 @@ def finalise(sync_state: dict):
         detect_and_record_obsolete_files(int_med, sync_state)
 
         sync_state[CURRENT_STATE_KEY] = SName.DONE_FINALISING
-        sync_state[CURRENT_ACTION_KEY] = Action.set_state_purging
+        sync_state[CURRENT_ACTION_KEY] = Action.set_state_aggregating
         logger.success(f'Finished: {Action.finalise}')
 
 
@@ -268,7 +341,7 @@ def set_state_purging(sync_state: dict):
 
 
 def purge(sync_state: dict):
-    logger.info(f'Started: {Action.purge}')
+    logger.success(f'Started: {Action.purge}')
 
     trash_dir_path = get_path(sync_state, TRASH_DIR_KEY)
     os.makedirs(trash_dir_path, exist_ok=True)
@@ -321,9 +394,9 @@ def finalise_each_file(int_med, sync_state):
                 int_med.at[index, SAMPLE_NAME_KEY],
                 int_med.at[index, HOT_SWAP_NAME_KEY])
 
-            logger.info(f'Hot swapping: {dest}')
+            logger.warning(f'Hot swapping: {dest}')
             os.rename(src, dest)
-            logger.success(f'Done hot swapping: {dest}')
+            logger.info(f'Done hot swapping: {dest}')
 
             int_med.at[index, STATUS_KEY] = DONE
 
@@ -331,7 +404,7 @@ def finalise_each_file(int_med, sync_state):
                 int_med.at[index, STATUS_KEY] == DOWNLOADED:
 
             int_med.at[index, STATUS_KEY] = DONE
-            logger.success(f'Done: {dest}')
+            logger.info(f'Done: {dest}')
 
         else:
             raise WorkflowError(
@@ -341,6 +414,7 @@ def finalise_each_file(int_med, sync_state):
                 f'The caller, probably {Action.finalise}, should have checked '
                 f'my inputs before calling me.')
 
+    logger.info(f'Finalized {len(int_med.index)} entries.')
     save_int_manifest(int_med, sync_state)
 
 
@@ -364,7 +438,7 @@ def detect_and_record_obsolete_files(int_med, sync_state):
 
     seq_ext_regexstr = '|'.join(FASTQ_EXTS + FASTA_EXTS)
     seqfile_regex = re.compile(
-        rf".+_[0-9TZ]+_[a-z0-9]{{8}}(_R\d)?\.({seq_ext_regexstr})(\.({GZ_EXT}))?$")
+        rf".+_[0-9TZ]+_[a-z0-9]{{8}}(_R\d)?(\.({seq_ext_regexstr}))?(\.({GZ_EXT}))?$")
 
     for path in files:
         if seqfile_regex.match(os.path.basename(path)):
@@ -394,7 +468,7 @@ def detect_and_record_obsolete_files(int_med, sync_state):
         saved = read_from_csv(sync_state, OBSOLETE_OBJECTS_FILE_KEY)
         keep = saved[~saved[FILE_NAME_KEY].isin(
             int_med[FILE_NAME_ON_DISK_KEY])]
-        obsoletes = obsoletes.append(keep)
+        obsoletes = pd.concat([obsoletes,keep])
 
     obsoletes.drop_duplicates(
         subset=[
@@ -403,8 +477,18 @@ def detect_and_record_obsolete_files(int_med, sync_state):
         inplace=True)
     save_to_csv(obsoletes, path)
 
-    logger.info(f'Found {len(obsoletes.index)} obsolete files.')
+    log_warn_or_success(
+        len(obsoletes.index),
+        f'Found {len(obsoletes.index)} obsolete files.'
+    )
     logger.info(f'Saving list to {path}')
+
+
+def log_warn_or_success(count, msg):
+    if count > 0:
+        logger.warning(msg)
+    else:
+        logger.success(msg)
 
 
 def publish_new_manifest(int_med, sync_state):
@@ -450,7 +534,7 @@ def get_file_from_server(data_frame, index, row, sync_state):
 
         if row[STATUS_KEY] == DRIFTED:
             fresh_name = f'{row[FILE_NAME_ON_DISK_KEY]}.fresh'
-            logger.warning(f'Drifted from server: {file_path}')
+            logger.info(f'Drifted from server: {file_path}')
             logger.info(f'Downloading fresh copy to temp file: {fresh_name}')
             data_frame.at[index, HOT_SWAP_NAME_KEY] = fresh_name
             file_path = os.path.join(sample_dir, fresh_name)
@@ -486,35 +570,35 @@ def check_download_hash(data_frame, file_path, index, row):
 def set_match_status(ctx, seq_path):
     azure_path = os.path.join(
         ctx[ROW][BLOB_FILE_PATH_KEY],
-        ctx[ROW][ORIGINAL_FILE_NAME_KEY])
-    logger.success(f'Matched: {seq_path} ==> Azure: {azure_path}')
+        ctx[ROW][INT_FILE_NAME_KEY])
+    logger.info(f'Matched: {seq_path} ==> Azure: {azure_path}')
     ctx[DF].at[ctx[IDX], STATUS_KEY] = MATCH
 
 
-def analyse_status(ctx, use_hash_cache, seq_path, published_manifest):
+def analyse_status(
+        ctx: dict,
+        use_hash_cache: bool,
+        seq_path: str,
+        hash_cache: dict):
     previously_matched = ctx[ROW][STATUS_KEY] == MATCH
-    p_manifest = published_manifest
 
     if not os.path.exists(seq_path):
-        logger.info(f'Missing: {seq_path}')
+        logger.warning(f'Missing: {seq_path}')
         ctx[DF].at[ctx[IDX], STATUS_KEY] = MISSING
 
     elif (not previously_matched) or ctx[ROW][STATUS_KEY] == FAILED:
 
-        cache_row = search_cache(ctx, p_manifest)
-        hash_col_key = build_cache_key(ctx)
-
         # If told to use cache and there is a cache hit.
-        if use_hash_cache and len(cache_row.index):
+        if use_hash_cache and ctx[ROW][FILE_NAME_ON_DISK_KEY] in hash_cache:
             logger.info("Hash cache hit.")
-            seq_hash = cache_row.iloc[0, cache_row.columns.get_loc(hash_col_key)]
+            seq_hash = hash_cache[ctx[ROW][FILE_NAME_ON_DISK_KEY]]
         else:
             seq_hash = calc_hash(seq_path)
 
         if seq_hash.casefold() == ctx[ROW][SERVER_SHA_256_KEY].casefold():
             set_match_status(ctx, seq_path)
         else:
-            logger.info(f'Drifted: {seq_path}')
+            logger.warning(f'Drifted: {seq_path}')
             ctx[DF].at[ctx[IDX], STATUS_KEY] = DRIFTED
 
     else:
@@ -527,42 +611,17 @@ def analyse_status(ctx, use_hash_cache, seq_path, published_manifest):
         set_match_status(ctx, seq_path)
 
 
-def search_cache(ctx, manifest):
-    if len(manifest.index) > 0 and ctx[ROW][TYPE_KEY] == FASTQ:
-        if len(manifest[FASTQ_R2_KEY].index) > 0:
-            # Pair of fastq
-            return manifest.loc[
-                (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
-                ((manifest[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]) |
-                 (manifest[FASTQ_R2_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY]))]
-
-        # Single fastq
-        return manifest.loc[
-            (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
-            (manifest[FASTQ_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY])]
-
-    if len(manifest.index) > 0 and ctx[ROW][TYPE_KEY] == FASTA:
-        return manifest.loc[
-            (manifest[SEQ_ID_KEY] == ctx[ROW][SAMPLE_NAME_KEY]) &
-            (manifest[FASTA_R1_KEY] == ctx[ROW][FILE_NAME_ON_DISK_KEY])]
-
-    return manifest
-
-
-def build_cache_key(ctx):
-    read = ctx[ROW][READ_KEY]
-    seq_type = ctx[ROW][TYPE_KEY]
-    hash_col_key = "HASH_" + f"{seq_type}_R{read}".upper()
-    return hash_col_key
-
-
 def move_delete_targets_to_trash(
         obsolete_objects_file_path,
         output_dir,
         trash_dir_path):
 
     trash = pd.read_csv(obsolete_objects_file_path)
-    logger.info(f'Found: {len(trash.index)} files to purge.')
+
+    log_warn_or_success(
+        len(trash.index),
+        f'Found: {len(trash.index)} files to purge.'
+    )
 
     for _, row in trash.iterrows():
         if os.path.exists(row[FILE_PATH_KEY]):
@@ -570,7 +629,7 @@ def move_delete_targets_to_trash(
             # Get the file's parent directories not including output_dir
             dest_dir = mirror_parent_sub_dirs(output_dir, row, trash_dir_path)
             dest_file = os.path.join(dest_dir, row[FILE_NAME_KEY])
-            logger.info(
+            logger.warning(
                 f'Moving to trash: {row[FILE_PATH_KEY]} ==> {dest_file}')
             shutil.move(row[FILE_PATH_KEY], dest_file)
 

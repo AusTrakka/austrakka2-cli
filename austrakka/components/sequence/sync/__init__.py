@@ -5,6 +5,7 @@ from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_group
 from austrakka.utils.options import opt_recalc_hash
 from austrakka.utils.options import opt_seq_type
+from austrakka.utils.options import opt_batch_size
 from .funcs import seq_get
 
 
@@ -20,6 +21,15 @@ def sync(ctx):
 @opt_group(default=None, multiple=False, required=True)
 @opt_recalc_hash()
 @opt_seq_type(required=True)
+@opt_batch_size(help='Specifies the number of sequence downloads to perform '
+                     'in a single batch during sync. This may improve '
+                     'performance depending on how many total sequences are expected. '
+                     'When resuming from an interruption, the '
+                     'entire batch will be re-tried even if some within a '
+                     'batch might have succeeded. For large fastq files, the '
+                     'recommended size is 1 to 10. For large numbers of small '
+                     'fasta files, the recommended size is 1000 or more.',
+                default=1)
 @option('--reset', help="Reset sync state; do not try to resume an "
                         "interrupted sync", is_flag=True)
 def get_seq(
@@ -27,6 +37,7 @@ def get_seq(
         group_name: str,
         recalculate_hashes: bool,
         seq_type: str,
+        batch_size: int,
         reset: bool):
     """
     Download sequence files from server to disk. Patches any local
@@ -38,4 +49,5 @@ def get_seq(
         group_name,
         recalculate_hashes,
         seq_type,
+        batch_size,
         reset)

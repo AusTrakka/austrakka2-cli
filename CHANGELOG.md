@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.32.5] - 2023-07-31
+### Changed
+- Performance improvements for `seq sync get`
+
+### Fixed
+- Fixed bug in `seq sync get` where some deleted files were not being moved to .trash
+
+# [0.32.4] - 2023-07-26
+- `seq sync get` performance improvement and minor bug fixes.
+
+# [0.32.3] - 2023-07-22
+- Added FASTA concatenation functionality to `seq sync get`
+
+# [0.32.2] - 2023-07-21
+- Added batch size option and default CSV batching for `metadata add`
+
+# [0.32.1] - 2023-07-19
+### Changed
+- Added batch size option for `seq sync get` to optimise saving of state.
+- Allow metadata list command to take field names
+- Refactor of process auth
+
 # [0.32.0] - 2023-07-17
 ### Changed
 - `seq sync get` with options to use cached hashes.

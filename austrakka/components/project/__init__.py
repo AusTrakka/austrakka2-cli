@@ -1,13 +1,14 @@
 import click
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import opt_abbrev
+from austrakka.utils.options import opt_abbrev, opt_is_active
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_dashboard_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_organisation
 from austrakka.components.project.funcs import list_projects, \
     add_project, \
+    update_project, \
     set_dashboard, \
     get_dashboard
 
@@ -35,6 +36,27 @@ def project_add(
     Add a new project to AusTrakka.
     '''
     add_project(abbrev, name, description, org, dashboard_name)
+
+@project.command('update', hidden=hide_admin_cmds())
+@click.argument('project-abbreviation', type=str)
+@opt_abbrev(help="New project abbreviation", required=False)
+@opt_name(help="New project name", required=False)
+@opt_description(help="New project description", required=False)
+@opt_is_active(help="Set project active status", is_update=True, required=False)
+@opt_organisation(help="New requesting organisation abbreviation", required=False)
+@opt_dashboard_name(help="New dashboard", required=False)
+def project_update(
+        project_abbreviation: str,
+        abbrev: str,
+        name: str,
+        description: str,
+        is_active: bool,
+        org: str,
+        dashboard_name: str):
+    '''
+    Update an existing project in AusTrakka.
+    '''
+    update_project(project_abbreviation, abbrev, name, description, is_active, org, dashboard_name)
 
 
 @project.command('set-dashboard', hidden=hide_admin_cmds())

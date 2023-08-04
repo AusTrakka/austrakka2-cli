@@ -1,5 +1,6 @@
 from .constant import GROUP_NAME_KEY
 from .constant import SEQ_TYPE_KEY
+from .constant import DOWNLOAD_BATCH_SIZE_KEY
 from .constant import OUTPUT_DIR_KEY
 from .errors import SyncError
 
@@ -44,6 +45,11 @@ def ensure_group_names_match(group_name, sync_state):
             f'differs from the parameter: {group_name}. You are '
             f'probably about to override files belonging to another '
             f'group. This is not allowed.')
+
+
+def ensure_download_batch_size_positive(download_batch_size):
+    if download_batch_size < 1:
+        raise SyncError(f'{DOWNLOAD_BATCH_SIZE_KEY} must be greater than 0.')
 
 
 def ensure_is_present(sync_state, key, msg):

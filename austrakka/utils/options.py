@@ -147,7 +147,6 @@ def opt_new_name(**attrs: t.Any):
 def opt_description(**attrs: t.Any):
     defaults = {
         'required': True,
-        'default': '',
         'help': 'Human-readable description text',
     }
     return _create_option(
@@ -391,6 +390,19 @@ def opt_user_object_id(**attrs: t.Any):
     )
 
 
+def opt_batch_size(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Batch size for upload/download'
+    }
+    return _create_option(
+        '-bs',
+        '--batch-size',
+        type=click.INT,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_is_active(is_update=False, **attrs: t.Any):
     defaults = {
         'help': 'Determines if the entry is active'
@@ -535,5 +547,6 @@ def _create_option(*param_decls: str, **attrs: t.Any):
         return click.option(
             *param_decls,
             cls=AusTrakkaCliOption,
+            show_default=True,
             **attrs)(func)
     return inner_func
