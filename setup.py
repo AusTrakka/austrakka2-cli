@@ -129,7 +129,6 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
         "azure-identity",
-        "azure-keyvault-secrets",
         "click",
         "loguru",
         "pandas",

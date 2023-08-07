@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.33.0] - 2023-08-07
+### Added
+- `project update` command.
+
+### Security
+- Removed unused dependencies.
+
 # [0.32.5] - 2023-07-31
 ### Changed
 - Performance improvements for `seq sync get`

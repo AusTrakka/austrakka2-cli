@@ -103,7 +103,7 @@ def update_field(
     """
     field = get_field_by_name(name)
 
-    post_field = {k: field[k] for k in [
+    put_field = {k: field[k] for k in [
         "columnName",
         "canVisualise",
         "columnOrder",
@@ -115,11 +115,11 @@ def update_field(
 
     if new_name is not None:
         logger.warning(f"Updating field name from {name} to {new_name}")
-        post_field["columnName"] = new_name
+        put_field["columnName"] = new_name
 
     if typename is not None:
         fieldtype = get_fieldtype_by_name(typename)
-        post_field["metaDataColumnTypeId"] = fieldtype["metaDataColumnTypeId"]
+        put_field["metaDataColumnTypeId"] = fieldtype["metaDataColumnTypeId"]
 
     if can_visualise is not None:
         if can_visualise == 'viz':
@@ -128,18 +128,18 @@ def update_field(
                     f"Setting colour-nodes flag on field {name} of type {typename}. "
                     f"This may work poorly as colour visualisations are configured for a "
                     f"small discrete set of values.")
-        post_field["canVisualise"] = can_visualise == 'viz'
+        put_field["canVisualise"] = can_visualise == 'viz'
 
     if column_order is not None:
-        post_field["columnOrder"] = column_order
+        put_field["columnOrder"] = column_order
 
     if set_show is not None:
-        post_field["isDisplayedAsDefault"] = set_show == 'show'
+        put_field["isDisplayedAsDefault"] = set_show == 'show'
 
     if min_width is not None:
-        post_field["minWidth"] = min_width
+        put_field["minWidth"] = min_width
 
     api_put(
         path=f"{METADATACOLUMN_PATH}/{field['metaDataColumnId']}",
-        data=post_field
+        data=put_field
     )
