@@ -12,6 +12,7 @@ pytest = "*"
 pipenv-setup = "==3.2.0"
 vistir = "==0.6.1"
 pytest-azurepipelines = "*"
+pyoxidizer = "==0.24.0"
 
 [packages]
 austrakka = {editable = true, path = "."}
