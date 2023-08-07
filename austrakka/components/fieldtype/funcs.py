@@ -20,7 +20,7 @@ def list_fieldtypes(out_format: str):
     data = response['data'] if ('data' in response) else response
     for row in data:
         if 'validValues' in row:
-            row['validValues'] = [val['name'] for val in row['validValues']]
+            row['validValues'] = ",".join([val['name'] for val in row['validValues']])
     result = pd.DataFrame.from_dict(data)
 
     print_table(
