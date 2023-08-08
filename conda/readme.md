@@ -1,0 +1,1 @@
+Need to package austrakka and austrakka-lib from the pyoxidizer build directory into a zip which conda will operate on

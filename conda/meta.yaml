@@ -1,0 +1,15 @@
+package:
+  name: austrakka
+  version: 0.32.5
+
+source:
+  path: ./build/x86_64-apple-darwin/debug/install/test.zip
+
+
+test:
+  commands:
+    - austrakka --version
+
+
+about:
+  home:
