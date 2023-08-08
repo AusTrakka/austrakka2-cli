@@ -45,10 +45,10 @@ steps:
     inputs:
       rootFolderOrFile: 'build/${{ variables.rustTarget }}/debug/install'
       archiveType: 'zip'
-      archiveFile: '$(Build.ArtifactStagingDirectory)/austrakka-cli-${{ variables.cliVersion }}-${{ variables.os }}.zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/austrakka-cli-$(cliVersion)-${{ variables.os }}.zip'
 
   - task: PublishPipelineArtifact@1
     displayName: Publish Terraform variables
     inputs:
-      targetPath: '$(Build.ArtifactStagingDirectory)/austrakka-cli-${{ variables.cliVersion }}-${{ variables.os }}.zip'
+      targetPath: '$(Build.ArtifactStagingDirectory)/austrakka-cli-$(cliVersion)-${{ variables.os }}.zip'
 
