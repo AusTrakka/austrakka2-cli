@@ -37,13 +37,13 @@ steps:
   - task: Bash@3
     inputs:
       filePath: 'package.sh'
-      arguments: '${{ variables.rustTarget }} ${{ variables.cliVersion }} ${{ variables.os }}'
+      arguments: '${{ variables.rustTarget }} $(cliVersion) ${{ variables.os }}'
 
   - task: PublishPipelineArtifact@1
     displayName: Publish Terraform variables
     inputs:
       targetPath: $(Pipeline.Workspace)/austrakka-cli-${{ variables.cliVersion }}-${{ variables.os }}.zip
-      artifactName: austrakka-cli-${{ variables.cliVersion }}-${{ variables.os }}.zip
+      artifactName: austrakka-cli-$(cliVersion)-${{ variables.os }}.zip
 
 #  - script: pipenv-setup sync
 #    displayName: 'Sync setup.py'
