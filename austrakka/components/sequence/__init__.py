@@ -8,12 +8,18 @@ from austrakka.utils.options import opt_seq_type, opt_seq_filter
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_read
 from austrakka.utils.options import opt_group
+from austrakka.utils.options import opt_sample_id
+from austrakka.utils.cmd_filter import hide_admin_cmds
 
 from .funcs import take_sample_names
 from .funcs import get_sequences
 from .funcs import list_sequences
+from .funcs import purge_sequence
 from .add import add
 from .sync import sync
+
+
+BY_SAMPLE = 'by-sample'
 
 
 @click.group()
@@ -77,3 +83,13 @@ def seq_list(
         group_name,
         sub_query_type,
     )
+
+
+@seq.command('purge', hidden=hide_admin_cmds())
+@opt_sample_id(
+    help='The id of the sample which needs to have sequences purged.',
+    multiple=False
+)
+def sequence_purge(sample_id: [str]):
+    """Purge all sequences associated with the specified sample."""
+    purge_sequence(sample_id)

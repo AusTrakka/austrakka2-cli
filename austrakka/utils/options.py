@@ -91,12 +91,12 @@ def opt_sample_id(**attrs: t.Any):
     defaults = {
         'required': True,
         'help': 'name',
+        'multiple': True,
     }
     return _create_option(
         "-s",
         "--sample-id",
         type=click.STRING,
-        multiple=True,
         **{**defaults, **attrs}
     )
 

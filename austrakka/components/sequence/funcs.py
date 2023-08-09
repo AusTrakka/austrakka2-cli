@@ -38,6 +38,7 @@ from austrakka.utils.enums.seq import UPLOAD_MODE_SKIP
 from austrakka.utils.enums.seq import UPLOAD_MODE_OVERWRITE
 from austrakka.utils.output import print_table
 from austrakka.utils.retry import retry
+from austrakka.utils.api import api_delete
 
 FASTA_PATH = 'Fasta'
 FASTQ_PATH = 'Fastq'
@@ -56,6 +57,7 @@ FASTA_CSV_FILENAME = 'FileName'
 FASTA_CSV_FASTA_ID = 'FastaId'
 
 USE_IS_ACTIVE_FLAG = 'useIsActiveFlag'
+BY_SAMPLE = 'by-sample'
 
 
 @dataclass
@@ -478,3 +480,8 @@ def list_sequences(
         pd.DataFrame(data),
         out_format,
     )
+
+
+@logger_wraps()
+def purge_sequence(sample_id: str):
+    api_delete(path="/".join([SEQUENCE_PATH, BY_SAMPLE, sample_id]))

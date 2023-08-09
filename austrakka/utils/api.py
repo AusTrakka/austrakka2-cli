@@ -197,3 +197,15 @@ def api_patch(
         data=json.dumps(data),
         params=params,
     )
+
+
+@_use_http_client(log_resp=True)
+def api_delete(
+        path: str,
+        params: Dict = None,
+        client: httpx.Client = None,
+):
+    return client.delete(
+        _get_url(path),
+        params=params,
+    )
