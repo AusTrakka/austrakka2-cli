@@ -16,7 +16,7 @@ from austrakka.utils.output import print_table, log_response
 from austrakka.utils.helpers.fields import get_system_field_names
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
-from austrakka.utils.fs import FileHash, verify_hash
+from austrakka.utils.fs import FileHash, verify_hash, verify_hash_single
 
 ATTACH = 'Attach'
 
@@ -310,4 +310,4 @@ def _post_proforma(files, file_hash: FileHash, custom_headers: dict):
     data = get_response(resp, True)
     print(resp.status_code)
     if resp.status_code == 200:
-        verify_hash(list([file_hash]), data)
+        verify_hash_single(file_hash, data)

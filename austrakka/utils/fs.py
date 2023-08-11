@@ -34,14 +34,14 @@ def verify_hash(hashes: list[FileHash], resp: dict):
 
 
 def verify_hash_single(a_hash: FileHash, resp: dict):
-    errors = []
+    error = ''
     upload_dto = resp['data']
 
     if not (
             a_hash.filename == upload_dto['originalFileName'] and
             a_hash.sha256.casefold() == upload_dto['serverSha256'].casefold()
     ):
-        errors.append(f'Hash for {upload_dto["originalFileName"]} is not correct')
+        errors = f'Hash for {upload_dto["originalFileName"]} is not correct'
 
-    if any(errors):
-        raise IncorrectHashException(", ".join(errors))
+    if error != '':
+        raise IncorrectHashException(error)
