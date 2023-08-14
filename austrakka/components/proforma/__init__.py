@@ -106,7 +106,17 @@ def proforma_attach(abbrev: str,
                     file_path: str = None,
                     proforma_version: int = None):
     """
-    This will attach a file to the ProForma Version that you specify.
+    This command will attach a file or pull a existing file to latest ProForma Version
+
+    Usage:
+
+    austrakka proforma attach [ABBREV] ~~This will pull the file from the last proforma version
+
+    austrakka proforma attach [ABBREV] -f [FILEPATH] ~~attaches given file
+
+    austrakka proforma attach [ABBREV] -id [PROFORMA-VERSION-ID] ~~this pulls a file from specified id
+
+    ABBREV should be the abbreviated name of the pro forma.
     """
     if file_path is None:
         pull_proforma(abbrev, proforma_version)
