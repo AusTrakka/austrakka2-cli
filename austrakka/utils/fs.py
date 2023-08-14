@@ -22,13 +22,13 @@ def create_dir(output_dir):
 
 def verify_hash(hashes: list[FileHash], resp: dict):
     errors = []
-    for uploadDto in resp['data']:
+    for upload_dto in resp['data']:
         if not any(
-                f.filename == uploadDto['originalFileName']
-                and f.sha256.casefold() == uploadDto['serverSha256'].casefold()
+                f.filename == upload_dto['originalFileName']
+                and f.sha256.casefold() == upload_dto['serverSha256'].casefold()
                 for f in hashes
         ):
-            errors.append(f'Hash for {uploadDto["originalFileName"]} is not correct')
+            errors.append(f'Hash for {upload_dto["originalFileName"]} is not correct')
     if any(errors):
         raise IncorrectHashException(", ".join(errors))
 
@@ -41,7 +41,7 @@ def verify_hash_single(a_hash: FileHash, resp: dict):
             a_hash.filename == upload_dto['originalFileName'] and
             a_hash.sha256.casefold() == upload_dto['serverSha256'].casefold()
     ):
-        errors = f'Hash for {upload_dto["originalFileName"]} is not correct'
+        error = f'Hash for {upload_dto["originalFileName"]} is not correct'
 
     if error != '':
         raise IncorrectHashException(error)

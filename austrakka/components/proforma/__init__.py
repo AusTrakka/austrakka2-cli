@@ -1,4 +1,3 @@
-from io import BufferedReader
 from typing import List
 
 from austrakka.utils.output import table_format_option
@@ -114,7 +113,8 @@ def proforma_attach(abbrev: str,
 
     austrakka proforma attach [ABBREV] -f [FILEPATH] ~~attaches given file
 
-    austrakka proforma attach [ABBREV] -id [PROFORMA-VERSION-ID] ~~this pulls a file from specified id
+    austrakka proforma attach [ABBREV] -id [PROFORMA-VERSION-ID]
+    ~~this pulls a file from specified id
 
     ABBREV should be the abbreviated name of the pro forma.
     """

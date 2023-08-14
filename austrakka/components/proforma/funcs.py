@@ -1,10 +1,9 @@
-from io import BufferedReader
 from typing import List
-
+import hashlib
 import pandas as pd
 from httpx import HTTPStatusError
 from loguru import logger
-import hashlib
+
 
 from austrakka.utils.api import api_get, api_post_multipart_raw, get_response
 from austrakka.utils.api import api_post
@@ -16,9 +15,10 @@ from austrakka.utils.output import print_table, log_response
 from austrakka.utils.helpers.fields import get_system_field_names
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
-from austrakka.utils.fs import FileHash, verify_hash, verify_hash_single
+from austrakka.utils.fs import FileHash, verify_hash_single
 
 ATTACH = 'Attach'
+
 
 @logger_wraps()
 def disable_proforma(abbrev: str):
@@ -151,12 +151,12 @@ def add_proforma(
 def attach_proforma(abbrev: str,
                     filepath: str):
     """
-    abbrev: 
+    abbrev:
     file:
     """
     file_hash = _proforma_hash(filepath)
-    file_content = open(filepath, 'rb')
-    files = [('files[]', (filepath, file_content))]
+    with open(filepath, 'rb') as file_content:
+        files = [('files[]', (filepath, file_content))]
 
     custom_headers = {
         'proforma-abbrev': abbrev,
@@ -183,12 +183,12 @@ def attach_proforma(abbrev: str,
 def pull_proforma(abbrev: str,
                   version: int = None):
     if version is None:
-        print('got here')
         api_patch(path=f'{PROFORMA_PATH}/PullPrevious/{abbrev}')
     else:
         api_patch(path=f'{PROFORMA_PATH}/PullPrevious/{abbrev}/{version}')
 
     logger.info('Done')
+
 
 @logger_wraps()
 def list_proformas(out_format: str):
@@ -277,10 +277,10 @@ def list_groups_proforma(abbrev: str, out_format: str):
 
 
 def _proforma_hash(filepath):
-    file = open(filepath, 'rb')
-    return FileHash(
-        filename=filepath,
-        sha256=hashlib.sha256(file.read()).hexdigest())
+    with open(filepath, 'rb') as file:
+        return FileHash(
+            filename=filepath,
+            sha256=hashlib.sha256(file.read()).hexdigest())
 
 
 def _post_proforma(files, file_hash: FileHash, custom_headers: dict):
