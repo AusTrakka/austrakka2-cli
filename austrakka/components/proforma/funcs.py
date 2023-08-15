@@ -1,3 +1,4 @@
+import os
 from typing import List
 import hashlib
 import pandas as pd
@@ -158,25 +159,25 @@ def attach_proforma(abbrev: str,
     with open(filepath, 'rb') as file_content:
         files = [('files[]', (filepath, file_content))]
 
-    custom_headers = {
-        'proforma-abbrev': abbrev,
-        'filename': filepath,
-    }
-    try:
-        retry(
-            func=lambda f=files, fh=file_hash, ch=custom_headers: _post_proforma(f, fh, ch),
-            retries=0,
-            desc=f"{abbrev} at " + "/".join([PROFORMA_PATH, ATTACH]),
-            delay=0.0
-        )
-    except FailedResponseException as ex:
-        logger.error(f'Pro Forma {abbrev} failed upload')
-        log_response(ex.parsed_resp)
-    except (
-            PermissionError, UnknownResponseException, HTTPStatusError
-    ) as ex:
-        logger.error(f'Pro Forma {abbrev} failed upload')
-        logger.error(ex)
+        custom_headers = {
+            'proforma-abbrev': abbrev,
+            'filename': os.path.basename(filepath),
+        }
+        try:
+            retry(
+                func=lambda f=files, fh=file_hash, ch=custom_headers: _post_proforma(f, fh, ch),
+                retries=0,
+                desc=f"{abbrev} at " + "/".join([PROFORMA_PATH, ATTACH]),
+                delay=0.0
+            )
+        except FailedResponseException as ex:
+            logger.error(f'Pro Forma {abbrev} failed upload')
+            log_response(ex.parsed_resp)
+        except (
+                PermissionError, UnknownResponseException, HTTPStatusError
+        ) as ex:
+            logger.error(f'Pro Forma {abbrev} failed upload')
+            logger.error(ex)
 
 
 @logger_wraps()
@@ -279,7 +280,7 @@ def list_groups_proforma(abbrev: str, out_format: str):
 def _proforma_hash(filepath):
     with open(filepath, 'rb') as file:
         return FileHash(
-            filename=filepath,
+            filename=os.path.basename(filepath),
             sha256=hashlib.sha256(file.read()).hexdigest())
 
 
