@@ -1,3 +1,4 @@
+# pylint: disable=consider-iterating-dictionary
 import typing as t
 
 import click
