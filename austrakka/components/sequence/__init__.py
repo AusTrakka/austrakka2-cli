@@ -8,7 +8,8 @@ from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_read
 from austrakka.utils.options import opt_group
 from austrakka.utils.options import opt_sample_id
-from austrakka.utils.options import MutuallyExclusiveOption
+from austrakka.utils.options import opt_force_mutex_skip
+from austrakka.utils.options import opt_skip_mutex_force
 from austrakka.utils.cmd_filter import hide_admin_cmds
 
 from .funcs import take_sample_names
@@ -90,16 +91,9 @@ def seq_list(
     help='The id of the sample which needs to have sequences purged.',
     multiple=False
 )
-@option('--skip', cls=MutuallyExclusiveOption,
-        help="Skip this command if the sample is still active.",
-        mutually_exclusive=["force"],
-        is_flag=True)
-@option('--force',
-        cls=MutuallyExclusiveOption,
-        help="Forcefully purge sequences belonging to the sample "
-             "even if the sample is still active.",
-        mutually_exclusive=["skip"],
-        is_flag=True)
+@opt_skip_mutex_force(help="Skip this command if the sample is still active.")
+@opt_force_mutex_skip(help="Forcefully purge sequences belonging to the sample "
+                           "even if the sample is still active.")
 def sequence_purge(sample_id: [str], skip: bool = False, force: bool = False):
     """Purge all sequences associated with the specified sample."""
     purge_sequence(sample_id, skip, force)
