@@ -39,6 +39,7 @@ from austrakka.utils.enums.seq import UPLOAD_MODE_OVERWRITE
 from austrakka.utils.output import print_table
 from austrakka.utils.retry import retry
 from austrakka.utils.api import api_delete
+from austrakka.utils.fs import FileHash, verify_hash
 
 FASTA_PATH = 'Fasta'
 FASTQ_PATH = 'Fastq'
@@ -65,13 +66,6 @@ class SeqFile:
     multipart: tuple
     sha256: str
     filename: str
-
-
-@dataclass
-class FileHash:
-    filename: str
-    sha256: str
-
 
 @logger_wraps()
 def add_fasta_submission(
@@ -198,20 +192,7 @@ def _post_fastq(sample_files: list[SeqFile], custom_headers):
     if resp.status_code == 200:
         hashes = [FileHash(filename=f.filename, sha256=f.sha256)
                   for f in sample_files]
-        _verify_hash(hashes, data)
-
-
-def _verify_hash(hashes: list[FileHash], resp: dict):
-    errors = []
-    for seq in resp['data']:
-        if not any(
-                f.filename == seq['originalFileName']
-                and f.sha256.casefold() == seq['serverSha256'].casefold()
-                for f in hashes
-        ):
-            errors.append(f'Hash for {seq["originalFileName"]} is not correct')
-    if any(errors):
-        raise IncorrectHashException(", ".join(errors))
+        verify_hash(hashes, data)
 
 
 def _post_fasta(sample_files, file_hash: FileHash, custom_headers: dict):
@@ -223,7 +204,7 @@ def _post_fasta(sample_files, file_hash: FileHash, custom_headers: dict):
 
     data = get_response(resp, True)
     if resp.status_code == 200:
-        _verify_hash(list([file_hash]), data)
+        verify_hash(list([file_hash]), data)
 
 
 @logger_wraps()

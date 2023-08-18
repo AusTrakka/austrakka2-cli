@@ -1,16 +1,24 @@
+import os
 from typing import List
-
+import hashlib
 import pandas as pd
+from httpx import HTTPStatusError
 from loguru import logger
 
-from austrakka.utils.api import api_get
+
+from austrakka.utils.api import api_get, api_post_multipart_raw, get_response
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
+from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_table
+from austrakka.utils.output import print_table, log_response
 from austrakka.utils.helpers.fields import get_system_field_names
 from austrakka.utils.paths import PROFORMA_PATH
+from austrakka.utils.retry import retry
+from austrakka.utils.fs import FileHash, verify_hash_single
+
+ATTACH = 'Attach'
 
 
 @logger_wraps()
@@ -141,6 +149,49 @@ def add_proforma(
 
 
 @logger_wraps()
+def attach_proforma(abbrev: str,
+                    filepath: str):
+    """
+    abbrev:
+    file:
+    """
+    file_hash = _proforma_hash(filepath)
+    with open(filepath, 'rb') as file_content:
+        files = [('files[]', (filepath, file_content))]
+
+        custom_headers = {
+            'proforma-abbrev': abbrev,
+            'filename': os.path.basename(filepath),
+        }
+        try:
+            retry(
+                func=lambda f=files, fh=file_hash, ch=custom_headers: _post_proforma(f, fh, ch),
+                retries=0,
+                desc=f"{abbrev} at " + "/".join([PROFORMA_PATH, ATTACH]),
+                delay=0.0
+            )
+        except FailedResponseException as ex:
+            logger.error(f'Pro Forma {abbrev} failed upload')
+            log_response(ex.parsed_resp)
+        except (
+                PermissionError, UnknownResponseException, HTTPStatusError
+        ) as ex:
+            logger.error(f'Pro Forma {abbrev} failed upload')
+            logger.error(ex)
+
+
+@logger_wraps()
+def pull_proforma(abbrev: str,
+                  version: int = None):
+    if version is None:
+        api_patch(path=f'{PROFORMA_PATH}/PullPrevious/{abbrev}')
+    else:
+        api_patch(path=f'{PROFORMA_PATH}/PullPrevious/{abbrev}/{version}')
+
+    logger.info('Done')
+
+
+@logger_wraps()
 def list_proformas(out_format: str):
     response = api_get(
         path=PROFORMA_PATH,
@@ -224,3 +275,21 @@ def list_groups_proforma(abbrev: str, out_format: str):
         result,
         out_format,
     )
+
+
+def _proforma_hash(filepath):
+    with open(filepath, 'rb') as file:
+        return FileHash(
+            filename=os.path.basename(filepath),
+            sha256=hashlib.sha256(file.read()).hexdigest())
+
+
+def _post_proforma(files, file_hash: FileHash, custom_headers: dict):
+    resp = api_post_multipart_raw(
+        path="/".join([PROFORMA_PATH, ATTACH]),
+        files=files,
+        custom_headers=custom_headers,
+    )
+    data = get_response(resp, True)
+    if resp.status_code == 200:
+        verify_hash_single(file_hash, data)
