@@ -1,3 +1,4 @@
+# pylint: disable=consider-iterating-dictionary
 import typing as t
 
 import click
@@ -415,6 +416,34 @@ def opt_is_active(is_update=False, **attrs: t.Any):
     )
 
 
+def opt_skip_mutex_force(**attrs: t.Any):
+    defaults = {
+        'help': 'When able, skip action rather than fail. Cannot be used together with force.'
+    }
+    return _create_option(
+        '--skip',
+        type=bool,
+        is_flag=True,
+        mutually_exclusive=["force"],
+        cls=MutuallyExclusiveOption,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_force_mutex_skip(**attrs: t.Any):
+    defaults = {
+        'help': 'Forcefully perform action. Cannot be used together with skip.'
+    }
+    return _create_option(
+        '--force',
+        type=bool,
+        is_flag=True,
+        mutually_exclusive=["skip"],
+        cls=MutuallyExclusiveOption,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_is_append(**attrs: t.Any):
     defaults = {
         'help': 'Specify validation mode (as if appending or creating) when '
@@ -544,6 +573,12 @@ def opt_show_disabled(**attrs: t.Any):
 
 def _create_option(*param_decls: str, **attrs: t.Any):
     def inner_func(func):
+        if 'cls' in attrs.keys():
+            return click.option(
+                *param_decls,
+                show_default=True,
+                **attrs)(func)
+
         return click.option(
             *param_decls,
             cls=AusTrakkaCliOption,
