@@ -181,13 +181,9 @@ def attach_proforma(abbrev: str,
 
 
 @logger_wraps()
-def pull_proforma(abbrev: str,
-                  version: int = None):
-    if version is None:
-        api_patch(path=f'{PROFORMA_PATH}/PullPrevious/{abbrev}')
-    else:
-        api_patch(path=f'{PROFORMA_PATH}/PullPrevious/{abbrev}/{version}')
-
+def pull_proforma(abbrev: str, n_previous: int = None):
+    n_prev = n_previous if n_previous is not None else 1
+    api_patch(path=f'{PROFORMA_PATH}/PullPrevious/{abbrev}?nPrevious={n_prev}')
     logger.info('Done')
 
 
