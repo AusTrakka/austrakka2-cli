@@ -94,16 +94,20 @@ def proforma_update(
                    'Only one xlsx filepath will be accepted',
               cls=MutuallyExclusiveOption,
               mutually_exclusive=["proforma-version"])
-@click.option('-v',
-              '--proforma-version',
+@click.option('-n',
+              '--n-previous',
               cls=MutuallyExclusiveOption,
-              help="If pulling a file from previous proforma "
-                   "you can specify a specific proforma version",
+              help="If pulling a file from a previous version, "
+                   "of all versions that had a file attached, "
+                   "how many steps back to pull from. 1 means "
+                   "the first previous version that has a file "
+                   "attachment. 2 means the second previous version "
+                   "that as a file attachment, etc..",
               type=click.INT,
               mutually_exclusive=["file-path"])
 def proforma_attach(abbrev: str,
                     file_path: str = None,
-                    proforma_version: int = None):
+                    n_previous: int = None):
     """
     This command will attach a file or pull a existing file to latest ProForma Version
 
@@ -119,7 +123,7 @@ def proforma_attach(abbrev: str,
     ABBREV should be the abbreviated name of the pro forma.
     """
     if file_path is None:
-        pull_proforma(abbrev, proforma_version)
+        pull_proforma(abbrev, n_previous)
     else:
         attach_proforma(abbrev, file_path)
 
