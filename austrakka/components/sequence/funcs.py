@@ -81,19 +81,10 @@ def add_fasta_submission(
         logger.info(f"Uploading {seq_id}")
         total_upload_count += 1
 
-        csv, csv_filename, single_contig_filename = _gen_csv(
+        files, file_hash = _fasta_payload(
             name_prefix,
-            seq_id)
-
-        single_contig, files = _fasta_payload(
-            csv,
-            csv_filename,
-            record,
-            single_contig_filename)
-
-        file_hash = _fasta_hash(
-            single_contig,
-            single_contig_filename)
+            seq_id,
+            record)
 
         custom_headers = {}
         set_mode_header(custom_headers, force, skip)
@@ -140,7 +131,14 @@ def _fasta_hash(single_contig, single_contig_filename):
         sha256=hashlib.sha256(bytearray(content, 'utf-8')).hexdigest())
 
 
-def _fasta_payload(csv, csv_filename, record, single_contig_filename):
+def _fasta_payload(name_prefix, seq_id, record):
+    """
+    Generate the upload files for a single FASTA record:
+    Create the single-contig CSV file and FASTA file, and calculate the sequence file hash
+    """
+    csv, csv_filename, single_contig_filename = _gen_csv(
+        name_prefix,
+        seq_id)
     single_contig = StringIO()
     SeqIO.write([record], single_contig, "fasta")
     encode = codecs.getwriter('utf-8')
@@ -148,7 +146,10 @@ def _fasta_payload(csv, csv_filename, record, single_contig_filename):
         ('files[]', (csv_filename, csv)),
         ('files[]', (single_contig_filename, encode(single_contig)))
     ]
-    return single_contig, files
+    file_hash = _fasta_hash(
+        single_contig,
+        single_contig_filename)
+    return files, file_hash
 
 
 def _gen_csv(name_prefix, seq_id):
