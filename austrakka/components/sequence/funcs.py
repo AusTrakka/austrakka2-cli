@@ -23,6 +23,7 @@ from austrakka.utils.api import api_post_multipart_raw
 from austrakka.utils.api import api_get
 from austrakka.utils.api import get_response
 from austrakka.utils.api import api_get_stream
+from austrakka.utils.api import set_mode_header
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
 from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
@@ -34,10 +35,10 @@ from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
-from austrakka.utils.enums.seq import UPLOAD_MODE_SKIP
-from austrakka.utils.enums.seq import UPLOAD_MODE_OVERWRITE
 from austrakka.utils.output import print_table
 from austrakka.utils.retry import retry
+from austrakka.utils.api import api_delete
+from austrakka.utils.fs import FileHash, verify_hash
 
 FASTA_PATH = 'Fasta'
 FASTQ_PATH = 'Fastq'
@@ -49,13 +50,13 @@ FASTQ_CSV_PATH_1 = 'filepath1'
 FASTQ_CSV_PATH_2 = 'filepath2'
 FASTQ_CSV_PATH_1_API = 'filename1'
 FASTQ_CSV_PATH_2_API = 'filename2'
-MODE = 'mode'
 
 FASTA_CSV_SAMPLE = 'SampleId'
 FASTA_CSV_FILENAME = 'FileName'
 FASTA_CSV_FASTA_ID = 'FastaId'
 
 USE_IS_ACTIVE_FLAG = 'useIsActiveFlag'
+BY_SAMPLE = 'by-sample'
 
 
 @dataclass
@@ -63,13 +64,6 @@ class SeqFile:
     multipart: tuple
     sha256: str
     filename: str
-
-
-@dataclass
-class FileHash:
-    filename: str
-    sha256: str
-
 
 @logger_wraps()
 def add_fasta_submission(
@@ -98,7 +92,7 @@ def add_fasta_submission(
             single_contig_filename)
 
         custom_headers = {}
-        set_upload_mode(custom_headers, force, skip)
+        set_mode_header(custom_headers, force, skip)
 
         try:
             retry(
@@ -196,20 +190,7 @@ def _post_fastq(sample_files: list[SeqFile], custom_headers):
     if resp.status_code == 200:
         hashes = [FileHash(filename=f.filename, sha256=f.sha256)
                   for f in sample_files]
-        _verify_hash(hashes, data)
-
-
-def _verify_hash(hashes: list[FileHash], resp: dict):
-    errors = []
-    for seq in resp['data']:
-        if not any(
-                f.filename == seq['originalFileName']
-                and f.sha256.casefold() == seq['serverSha256'].casefold()
-                for f in hashes
-        ):
-            errors.append(f'Hash for {seq["originalFileName"]} is not correct')
-    if any(errors):
-        raise IncorrectHashException(", ".join(errors))
+        verify_hash(hashes, data)
 
 
 def _post_fasta(sample_files, file_hash: FileHash, custom_headers: dict):
@@ -221,7 +202,7 @@ def _post_fasta(sample_files, file_hash: FileHash, custom_headers: dict):
 
     data = get_response(resp, True)
     if resp.status_code == 200:
-        _verify_hash(list([file_hash]), data)
+        verify_hash(list([file_hash]), data)
 
 
 @logger_wraps()
@@ -254,7 +235,7 @@ def add_fastq_submission(
                     = os.path.basename(row[FASTQ_CSV_PATH_2])
                 sample_files.append(_get_file(row[FASTQ_CSV_PATH_2]))
 
-            set_upload_mode(custom_headers, force, skip)
+            set_mode_header(custom_headers, force, skip)
 
             retry(lambda sf=sample_files, ch=custom_headers: _post_fastq(
                 sf, ch), 1, "/".join([SEQUENCE_PATH, FASTQ_PATH]))
@@ -271,13 +252,6 @@ def add_fastq_submission(
             logger.error(ex)
         except Exception as ex:
             raise ex from ex
-
-
-def set_upload_mode(custom_headers, force, skip):
-    if skip:
-        custom_headers[MODE] = UPLOAD_MODE_SKIP
-    if force:
-        custom_headers[MODE] = UPLOAD_MODE_OVERWRITE
 
 
 def take_sample_names(data, filter_prop):
@@ -477,4 +451,14 @@ def list_sequences(
     print_table(
         pd.DataFrame(data),
         out_format,
+    )
+
+
+@logger_wraps()
+def purge_sequence(sample_id: str, skip: bool, force: bool):
+    custom_headers = {}
+    set_mode_header(custom_headers, force, skip)
+    api_delete(
+        path="/".join([SEQUENCE_PATH, BY_SAMPLE, sample_id]),
+        custom_headers=custom_headers
     )

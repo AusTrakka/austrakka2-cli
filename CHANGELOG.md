@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.34.0] - 2023-08-30
+### Added
+- `seq purge` command for admins only.
+- `proforma attach` command for admins to attach xlsx templates to a given proforma.
+
 # [0.33.0] - 2023-08-07
 ### Added
 - `project update` command.

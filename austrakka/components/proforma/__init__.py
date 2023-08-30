@@ -11,7 +11,7 @@ from .funcs import \
     enable_proforma, \
     share_proforma, \
     unshare_proforma, \
-    list_groups_proforma
+    list_groups_proforma, attach_proforma, pull_proforma
 
 from ...utils.options import *
 
@@ -84,6 +84,48 @@ def proforma_update(
         abbrev,
         required_field,
         optional_field)
+
+
+@proforma.command('attach', hidden=hide_admin_cmds())
+@click.argument('abbrev', type=click.STRING)
+@click.option('-f',
+              '--file-path',
+              help='File that you may want to link.  '
+                   'Only one xlsx filepath will be accepted',
+              cls=MutuallyExclusiveOption,
+              mutually_exclusive=["proforma-version"])
+@click.option('-n',
+              '--n-previous',
+              cls=MutuallyExclusiveOption,
+              help="If pulling a file from a previous version, "
+                   "of all versions that had a file attached, "
+                   "how many steps back to pull from. 1 means "
+                   "the first previous version that has a file "
+                   "attachment. 2 means the second previous version "
+                   "that as a file attachment, etc..",
+              type=click.INT,
+              mutually_exclusive=["file-path"])
+def proforma_attach(abbrev: str,
+                    file_path: str = None,
+                    n_previous: int = None):
+    """
+    This command will attach a file or pull a existing file to latest ProForma Version
+
+    Usage:
+
+    austrakka proforma attach [ABBREV] ~~This will pull the file from the last proforma version
+
+    austrakka proforma attach [ABBREV] -f [FILEPATH] ~~attaches given file
+
+    austrakka proforma attach [ABBREV] -id [PROFORMA-VERSION-ID]
+    ~~this pulls a file from specified id
+
+    ABBREV should be the abbreviated name of the pro forma.
+    """
+    if file_path is None:
+        pull_proforma(abbrev, n_previous)
+    else:
+        attach_proforma(abbrev, file_path)
 
 
 @proforma.command('list')

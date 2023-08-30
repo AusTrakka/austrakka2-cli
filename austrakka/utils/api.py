@@ -19,6 +19,10 @@ from austrakka import __version__
 CONTENT_TYPE_JSON = 'application/json'
 CONTENT_TYPE_MULTIPART = 'multipart/form-data; charset=utf-8; boundary=+++'
 
+MODE_SKIP = 'skip'
+MODE_OVERWRITE = 'overwrite'
+MODE = 'mode'
+
 
 def _get_default_headers(
         content_type: str = CONTENT_TYPE_JSON,
@@ -197,3 +201,24 @@ def api_patch(
         data=json.dumps(data),
         params=params,
     )
+
+
+@_use_http_client(log_resp=True)
+def api_delete(
+        path: str,
+        params: Dict = None,
+        custom_headers: Dict = None,
+        client: httpx.Client = None,
+):
+    return client.delete(
+        _get_url(path),
+        params=params,
+        headers=dict(client.headers) | custom_headers
+    )
+
+
+def set_mode_header(custom_headers, force, skip):
+    if skip:
+        custom_headers[MODE] = MODE_SKIP
+    if force:
+        custom_headers[MODE] = MODE_OVERWRITE

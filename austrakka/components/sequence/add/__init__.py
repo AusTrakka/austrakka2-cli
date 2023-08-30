@@ -4,7 +4,8 @@ from io import BufferedReader
 import click
 from click import option
 
-from austrakka.utils.options import opt_csv, MutuallyExclusiveOption
+from austrakka.utils.options import opt_csv
+from austrakka.utils.options import opt_force_mutex_skip, opt_skip_mutex_force
 from ..funcs import add_fasta_submission
 from ..funcs import add_fastq_submission
 
@@ -18,15 +19,8 @@ def add(ctx):
 
 @add.command('fastq')
 @opt_csv(help='CSV with mapping from Seq_ID to sequence files', required=True)
-@option('--skip', cls=MutuallyExclusiveOption,
-        help="Skip this command if the sample has existing fastq sequences.",
-        mutually_exclusive=["force"],
-        is_flag=True)
-@option('--force',
-        cls=MutuallyExclusiveOption,
-        help="Upload fastq sequences and supersede any existing fastq sequences.",
-        mutually_exclusive=["skip"],
-        is_flag=True)
+@opt_skip_mutex_force(help="Skip this command if the sample has existing fastq sequences.")
+@opt_force_mutex_skip(help="Upload fastq sequences and supersede any existing fastq sequences.")
 def seq_add_fastq(
         csv_file: BufferedReader, skip: bool = False, force: bool = False
 ):
@@ -43,15 +37,8 @@ def seq_add_fastq(
 
 @add.command('fasta')
 @click.argument('fasta_file', type=click.File('rb'))
-@option('--skip', cls=MutuallyExclusiveOption,
-        help="Skip this command if the sample has existing fasta sequences.",
-        mutually_exclusive=["force"],
-        is_flag=True)
-@option('--force',
-        cls=MutuallyExclusiveOption,
-        help="Upload fasta sequences and supersede any existing fasta sequences.",
-        mutually_exclusive=["skip"],
-        is_flag=True)
+@opt_skip_mutex_force(help="Skip this command if the sample has existing fasta sequences.")
+@opt_force_mutex_skip(help="Upload fasta sequences and supersede any existing fasta sequences.")
 def seq_add_fasta(
         fasta_file: BufferedReader, skip: bool = False, force: bool = False
 ):
