@@ -93,7 +93,7 @@ def proforma_update(
               help='File that you may want to link.  '
                    'Only one xlsx filepath will be accepted',
               cls=MutuallyExclusiveOption,
-              mutually_exclusive=["proforma-version"])
+              mutually_exclusive=["n_previous"])
 @click.option('-n',
               '--n-previous',
               cls=MutuallyExclusiveOption,
@@ -104,7 +104,7 @@ def proforma_update(
                    "attachment. 2 means the second previous version "
                    "that as a file attachment, etc..",
               type=click.INT,
-              mutually_exclusive=["file-path"])
+              mutually_exclusive=["file_path"])
 def proforma_attach(abbrev: str,
                     file_path: str = None,
                     n_previous: int = None):
