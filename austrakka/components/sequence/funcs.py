@@ -34,7 +34,6 @@ from austrakka.utils.fs import create_dir
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import READ_BOTH
-from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
 from austrakka.utils.output import print_table
 from austrakka.utils.retry import retry
 from austrakka.utils.api import api_delete
@@ -345,7 +344,7 @@ def _get_seq_download_path(
         sample_name: str,
         read: str,
         seq_type: str,):
-    
+
     download_path = f'{SEQUENCE_PATH}/{DOWNLOAD}'
     download_path += f'/{FASTQ_PATH}/{sample_name}/{read}' \
         if seq_type == FASTQ_UPLOAD_TYPE \
@@ -387,11 +386,10 @@ def _filter_sequences(data, seq_type, read) -> List[Dict]:
     return list(data)
 
 
-def _get_seq_api(group_name: str, use_is_active_flag: bool):
+def _get_seq_api(group_name: str):
     api_path = SEQUENCE_PATH
     if group_name is not None:
-        api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}' \
-                    f'?{USE_IS_ACTIVE_FLAG}={use_is_active_flag}'
+        api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}'
     else:
         raise ValueError("A filter has not been passed")
     return api_path

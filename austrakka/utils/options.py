@@ -4,8 +4,8 @@ import typing as t
 import click
 from click import Option, UsageError
 
-from austrakka.utils.enums.seq import SEQ_TYPES, SEQ_FILTERS
-from austrakka.utils.enums.seq import READS, BY_LATEST_DATE
+from austrakka.utils.enums.seq import SEQ_TYPES
+from austrakka.utils.enums.seq import READS
 from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.utils.misc import AusTrakkaCliOption
 

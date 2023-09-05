@@ -8,7 +8,6 @@ import pandas as pd
 from loguru import logger
 
 from austrakka.utils.enums.seq import READ_BOTH
-from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
 from austrakka.components.sequence.funcs import _download_seq_file
 from austrakka.components.sequence.funcs import _get_seq_download_path
 from austrakka.utils.retry import retry
@@ -173,7 +172,6 @@ def pull_manifest(sync_state: dict):
         sync_state[SEQ_TYPE_KEY],
         READ_BOTH,
         sync_state[GROUP_NAME_KEY],
-        BY_IS_ACTIVE_FLAG,
     )
 
     logger.success(f'Freshly pulled manifest has {len(data)} entries.')
@@ -529,8 +527,7 @@ def get_file_from_server(data_frame, index, row, sync_state):
         query_path = _get_seq_download_path(
             sample_name,
             read,
-            seq_type,
-            BY_IS_ACTIVE_FLAG)
+            seq_type,)
 
         if row[STATUS_KEY] == DRIFTED:
             fresh_name = f'{row[FILE_NAME_ON_DISK_KEY]}.fresh'
