@@ -53,7 +53,7 @@ class RequiredMutuallyExclusiveOption(Option):
                 f"`{self.name}` is mutually exclusive "
                 f"with `{', '.join(self.mutually_exclusive)}`."
             )
-        if not self.mutually_exclusive.intersection(opts) and not self.name in opts:
+        if not self.mutually_exclusive.intersection(opts) and self.name not in opts:
             raise UsageError(
                 f"You must provide at least one of these arguments: "
                 f"`{', '.join([self.name] + list(self.mutually_exclusive))}`."
@@ -121,7 +121,7 @@ def opt_group_name(var_name='group_name', **attrs: t.Any):
 
 def opt_sample_id(**attrs: t.Any):
     defaults = {
-        'required': True,
+        'required': False,
         'help': 'name',
         'multiple': True,
     }
@@ -233,7 +233,7 @@ def opt_organisation(**attrs: t.Any):
 
 def opt_group(**attrs: t.Any):
     defaults = {
-        'required': True,
+        'required': False,
         'multiple': True,
         'help': 'Name of group.'
     }

@@ -4,7 +4,7 @@ from typing import List
 import click
 
 from austrakka.utils.output import table_format_option
-from austrakka.utils.options import RequiredMutuallyExclusiveOption
+from austrakka.utils.options import RequiredMutuallyExclusiveOption, opt_seq_type
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_read
 from austrakka.utils.options import opt_group
@@ -37,24 +37,23 @@ seq.add_command(sync)
 
 @seq.command('get')
 @opt_output_dir()
+@opt_seq_type()
 @opt_read()
 @opt_group(default=None,
            multiple=False,
-           required=True,
            cls=RequiredMutuallyExclusiveOption,
            mutually_exclusive=['sample_id'])
 @opt_sample_id(
     default=None,
     help='The Seq_IDs of specific sequences to download',
-    cls= RequiredMutuallyExclusiveOption,
-    mutually_exclusive= ['group_name']
-)
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['group_name'])
 def get(
         output_dir,
         seq_type: str,
         read: str,
-        group_name: str = None,
-        sample_id: List[str] = None,
+        group_name: str,
+        sample_id: List[str],
 ):
     """Download sequence files to the local drive
 

@@ -400,9 +400,10 @@ def _get_seq_api_sample_names(sample_ids: List[str]):
     api_path = SEQUENCE_PATH
     paths = []
     if sample_ids is not None:
-        for id in sample_ids:
-            api_path += f'/{SEQUENCE_BY_SAMPLE_PATH}/{id}'
+        for sample in sample_ids:
+            api_path += f'/{SEQUENCE_BY_SAMPLE_PATH}/{sample}'
             paths.append(api_path)
+            api_path = SEQUENCE_PATH
     else:
         raise ValueError("A filter has not been passed")
     return paths
@@ -413,16 +414,16 @@ def _get_seq_data(
         seq_type: str,
         read: str,
         group_name: str,
-        sample_ids: List[str],
+        sample_ids: List[str] = None,
 ):
     data = []
-    if group_name == None:
+    if group_name is not None:
         api_path = _get_seq_api(group_name)
         data = api_get(path=api_path)['data']
     else:
         api_paths = _get_seq_api_sample_names(sample_ids)
-        for p in api_paths:
-            data.extend(api_get(path=p)['data'])
+        for path in api_paths:
+            data.extend(api_get(path=path)['data'])
 
     return _filter_sequences(data, seq_type, read)
 
