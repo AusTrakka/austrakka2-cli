@@ -266,21 +266,6 @@ def opt_seq_type(**attrs: t.Any):
     )
 
 
-def opt_seq_filter(**attrs: t.Any):
-    defaults = {
-        'required': False,
-        'default': BY_LATEST_DATE,
-        'help': 'addition filter for sequence.',
-    }
-    return _create_option(
-        "-q",
-        '--sub-seq-query',
-        'sub_query_type',
-        type=click.Choice(SEQ_FILTERS),
-        **{**defaults, **attrs}
-    )
-
-
 def opt_output_dir(**attrs: t.Any):
     defaults = {
         'required': True,

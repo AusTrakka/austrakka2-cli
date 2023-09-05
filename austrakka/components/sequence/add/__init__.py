@@ -2,7 +2,6 @@
 from io import BufferedReader
 
 import click
-from click import option
 
 from austrakka.utils.options import opt_csv
 from austrakka.utils.options import opt_force_mutex_skip, opt_skip_mutex_force
