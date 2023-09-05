@@ -1,7 +1,10 @@
 # pylint: disable=redefined-outer-name
+from typing import List
+
 import click
 
 from austrakka.utils.output import table_format_option
+from austrakka.utils.options import RequiredMutuallyExclusiveOption
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_read
 from austrakka.utils.options import opt_group
@@ -18,7 +21,7 @@ from .add import add
 from .sync import sync
 
 
-BY_SAMPLE = 'by-sample'
+
 
 
 @click.group()
@@ -35,12 +38,23 @@ seq.add_command(sync)
 @seq.command('get')
 @opt_output_dir()
 @opt_read()
-@opt_group(default=None, multiple=False, required=True)
+@opt_group(default=None,
+           multiple=False,
+           required=True,
+           cls=RequiredMutuallyExclusiveOption,
+           mutually_exclusive=['sample_id'])
+@opt_sample_id(
+    default=None,
+    help='The Seq_IDs of specific sequences to download',
+    cls= RequiredMutuallyExclusiveOption,
+    mutually_exclusive= ['group_name']
+)
 def get(
         output_dir,
         seq_type: str,
         read: str,
-        group_name: str,
+        group_name: str = None,
+        sample_id: List[str] = None,
 ):
     """Download sequence files to the local drive
 
@@ -55,6 +69,7 @@ def get(
         seq_type,
         read,
         group_name,
+        sample_id,
     )
 
 
