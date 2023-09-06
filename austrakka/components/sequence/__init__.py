@@ -2,6 +2,7 @@
 import click
 
 from austrakka.utils.output import table_format_option
+from austrakka.utils.options import opt_seq_type
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_read
 from austrakka.utils.options import opt_group
@@ -34,6 +35,7 @@ seq.add_command(sync)
 
 @seq.command('get')
 @opt_output_dir()
+@opt_seq_type()
 @opt_read()
 @opt_group(default=None, multiple=False, required=True)
 def get(
@@ -60,6 +62,7 @@ def get(
 
 @seq.command('list')
 @table_format_option()
+@opt_seq_type(default=None, required=False)
 @opt_read()
 @opt_group(default=None, multiple=False, required=True)
 def seq_list(
