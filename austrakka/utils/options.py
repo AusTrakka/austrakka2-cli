@@ -42,7 +42,7 @@ class RequiredMutuallyExclusiveOption(Option):
         if self.mutually_exclusive:
             ex_str = ', '.join(self.mutually_exclusive)
             kwargs['help'] = help_text + (
-                    ' Mutually exclusive with [' + ex_str + ']'
+                    ' Mutually exclusive with [' + ex_str + '].'
                     ' At least one of these options are required'
             )
         super().__init__(*args, **kwargs)
@@ -121,7 +121,7 @@ def opt_group_name(var_name='group_name', **attrs: t.Any):
 
 def opt_sample_id(**attrs: t.Any):
     defaults = {
-        'required': False,
+        'required': True,
         'help': 'name',
         'multiple': True,
     }
@@ -233,7 +233,7 @@ def opt_organisation(**attrs: t.Any):
 
 def opt_group(**attrs: t.Any):
     defaults = {
-        'required': False,
+        'required': True,
         'multiple': True,
         'help': 'Name of group.'
     }
