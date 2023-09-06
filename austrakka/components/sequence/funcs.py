@@ -34,7 +34,6 @@ from austrakka.utils.fs import create_dir
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import READ_BOTH
-from austrakka.utils.enums.seq import BY_IS_ACTIVE_FLAG
 from austrakka.utils.output import print_table
 from austrakka.utils.retry import retry
 from austrakka.utils.api import api_delete
@@ -344,21 +343,18 @@ def _download_seq_file(file_path, filename, query_path, sample_dir):
 def _get_seq_download_path(
         sample_name: str,
         read: str,
-        seq_type: str,
-        sub_query_type: str,):
+        seq_type: str,):
 
-    by_is_active = BY_IS_ACTIVE_FLAG == sub_query_type
     download_path = f'{SEQUENCE_PATH}/{DOWNLOAD}'
-    download_path += f'/{FASTQ_PATH}/{sample_name}/{read}?{USE_IS_ACTIVE_FLAG}={by_is_active}' \
+    download_path += f'/{FASTQ_PATH}/{sample_name}/{read}' \
         if seq_type == FASTQ_UPLOAD_TYPE \
-        else f'/{FASTA_PATH}/{sample_name}?{USE_IS_ACTIVE_FLAG}={by_is_active}'
+        else f'/{FASTA_PATH}/{sample_name}'
     return download_path
 
 
 def _download_sequences(
         output_dir: str,
         samples_seq_info: list[Dict],
-        sub_query_type: str,
 ):
     for ssi in samples_seq_info:
         sample_name = ssi['sampleName']
@@ -377,8 +373,7 @@ def _download_sequences(
         query_path = _get_seq_download_path(
             sample_name,
             dto_read,
-            seq_type,
-            sub_query_type)
+            seq_type,)
 
         _download_seq_file(file_path, filename, query_path, sample_dir)
 
@@ -391,11 +386,10 @@ def _filter_sequences(data, seq_type, read) -> List[Dict]:
     return list(data)
 
 
-def _get_seq_api(group_name: str, use_is_active_flag: bool):
+def _get_seq_api(group_name: str):
     api_path = SEQUENCE_PATH
     if group_name is not None:
-        api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}' \
-                    f'?{USE_IS_ACTIVE_FLAG}={use_is_active_flag}'
+        api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}'
     else:
         raise ValueError("A filter has not been passed")
     return api_path
@@ -406,10 +400,8 @@ def _get_seq_data(
         seq_type: str,
         read: str,
         group_name: str,
-        sub_query_type: str,
 ):
-    use_is_active_flag = sub_query_type == BY_IS_ACTIVE_FLAG
-    api_path = _get_seq_api(group_name, use_is_active_flag)
+    api_path = _get_seq_api(group_name)
     data = api_get(path=api_path)['data']
     return _filter_sequences(data, seq_type, read)
 
@@ -420,7 +412,6 @@ def get_sequences(
         seq_type: str,
         read: str,
         group_name: str,
-        sub_query_type: str,
 ):
     if not os.path.exists(output_dir):
         create_dir(output_dir)
@@ -429,9 +420,8 @@ def get_sequences(
         seq_type,
         read,
         group_name,
-        sub_query_type,
     )
-    _download_sequences(output_dir, data, sub_query_type)
+    _download_sequences(output_dir, data)
 
 
 # pylint: disable=duplicate-code
@@ -440,13 +430,11 @@ def list_sequences(
         seq_type: str,
         read: str,
         group_name: str,
-        sub_query_type: str,
 ):
     data = _get_seq_data(
         seq_type,
         read,
         group_name,
-        sub_query_type,
     )
     print_table(
         pd.DataFrame(data),
