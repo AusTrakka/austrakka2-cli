@@ -383,7 +383,8 @@ def _filter_sequences(data, seq_type, read) -> List[Dict]:
     data_filtered = list(filter(lambda x: x['isActive'] is True, data_filtered))
     if seq_type == FASTA_UPLOAD_TYPE:
         return data_filtered
-    data_filtered = list(filter(lambda x: read == READ_BOTH or x['read'] == int(read), data_filtered))
+    data_filtered = list(filter(lambda x: read == READ_BOTH or
+                                          x['read'] == int(read), data_filtered))
 
     # Find the 'sequenceID' values that are different among dictionaries in data_filtered
     different_sample_names = [item['sampleName'] for item in data
@@ -392,7 +393,8 @@ def _filter_sequences(data, seq_type, read) -> List[Dict]:
     if different_sample_names:
         for sample_name in different_sample_names:
             logger.warning(f"SampleName: {sample_name}, skipped...")
-        logger.warning("Items have been filtered out due to data being unavailable or in an incorrect format")
+        logger.warning("Items have been filtered out due to data"
+                       " being unavailable or in an incorrect format")
 
     return data_filtered
 
