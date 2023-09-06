@@ -39,10 +39,11 @@ seq.add_command(sync)
 @opt_output_dir()
 @opt_seq_type()
 @opt_read()
-@opt_group(default=None,
-           multiple=False,
-           cls=RequiredMutuallyExclusiveOption,
-           mutually_exclusive=['sample_id'])
+@opt_group(
+    default=None,
+    multiple=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['sample_id'])
 @opt_sample_id(
     default=None,
     help='The Seq_IDs of specific sequences to download',

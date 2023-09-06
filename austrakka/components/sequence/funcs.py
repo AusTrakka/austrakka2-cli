@@ -379,12 +379,22 @@ def _download_sequences(
 
 
 def _filter_sequences(data, seq_type, read) -> List[Dict]:
-    data = filter(lambda x: x['type'] == seq_type or seq_type is None, data)
-    data = filter(lambda x: x['isActive'] is True, data)
+    data_filtered = list(filter(lambda x: x['type'] == seq_type or seq_type is None, data))
+    data_filtered = list(filter(lambda x: x['isActive'] is True, data_filtered))
     if seq_type == FASTA_UPLOAD_TYPE:
-        return list(data)
-    data = filter(lambda x: read == READ_BOTH or x['read'] == int(read), data)
-    return list(data)
+        return data_filtered
+    data_filtered = list(filter(lambda x: read == READ_BOTH or x['read'] == int(read), data_filtered))
+
+    # Find the 'sequenceID' values that are different among dictionaries in data_filtered
+    different_sample_names = [item['sampleName'] for item in data
+                              if item['sampleName'] not in [x['sampleName'] for x in data_filtered]]
+
+    if different_sample_names:
+        for sample_name in different_sample_names:
+            logger.warning(f"SampleName: {sample_name}, skipped...")
+        logger.warning("Items have been filtered out due to data being unavailable or in an incorrect format")
+
+    return data_filtered
 
 
 def _get_seq_api(group_name: str):
@@ -417,14 +427,13 @@ def _get_seq_data(
         sample_ids: List[str] = None,
 ):
     data = []
-    if group_name is not None:
+    if group_name:
         api_path = _get_seq_api(group_name)
         data = api_get(path=api_path)['data']
     else:
         api_paths = _get_seq_api_sample_names(sample_ids)
         for path in api_paths:
             data.extend(api_get(path=path)['data'])
-
     return _filter_sequences(data, seq_type, read)
 
 

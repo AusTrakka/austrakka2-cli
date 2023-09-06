@@ -42,20 +42,20 @@ class RequiredMutuallyExclusiveOption(Option):
         if self.mutually_exclusive:
             ex_str = ', '.join(self.mutually_exclusive)
             kwargs['help'] = help_text + (
-                    'Mutually exclusive with [' + ex_str + ']'
-                    'At least one of these options are required'
+                    ' Mutually exclusive with [' + ex_str + ']'
+                    ' At least one of these options are required'
             )
         super().__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
         if self.mutually_exclusive.intersection(opts) and self.name in opts:
             raise UsageError(
-                f"`{self.name}` is mutually exclusive "
+                f" `{self.name}` is mutually exclusive "
                 f"with `{', '.join(self.mutually_exclusive)}`."
             )
         if not self.mutually_exclusive.intersection(opts) and self.name not in opts:
             raise UsageError(
-                f"You must provide at least one of these arguments: "
+                f" You must provide at least one of these arguments: "
                 f"`{', '.join([self.name] + list(self.mutually_exclusive))}`."
             )
 
