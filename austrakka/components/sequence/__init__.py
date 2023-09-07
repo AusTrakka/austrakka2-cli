@@ -77,6 +77,7 @@ def get(
 
 @seq.command('list')
 @table_format_option()
+@opt_seq_type(default=None, required=False)
 @opt_read()
 @opt_group(default=None, multiple=False, required=True)
 def seq_list(
