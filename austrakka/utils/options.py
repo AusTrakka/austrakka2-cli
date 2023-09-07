@@ -231,30 +231,6 @@ def opt_organisation(**attrs: t.Any):
     )
 
 
-def opt_group(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'multiple': True,
-        'help': 'Name of group.'
-    }
-    return _create_option(
-        '-g',
-        '--group-name',
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
-def opt_groups(**attrs: t.Any):
-    return _create_option(
-        '-g',
-        '--group-names',
-        multiple=True,
-        type=click.STRING,
-        **attrs
-    )
-
-
 def opt_proforma(**attrs: t.Any):
     defaults = {
         'required': True,

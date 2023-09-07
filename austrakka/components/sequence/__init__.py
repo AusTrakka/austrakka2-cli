@@ -4,10 +4,9 @@ from typing import List
 import click
 
 from austrakka.utils.output import table_format_option
-from austrakka.utils.options import RequiredMutuallyExclusiveOption, opt_seq_type
+from austrakka.utils.options import RequiredMutuallyExclusiveOption, opt_seq_type, opt_group_name
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_read
-from austrakka.utils.options import opt_group
 from austrakka.utils.options import opt_sample_id
 from austrakka.utils.options import opt_force_mutex_skip
 from austrakka.utils.options import opt_skip_mutex_force
@@ -39,14 +38,14 @@ seq.add_command(sync)
 @opt_output_dir()
 @opt_seq_type()
 @opt_read()
-@opt_group(
+@opt_group_name(
     required=False,
     default=None,
     multiple=False,
     cls=RequiredMutuallyExclusiveOption,
     mutually_exclusive=['sample_id'])
 @opt_sample_id(
-    requird=False,
+    required=False,
     default=None,
     help='The Seq_IDs of specific sequences to download',
     cls=RequiredMutuallyExclusiveOption,
@@ -79,7 +78,7 @@ def get(
 @table_format_option()
 @opt_seq_type(default=None, required=False)
 @opt_read()
-@opt_group(default=None, multiple=False, required=True)
+@opt_group_name(default=None, multiple=False, required=True)
 def seq_list(
         out_format: str,
         seq_type: str,
