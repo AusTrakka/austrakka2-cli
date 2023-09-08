@@ -438,7 +438,7 @@ def _get_seq_api_sample_names(sample_ids: List[str]):
     return paths
 
 
-# pylint: disable=duplicate-code
+# pylint: disable=duplicate-code,no-else-return
 def _get_seq_data(
         seq_type: str,
         read: str,
@@ -458,7 +458,8 @@ def _get_seq_data(
         skipped_samples = [sample for sample in sample_ids if 
                            sample not in [item['sampleName'] for item in result]]
         if skipped_samples:
-            logger.warning(f'Skipped samples with no available sequences: {",".join(skipped_samples)}')
+            logger.warning('Skipped samples with no available sequences: '
+                           f'{",".join(skipped_samples)}')
         return result
 
 
