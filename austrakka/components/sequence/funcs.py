@@ -413,17 +413,6 @@ def _filter_sequences(data, seq_type, read) -> List[Dict]:
         return data_filtered
     data_filtered = list(filter(lambda x: read == READ_BOTH or
                                           x['read'] == int(read), data_filtered))
-
-    # Find the 'sequenceID' values that are different among dictionaries in data_filtered
-    different_sample_names = [item['sampleName'] for item in data
-                              if item['sampleName'] not in [x['sampleName'] for x in data_filtered]]
-
-    if different_sample_names:
-        for sample_name in different_sample_names:
-            logger.warning(f"SampleName: {sample_name}, skipped...")
-        logger.warning("Items have been filtered out due to data"
-                       " being unavailable or in an incorrect format")
-
     return data_filtered
 
 
@@ -460,11 +449,17 @@ def _get_seq_data(
     if group_name:
         api_path = _get_seq_api(group_name)
         data = api_get(path=api_path)['data']
+        return _filter_sequences(data, seq_type, read)
     else:
         api_paths = _get_seq_api_sample_names(sample_ids)
         for path in api_paths:
             data.extend(api_get(path=path)['data'])
-    return _filter_sequences(data, seq_type, read)
+        result = _filter_sequences(data, seq_type, read)
+        skipped_samples = [sample for sample in sample_ids if 
+                           sample not in [item['sampleName'] for item in result]]
+        if skipped_samples:
+            logger.warning(f'Skipped samples with no available sequences: {",".join(skipped_samples)}')
+        return result
 
 
 # pylint: disable=duplicate-code
