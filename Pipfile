@@ -15,7 +15,7 @@ pytest-azurepipelines = "*"
 
 [packages]
 austrakka = {editable = true, path = "."}
-azure-identity = "==1.13.0"
+azure-identity = "==1.14.0"
 click = "==8.1.7"
 loguru = "==0.7.0"
 pandas = "==2.0.3"
