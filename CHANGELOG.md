@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.35.0] - 2023-09-06
+### Changed
+- `seq add` commands will now provide a summary at the end of a bulk upload, including the number of sequences uploaded, and which sequences failed upload.
+- Sequence list and download commands no longer take the deprecated --sub-query-type flag. 
+A CLI update to this version will be required to support download from the updated AusTrakka server.
+
+### Fixed
+- `proforma attach` command options --file-path and --n-previous are now correctly mutually exclusive
+
 # [0.34.0] - 2023-08-30
 ### Added
 - `seq purge` command for admins only.
