@@ -184,7 +184,7 @@ def proforma_enable(abbrev: str):
 
 @proforma.command('share', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=click.STRING)
-@opt_groups()
+@opt_group_name(var_name='group_names', multiple=True)
 def proforma_share(abbrev: str, group_names: List[str]):
     """
     Share a pro forma with one or more groups so can see the proforma
@@ -200,7 +200,7 @@ def proforma_share(abbrev: str, group_names: List[str]):
 
 @proforma.command('unshare', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=click.STRING)
-@opt_groups()
+@opt_group_name(var_name='group_names', multiple=True)
 def proforma_unshare(abbrev: str, group_names: List[str]):
     """
     UnShare a pro forma with one or more groups to prevent the proforma
