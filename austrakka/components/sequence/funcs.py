@@ -27,6 +27,7 @@ from austrakka.utils.api import set_mode_header
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SEQUENCE_PATH
 from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
+from austrakka.utils.paths import SEQUENCE_BY_SAMPLE_PATH
 from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
@@ -55,7 +56,6 @@ FASTA_CSV_FILENAME = 'FileName'
 FASTA_CSV_FASTA_ID = 'FastaId'
 
 USE_IS_ACTIVE_FLAG = 'useIsActiveFlag'
-BY_SAMPLE = 'by-sample'
 
 
 @dataclass
@@ -407,11 +407,13 @@ def _download_sequences(
 
 
 def _filter_sequences(data, seq_type, read) -> List[Dict]:
-    data = filter(lambda x: x['type'] == seq_type or seq_type is None, data)
+    data_filtered = list(filter(lambda x: x['type'] == seq_type or seq_type is None, data))
+    data_filtered = list(filter(lambda x: x['isActive'] is True, data_filtered))
     if seq_type == FASTA_UPLOAD_TYPE:
-        return list(data)
-    data = filter(lambda x: read == READ_BOTH or x['read'] == int(read), data)
-    return list(data)
+        return data_filtered
+    data_filtered = list(filter(lambda x: read == READ_BOTH or
+                                          x['read'] == int(read), data_filtered))
+    return data_filtered
 
 
 def _get_seq_api(group_name: str):
@@ -423,15 +425,42 @@ def _get_seq_api(group_name: str):
     return api_path
 
 
-# pylint: disable=duplicate-code
+def _get_seq_api_sample_names(sample_ids: List[str]):
+    api_path = SEQUENCE_PATH
+    paths = []
+    if sample_ids is not None:
+        for sample in sample_ids:
+            api_path += f'/{SEQUENCE_BY_SAMPLE_PATH}/{sample}'
+            paths.append(api_path)
+            api_path = SEQUENCE_PATH
+    else:
+        raise ValueError("A filter has not been passed")
+    return paths
+
+
+# pylint: disable=duplicate-code,no-else-return
 def _get_seq_data(
         seq_type: str,
         read: str,
         group_name: str,
+        sample_ids: List[str] = None,
 ):
-    api_path = _get_seq_api(group_name)
-    data = api_get(path=api_path)['data']
-    return _filter_sequences(data, seq_type, read)
+    data = []
+    if group_name:
+        api_path = _get_seq_api(group_name)
+        data = api_get(path=api_path)['data']
+        return _filter_sequences(data, seq_type, read)
+    else:
+        api_paths = _get_seq_api_sample_names(sample_ids)
+        for path in api_paths:
+            data.extend(api_get(path=path)['data'])
+        result = _filter_sequences(data, seq_type, read)
+        skipped_samples = [sample for sample in sample_ids if 
+                           sample not in [item['sampleName'] for item in result]]
+        if skipped_samples:
+            logger.warning('Skipped samples with no available sequences: '
+                           f'{",".join(skipped_samples)}')
+        return result
 
 
 # pylint: disable=duplicate-code
@@ -439,7 +468,8 @@ def get_sequences(
         output_dir,
         seq_type: str,
         read: str,
-        group_name: str,
+        group_name: str = None,
+        sample_ids: List[str] = None,
 ):
     if not os.path.exists(output_dir):
         create_dir(output_dir)
@@ -448,6 +478,7 @@ def get_sequences(
         seq_type,
         read,
         group_name,
+        sample_ids,
     )
     _download_sequences(output_dir, data)
 
@@ -475,6 +506,6 @@ def purge_sequence(sample_id: str, skip: bool, force: bool):
     custom_headers = {}
     set_mode_header(custom_headers, force, skip)
     api_delete(
-        path="/".join([SEQUENCE_PATH, BY_SAMPLE, sample_id]),
+        path="/".join([SEQUENCE_PATH, SEQUENCE_BY_SAMPLE_PATH, sample_id]),
         custom_headers=custom_headers
     )

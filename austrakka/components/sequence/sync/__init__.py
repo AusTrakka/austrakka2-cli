@@ -1,8 +1,7 @@
 import click
 from click import option
 
-from austrakka.utils.options import opt_output_dir
-from austrakka.utils.options import opt_group
+from austrakka.utils.options import opt_output_dir, opt_group_name
 from austrakka.utils.options import opt_recalc_hash
 from austrakka.utils.options import opt_seq_type
 from austrakka.utils.options import opt_batch_size
@@ -18,7 +17,7 @@ def sync(ctx):
 
 @sync.command('get')
 @opt_output_dir()
-@opt_group(default=None, multiple=False, required=True)
+@opt_group_name(default=None, multiple=False, required=True)
 @opt_recalc_hash()
 @opt_seq_type(required=True)
 @opt_batch_size(help='Specifies the number of sequence downloads to perform '
