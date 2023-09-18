@@ -17,7 +17,7 @@ class MutuallyExclusiveOption(Option):
         if self.mutually_exclusive:
             ex_str = ', '.join(self.mutually_exclusive)
             kwargs['help'] = help_text + (
-                ' Mutually exclusive with [' + ex_str + '].'
+                    ' Mutually exclusive with [' + ex_str + '].'
             )
         super().__init__(*args, **kwargs)
 
@@ -26,6 +26,37 @@ class MutuallyExclusiveOption(Option):
             raise UsageError(
                 f"`{self.name}` is mutually exclusive "
                 f"with `{', '.join(self.mutually_exclusive)}`."
+            )
+
+        return super().handle_parse_result(
+            ctx,
+            opts,
+            args
+        )
+
+
+class RequiredMutuallyExclusiveOption(Option):
+    def __init__(self, *args, **kwargs):
+        self.mutually_exclusive = set(kwargs.pop('mutually_exclusive', []))
+        help_text = kwargs.get('help', '')
+        if self.mutually_exclusive:
+            ex_str = ', '.join(self.mutually_exclusive)
+            kwargs['help'] = help_text + (
+                    ' Mutually exclusive with [' + ex_str + '].'
+                    ' At least one of these options are required'
+            )
+        super().__init__(*args, **kwargs)
+
+    def handle_parse_result(self, ctx, opts, args):
+        if self.mutually_exclusive.intersection(opts) and self.name in opts:
+            raise UsageError(
+                f" `{self.name}` is mutually exclusive "
+                f"with `{', '.join(self.mutually_exclusive)}`."
+            )
+        if not self.mutually_exclusive.intersection(opts) and self.name not in opts:
+            raise UsageError(
+                f" You must provide at least one of these arguments: "
+                f"`{', '.join([self.name] + list(self.mutually_exclusive))}`."
             )
 
         return super().handle_parse_result(
@@ -200,30 +231,6 @@ def opt_organisation(**attrs: t.Any):
     )
 
 
-def opt_group(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'multiple': True,
-        'help': 'Name of group.'
-    }
-    return _create_option(
-        '-g',
-        '--group-name',
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
-def opt_groups(**attrs: t.Any):
-    return _create_option(
-        '-g',
-        '--group-names',
-        multiple=True,
-        type=click.STRING,
-        **attrs
-    )
-
-
 def opt_proforma(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -339,7 +346,7 @@ def opt_plotspec(**attrs: t.Any):
     defaults = {
         'required': False,
         'help': 'Plot spec. If not provided, or empty, the default spec for the'
-        ' plot type will be used.'}
+                ' plot type will be used.'}
     return _create_option(
         '-spec',
         'spec',
@@ -569,4 +576,5 @@ def _create_option(*param_decls: str, **attrs: t.Any):
             cls=AusTrakkaCliOption,
             show_default=True,
             **attrs)(func)
+
     return inner_func
