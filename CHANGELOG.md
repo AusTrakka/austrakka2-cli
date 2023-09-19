@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.35.1] - 2023-09-18
+### Changed
+- The `seq get` command will now accept `-s` flags to download sequences by Seq_ID.
+
 # [0.35.0] - 2023-09-06
 ### Changed
 - `seq add` commands will now provide a summary at the end of a bulk upload, including the number of sequences uploaded, and which sequences failed upload.
