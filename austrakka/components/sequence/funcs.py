@@ -257,12 +257,12 @@ def add_fastq_submission(
             retry(lambda sf=sample_files, ch=custom_headers: _post_fastq(
                 sf, ch), 1, "/".join([SEQUENCE_PATH, FASTQ_PATH]))
             upload_success_count += 1
-            
+
         except FailedResponseException as ex:
             logger.error(f'Sample {row[FASTQ_CSV_SAMPLE_ID]} failed upload')
             log_response(ex.parsed_resp)
             failed_samples.append(row[FASTQ_CSV_SAMPLE_ID])
-            
+
         except (
                 PermissionError,
                 UnknownResponseException,

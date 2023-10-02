@@ -8,7 +8,8 @@ from loguru import logger
 import pandas as pd
 
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import api_post_multipart
+from austrakka.utils.api import api_post_multipart_raw, get_response
+from austrakka.utils.retry import retry_on_5xx
 from austrakka.utils.paths import SUBMISSION_PATH
 from austrakka.utils.paths import METADATA_SEARCH_PATH
 from austrakka.utils.helpers.groups import get_group_by_name
@@ -21,6 +22,7 @@ SUBMISSION_VALIDATE_APPEND = 'ValidateSubmissions?appendMode=True'
 DELETE_ON_BLANK_PARAM = 'deleteOnBlank=True'
 
 METADATA_BY_FIELD_PATH = 'by-field'
+
 
 @logger_wraps()
 def add_metadata(
@@ -58,7 +60,7 @@ def validate_metadata(
     path = SUBMISSION_VALIDATE_APPEND if is_append else SUBMISSION_VALIDATE
     path = "/".join([SUBMISSION_PATH, path])
     _call_batched_submission(path, file, proforma_abbrev, batch_size)
-    
+
 
 def _call_batched_submission(
         path: str,
@@ -69,9 +71,9 @@ def _call_batched_submission(
     if batch_size < 1:
         _call_submission(path, file, proforma_abbrev)
         return
-    
+
     filepath = Path(file.name)
-    if  filepath.suffix == '.csv':
+    if filepath.suffix == '.csv':
         # pylint: disable=C0103
         df = pd.read_csv(file, dtype=str, index_col=False, keep_default_na=False, na_values='')
     elif filepath.suffix == '.xlsx':
@@ -80,24 +82,24 @@ def _call_batched_submission(
         return
     else:
         raise ValueError('File must be .csv or .xlsx')
-    
+
     num_rows = df.shape[0]
     if num_rows <= batch_size:
         # Just upload the original file
         file.seek(0)
         _call_submission(path, file, proforma_abbrev)
         return
-    
+
     logger.info(f"Uploading {num_rows} rows in batches of {batch_size}")
     encode = codecs.getwriter('utf-8')
     for index in range(0, num_rows, batch_size):
-        logger.info(f"Uploading rows {index}-{index+batch_size-1}")
-        chunk = df.iloc[index:index+batch_size, :]
+        logger.info(f"Uploading rows {index}-{index + batch_size - 1}")
+        chunk = df.iloc[index:index + batch_size, :]
         buffer = StringIO()
-        buffer.name = f"{filepath.stem}_batch_rows{index}-{index+batch_size-1}.csv"
+        buffer.name = f"{filepath.stem}_batch_rows{index}-{index + batch_size - 1}.csv"
         chunk.to_csv(buffer, index=False)
         _call_submission(path, encode(buffer), proforma_abbrev)
-    
+
     logger.info("Batched upload complete")
 
 
@@ -106,13 +108,16 @@ def _call_submission(
         file: BufferedReader,
         proforma_abbrev: str,
 ):
-    api_post_multipart(
-        path=path,
-        data={
-            'proforma-abbrev': proforma_abbrev,
-        },
-        files={'file': (file.name, file)}
+    data = {'proforma-abbrev': proforma_abbrev}
+    files = {'file': (file.name, file)}
+
+    resp = retry_on_5xx(
+        lambda p=path, d=data, f=files: api_post_multipart_raw(path=p, data=d, files=f),
+        1,
+        "_call_submission",
+        1
     )
+    get_response(resp, log_resp=True)
 
 
 @logger_wraps()
@@ -125,6 +130,7 @@ def list_metadata(group_name: str, out_format: str):
             'groupContext': group_id
         }
     )
+
 
 @logger_wraps()
 def list_metadata_by_field(group_name: str, field_names: List[str], out_format: str):
