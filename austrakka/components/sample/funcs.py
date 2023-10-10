@@ -46,7 +46,15 @@ def get_groups(
         out_format
 ):
     data = api_get(path=f"{SAMPLE_PATH}/{sample_id}/{GROUPS}")['data']
-    print_table(pd.DataFrame(data), out_format)
+    result = pd.json_normalize(data, max_level=1)
+
+    if 'organisation' in result.columns:
+        result.drop(['organisation'],
+                    axis='columns',
+                    inplace=True)
+
+    result.fillna('', inplace=True)
+    print_table(result, out_format)
 
 @logger_wraps()
 def disable_sample(
