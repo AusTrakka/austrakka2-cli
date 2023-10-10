@@ -1,6 +1,5 @@
 from typing import List
 
-import pandas as pd
 from loguru import logger
 
 from austrakka.utils.api import api_get
@@ -8,8 +7,8 @@ from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.api import api_patch
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_table
 from austrakka.utils.paths import GROUP_PATH
+from austrakka.utils.helpers.groups import format_group_dto_for_output
 
 
 @logger_wraps()
@@ -99,16 +98,4 @@ def list_group(out_format: str):
     )
 
     data = response['data'] if ('data' in response) else response
-    result = pd.json_normalize(data, max_level=1)
-
-    if 'organisation' in result.columns:
-        result.drop(['organisation'],
-                    axis='columns',
-                    inplace=True)
-
-    result.fillna('', inplace=True)
-
-    print_table(
-        result,
-        out_format,
-    )
+    format_group_dto_for_output(data, out_format)
