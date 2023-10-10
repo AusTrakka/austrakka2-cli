@@ -1,8 +1,9 @@
+import pandas as pd
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.paths import SAMPLE_PATH
 from austrakka.utils.output import print_table
-import pandas as pd
+
 
 DISABLE = 'Disable'
 ENABLE = 'Enable'
