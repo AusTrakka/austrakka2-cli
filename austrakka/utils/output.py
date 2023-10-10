@@ -184,15 +184,3 @@ def create_response_object(message: str, message_type: str):
         RESPONSE_MESSAGE: message,
         RESPONSE_TYPE: message_type
     }
-
-
-def format_group_dto_for_output(data, out_format):
-    result = pd.json_normalize(data, max_level=1)
-
-    if 'organisation' in result.columns:
-        result.drop(['organisation'],
-                    axis='columns',
-                    inplace=True)
-
-    result.fillna('', inplace=True)
-    print_table(result, out_format)

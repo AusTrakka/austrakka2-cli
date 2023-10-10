@@ -8,7 +8,7 @@ from austrakka.utils.api import api_put
 from austrakka.utils.api import api_patch
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import GROUP_PATH
-from austrakka.utils.output import format_group_dto_for_output
+from austrakka.utils.helpers.groups import format_group_dto_for_output
 
 
 @logger_wraps()

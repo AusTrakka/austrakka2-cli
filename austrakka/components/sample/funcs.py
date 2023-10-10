@@ -1,8 +1,7 @@
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.paths import SAMPLE_PATH
-from austrakka.utils.output import format_group_dto_for_output
-
+from austrakka.utils.helpers.groups import format_group_dto_for_output
 
 DISABLE = 'Disable'
 ENABLE = 'Enable'
