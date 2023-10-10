@@ -1,8 +1,7 @@
-import pandas as pd
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.paths import SAMPLE_PATH
-from austrakka.utils.output import print_table
+from austrakka.utils.output import format_group_dto_for_output
 
 
 DISABLE = 'Disable'
@@ -46,15 +45,7 @@ def get_groups(
         out_format
 ):
     data = api_get(path=f"{SAMPLE_PATH}/{sample_id}/{GROUPS}")['data']
-    result = pd.json_normalize(data, max_level=1)
-
-    if 'organisation' in result.columns:
-        result.drop(['organisation'],
-                    axis='columns',
-                    inplace=True)
-
-    result.fillna('', inplace=True)
-    print_table(result, out_format)
+    format_group_dto_for_output(data, out_format)
 
 @logger_wraps()
 def disable_sample(
