@@ -3,11 +3,14 @@ from io import BufferedReader
 import click
 
 from austrakka.utils.options import opt_sample_id, opt_group_name
+from ...utils.output import table_format_option
 from .funcs import \
     disable_sample, \
     enable_sample, \
     unshare_sample, \
-    share_sample
+    share_sample, \
+    get_groups
+
 
 
 @click.group()
@@ -48,6 +51,18 @@ def sample_disable(sample_id: [str]):
     from the system."""
     disable_sample(sample_id)
 
+
+@sample.command('groups')
+@table_format_option()
+@opt_sample_id(multiple=False)
+def seq_groups(
+        sample_id: str,
+        out_format: str
+):
+    get_groups(
+        sample_id,
+        out_format,
+    )
 
 @sample.command('enable')
 @opt_sample_id(

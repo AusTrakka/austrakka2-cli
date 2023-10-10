@@ -1,11 +1,14 @@
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import api_patch
+from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.paths import SAMPLE_PATH
+from austrakka.utils.output import print_table
+import pandas as pd
 
 DISABLE = 'Disable'
 ENABLE = 'Enable'
 UNSHARE = 'UnShare'
 SHARE = 'Share'
+GROUPS = 'Groups'
 
 
 @logger_wraps()
@@ -35,6 +38,14 @@ def unshare_sample(
         },
     )
 
+
+@logger_wraps()
+def get_groups(
+        sample_id: str,
+        out_format
+):
+    data = api_get(path=f"{SAMPLE_PATH}/{sample_id}/{GROUPS}")['data']
+    print_table(pd.DataFrame(data), out_format)
 
 @logger_wraps()
 def disable_sample(
