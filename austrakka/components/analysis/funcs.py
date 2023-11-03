@@ -7,8 +7,9 @@ from austrakka.utils.paths import ANALYSIS_PATH
 
 
 @logger_wraps()
-def list_analyses(out_format: str):
-    call_get_and_print_table(ANALYSIS_PATH, out_format)
+def list_analyses(project_abbrev: str, out_format: str):
+    call_get_and_print_table(
+        f'{ANALYSIS_PATH}/project/{project_abbrev}', out_format)
 
 
 @logger_wraps()
