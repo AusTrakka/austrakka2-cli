@@ -408,6 +408,18 @@ def opt_is_active(is_update=False, **attrs: t.Any):
     )
 
 
+def opt_is_austrakka_process(**attrs: t.Any):
+    defaults = {
+        'help': 'Determines if the user is an AusTrakka process'
+    }
+    return _create_option(
+        '--is-austrakka-process/--not-austrakka-process',
+        type=bool,
+        required=True,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_skip_mutex_force(**attrs: t.Any):
     defaults = {
         'help': 'When able, skip action rather than fail. Cannot be used together with force.'
