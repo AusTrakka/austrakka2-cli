@@ -1,7 +1,8 @@
 from io import BufferedReader
 
+from austrakka.utils.fs import verify_hash_single, FileHash
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import api_post_multipart
+from austrakka.utils.api import api_post_multipart, api_post_multipart_raw, get_response
 from austrakka.utils.api import api_post
 from austrakka.utils.paths import JOB_INSTANCE_PATH
 
@@ -28,3 +29,20 @@ def upload_file(
         },
         files={'file': (file.name, file)}
     )
+
+
+@logger_wraps()
+def upload_multipart(
+        path: str, 
+        files, 
+        file_hash: FileHash, 
+        custom_headers: dict):
+
+    resp = api_post_multipart_raw(
+        path=path,
+        files=files,
+        custom_headers=custom_headers,
+    )
+    data = get_response(resp, True)
+    if resp.status_code == 200:
+        verify_hash_single(file_hash, data)

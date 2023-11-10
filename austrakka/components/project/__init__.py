@@ -12,12 +12,16 @@ from austrakka.components.project.funcs import list_projects, \
     set_dashboard, \
     get_dashboard
 
+from .dataset import dataset
 
 @click.group()
 @click.pass_context
 def project(ctx):
     '''Commands related to projects'''
     ctx.context = ctx.parent.context
+
+
+project.add_command(dataset)
 
 
 @project.command('add', hidden=hide_admin_cmds())

@@ -245,6 +245,20 @@ def opt_proforma(**attrs: t.Any):
     )
 
 
+def opt_analysis_label(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Analysis label to distinguish the same field across different '
+                'datasets.',
+    }
+    return _create_option(
+        '-al',
+        '--analysis-label',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_csv(**attrs: t.Any):
     defaults = {
         'required': False,

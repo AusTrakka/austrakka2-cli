@@ -11,12 +11,13 @@ from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
+from austrakka.utils.helpers.upload import upload_multipart
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_table, log_response
 from austrakka.utils.helpers.fields import get_system_field_names
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
-from austrakka.utils.fs import FileHash, verify_hash_single
+from austrakka.utils.fs import FileHash, get_hash
 
 ATTACH = 'Attach'
 
@@ -155,7 +156,7 @@ def attach_proforma(abbrev: str,
     abbrev:
     file:
     """
-    file_hash = _proforma_hash(filepath)
+    file_hash = get_hash(filepath)
     with open(filepath, 'rb') as file_content:
         files = [('files[]', (filepath, file_content))]
 
@@ -273,19 +274,8 @@ def list_groups_proforma(abbrev: str, out_format: str):
     )
 
 
-def _proforma_hash(filepath):
-    with open(filepath, 'rb') as file:
-        return FileHash(
-            filename=os.path.basename(filepath),
-            sha256=hashlib.sha256(file.read()).hexdigest())
-
-
 def _post_proforma(files, file_hash: FileHash, custom_headers: dict):
-    resp = api_post_multipart_raw(
-        path="/".join([PROFORMA_PATH, ATTACH]),
-        files=files,
-        custom_headers=custom_headers,
-    )
-    data = get_response(resp, True)
-    if resp.status_code == 200:
-        verify_hash_single(file_hash, data)
+    upload_multipart(path="/".join([PROFORMA_PATH, ATTACH]),
+                     files=files,
+                     file_hash=file_hash,
+                     custom_headers=custom_headers)

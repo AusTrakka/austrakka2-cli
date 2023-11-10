@@ -1,3 +1,4 @@
+import hashlib
 import os
 from dataclasses import dataclass
 
@@ -45,3 +46,11 @@ def verify_hash_single(a_hash: FileHash, resp: dict):
 
     if error != '':
         raise IncorrectHashException(error)
+
+
+def get_hash(filepath):
+    with open(filepath, 'rb') as file:
+        return FileHash(
+            filename=os.path.basename(filepath),
+            sha256=hashlib.sha256(file.read()).hexdigest())
+
