@@ -132,6 +132,8 @@ to see the usage of the `metadata add` command to upload metadata files.
 
 All commands require `AT_URI` and `AT_TOKEN` to be set, except for `auth` commands.
 
+Ensure these variables are set with `export` as they will need be accessed by sub-shells.
+
 ## Project Structure
 
 Each logical component of the system has its own package under `austrakka/`. Eg. `austrakka/job`.
