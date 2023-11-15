@@ -77,6 +77,31 @@ def opt_abbrev(**attrs: t.Any):
     )
 
 
+def opt_tracking_token(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'progress token of a job, that can be used to query its status'
+    }
+    return _create_option(
+        "-tt",
+        "--tracking_token",
+        **{**defaults, **attrs}
+    )
+
+
+def opt_detailed(**attrs: t.Any):
+    defaults = {
+        'help': "Do you want to fetch more detailed tracking information"
+    }
+    return _create_option(
+        '--detailed',
+        type=bool,
+        is_flag=True,
+        default=False,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_name(var_name='name', **attrs: t.Any):
     defaults = {
         'required': True,
