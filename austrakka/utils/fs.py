@@ -48,9 +48,20 @@ def verify_hash_single(a_hash: FileHash, resp: dict):
         raise IncorrectHashException(error)
 
 
+def verify_hash_dataset_job(a_hash: FileHash, upload_dto: dict):
+    error = ''
+
+    if not (
+            a_hash.sha256.casefold() == upload_dto['serverSha256'].casefold()
+    ):
+        error = 'Hash for this dataset job is not correct'
+
+    if error != '':
+        raise IncorrectHashException(error)
+
+
 def get_hash(filepath):
     with open(filepath, 'rb') as file:
         return FileHash(
             filename=os.path.basename(filepath),
             sha256=hashlib.sha256(file.read()).hexdigest())
-

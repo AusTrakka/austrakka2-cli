@@ -1,12 +1,11 @@
 import os
 from typing import List
-import hashlib
 import pandas as pd
 from httpx import HTTPStatusError
 from loguru import logger
 
 
-from austrakka.utils.api import api_get, api_post_multipart_raw, get_response
+from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
