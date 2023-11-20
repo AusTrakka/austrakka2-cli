@@ -67,4 +67,5 @@ def upload_multipart_tracking_token(
     dto = data['data']
     logger.info('Checking Hash...')
     verify_hash_dataset_job(file_hash, dto)
-    return dto['progressToken']
+    logger.success('Hash Verified!')
+    return dto['trackingToken']

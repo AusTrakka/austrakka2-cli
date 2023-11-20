@@ -53,5 +53,5 @@ def dataset_blocking_add(file_path: str,
                          analysis_label: str,
                          abbrev: str,
                          out_format: str,):
-
+    """A blocking version of the dataset which uploads and polls the status of the job sent"""
     add_dataset_blocking(file_path, analysis_label, abbrev, out_format)

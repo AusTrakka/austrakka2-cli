@@ -80,7 +80,7 @@ def opt_abbrev(**attrs: t.Any):
 def opt_tracking_token(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'progress token of a job, that can be used to query its status'
+        'help': 'tracking token of a job, that can be used to query its status'
     }
     return _create_option(
         "-tt",

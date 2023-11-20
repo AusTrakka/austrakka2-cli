@@ -80,7 +80,7 @@ def add_dataset_blocking(
         label: str,
         abbrev: str,
         out_format: str):
-    logger.info('STORING')
+    logger.info('Storing')
     path_adding = "/".join([PROJECT_PATH, abbrev, DATASET_UPLOAD_PATH])
     filename = os.path.basename(filepath)
 
@@ -96,7 +96,6 @@ def add_dataset_blocking(
                                                          files=files,
                                                          file_hash=file_hash,
                                                          custom_headers=custom_headers)
-    logger.info('CHECKING HASH AND VERIFYING')
     path_ack = "/".join([PROJECT_PATH, abbrev, DATASET_ACK_PATH, tracking_token])
     api_post(
         path=path_ack,
@@ -106,9 +105,8 @@ def add_dataset_blocking(
                            DATASET_TRACK_PATH,
                            tracking_token])
 
-    logger.info('TRACKING JOB')
     while True:
-        logger.info('TRACKING...')
+        logger.info('Tracking...')
         status_change = call_get_and_print_table_on_state_change(
             path_track,
             out_format,
@@ -119,8 +117,11 @@ def add_dataset_blocking(
             logger.success(f"Current status: {status_change}")
 
             if status_change == 'Finished':
-                logger.success('Finished')
+                logger.success('')
                 break  # Exit the loop when the desired status is reached
+            elif "Failed" in status_change:
+                logger.error("The Job in-jest has failed")
+                break
         else:
-            logger.warning('Still Working...')
-        time.sleep(10)
+            logger.warning('No State Change...')
+        time.sleep(5)
