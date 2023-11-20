@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.37.0] - 2023-11-20
+### Changed
+- `analysis list` now requires a `--project`.
+
 # [0.36.0] - 2023-11-07
 ### Added
 - `sample groups` command.
