@@ -404,6 +404,9 @@ def finalise_each_file(int_med, sync_state):
             int_med.at[index, STATUS_KEY] = DONE
             logger.info(f'Done: {dest}')
 
+        elif int_med.at[index, STATUS_KEY] == DONE:
+            logger.info(f'Already done: {dest}')
+
         else:
             raise WorkflowError(
                 f'Reach an impossible state in the depths of {Action.finalise}. '
