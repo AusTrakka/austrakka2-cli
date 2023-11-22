@@ -450,7 +450,7 @@ def opt_force_mutex_skip(**attrs: t.Any):
 
 def opt_is_update(**attrs: t.Any):
     defaults = {
-        'help': 'Specify validation mode (as if appending or creating) when '
+        'help': 'Specify validation mode (as if updating or creating) when '
                 'checking data.'
     }
     return _create_option(
