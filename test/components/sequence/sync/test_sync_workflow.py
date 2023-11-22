@@ -810,6 +810,53 @@ class TestSyncWorkflow:
         clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY]))
         clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
 
+    def test_finalise11_given_done_status_and_successful_finalise_expect_convert_int_manifest_to_live_manifest(self):
+        # Arrange
+        sync_state = {
+            SYNC_STATE_FILE_KEY: "test-finalise11-sync-state.json",
+            INTERMEDIATE_MANIFEST_FILE_KEY: "test-finalise11-int-manifest-clone.csv",
+            OUTPUT_DIR_KEY: "test/components/sequence/sync/finalise11",
+            OBSOLETE_OBJECTS_FILE_KEY: "test-finalise11-delete-targets.csv",
+            MANIFEST_KEY: "test-finalise11-manifest.csv",
+        }
+
+        # make a clone of the original test manifest because the test subject will
+        # be mutating it. The clone must be deleted by the test afterwards.
+        original = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-finalise11-int-manifest-original.csv")
+        clone = os.path.join(sync_state[OUTPUT_DIR_KEY], "test-finalise11-int-manifest-clone.csv")
+        shutil.copy(original, clone)
+
+        # Check that the test data start out clean
+        df = pd.read_csv(clone)
+        assert STATUS_KEY in df.columns
+
+        # Act
+        finalise(sync_state)
+
+        # Assert
+        assert sync_state[CURRENT_STATE_KEY] == SName.DONE_FINALISING
+
+        m_path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[MANIFEST_KEY])
+        m_df = pd.read_csv(m_path)
+
+        im_path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[INTERMEDIATE_MANIFEST_FILE_KEY])
+        im_df = pd.read_csv(im_path)
+
+        assert im_df.at[0, STATUS_KEY] == DONE
+        assert im_df.at[0, FILE_NAME_ON_DISK_KEY] == m_df.at[0, FASTQ_R1_KEY]
+        assert im_df.at[0, READ_KEY] == 1
+        assert im_df.at[0, SAMPLE_NAME_KEY] == 'Sample5'
+        assert im_df.at[1, STATUS_KEY] == DONE
+        assert im_df.at[1, FILE_NAME_ON_DISK_KEY] == m_df.at[0, FASTQ_R2_KEY]
+        assert im_df.at[1, READ_KEY] == 2
+        assert im_df.at[1, SAMPLE_NAME_KEY] == 'Sample5'
+        assert m_df.at[0, SEQ_ID_KEY] == 'Sample5'
+
+        # Clean up
+        clean_up_path(clone)
+        clean_up_path(m_path)
+        clean_up_path(os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY]))
+
     def test_purge1_file_marked_as_obsolete_and_exists_expect_file_is_deleted(self):
         # Arrange
         sync_state = {
