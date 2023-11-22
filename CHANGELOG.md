@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.38.0] - 2023-11-23
+### Changed
+- The `metadata append` command has been renamed to `metadata update`. Options 
+`--is-append/--not-append` have been renamed to `--is-update/--not-update`.
+
+
 # [0.37.1] - 2023-11-22
 ### Changed
 - Fixed bug in `sync get` command where re-running the "finalise" step doesn't recognise previously "Done" checks.
