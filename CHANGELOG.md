@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.37.1] - 2023-11-22
+### Changed
+- Fixed bug in `sync get` command where re-running the "finalise" step doesn't recognise previously "Done" checks.
+
 # [0.37.0] - 2023-11-20
 ### Changed
 - `analysis list` now requires a `--project`.
