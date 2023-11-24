@@ -10,6 +10,10 @@ class UnknownResponseException(Exception):
     pass
 
 
+class UnauthorizedException(Exception):
+    pass
+
+
 class FailedResponseException(Exception):
     def __init__(self, parsed_resp):
         self.parsed_resp = parsed_resp
