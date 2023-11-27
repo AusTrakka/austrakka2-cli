@@ -5,11 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.39.0] - 2023-11-28
+### Fixed
+- Unauthorised responses are correctly displayed.
+- `40x` responses return an exit code of `1`.
+
 # [0.38.0] - 2023-11-23
 ### Changed
 - The `metadata append` command has been renamed to `metadata update`. Options 
 `--is-append/--not-append` have been renamed to `--is-update/--not-update`.
-
 
 # [0.37.1] - 2023-11-22
 ### Changed
