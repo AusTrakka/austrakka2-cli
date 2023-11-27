@@ -1,3 +1,4 @@
+import http
 import json
 from typing import Callable
 from typing import Dict
@@ -11,6 +12,7 @@ import httpx
 
 from austrakka.utils.exceptions import FailedResponseException
 from austrakka.utils.exceptions import UnknownResponseException
+from austrakka.utils.exceptions import UnauthorizedException
 from austrakka.utils.output import log_response
 from austrakka.utils.context import CxtKey
 from austrakka.utils.context import get_ctx_value
@@ -18,6 +20,8 @@ from austrakka import __version__
 
 CONTENT_TYPE_JSON = 'application/json'
 CONTENT_TYPE_MULTIPART = 'multipart/form-data; charset=utf-8; boundary=+++'
+WWW_AUTHENTICATE = 'www-authenticate'
+INVALID_TOKEN = 'invalid_token'
 
 MODE_SKIP = 'skip'
 MODE_OVERWRITE = 'overwrite'
@@ -48,6 +52,12 @@ def _check_response(response: httpx.Response):
         except HTTPStatusError:
             raise FailedResponseException(parsed_resp)
     except JSONDecodeError:
+        if response.status_code == http.HTTPStatus.UNAUTHORIZED:
+            err = 'Unauthorized'
+            auth_err = response.headers.get(WWW_AUTHENTICATE) or ''
+            if INVALID_TOKEN in auth_err:
+                err = 'Unauthorized: invalid or expired token'
+            raise UnauthorizedException(err)
         raise UnknownResponseException(
             f'{response.status_code}: {response.text}'
         )

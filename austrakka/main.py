@@ -141,6 +141,7 @@ def main():
     except FailedResponseException as ex:
         logger.error("Request failed")
         log_response(ex.parsed_resp)
+        sys.exit(1)
     except Exception as ex:  # pylint: disable=broad-except
         if is_debug(os.environ.get(f"{CLI_PREFIX}_{CLI_LOG_LEVEL}")):
             logger.exception(ex)
