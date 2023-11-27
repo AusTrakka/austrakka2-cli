@@ -575,6 +575,18 @@ def opt_show_disabled(**attrs: t.Any):
     )
 
 
+def opt_tree_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Tree ID',
+    }
+    return _create_option(
+        '--tree-id',
+        type=click.INT,
+        **{**defaults, **attrs}
+    )
+
+
 def _create_option(*param_decls: str, **attrs: t.Any):
     def inner_func(func):
         if 'cls' in attrs.keys():
