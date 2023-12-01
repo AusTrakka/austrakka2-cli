@@ -56,12 +56,12 @@ def call_get_and_print_table_on_state_change(path: str,
 
     result = response['data'] if ('data' in response) else response
     if result['status'] != prev_state:
+        new_state = result['status']
         result = pd.json_normalize(result, max_level=1) \
             .pipe(lambda x: x.drop('serverSha256', axis=1))
         print_table(
             result,
             out_format,
         )
-        new_state = result['status']
         return new_state
     return None
