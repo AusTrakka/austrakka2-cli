@@ -487,13 +487,13 @@ def opt_force_mutex_skip(**attrs: t.Any):
     )
 
 
-def opt_is_append(**attrs: t.Any):
+def opt_is_update(**attrs: t.Any):
     defaults = {
-        'help': 'Specify validation mode (as if appending or creating) when '
+        'help': 'Specify validation mode (as if updating or creating) when '
                 'checking data.'
     }
     return _create_option(
-        '--is-append/--not-append',
+        '--is-update/--not-update',
         type=bool,
         default=False,
         **{**defaults, **attrs}
@@ -610,6 +610,18 @@ def opt_show_disabled(**attrs: t.Any):
         '--show-disabled/--hide-disabled',
         type=bool,
         default=False,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_tree_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Tree ID',
+    }
+    return _create_option(
+        '--tree-id',
+        type=click.INT,
         **{**defaults, **attrs}
     )
 

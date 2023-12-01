@@ -28,10 +28,11 @@ analysis.add_command(definition) if show_admin_cmds() else None
 
 
 @analysis.command('list')
+@opt_project(required=True)
 @table_format_option()
-def analysis_list(out_format: str):
+def analysis_list(project: str, out_format: str):
     '''List analyses in AusTrakka'''
-    list_analyses(out_format)
+    list_analyses(project, out_format)
 
 
 @analysis.command('add', hidden=hide_admin_cmds())

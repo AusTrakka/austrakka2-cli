@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.39.0] - 2023-11-28
+### Fixed
+- Unauthorised responses are correctly displayed.
+- `40x` responses return an exit code of `1`.
+
+# [0.38.0] - 2023-11-23
+### Changed
+- The `metadata append` command has been renamed to `metadata update`. Options 
+`--is-append/--not-append` have been renamed to `--is-update/--not-update`.
+
+# [0.37.1] - 2023-11-22
+### Changed
+- Fixed bug in `sync get` command where re-running the "finalise" step doesn't recognise previously "Done" checks.
+
+# [0.37.0] - 2023-11-20
+### Changed
+- `analysis list` now requires a `--project`.
+
+# [0.36.0] - 2023-11-07
+### Added
+- `sample groups` command.
+
+### Changed
+- `user add` and `user update` to handle AusTrakka process accounts.
+
 # [0.35.1] - 2023-09-18
 ### Changed
 - The `seq get` command will now accept `-s` flags to download sequences by Seq_ID.

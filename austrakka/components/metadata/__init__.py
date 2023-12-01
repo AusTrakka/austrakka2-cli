@@ -6,7 +6,7 @@ from io import BufferedReader
 import click
 
 from austrakka.utils.options import opt_proforma, opt_batch_size
-from austrakka.utils.options import opt_is_append
+from austrakka.utils.options import opt_is_update
 from austrakka.utils.options import opt_group_name
 from austrakka.utils.options import opt_blanks_delete
 from austrakka.utils.options import opt_field_name
@@ -48,7 +48,7 @@ def submission_add(
     add_metadata(file, proforma, blanks_will_delete, batch_size)
 
 
-@metadata.command('append')
+@metadata.command('update')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
 @opt_blanks_delete()
@@ -60,8 +60,8 @@ def submission_append(
         blanks_will_delete: bool,
         batch_size: int):   
     """
-    Upload metadata to be appended to existing samples.
-    The append operation does not require (or accept) Owner_group.
+    Upload metadata to existing samples.
+    The update operation does not require (or accept) Owner_group.
     The specified pro forma must contain Seq_ID and metadata fields
     to be updated. All samples must already exist in AusTrakka.
     """
@@ -71,16 +71,16 @@ def submission_append(
 @metadata.command('validate')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
-@opt_is_append()
+@opt_is_update()
 @opt_batch_size(help='The number of rows to split the metadata upload into before uploading. '
                      'If the file size is below this value, the file will not be split. '
                      'Validation messages will be returned per batch.'
                      'A negative or 0 value can be used to indicate no batching.',
                 default=5000)
-def submission_validate(file: BufferedReader, proforma: str, is_append: bool, batch_size: int):
+def submission_validate(file: BufferedReader, proforma: str, is_update: bool, batch_size: int):
     """Check uploaded content for errors and warnings. This is a read-only
     action. No data will modified."""
-    validate_metadata(file, proforma, is_append, batch_size)
+    validate_metadata(file, proforma, is_update, batch_size)
 
 
 @metadata.command('list')
