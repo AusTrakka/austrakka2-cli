@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.39.1] - 2023-12-05
+### Changed
+- Minor change to optimise the Finalisation stage of the `seq sync` command.
+
 # [0.39.0] - 2023-11-28
 ### Fixed
 - Unauthorised responses are correctly displayed.
