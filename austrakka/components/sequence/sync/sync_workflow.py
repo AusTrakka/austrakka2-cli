@@ -379,18 +379,18 @@ def set_state_up_to_date(sync_state: dict):
 
 def finalise_each_file(int_med, sync_state):
     output_dir = get_output_dir(sync_state)
-    for index, _ in int_med.iterrows():
+    for index, row in int_med.iterrows():
 
         dest = os.path.join(
             output_dir,
-            int_med.at[index, SAMPLE_NAME_KEY],
-            int_med.at[index, FILE_NAME_ON_DISK_KEY])
+            row[SAMPLE_NAME_KEY],
+            row[FILE_NAME_ON_DISK_KEY])
 
-        if int_med.at[index, STATUS_KEY] == DRIFTED:
+        if row[STATUS_KEY] == DRIFTED:
             src = os.path.join(
                 output_dir,
-                int_med.at[index, SAMPLE_NAME_KEY],
-                int_med.at[index, HOT_SWAP_NAME_KEY])
+                row[SAMPLE_NAME_KEY],
+                row[HOT_SWAP_NAME_KEY])
 
             logger.warning(f'Hot swapping: {dest}')
             os.rename(src, dest)
@@ -398,13 +398,13 @@ def finalise_each_file(int_med, sync_state):
 
             int_med.at[index, STATUS_KEY] = DONE
 
-        elif int_med.at[index, STATUS_KEY] == MATCH or\
-                int_med.at[index, STATUS_KEY] == DOWNLOADED:
+        elif row[STATUS_KEY] == MATCH or\
+                row[STATUS_KEY] == DOWNLOADED:
 
             int_med.at[index, STATUS_KEY] = DONE
             logger.info(f'Done: {dest}')
 
-        elif int_med.at[index, STATUS_KEY] == DONE:
+        elif row[STATUS_KEY] == DONE:
             logger.info(f'Already done: {dest}')
 
         else:
@@ -415,7 +415,7 @@ def finalise_each_file(int_med, sync_state):
                 f'The caller, probably {Action.finalise}, should have checked '
                 f'my inputs before calling me.')
 
-    logger.info(f'Finalized {len(int_med.index)} entries.')
+    logger.info(f'Finalized {int_med.shape[0]} entries.')
     save_int_manifest(int_med, sync_state)
 
 

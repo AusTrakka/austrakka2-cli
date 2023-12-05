@@ -1,6 +1,7 @@
 from os import path
 from io import BufferedReader
 
+from austrakka.utils.api import api_patch
 from austrakka.utils.helpers.output import call_get_and_print_table
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.helpers.upload import upload_file
@@ -28,3 +29,13 @@ def list_trees(out_format: str, analysis_abbrev: str):
         f'{JOB_INSTANCE_PATH}/{analysis["analysisId"]}/{ALL_VERSIONS}',
         out_format
     )
+
+
+@logger_wraps()
+def disable_tree(tree_id: int):
+    api_patch(path=f'{TREE_PATH}/disable/{tree_id}')
+
+
+@logger_wraps()
+def enable_tree(tree_id: int):
+    api_patch(path=f'{TREE_PATH}/enable/{tree_id}')
