@@ -1,10 +1,15 @@
 import click
 
-from austrakka.components.project.setup.funcs import add_field_project, set_merge_algorithm_project, \
+from austrakka.components.project.setup.funcs import \
+    add_field_project, \
+    set_merge_algorithm_project, \
     add_provision_project
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import opt_field_name, MutuallyExclusiveOption, opt_project, opt_merge_algorithm, \
-    opt_field_and_source, opt_abbrev
+from austrakka.utils.options import \
+    opt_field_name, \
+    opt_merge_algorithm, \
+    opt_field_and_source, \
+    opt_abbrev
 
 
 # pylint: disable=duplicate-code

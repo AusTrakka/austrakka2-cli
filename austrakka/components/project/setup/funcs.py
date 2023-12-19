@@ -7,9 +7,7 @@ from austrakka.utils.paths import PROJECT_PATH
 # pylint: disable=duplicate-code
 @logger_wraps()
 def add_field_project(abbrev: str, field_names: List[str]):
-    print(field_names)
     field_name_objs = {"fieldAndSourceDTOs": []}
-
     for field_name in field_names:
         field_name_split = field_name.split(',')
         field_name_objs["fieldAndSourceDTOs"].append({
@@ -17,7 +15,6 @@ def add_field_project(abbrev: str, field_names: List[str]):
             "restrictionName": field_name_split[1]
         })
 
-    print(field_name_objs)
     # Replace 'abbrev' with your actual value
     return api_patch(
         path=f'{PROJECT_PATH}/add-project-field/{abbrev}',
