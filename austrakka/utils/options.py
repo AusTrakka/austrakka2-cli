@@ -602,6 +602,22 @@ def opt_group_role(**attrs: t.Any):
     )
 
 
+def opt_field_and_source(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'multiple': True,
+        'help': 'The field and source to remove from the specified dataset. Use '
+                'comma (,) as a separator. Format is <field>,<source> '
+                'Eg. field1,source1. '
+                'Sources include: SourceFromBoth, SourceFromSampleRecord, SourceFromDataset',
+    }
+    return _create_option(
+        '-fs',
+        '--field-source',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
 def opt_show_disabled(**attrs: t.Any):
     defaults = {
         'help': 'Shows or hides disabled entities [default: --hide-disabled]'
@@ -610,6 +626,19 @@ def opt_show_disabled(**attrs: t.Any):
         '--show-disabled/--hide-disabled',
         type=bool,
         default=False,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_merge_algorithm(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Determines which merge algorithm to use when merging datasets. '
+                'Valid options are: show-all, override'
+    }
+    return _create_option(
+        '--merge-algorithm', '-ma',
+        type=click.Choice(['show-all', 'override']),
         **{**defaults, **attrs}
     )
 

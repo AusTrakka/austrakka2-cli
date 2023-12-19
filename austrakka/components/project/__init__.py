@@ -7,7 +7,7 @@ from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_dashboard_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_organisation
-from austrakka.components.project.field import field
+from austrakka.components.project.setup import setup
 from austrakka.components.project.funcs import list_projects, \
     add_project, \
     update_project, \
@@ -23,7 +23,8 @@ def project(ctx):
     ctx.context = ctx.parent.context
 
 
-project.add_command(field) if show_admin_cmds() else None
+project.add_command(setup)
+project.add_command(dataset)
 
 
 @project.command('add', hidden=hide_admin_cmds())
