@@ -609,7 +609,7 @@ def opt_field_and_source(**attrs: t.Any):
         'help': 'The field and source to remove from the specified dataset. Use '
                 'comma (,) as a separator. Format is <field>,<source> '
                 'Eg. field1,source1. '
-                'Sources include: SourceFromBoth, SourceFromSampleRecord, SourceFromDataset',
+                'Sources include: Source-From-Both, Source-From-Sample-Record, Source-From-Dataset',
     }
     return _create_option(
         '-fs',

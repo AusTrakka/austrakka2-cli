@@ -1,5 +1,6 @@
 import http
 import json
+import os
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -130,6 +131,24 @@ def api_get_stream(
     with _get_client().stream("GET", _get_url(path)) as resp:
         resp.raise_for_status()
         func(resp)
+
+
+def api_get_stream_with_filename(path: str, func: Callable[[httpx.Response], None], dir_path: str):
+    """
+    Get a stream from an API endpoint and extract filename from Content-Disposition header.
+    Throws httpx.HTTPStatusError if status is not 2xx.
+    """
+    with _get_client().stream("GET", _get_url(path)) as resp:
+        resp.raise_for_status()
+
+        content_disposition = resp.headers.get("Content-Disposition")
+        if content_disposition:
+            filename = content_disposition.split(";")[1].split("=")[1].strip('"')
+        else:
+            raise ValueError("Content-Disposition header not found in response")
+
+        with open(os.path.join(dir_path, filename), "wb") as file:
+            func(resp, file)
 
 
 @_use_http_client(content_type=CONTENT_TYPE_MULTIPART, log_resp=True)

@@ -12,7 +12,7 @@ def add_field_project(abbrev: str, field_names: List[str]):
         field_name_split = field_name.split(',')
         field_name_objs["fieldAndSourceDTOs"].append({
             "fieldName": field_name_split[0],
-            "restrictionName": field_name_split[1]
+            "restrictionName": field_name_split[1].replace('-', ' ')
         })
 
     # Replace 'abbrev' with your actual value

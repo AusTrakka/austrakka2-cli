@@ -1,8 +1,14 @@
 import click
 
-from austrakka.utils.options import opt_analysis_label, opt_tracking_token, opt_abbrev, opt_detailed
-from austrakka.components.project.dataset.funcs import add_dataset_blocking
-from austrakka.components.project.dataset.funcs import add_dataset, track_dataset
+from austrakka.utils.options import opt_analysis_label, \
+    opt_tracking_token, \
+    opt_abbrev, opt_detailed, \
+    opt_output_dir
+from austrakka.components.project.dataset.funcs import add_dataset_blocking, \
+    list_dataset_views, \
+    download_dataset_view
+from austrakka.components.project.dataset.funcs import add_dataset, \
+    track_dataset
 from austrakka.utils.output import table_format_option
 
 
@@ -55,3 +61,24 @@ def dataset_blocking_add(file_path: str,
                          out_format: str,):
     """A blocking version of the dataset which uploads and polls the status of the job sent"""
     add_dataset_blocking(file_path, analysis_label, abbrev, out_format)
+
+
+@dataset.command('list-views')
+@opt_abbrev(help="Project Abbreviation")
+@table_format_option()
+def get_dataset_view_list(abbrev: str, out_format: str):
+    """Get a list of views for a given project"""
+    list_dataset_views(abbrev, out_format)
+
+
+@dataset.command('get-view')
+@click.option('-id',
+              '--dataset-view-id',
+              help='dataset view to get', )
+@opt_abbrev(help="Project Abbreviation")
+@opt_output_dir()
+def get_dataset_view(output_dir: str,
+                     dataset_view_id: str,
+                     abbrev: str):
+    """Get a dataset view for a given project"""
+    download_dataset_view(output_dir, dataset_view_id, abbrev)
