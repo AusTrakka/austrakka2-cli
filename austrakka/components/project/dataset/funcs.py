@@ -161,6 +161,22 @@ def download_dataset_view(
     _download_dataset_view_file(output_dir, path)
 
 
+@logger_wraps()
+def get_active_dataset_list(abbrev: str, out_format: str):
+    path = "/".join([PROJECT_PATH, abbrev, 'get-active-dataset-list'])
+    response = api_get(path)
+    data = response['data'] if ('data' in response) else response
+    if not data:
+        logger.info("No Active Datasets available")
+        return
+
+    result = pd.DataFrame.from_dict(data)
+    print_table(
+        result,
+        out_format,
+    )
+
+
 def _download_dataset_view_file(dir_path, query_path):
     try:
         def _write_chunks(resp: httpx.Response, file):

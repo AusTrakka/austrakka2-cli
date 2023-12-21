@@ -1,7 +1,9 @@
 from typing import List
-
-from austrakka.utils.api import api_patch
+from loguru import logger
+import pandas as pd
+from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.misc import logger_wraps
+from austrakka.utils.output import print_table
 from austrakka.utils.paths import PROJECT_PATH
 
 # pylint: disable=duplicate-code
@@ -47,4 +49,49 @@ def add_provision_project(abbrev: str, field_names: List[str]):
         data={
             "columnNames": field_name_objs
         }
+    )
+
+
+@logger_wraps()
+def get_dataset_provision_list(
+        abbrev: str,
+        out_format: str):
+    path = "/".join([PROJECT_PATH, abbrev, 'get-project-provision-list'])
+    response = api_get(path)
+    data = response['data'] if ('data' in response) else response
+    if not data:
+        logger.info("No Dataset Provisions available")
+        return
+
+    result = pd.DataFrame.from_dict(data)
+    print_table(
+        result,
+        out_format,
+    )
+
+
+@logger_wraps()
+def get_project_field_list(
+        abbrev: str,
+        out_format: str):
+    path = "/".join([PROJECT_PATH, abbrev, 'get-project-field-list'])
+    response = api_get(path)
+    data = response['data'] if ('data' in response) else response
+    if not data:
+        logger.info("No Project Fields available")
+        return
+
+    result = pd.DataFrame.from_dict(data)
+    print_table(
+        result,
+        out_format,
+    )
+
+
+@logger_wraps()
+def disable_project_field(abbrev: str, field_names: List[str]):
+
+    return api_patch(
+        path=f'{PROJECT_PATH}/remove-project-field/{abbrev}',
+        data= field_names
     )
