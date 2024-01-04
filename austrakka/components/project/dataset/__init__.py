@@ -5,7 +5,7 @@ from austrakka.utils.options import opt_analysis_label, \
     opt_output_dir
 from austrakka.components.project.dataset.funcs import add_dataset_blocking, \
     list_dataset_views, \
-    download_dataset_view, get_active_dataset_list
+    download_dataset_view, active_dataset_entry_list_get
 from austrakka.components.project.dataset.funcs import add_dataset, \
     track_dataset
 from austrakka.utils.output import table_format_option
@@ -86,6 +86,6 @@ def get_dataset_view(output_dir: str,
 @dataset.command('active')
 @opt_abbrev(help="Project Abbreviation")
 @table_format_option()
-def active_dataset_list(abbrev: str, out_format: str):
+def get_active_dataset_entry_list(abbrev: str, out_format: str):
     """Get a list of active datasets for a given project"""
-    get_active_dataset_list(abbrev, out_format)
+    active_dataset_entry_list_get(abbrev, out_format)

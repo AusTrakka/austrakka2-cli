@@ -56,7 +56,7 @@ def add_provision_project(abbrev: str, field_names: List[str]):
 def get_dataset_provision_list(
         abbrev: str,
         out_format: str):
-    path = "/".join([PROJECT_PATH, abbrev, 'get-project-provision-list'])
+    path = "/".join([PROJECT_PATH, abbrev, 'project-provision-list'])
     response = api_get(path)
     data = response['data'] if ('data' in response) else response
     if not data:
@@ -74,7 +74,7 @@ def get_dataset_provision_list(
 def get_project_field_list(
         abbrev: str,
         out_format: str):
-    path = "/".join([PROJECT_PATH, abbrev, 'get-project-field-list'])
+    path = "/".join([PROJECT_PATH, abbrev, 'project-field-list'])
     response = api_get(path)
     data = response['data'] if ('data' in response) else response
     if not data:

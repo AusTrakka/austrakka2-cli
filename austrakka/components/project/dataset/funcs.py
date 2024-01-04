@@ -135,7 +135,7 @@ def add_dataset_blocking(
 def list_dataset_views(
         abbrev: str,
         out_format: str):
-    path = "/".join([PROJECT_PATH, abbrev, 'get-project-views'])
+    path = "/".join([PROJECT_PATH, abbrev, 'project-views'])
     response = api_get(path)
     data = response['data'] if ('data' in response) else response
     if not data:
@@ -162,8 +162,8 @@ def download_dataset_view(
 
 
 @logger_wraps()
-def get_active_dataset_list(abbrev: str, out_format: str):
-    path = "/".join([PROJECT_PATH, abbrev, 'get-active-dataset-list'])
+def active_dataset_entry_list_get(abbrev: str, out_format: str):
+    path = "/".join([PROJECT_PATH, abbrev, 'active-dataset-entry-list'])
     response = api_get(path)
     data = response['data'] if ('data' in response) else response
     if not data:
