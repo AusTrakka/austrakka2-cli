@@ -65,7 +65,7 @@ def project_add_provision(abbrev: str, field_names: List[str]):
 def project_list_provisions(abbrev: str, out_format: str):
     """This will list project provisions"""
     get_dataset_provision_list(abbrev, out_format)
-    
+
 
 @setup.command('list-fields')
 @table_format_option()
