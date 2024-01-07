@@ -5,7 +5,7 @@ from austrakka.utils.options import opt_analysis_label, \
     opt_output_dir
 from austrakka.components.project.dataset.funcs import add_dataset_blocking, \
     list_dataset_views, \
-    download_dataset_view, active_dataset_entry_list_get
+    download_dataset_view, active_dataset_entry_list_get, disable_dataset
 from austrakka.components.project.dataset.funcs import add_dataset, \
     track_dataset
 from austrakka.utils.output import table_format_option
@@ -83,9 +83,19 @@ def get_dataset_view(output_dir: str,
     download_dataset_view(output_dir, dataset_view_id, abbrev)
 
 
-@dataset.command('active')
+@dataset.command('get-dataset-list')
 @opt_abbrev(help="Project Abbreviation")
 @table_format_option()
 def get_active_dataset_entry_list(abbrev: str, out_format: str):
     """Get a list of active datasets for a given project"""
     active_dataset_entry_list_get(abbrev, out_format)
+
+
+@dataset.command('disable')
+@click.option('-id',
+              '--dataset-id',
+              help='dataset to disable', )
+@opt_abbrev(help="Project Abbreviation")
+def project_dataset_disable(abbrev: str, dataset_id: int):
+    """Disable a dataset for a given project"""
+    disable_dataset(abbrev, dataset_id)

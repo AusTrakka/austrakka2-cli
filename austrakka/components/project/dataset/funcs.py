@@ -6,7 +6,7 @@ import httpx
 import pandas as pd
 from httpx import HTTPStatusError
 from loguru import logger
-from austrakka.utils.api import api_post, api_get, api_get_stream_with_filename
+from austrakka.utils.api import api_post, api_get, api_get_stream_with_filename, api_patch
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from austrakka.utils.fs import get_hash, create_dir
 from austrakka.utils.helpers.output import call_get_and_print_table_on_state_change
@@ -129,6 +129,16 @@ def add_dataset_blocking(
         else:
             logger.warning('No State Change...')
         time.sleep(5)
+
+
+@logger_wraps()
+def disable_dataset(
+        abbrev: str,
+        dataset_id: int):
+    path = "/".join([PROJECT_PATH, abbrev, 'disable-dataset', dataset_id])
+    return api_patch(
+        path=path,
+    )
 
 
 @logger_wraps()

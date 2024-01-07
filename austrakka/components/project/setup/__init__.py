@@ -3,13 +3,14 @@ import click
 from austrakka.components.project.setup.funcs import \
     add_field_project, \
     set_merge_algorithm_project, \
-    add_provision_project, get_dataset_provision_list, get_project_field_list, disable_project_field
+    add_provision_project, get_dataset_provision_list, get_project_field_list, \
+    remove_project_field, remove_project_provision, update_project_provision
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import \
     opt_field_name, \
     opt_merge_algorithm, \
     opt_field_and_source, \
-    opt_abbrev
+    opt_abbrev, opt_prov_id
 from austrakka.utils.output import table_format_option
 
 
@@ -25,20 +26,20 @@ def setup(ctx):
 @opt_abbrev()
 @opt_field_and_source()
 def project_add_field(abbrev: str, field_source):
-    '''
+    """
     add fields for a given project.
-    '''
+    """
     add_field_project(abbrev, field_source)
 
 
-@setup.command('disable-fields', hidden=hide_admin_cmds())
+@setup.command('remove-fields', hidden=hide_admin_cmds())
 @opt_abbrev()
 @opt_field_name()
-def project_disable_field(abbrev: str, field_names: List[str]):
-    '''
+def project_remove_field(abbrev: str, field_names: List[str]):
+    """
     disable fields for a given project.
-    '''
-    disable_project_field(abbrev, field_names)
+    """
+    remove_project_field(abbrev, field_names)
 
 
 @setup.command('set-merge')
@@ -58,6 +59,22 @@ def project_add_provision(abbrev: str, field_names: List[str]):
     """This will add a project provision"""
     add_provision_project(abbrev, field_names)
 
+
+@setup.command('remove-provision')
+@opt_abbrev()
+@opt_prov_id()
+def project_remove_provision(abbrev: str, prov_id: str):
+    """This will remove a project provision"""
+    remove_project_provision(abbrev, prov_id)
+
+
+@setup.command('update-provision')
+@opt_abbrev()
+@opt_field_name()
+@opt_prov_id()
+def project_update_provision(abbrev: str, field_names: List[str], prov_id: str):
+    """This will update a project provision"""
+    update_project_provision(abbrev, prov_id, field_names)
 
 @setup.command('list-provisions')
 @table_format_option()

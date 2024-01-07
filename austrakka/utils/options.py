@@ -158,6 +158,19 @@ def opt_sample_id(**attrs: t.Any):
     )
 
 
+def opt_prov_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'provision id',
+    }
+    return _create_option(
+        "-pi",
+        "--prov-id",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_field_name(**attrs: t.Any):
     defaults = {
         'required': True,
