@@ -87,7 +87,7 @@ def _get_client(
     return httpx.Client(
         headers=_get_default_headers(content_type),
         verify=get_ctx_value(CxtKey.CTX_VERIFY_CERT),
-        timeout=300,
+        timeout=None,
         http2=get_ctx_value(CxtKey.CTX_USE_HTTP2),
     )
 
