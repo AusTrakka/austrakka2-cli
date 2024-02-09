@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.40.0] - 2024-02-09
+### Changed
+- Disabled httpx client timeout to support large file upload.
+
 # [0.39.1] - 2023-12-05
 ### Changed
 - Minor change to optimise the Finalisation stage of the `seq sync` command.
