@@ -80,7 +80,7 @@ def opt_abbrev(**attrs: t.Any):
 def opt_tracking_token(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'tracking token of a job, that can be used to query its status'
+        'help': 'Tracking token for a dataset upload that can be used to query the upload status'
     }
     return _create_option(
         "-tt",

@@ -32,7 +32,7 @@ def dataset_add(
     add_dataset(file_path, analysis_label, abbrev)
 
 
-@dataset.command('track-job')
+@dataset.command('track-upload')
 @opt_abbrev(help="Project Abbreviation")
 @opt_tracking_token()
 @opt_detailed()
