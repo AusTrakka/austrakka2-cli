@@ -83,7 +83,7 @@ def get_dataset_view(output_dir: str,
     download_dataset_view(output_dir, dataset_view_id, abbrev)
 
 
-@dataset.command('get-dataset-list')
+@dataset.command('list')
 @opt_abbrev(help="Project Abbreviation")
 @table_format_option()
 def get_active_dataset_entry_list(abbrev: str, out_format: str):
