@@ -14,7 +14,7 @@ from austrakka.utils.output import table_format_option
 @click.group()
 @click.pass_context
 def dataset(ctx):
-    """Commands to upload project datasets"""
+    """Commands to manage project datasets for analysis metadata"""
     ctx.context = ctx.parent.context
 
 
