@@ -47,7 +47,7 @@ def get_dataset_view(output_dir: str,
     download_dataset_view(output_dir, dataset_view_id, abbrev)
 
 
-@metadata.command('merge-by')
+@metadata.command('set-merge')
 @opt_abbrev()
 @opt_merge_algorithm()
 def project_set_merge_algo(abbrev: str, merge_algorithm):
