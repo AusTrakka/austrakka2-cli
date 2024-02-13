@@ -1,12 +1,17 @@
 from typing import List
 import click
-from .funcs import \
-    add_provision_project, get_dataset_provision_list, \
-    remove_project_provision, update_project_provision
+
+from austrakka.utils.output import table_format_option
 from austrakka.utils.options import \
     opt_field_name, \
-    opt_abbrev, opt_prov_id
-from austrakka.utils.output import table_format_option
+    opt_abbrev, \
+    opt_prov_id
+
+from .funcs import \
+    add_provision_project, \
+    get_dataset_provision_list, \
+    remove_project_provision, \
+    update_project_provision
 
 
 @click.group()

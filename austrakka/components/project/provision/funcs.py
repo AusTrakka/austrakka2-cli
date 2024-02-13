@@ -9,11 +9,7 @@ from austrakka.utils.paths import PROJECT_PATH
 
 @logger_wraps()
 def add_provision_project(abbrev: str, field_names: List[str]):
-    field_name_objs = []
-    for field_name in field_names:
-        field_name_objs.append({
-            "ColumnName": field_name
-        })
+    field_name_objs = convert_to_api_dto(field_names)
 
     return api_patch(
         path=f'{PROJECT_PATH}/{abbrev}/add-project-view-provision',
@@ -32,11 +28,7 @@ def remove_project_provision(abbrev: str, provision_id: str):
 
 @logger_wraps()
 def update_project_provision(abbrev: str, provision_id: str, field_names: List[str]):
-    field_name_objs = []
-    for field_name in field_names:
-        field_name_objs.append({
-            "ColumnName": field_name
-        })
+    field_name_objs = convert_to_api_dto(field_names)
 
     return api_patch(
         path=f'{PROJECT_PATH}/{abbrev}/update-project-view-provision/{provision_id}',
@@ -62,3 +54,12 @@ def get_dataset_provision_list(
         result,
         out_format,
     )
+
+
+def convert_to_api_dto(field_names):
+    field_name_objs = []
+    for field_name in field_names:
+        field_name_objs.append({
+            "ColumnName": field_name
+        })
+    return field_name_objs

@@ -1,17 +1,21 @@
 from typing import List
 import click
+
+from austrakka.utils.cmd_filter import hide_admin_cmds
+from austrakka.utils.output import table_format_option
+
+from austrakka.utils.options import \
+    opt_field_name, \
+    opt_field_and_source, \
+    opt_abbrev
+
 from .funcs import \
     add_field_project, \
     get_project_field_list, \
     remove_project_field
-from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import \
-    opt_field_name, \
-    opt_field_and_source, \
-    opt_abbrev, opt_prov_id
-from austrakka.utils.output import table_format_option
 
 
+# pylint: disable=(duplicate-code)
 @click.group()
 @click.pass_context
 def field(ctx):

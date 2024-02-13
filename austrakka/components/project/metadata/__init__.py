@@ -1,11 +1,14 @@
 import click
-from austrakka.utils.options import opt_merge_algorithm, \
+
+from austrakka.utils.output import table_format_option
+from austrakka.utils.options import \
+    opt_merge_algorithm, \
     opt_abbrev, \
     opt_output_dir
+
 from .funcs import list_dataset_views, \
     download_dataset_view, \
     set_merge_algorithm_project
-from austrakka.utils.output import table_format_option
 
 
 @click.group()
@@ -16,7 +19,7 @@ def metadata(ctx):
     that was uploaded and shared with the project, as well as project analysis metadata 
     that was uploaded by a project analyst. Data from both sources are merged to create 
     one or more unified views which are accessible to project members. 
-    
+
     All views have the same number of sample rows but differ in the number of fields. The
     base view contains all fields which are accessible by the project. All other views are
     subsets of the base."""
