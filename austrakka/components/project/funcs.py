@@ -36,6 +36,7 @@ def add_project(
         }
     )
 
+
 @logger_wraps()
 def update_project(
         project_abbreviation: str,
@@ -46,7 +47,7 @@ def update_project(
         org: str,
         dashboard_name: str):
     project = get_project_by_abbrev(project_abbreviation)
-    
+
     # ProjectDTO fields which should go in ProjectPutDTO
     put_project = {k: project[k] for k in [
         'abbreviation',
@@ -58,7 +59,7 @@ def update_project(
     ]}
     if project['requestingOrg'] is None:
         put_project['requestingOrg'] = {'abbreviation': None}
-    
+
     if abbrev is not None:
         logger.warning(f"Updating project abbreviation from {project['abbreviation']} to {abbrev}")
         put_project['abbreviation'] = abbrev
@@ -74,7 +75,7 @@ def update_project(
         }
     if dashboard_name is not None:
         put_project['dashboardName'] = dashboard_name
-    
+
     return api_put(
         path=f"{PROJECT_PATH}/{project_abbreviation}",
         data=put_project
