@@ -45,7 +45,8 @@ def project_remove_provision(abbrev: str, prov_id: str):
 @opt_field_name()
 @opt_prov_id()
 def project_update_provision(abbrev: str, field_names: List[str], prov_id: str):
-    """This will update a project provision"""
+    """This will update a project provision by replacing the current list of fields
+    with the new list of fields."""
     update_project_provision(abbrev, prov_id, field_names)
 
 

@@ -41,10 +41,10 @@ def get_dataset_view_list(abbrev: str, out_format: str):
 @opt_abbrev(help="Project Abbreviation")
 @opt_output_dir()
 def get_dataset_view(output_dir: str,
-                     dataset_view_id: str,
+                     view_id: str,
                      abbrev: str):
     """Get a specific metadata view."""
-    download_dataset_view(output_dir, dataset_view_id, abbrev)
+    download_dataset_view(output_dir, view_id, abbrev)
 
 
 @metadata.command('set-merge')
