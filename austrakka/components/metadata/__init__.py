@@ -40,8 +40,8 @@ def metadata(ctx):
 @opt_batch_size(help=ADD_APPEND_BATCH_SIZE_HELP,
                 default=5000)
 def submission_add(
-        file: BufferedReader, 
-        proforma: str, 
+        file: BufferedReader,
+        proforma: str,
         blanks_will_delete: bool,
         batch_size: int):
     """Upload metadata submission to AusTrakka"""
