@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.50.0] - 2024-02-14
+### Added
+- Added new commands to support the concept of Project Metadata.
+- Added `project metadata` commands.
+- Added `project field` commands.
+- Added `project provision` commands.
+- Added `project dataset` commands.
+
 # [0.40.0] - 2024-02-09
 ### Changed
 - Disabled httpx client timeout to support large file upload.
