@@ -77,6 +77,31 @@ def opt_abbrev(**attrs: t.Any):
     )
 
 
+def opt_tracking_token(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Tracking token for a dataset upload that can be used to query the upload status'
+    }
+    return _create_option(
+        "-tt",
+        "--tracking_token",
+        **{**defaults, **attrs}
+    )
+
+
+def opt_detailed(**attrs: t.Any):
+    defaults = {
+        'help': "Do you want to fetch more detailed tracking information"
+    }
+    return _create_option(
+        '--detailed',
+        type=bool,
+        is_flag=True,
+        default=False,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_name(var_name='name', **attrs: t.Any):
     defaults = {
         'required': True,
@@ -128,6 +153,19 @@ def opt_sample_id(**attrs: t.Any):
     return _create_option(
         "-s",
         "--sample-id",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_prov_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'provision id',
+    }
+    return _create_option(
+        "-pi",
+        "--prov-id",
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -240,6 +278,20 @@ def opt_proforma(**attrs: t.Any):
     return _create_option(
         '-p',
         '--proforma',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_analysis_label(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Analysis label to distinguish the same field across different '
+                'datasets.',
+    }
+    return _create_option(
+        '-al',
+        '--analysis-label',
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -563,6 +615,22 @@ def opt_group_role(**attrs: t.Any):
     )
 
 
+def opt_field_and_source(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'multiple': True,
+        'help': 'The field and source to remove from the specified dataset. Use '
+                'comma (,) as a separator. Format is <field>,<source> '
+                'Eg. field1,source1. '
+                'Sources include: Source-From-Both, Source-From-Sample-Record, Source-From-Dataset',
+    }
+    return _create_option(
+        '-fs',
+        '--field-source',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
 def opt_show_disabled(**attrs: t.Any):
     defaults = {
         'help': 'Shows or hides disabled entities [default: --hide-disabled]'
@@ -571,6 +639,19 @@ def opt_show_disabled(**attrs: t.Any):
         '--show-disabled/--hide-disabled',
         type=bool,
         default=False,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_merge_algorithm(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Determines which merge algorithm to use when merging datasets. '
+                'Valid options are: show-all, override'
+    }
+    return _create_option(
+        '--merge-algorithm', '-ma',
+        type=click.Choice(['show-all', 'override']),
         **{**defaults, **attrs}
     )
 

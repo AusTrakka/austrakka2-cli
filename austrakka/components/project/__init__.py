@@ -1,3 +1,4 @@
+# pylint: disable=expression-not-assigned
 import click
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
@@ -6,18 +7,29 @@ from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_dashboard_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_organisation
-from austrakka.components.project.funcs import list_projects, \
+from .funcs import list_projects, \
     add_project, \
     update_project, \
     set_dashboard, \
     get_dashboard
 
+from .dataset import dataset
+from .field import field
+from .provision import provision
+from .metadata import metadata
+
 
 @click.group()
 @click.pass_context
 def project(ctx):
-    '''Commands related to projects'''
+    """Commands related to projects"""
     ctx.context = ctx.parent.context
+
+
+project.add_command(field)
+project.add_command(provision)
+project.add_command(metadata)
+project.add_command(dataset)
 
 
 @project.command('add', hidden=hide_admin_cmds())
@@ -36,6 +48,7 @@ def project_add(
     Add a new project to AusTrakka.
     '''
     add_project(abbrev, name, description, org, dashboard_name)
+
 
 @project.command('update', hidden=hide_admin_cmds())
 @click.argument('project-abbreviation', type=str)
