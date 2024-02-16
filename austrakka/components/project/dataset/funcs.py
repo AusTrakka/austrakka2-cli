@@ -52,23 +52,13 @@ def track_dataset(
         tracking_token: str,
         detailed: bool,
         out_format: str):
-    path = "/".join([PROJECT_PATH,
-                     abbrev,
-                     DATASET_TRACK_DETAILED_PATH if detailed else DATASET_TRACK_PATH,
-                     tracking_token])
     if detailed:
-        response = api_get(path)
-        data = response['data'] if ('data' in response) else response
-        if not data:
-            logger.info("No JobFeedbacks available")
-            return
-
-        result = pd.DataFrame.from_dict(data)
-        print_table(
-            result,
-            out_format,
-        )
+        print_detailed_job_feedbacks(out_format, abbrev, tracking_token)
     else:
+        path = "/".join([PROJECT_PATH,
+                         abbrev,
+                         DATASET_TRACK_PATH,
+                         tracking_token])
         call_get_and_print_dataset_status(
             path,
             out_format
@@ -122,6 +112,8 @@ def add_dataset_blocking(
                 break  # Exit the loop when the desired status is reached
             if "Failed" in status_change:
                 logger.error("The dataset ingest has failed")
+                logger.error("Failed Job Logs:")
+                print_detailed_job_feedbacks(out_format, abbrev, tracking_token)
                 break
         else:
             logger.warning('No State Change...')
@@ -147,6 +139,20 @@ def active_dataset_entry_list_get(abbrev: str, out_format: str):
         logger.info("No Active Datasets available")
         return
 
+    result = pd.DataFrame.from_dict(data)
+    print_table(
+        result,
+        out_format,
+    )
+
+
+def print_detailed_job_feedbacks(out_format: str, abbrev: str, tracking_token: str):
+    path = "/".join([PROJECT_PATH, abbrev, DATASET_TRACK_DETAILED_PATH, tracking_token])
+    response = api_get(path)
+    data = response['data'] if ('data' in response) else response
+    if not data:
+        logger.info("No JobFeedbacks available")
+        return
     result = pd.DataFrame.from_dict(data)
     print_table(
         result,
