@@ -26,7 +26,7 @@ def metadata(ctx):
 
 
 @metadata.command('list')
-@click.argument('Project Abbrev', type=str)
+@click.argument('abbrev', type=str)
 @table_format_option()
 def get_dataset_view_list(abbrev: str, out_format: str):
     """Get a list of metadata views for a given project."""
@@ -37,7 +37,7 @@ def get_dataset_view_list(abbrev: str, out_format: str):
 @click.option('-id',
               '--view-id',
               help='Project metadata view to get', )
-@click.argument('Project Abbrev', type=str)
+@click.argument('abbrev', type=str)
 @opt_output_dir()
 def get_dataset_view(abbrev: str,
                      output_dir: str,
@@ -47,7 +47,7 @@ def get_dataset_view(abbrev: str,
 
 
 @metadata.command('set-merge')
-@click.argument('Project Abbrev', type=str)
+@click.argument('abbrev', type=str)
 @opt_merge_algorithm()
 def project_set_merge_algo(abbrev: str, merge_algorithm):
     """

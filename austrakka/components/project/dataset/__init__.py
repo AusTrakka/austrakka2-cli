@@ -17,7 +17,7 @@ def dataset(ctx):
 
 
 @dataset.command('async-add')
-@click.argument('Project Abbrev', type=str)
+@click.argument('abbrev', type=str)
 @click.option('-fp',
               '--file-path',
               help='dataset csv file to upload to the project', )
@@ -31,7 +31,7 @@ def dataset_add(
 
 
 @dataset.command('track-upload')
-@click.argument('Project Abbrev', type=str)
+@click.argument('abbrev', type=str)
 @opt_tracking_token()
 @opt_detailed()
 @table_format_option()
@@ -46,7 +46,7 @@ def dataset_track(
 
 
 @dataset.command('add')
-@click.argument('Project Abbrev', type=str)
+@click.argument('abbrev', type=str)
 @click.option('-fp',
               '--file-path',
               help='dataset csv file to upload to the project', )
@@ -61,7 +61,7 @@ def dataset_blocking_add(abbrev: str,
 
 
 @dataset.command('list')
-@click.argument('Project Abbrev', type=str)
+@click.argument('abbrev', type=str)
 @table_format_option()
 def get_active_dataset_entry_list(abbrev: str, out_format: str):
     """Get a list of active datasets for a given project"""
@@ -72,7 +72,7 @@ def get_active_dataset_entry_list(abbrev: str, out_format: str):
 @click.option('-id',
               '--dataset-id',
               help='dataset to disable', )
-@click.argument('Project Abbrev', type=str)
+@click.argument('abbrev', type=str)
 def project_dataset_disable(abbrev: str, dataset_id: int):
     """Disable a dataset for a given project"""
     disable_dataset(abbrev, dataset_id)
