@@ -8,13 +8,15 @@ from austrakka.utils.paths import PROJECT_PATH
 
 
 # pylint: disable=duplicate-code
-def short_to_long(merge_algorithm: str) -> str:
-    merge_algorithm_dict = {
+def short_to_long(source: str) -> str:
+    source_dict = {
         'both': 'Source From Both',
         'sample': 'Source From Sample Record',
         'dataset': 'Source From Dataset',
     }
-    return merge_algorithm_dict[merge_algorithm]
+    if source not in source_dict:
+        raise ValueError(f"Invalid source: {source}")
+    return source_dict[source]
 
 
 @logger_wraps()
