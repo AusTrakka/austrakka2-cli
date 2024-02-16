@@ -26,7 +26,7 @@ def proforma(ctx):
 
 
 @proforma.command('add', hidden=hide_admin_cmds())
-@click.argument('Project Abbrev', type=str)
+@opt_abbrev()
 @opt_name()
 @opt_description(required=False)
 @click.option('-req',
