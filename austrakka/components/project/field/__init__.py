@@ -6,9 +6,7 @@ from austrakka.utils.output import table_format_option
 
 from austrakka.utils.options import \
     opt_field_name, \
-    opt_field_and_source, \
-    opt_abbrev
-
+    opt_field_and_source
 from .funcs import \
     add_field_project, \
     get_project_field_list, \
@@ -24,7 +22,7 @@ def field(ctx):
 
 
 @field.command('add', hidden=hide_admin_cmds())
-@opt_abbrev()
+@click.argument('Project Abbrev', type=str)
 @opt_field_and_source()
 def project_add_field(abbrev: str, field_source):
     """
@@ -34,7 +32,7 @@ def project_add_field(abbrev: str, field_source):
 
 
 @field.command('remove', hidden=hide_admin_cmds())
-@opt_abbrev()
+@click.argument('Project Abbrev', type=str)
 @opt_field_name()
 def project_remove_field(abbrev: str, field_names: List[str]):
     """
@@ -45,7 +43,7 @@ def project_remove_field(abbrev: str, field_names: List[str]):
 
 @field.command('list')
 @table_format_option()
-@opt_abbrev()
+@click.argument('Project Abbrev', type=str)
 def project_list_fields(abbrev: str, out_format: str):
     """This will list project fields"""
     get_project_field_list(abbrev, out_format)

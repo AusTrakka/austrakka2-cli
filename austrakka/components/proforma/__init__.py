@@ -1,5 +1,7 @@
 from typing import List
 
+import click
+
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from .funcs import \
@@ -24,7 +26,7 @@ def proforma(ctx):
 
 
 @proforma.command('add', hidden=hide_admin_cmds())
-@opt_abbrev()
+@click.argument('Project Abbrev', type=str)
 @opt_name()
 @opt_description(required=False)
 @click.option('-req',
