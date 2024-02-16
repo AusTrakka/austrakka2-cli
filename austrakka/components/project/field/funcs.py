@@ -8,6 +8,17 @@ from austrakka.utils.paths import PROJECT_PATH
 
 
 # pylint: disable=duplicate-code
+def short_to_long(source: str) -> str:
+    source_dict = {
+        'both': 'Source From Both',
+        'sample': 'Source From Sample Record',
+        'dataset': 'Source From Dataset',
+    }
+    if source not in source_dict:
+        raise ValueError(f"Invalid source: {source}")
+    return source_dict[source]
+
+
 @logger_wraps()
 def add_field_project(abbrev: str, field_names: List[str]):
     field_name_objs = {"fieldAndSourceDTOs": []}
@@ -15,7 +26,7 @@ def add_field_project(abbrev: str, field_names: List[str]):
         field_name_split = field_name.split(',')
         field_name_objs["fieldAndSourceDTOs"].append({
             "fieldName": field_name_split[0],
-            "restrictionName": field_name_split[1].replace('-', ' ')
+            "restrictionName": short_to_long(field_name_split[1]),
         })
 
     # Replace 'abbrev' with your actual value
