@@ -4,7 +4,7 @@ from austrakka.utils.output import table_format_option
 from austrakka.utils.options import \
     opt_merge_algorithm, \
     opt_abbrev, \
-    opt_output_dir, opt_project
+    opt_output_dir
 
 from .funcs import list_dataset_views, \
     download_dataset_view, \
@@ -48,10 +48,10 @@ def get_dataset_view(output_dir: str,
 
 
 @metadata.command('set-merge')
-@opt_project()
+@click.argument('abbrev', type=str)
 @opt_merge_algorithm()
-def project_set_merge_algo(project: str, merge_algorithm):
+def project_set_merge_algo(abbrev: str, merge_algorithm):
     """
     Set merge algorithm to use when generating metadata views.
     """
-    set_merge_algorithm_project(project, merge_algorithm)
+    set_merge_algorithm_project(abbrev, merge_algorithm)
