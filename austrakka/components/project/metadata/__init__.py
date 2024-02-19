@@ -3,7 +3,6 @@ import click
 from austrakka.utils.output import table_format_option
 from austrakka.utils.options import \
     opt_merge_algorithm, \
-    opt_abbrev, \
     opt_output_dir
 
 from .funcs import list_dataset_views, \
@@ -27,7 +26,7 @@ def metadata(ctx):
 
 
 @metadata.command('list')
-@opt_abbrev(help="Project Abbreviation")
+@click.argument('abbrev', type=str)
 @table_format_option()
 def get_dataset_view_list(abbrev: str, out_format: str):
     """Get a list of metadata views for a given project."""
@@ -38,17 +37,17 @@ def get_dataset_view_list(abbrev: str, out_format: str):
 @click.option('-id',
               '--view-id',
               help='Project metadata view to get', )
-@opt_abbrev(help="Project Abbreviation")
+@click.argument('abbrev', type=str)
 @opt_output_dir()
-def get_dataset_view(output_dir: str,
-                     view_id: str,
-                     abbrev: str):
+def get_dataset_view(abbrev: str,
+                     output_dir: str,
+                     view_id: str,):
     """Get a specific metadata view."""
     download_dataset_view(output_dir, view_id, abbrev)
 
 
 @metadata.command('set-merge')
-@opt_abbrev()
+@click.argument('abbrev', type=str)
 @opt_merge_algorithm()
 def project_set_merge_algo(abbrev: str, merge_algorithm):
     """

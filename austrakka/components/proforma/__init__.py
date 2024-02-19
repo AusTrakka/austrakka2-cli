@@ -1,5 +1,7 @@
 from typing import List
 
+import click
+
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from .funcs import \
