@@ -4,7 +4,6 @@ import click
 from austrakka.utils.output import table_format_option
 from austrakka.utils.options import \
     opt_field_name, \
-    opt_abbrev, \
     opt_prov_id
 
 from .funcs import \
@@ -25,7 +24,7 @@ def provision(ctx):
 
 
 @provision.command('add')
-@opt_abbrev()
+@click.argument('abbrev', type=str)
 @opt_field_name()
 def project_add_provision(abbrev: str, field_names: List[str]):
     """This will add a project provision"""
@@ -33,7 +32,7 @@ def project_add_provision(abbrev: str, field_names: List[str]):
 
 
 @provision.command('remove')
-@opt_abbrev()
+@click.argument('abbrev', type=str)
 @opt_prov_id()
 def project_remove_provision(abbrev: str, prov_id: str):
     """This will remove a project provision"""
@@ -41,7 +40,7 @@ def project_remove_provision(abbrev: str, prov_id: str):
 
 
 @provision.command('update')
-@opt_abbrev()
+@click.argument('abbrev', type=str)
 @opt_field_name()
 @opt_prov_id()
 def project_update_provision(abbrev: str, field_names: List[str], prov_id: str):
@@ -52,7 +51,7 @@ def project_update_provision(abbrev: str, field_names: List[str], prov_id: str):
 
 @provision.command('list')
 @table_format_option()
-@opt_abbrev()
+@click.argument('abbrev', type=str)
 def project_list_provisions(abbrev: str, out_format: str):
     """This will list project provisions"""
     get_dataset_provision_list(abbrev, out_format)
