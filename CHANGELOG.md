@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.51.0] - 2024-02-20
+### Changed
+- Minor changes to syntax of project field, provision, and dataset commands; project abbreviation is a positional argument.
+- The `project set-merge` command now takes in short-form strings for field source: sample, dataset, both.
+- The `project dataset add` command will now retreive and print the details of validation or other errors if there is an error during dataset upload or processing.
+
 # [0.50.1] - 2024-02-14
 ### Added
 - Added new commands to support the concept of Project Metadata.
