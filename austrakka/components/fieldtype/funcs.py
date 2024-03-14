@@ -6,7 +6,7 @@ from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_table
+from austrakka.utils.output import print_formatted
 from austrakka.utils.paths import METADATACOLUMNTYPE_PATH
 from austrakka.utils.helpers.fieldtype import get_fieldtype_by_name
 
@@ -23,7 +23,7 @@ def list_fieldtypes(out_format: str):
             row['validValues'] = ",".join([val['name'] for val in row['validValues']])
     result = pd.DataFrame.from_dict(data)
 
-    print_table(
+    print_formatted(
         result,
         out_format,
     )

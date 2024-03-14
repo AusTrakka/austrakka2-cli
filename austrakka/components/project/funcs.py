@@ -1,19 +1,17 @@
 # pylint: disable=duplicate-code
 
-from os import path
-
 from loguru import logger
 
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
-from austrakka.utils.helpers.output import call_get_and_print_table
+from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.helpers.project import get_project_by_abbrev
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import PROJECT_PATH
 from austrakka.utils.paths import SET_DASHBOARD
 from austrakka.utils.paths import DASHBOARD_WIDGETS
-
+from austrakka.utils.paths import PROJECT_SETTINGS
 
 @logger_wraps()
 def add_project(
@@ -84,17 +82,23 @@ def update_project(
 @logger_wraps()
 def set_dashboard(project_id: int, dashboard_name: str):
     return api_patch(
-        path=path.join(PROJECT_PATH, SET_DASHBOARD, str(project_id)),
+        path='/'.join([PROJECT_PATH, SET_DASHBOARD, str(project_id)]),
         data=dashboard_name
     )
 
 
 @logger_wraps()
 def list_projects(out_format: str):
-    call_get_and_print_table(PROJECT_PATH, out_format)
+    call_get_and_print(PROJECT_PATH, out_format)
 
 
 @logger_wraps()
 def get_dashboard(project_id: int, out_format: str):
-    joined_path = path.join(PROJECT_PATH, DASHBOARD_WIDGETS, str(project_id))
-    call_get_and_print_table(joined_path, out_format)
+    joined_path = '/'.join([PROJECT_PATH, DASHBOARD_WIDGETS, str(project_id)])
+    call_get_and_print(joined_path, out_format)
+
+@logger_wraps()
+def show_project_settings(abbrev: str, out_format: str):
+    path = '/'.join([PROJECT_PATH, abbrev, PROJECT_SETTINGS])
+    call_get_and_print(path, out_format)
+    

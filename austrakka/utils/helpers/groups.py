@@ -1,7 +1,7 @@
 import pandas as pd
 
 from austrakka.utils.api import api_get
-from austrakka.utils.output import print_table
+from austrakka.utils.output import print_formatted
 from austrakka.utils.paths import GROUP_PATH
 
 
@@ -18,4 +18,4 @@ def format_group_dto_for_output(data, out_format):
                     inplace=True)
 
     result.fillna('', inplace=True)
-    print_table(result, out_format)
+    print_formatted(result, out_format)

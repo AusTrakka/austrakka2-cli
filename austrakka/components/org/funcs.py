@@ -3,12 +3,12 @@ from austrakka.utils.api import api_put
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import ORG_PATH
 from austrakka.utils.helpers.orgs import get_org_by_abbrev
-from austrakka.utils.helpers.output import call_get_and_print_table
+from austrakka.utils.helpers.output import call_get_and_print
 
 
 @logger_wraps()
 def list_orgs(out_format: str):
-    call_get_and_print_table(ORG_PATH, out_format)
+    call_get_and_print(ORG_PATH, out_format)
 
 
 # pylint: disable=duplicate-code

@@ -3,7 +3,7 @@ from loguru import logger
 import pandas as pd
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_table
+from austrakka.utils.output import print_formatted
 from austrakka.utils.paths import PROJECT_PATH
 
 
@@ -48,7 +48,7 @@ def get_project_field_list(
         return
 
     result = pd.DataFrame.from_dict(data)
-    print_table(
+    print_formatted(
         result,
         out_format,
     )
