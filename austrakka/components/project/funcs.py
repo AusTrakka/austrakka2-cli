@@ -7,7 +7,7 @@ from loguru import logger
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
-from austrakka.utils.helpers.output import call_get_and_print_table
+from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.helpers.project import get_project_by_abbrev
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import PROJECT_PATH
@@ -91,7 +91,7 @@ def set_dashboard(project_id: int, dashboard_name: str):
 
 @logger_wraps()
 def list_projects(out_format: str):
-    call_get_and_print_table(PROJECT_PATH, out_format)
+    call_get_and_print(PROJECT_PATH, out_format)
 
 
 @logger_wraps()

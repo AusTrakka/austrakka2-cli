@@ -1,14 +1,14 @@
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.analysis import get_analysis_by_abbrev
-from austrakka.utils.helpers.output import call_get_and_print_table
+from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import ANALYSIS_PATH
 
 
 @logger_wraps()
 def list_analyses(project_abbrev: str, out_format: str):
-    call_get_and_print_table(
+    call_get_and_print(
         f'{ANALYSIS_PATH}/project/{project_abbrev}', out_format)
 
 

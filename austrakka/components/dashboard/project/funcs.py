@@ -1,4 +1,4 @@
-from austrakka.utils.helpers.output import call_get_and_print_table
+from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.api import api_patch
@@ -65,7 +65,7 @@ def list_dashboards(out_format: str):
     """
     List dashboards available for use in a project.
     """
-    call_get_and_print_table(PROJECT_DASHBOARD_PATH, out_format)
+    call_get_and_print(PROJECT_DASHBOARD_PATH, out_format)
 
 
 @logger_wraps()

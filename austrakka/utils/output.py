@@ -66,7 +66,7 @@ def default_object_format():
     return _format_json.__name__[len(FORMAT_PREFIX):]
 
 
-def print_table(
+def print_formatted(
         dataframe: pd.DataFrame,
         output_format: str = default_object_format(),
         print_output: bool = True,

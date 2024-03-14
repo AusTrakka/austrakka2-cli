@@ -9,7 +9,7 @@ from austrakka.utils.api import api_get, api_get_stream_with_filename, api_patch
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from austrakka.utils.fs import create_dir
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_table, log_response_compact
+from austrakka.utils.output import print_formatted, log_response_compact
 from austrakka.utils.paths import PROJECT_PATH
 
 DATASET_UPLOAD_PATH = 'dataset'
@@ -42,7 +42,7 @@ def list_dataset_views(
         return
 
     result = pd.DataFrame.from_dict(data)
-    print_table(
+    print_formatted(
         result,
         out_format,
     )
