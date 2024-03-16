@@ -218,7 +218,7 @@ def list_proformas(out_format: str):
 
 
 @logger_wraps()
-def show_proformas(abbrev: str, out_format: str):
+def show_proforma(abbrev: str, out_format: str):
     response = api_get(
         path=f"{PROFORMA_PATH}/abbrev/{abbrev}"
     )
@@ -229,16 +229,27 @@ def show_proformas(abbrev: str, out_format: str):
 
     logger.info('Pro forma fields:')
 
-    # Should add isActive check, but probably in endpoint
-    field_df = pd.DataFrame.from_dict(data['columnMappings'])[
-        ['metaDataColumnName', 'metaDataColumnPrimitiveType', 'isRequired']]
+    field_df = pd.DataFrame.from_dict(data['columnMappings'])[[
+        'metaDataColumnName',
+        'metaDataColumnPrimitiveType',
+        'metaDataColumnValidValues',
+        'isRequired'
+    ]]
 
     field_df.rename(
-        columns={'metaDataColumnPrimitiveType': 'type'},
+        columns={
+            'metaDataColumnName': 'name',
+            'metaDataColumnPrimitiveType': 'type',
+            'metaDataColumnValidValues': 'allowedValues',
+        },
         inplace=True
     )
 
     field_df['type'].fillna('categorical', inplace=True)
+    field_df['allowedValues'] = field_df['allowedValues'].apply(
+        lambda x: ';'.join(x) if x else None
+    )
+    
     print_formatted(
         field_df,
         out_format,
