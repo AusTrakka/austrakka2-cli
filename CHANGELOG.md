@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.51.1] - 2024-03-18
+
+### Added
+- Added `project settings` command to view project settings, including current merge algorithm.
+
+### Changed
+- The `project proforma show` command now displays the allowed values for categorical fields.
+
 # [0.51.0] - 2024-02-20
 ### Changed
 - Minor changes to syntax of project field, provision, and dataset commands; project abbreviation is a positional argument.
