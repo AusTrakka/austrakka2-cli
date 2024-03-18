@@ -4,11 +4,11 @@ import pandas as pd
 
 from austrakka.utils.api import api_get
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_table
+from austrakka.utils.output import print_formatted
 
 
 @logger_wraps()
-def call_get_and_print_table(path: str, out_format: str, params: Dict = None):
+def call_get_and_print(path: str, out_format: str, params: Dict = None):
     params = {} if params is None else params
     response = api_get(
         path=path,
@@ -18,7 +18,7 @@ def call_get_and_print_table(path: str, out_format: str, params: Dict = None):
     result = response['data'] if ('data' in response) else response
     result = pd.json_normalize(result, max_level=1)
 
-    print_table(
+    print_formatted(
         result,
         out_format,
     )
@@ -37,7 +37,7 @@ def call_get_and_print_dataset_status(path: str,
     result = pd.json_normalize(result, max_level=1) \
         .pipe(lambda x: x.drop('serverSha256', axis=1))
 
-    print_table(
+    print_formatted(
         result,
         out_format,
     )
@@ -59,7 +59,7 @@ def call_get_and_print_table_on_state_change(path: str,
         new_state = result['status']
         result = pd.json_normalize(result, max_level=1) \
             .pipe(lambda x: x.drop('serverSha256', axis=1))
-        print_table(
+        print_formatted(
             result,
             out_format,
         )

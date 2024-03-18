@@ -8,7 +8,7 @@ from .funcs import \
     add_proforma, \
     update_proforma, \
     list_proformas, \
-    show_proformas, \
+    show_proforma, \
     disable_proforma, \
     enable_proforma, \
     share_proforma, \
@@ -151,7 +151,7 @@ def proforma_show(abbrev: str, out_format: str):
     ABBREV should be the abbreviated name of the pro forma.
     Use `austrakka proforma list` for options.
     """
-    show_proformas(abbrev, out_format)
+    show_proforma(abbrev, out_format)
 
 
 @proforma.command('disable', hidden=hide_admin_cmds())

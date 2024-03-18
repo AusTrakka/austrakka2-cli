@@ -10,7 +10,7 @@ from austrakka.utils.helpers.output import call_get_and_print_table_on_state_cha
 from austrakka.utils.helpers.output import call_get_and_print_dataset_status
 from austrakka.utils.helpers.upload import upload_multipart_tracking_token
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_table
+from austrakka.utils.output import print_formatted
 from austrakka.utils.paths import PROJECT_PATH
 
 DATASET_UPLOAD_PATH = 'dataset'
@@ -140,7 +140,7 @@ def active_dataset_entry_list_get(abbrev: str, out_format: str):
         return
 
     result = pd.DataFrame.from_dict(data)
-    print_table(
+    print_formatted(
         result,
         out_format,
     )
@@ -154,7 +154,7 @@ def print_detailed_job_feedbacks(out_format: str, abbrev: str, tracking_token: s
         logger.info("No JobFeedbacks available")
         return
     result = pd.DataFrame.from_dict(data)
-    print_table(
+    print_formatted(
         result,
         out_format,
     )

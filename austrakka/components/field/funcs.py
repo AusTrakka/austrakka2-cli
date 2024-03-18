@@ -8,7 +8,7 @@ from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_table
+from austrakka.utils.output import print_formatted
 from austrakka.utils.paths import METADATACOLUMN_PATH
 
 
@@ -31,7 +31,7 @@ def list_fields(out_format: str):
     if 'primitiveType' in result:
         result['primitiveType'].fillna('category', inplace=True)
 
-    print_table(
+    print_formatted(
         result,
         out_format,
     )

@@ -12,7 +12,7 @@ from austrakka.utils.api import api_put
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from austrakka.utils.helpers.upload import upload_multipart
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_table, log_response
+from austrakka.utils.output import print_formatted, log_response
 from austrakka.utils.helpers.fields import get_system_field_names
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
@@ -211,14 +211,14 @@ def list_proformas(out_format: str):
                 axis='columns',
                 inplace=True)
 
-    print_table(
+    print_formatted(
         result,
         out_format,
     )
 
 
 @logger_wraps()
-def show_proformas(abbrev: str, out_format: str):
+def show_proforma(abbrev: str, out_format: str):
     response = api_get(
         path=f"{PROFORMA_PATH}/abbrev/{abbrev}"
     )
@@ -229,17 +229,28 @@ def show_proformas(abbrev: str, out_format: str):
 
     logger.info('Pro forma fields:')
 
-    # Should add isActive check, but probably in endpoint
-    field_df = pd.DataFrame.from_dict(data['columnMappings'])[
-        ['metaDataColumnName', 'metaDataColumnPrimitiveType', 'isRequired']]
+    field_df = pd.DataFrame.from_dict(data['columnMappings'])[[
+        'metaDataColumnName',
+        'metaDataColumnPrimitiveType',
+        'metaDataColumnValidValues',
+        'isRequired'
+    ]]
 
     field_df.rename(
-        columns={'metaDataColumnPrimitiveType': 'type'},
+        columns={
+            'metaDataColumnName': 'name',
+            'metaDataColumnPrimitiveType': 'type',
+            'metaDataColumnValidValues': 'allowedValues',
+        },
         inplace=True
     )
 
     field_df['type'].fillna('categorical', inplace=True)
-    print_table(
+    field_df['allowedValues'] = field_df['allowedValues'].apply(
+        lambda x: ';'.join(x) if x else None
+    )
+    
+    print_formatted(
         field_df,
         out_format,
     )
@@ -267,7 +278,7 @@ def list_groups_proforma(abbrev: str, out_format: str):
                 axis='columns',
                 inplace=True)
 
-    print_table(
+    print_formatted(
         result,
         out_format,
     )

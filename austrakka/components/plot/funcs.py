@@ -3,7 +3,7 @@ from io import BufferedReader
 from loguru import logger
 
 from austrakka.utils.api import api_post, api_patch, api_get, api_put
-from austrakka.utils.helpers.output import call_get_and_print_table
+from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.helpers.project import get_project_by_abbrev
 from austrakka.utils.helpers.plots import get_plot_by_abbrev
 from austrakka.utils.misc import logger_wraps
@@ -17,7 +17,7 @@ def list_plots(
 ):
     # get project ID
     project = get_project_by_abbrev(project_abbrev)
-    call_get_and_print_table(
+    call_get_and_print(
         f'{PLOT_PATH}/project/{project["projectId"]}',
         out_format)
 

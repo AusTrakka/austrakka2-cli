@@ -1,6 +1,6 @@
 # pylint: disable=expression-not-assigned
 import click
-from austrakka.utils.output import table_format_option
+from austrakka.utils.output import table_format_option, object_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_abbrev, opt_is_active
 from austrakka.utils.options import opt_name
@@ -11,7 +11,8 @@ from .funcs import list_projects, \
     add_project, \
     update_project, \
     set_dashboard, \
-    get_dashboard
+    get_dashboard, \
+    show_project_settings
 
 from .dataset import dataset
 from .field import field
@@ -97,3 +98,10 @@ def dashboard_get(project_id: int, out_format: str):
 def projects_list(out_format: str):
     '''List projects in AusTrakka'''
     list_projects(out_format)
+
+@project.command('settings')
+@click.argument('abbrev', type=str)
+@object_format_option()
+def project_settings(abbrev: str, out_format: str):
+    '''Show project settings'''
+    show_project_settings(abbrev, out_format)

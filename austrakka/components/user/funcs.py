@@ -7,7 +7,7 @@ from austrakka.utils.api import api_put
 from austrakka.utils.api import api_patch
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import USER_PATH
-from austrakka.utils.output import print_table
+from austrakka.utils.output import print_formatted
 
 
 @logger_wraps()
@@ -51,7 +51,7 @@ def list_users(show_disabled: bool, out_format: str):
         .sort_values(["user.userId", "isAusTrakkaAdmin", "group.name"]) \
         .pipe(lambda x: x.drop('userId', axis=1))
 
-    print_table(
+    print_formatted(
         normalized,
         out_format,
     )
