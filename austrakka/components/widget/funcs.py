@@ -1,4 +1,4 @@
-from austrakka.utils.helpers.output import call_get_and_print_table
+from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.misc import logger_wraps
@@ -36,7 +36,7 @@ def list_widgets(out_format: str):
     """
     List widgets available for inclusion in a dashboard.
     """
-    call_get_and_print_table(WIDGET_PATH, out_format)
+    call_get_and_print(WIDGET_PATH, out_format)
 
 
 @logger_wraps()
@@ -45,4 +45,4 @@ def get_widget(widget_id: int, out_format: str):
     List widgets available for inclusion in a dashboard.
     """
     full_path = f'{WIDGET_PATH}/{widget_id}'
-    call_get_and_print_table(full_path, out_format)
+    call_get_and_print(full_path, out_format)

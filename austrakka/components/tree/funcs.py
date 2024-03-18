@@ -2,7 +2,7 @@ from os import path
 from io import BufferedReader
 
 from austrakka.utils.api import api_patch
-from austrakka.utils.helpers.output import call_get_and_print_table
+from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.helpers.upload import upload_file
 from austrakka.utils.paths import TREE_PATH
@@ -25,7 +25,7 @@ def add_tree(file: BufferedReader, analysis_abbrev: str):
 @logger_wraps()
 def list_trees(out_format: str, analysis_abbrev: str):
     analysis = get_analysis_by_abbrev(analysis_abbrev)
-    call_get_and_print_table(
+    call_get_and_print(
         f'{JOB_INSTANCE_PATH}/{analysis["analysisId"]}/{ALL_VERSIONS}',
         out_format
     )
