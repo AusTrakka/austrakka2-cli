@@ -115,7 +115,7 @@ def add_dataset_blocking(
         else:
             logger.warning('No State Change...')
         time.sleep(5)
-    logger.error("Job Logs:")
+    logger.warning("Job Logs:")
     print_detailed_job_feedbacks(out_format, abbrev, tracking_token)
 
 
