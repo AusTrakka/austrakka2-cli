@@ -106,18 +106,17 @@ def add_dataset_blocking(
 
         if status_change is not None:
             logger.success(f"Current status: {status_change}")
-
             if status_change == 'Finished':
                 logger.success('')
                 break  # Exit the loop when the desired status is reached
             if "Failed" in status_change:
                 logger.error("The dataset ingest has failed")
-                logger.error("Failed Job Logs:")
-                print_detailed_job_feedbacks(out_format, abbrev, tracking_token)
                 break
         else:
             logger.warning('No State Change...')
         time.sleep(5)
+    logger.warning("Job Logs:")
+    print_detailed_job_feedbacks(out_format, abbrev, tracking_token)
 
 
 @logger_wraps()
