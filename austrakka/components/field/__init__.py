@@ -23,6 +23,11 @@ def field_list(out_format: str):
 @field.command('add', hidden=hide_admin_cmds())
 @opt_name(help="Field name")
 @opt_fieldtype()
+@click.option('-d', '--description', 'description',
+              help="This field describes the purpose of the metadata field. "
+                   "It's value is also used for generating XLSX pro forma files.")
+@click.option('--nndss-label', 'nndss_label',
+              help="This National Notifiable Diseases Surveillance System label.")
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
               help="This field may be used to colour nodes on the tree")
 @click.option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
@@ -31,24 +36,16 @@ def field_list(out_format: str):
               help="Default order in which this column will be sorted in tables relative to other '"
                    "fields. If no value is specifed, the column will be placed after ordered "
                     "columns.")
-@click.option('--show/--no-show', default=True, type=bool,
-              help="Whether the column will be shown in relevant tables on load, rather than "
-                   "needing to be selected in the column picker.")
-@click.option(
-    '-w', '--min-width',
-    help='Minimum width of the column. A value of 0 is automatically sized',
-    type=int, default=0,
-)
 def field_add(
         name: str,
+        description: str,
+        nndss_label: str,
         field_type: str,
         colour_nodes: str,
         column_order: int,
-        show: bool,
-        min_width: int,
 ):
     """Add a metadata field to AusTrakka"""
-    add_field(name, field_type, colour_nodes, column_order, show, min_width)
+    add_field(name, description, nndss_label, field_type, colour_nodes, column_order)
 
 
 @field.command('update', hidden=hide_admin_cmds())
@@ -56,6 +53,11 @@ def field_add(
 @opt_name(required=False,
           help="New field name - if this argument is provided, the field name will be changed")
 @opt_fieldtype(required=False)
+@click.option('-d', '--description', 'description',
+              help="This field describes the purpose of the metadata field. "
+                   "It's value is also used for generating XLSX pro forma files.")
+@click.option('--nndss-label', 'nndss_label',
+              help="This National Notifiable Diseases Surveillance System label.")
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
               help="This field may be used to colour nodes on the tree")
 @click.option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
@@ -64,33 +66,22 @@ def field_add(
               help="Default order in which this column will be sorted in tables relative to other "
                    "fields. If no value is specifed, the column will be placed after ordered "
                    "columns.")
-@click.option('--show', 'set_show', flag_value='show',
-              help="Whether the column will be shown in relevant tables on load, rather than "
-                   "needing to be selected in the column picker.")
-@click.option('--no-show', 'set_show', flag_value='no_show',
-              help="Whether the column will be shown in relevant tables on load, rather than "
-                   "needing to be selected in the column picker.")
-@click.option(
-    '-w', '--min-width',
-    help='Minimum width of the column. A value of 0 is automatically sized',
-    type=int, default=None,
-)
 def field_update(
         fieldname: str,
         name: str,
+        description: str,
+        nndss_label: str,
         field_type: str,
         colour_nodes: str,
         column_order: int,
-        set_show: str,
-        min_width: int,
 ):
     """Update a metadata field within AusTrakka"""
     update_field(
         fieldname,
         name,
+        description,
+        nndss_label,
         field_type,
         colour_nodes,
         column_order,
-        set_show,
-        min_width,
     )
