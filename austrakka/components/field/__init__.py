@@ -25,9 +25,9 @@ def field_list(out_format: str):
 @opt_fieldtype()
 @click.option('-d', '--description', 'description',
               help="This field describes the purpose of the metadata field. "
-                   "It's value is also used for generating XLSX pro forma files.")
-@click.option('--nndss-label', 'nndss_label',
-              help="This National Notifiable Diseases Surveillance System label.")
+                   "Its value is also used for generating XLSX pro forma files.")
+@click.option('--nndss', 'nndss_label',
+              help="The corresponding National Notifiable Diseases Surveillance System label, where it exists.")
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
               help="This field may be used to colour nodes on the tree")
 @click.option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
@@ -39,13 +39,13 @@ def field_list(out_format: str):
 def field_add(
         name: str,
         description: str,
-        nndss_label: str,
+        nndss: str,
         field_type: str,
         colour_nodes: str,
         column_order: int,
 ):
     """Add a metadata field to AusTrakka"""
-    add_field(name, description, nndss_label, field_type, colour_nodes, column_order)
+    add_field(name, description, nndss, field_type, colour_nodes, column_order)
 
 
 @field.command('update', hidden=hide_admin_cmds())
@@ -55,9 +55,9 @@ def field_add(
 @opt_fieldtype(required=False)
 @click.option('-d', '--description', 'description',
               help="This field describes the purpose of the metadata field. "
-                   "It's value is also used for generating XLSX pro forma files.")
-@click.option('--nndss-label', 'nndss_label',
-              help="This National Notifiable Diseases Surveillance System label.")
+                   "Its value is also used for generating XLSX pro forma files.")
+@click.option('--nndss', 'nndss_label',
+              help="The corresponding National Notifiable Diseases Surveillance System label, where it exists.")
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
               help="This field may be used to colour nodes on the tree")
 @click.option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
@@ -70,7 +70,7 @@ def field_update(
         fieldname: str,
         name: str,
         description: str,
-        nndss_label: str,
+        nndss: str,
         field_type: str,
         colour_nodes: str,
         column_order: int,
@@ -80,7 +80,7 @@ def field_update(
         fieldname,
         name,
         description,
-        nndss_label,
+        nndss,
         field_type,
         colour_nodes,
         column_order,
