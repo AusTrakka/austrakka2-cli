@@ -27,7 +27,8 @@ def field_list(out_format: str):
               help="This field describes the purpose of the metadata field. "
                    "Its value is also used for generating XLSX pro forma files.")
 @click.option('--nndss', 'nndss_label',
-              help="The corresponding National Notifiable Diseases Surveillance System label, where it exists.")
+              help="The corresponding National Notifiable Diseases Surveillance System label, "
+                   "where it exists.")
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
               help="This field may be used to colour nodes on the tree")
 @click.option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
@@ -57,7 +58,8 @@ def field_add(
               help="This field describes the purpose of the metadata field. "
                    "Its value is also used for generating XLSX pro forma files.")
 @click.option('--nndss', 'nndss_label',
-              help="The corresponding National Notifiable Diseases Surveillance System label, where it exists.")
+              help="The corresponding National Notifiable Diseases Surveillance System label, " 
+                   "where it exists.")
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
               help="This field may be used to colour nodes on the tree")
 @click.option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
