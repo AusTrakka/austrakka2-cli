@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.52.1] - 2024-04-12
+### Fixed
+- Issue with `nndss` fields on `field add` and `field update`.
+
 # [0.52.0] - 2024-04-11
 ### Added
 - Added `description` and `nndss` fields to `field add` and `field update`.

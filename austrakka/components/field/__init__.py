@@ -26,7 +26,7 @@ def field_list(out_format: str):
 @click.option('-d', '--description', 'description',
               help="This field describes the purpose of the metadata field. "
                    "Its value is also used for generating XLSX pro forma files.")
-@click.option('--nndss', 'nndss_label',
+@click.option('--nndss', 'nndss',
               help="The corresponding National Notifiable Diseases Surveillance System label, "
                    "where it exists.")
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
@@ -57,7 +57,7 @@ def field_add(
 @click.option('-d', '--description', 'description',
               help="This field describes the purpose of the metadata field. "
                    "Its value is also used for generating XLSX pro forma files.")
-@click.option('--nndss', 'nndss_label',
+@click.option('--nndss', 'nndss',
               help="The corresponding National Notifiable Diseases Surveillance System label, " 
                    "where it exists.")
 @click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
