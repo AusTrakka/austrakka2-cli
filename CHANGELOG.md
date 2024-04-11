@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.52.0] - 2024-04-11
+### Added
+- Added `description` and `nndss` fields to `field add` and `field update`.
+
+### Changed
+- `project dataset add` always displays job feedback regardless of job status.
+
+### Added
+- Added `project settings` command to view project settings, including current merge algorithm.
+
 # [0.51.1] - 2024-03-18
 
 ### Added
