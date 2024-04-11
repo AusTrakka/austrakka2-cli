@@ -40,11 +40,11 @@ def list_fields(out_format: str):
 @logger_wraps()
 def add_field(
         name: str,
+        description: str,
+        nndss_label: str,
         typename: str,
         can_visualise: str,
         column_order: int,
-        show_at_start: bool,
-        min_width: int,
 ):
     """
     Add a field (MetaDataColumn) to AusTrakka.
@@ -77,10 +77,10 @@ def add_field(
             "ColumnName": name,
             "CanVisualise": can_visualise,
             "ColumnOrder": column_order,
-            "IsDisplayedAsDefault": show_at_start,
             "MetaDataColumnTypeId": fieldtype["metaDataColumnTypeId"],
             "IsActive": True,
-            "MinWidth": min_width,
+            "Description": description,
+            "NndssFieldLabel": nndss_label,
         }
     )
 
@@ -89,11 +89,11 @@ def add_field(
 def update_field(
         name: str,
         new_name: str,
+        description: str,
+        nndss_label: str,
         typename: str,
         can_visualise: str,
         column_order: int,
-        set_show: str,
-        min_width: int,
 ):
     """
     Update a field (MetaDataColumn) within AusTrakka.
@@ -107,10 +107,8 @@ def update_field(
         "columnName",
         "canVisualise",
         "columnOrder",
-        "isDisplayedAsDefault",
         "isActive",
         "metaDataColumnTypeId",
-        "minWidth",
     ]}
 
     if new_name is not None:
@@ -133,11 +131,11 @@ def update_field(
     if column_order is not None:
         put_field["columnOrder"] = column_order
 
-    if set_show is not None:
-        put_field["isDisplayedAsDefault"] = set_show == 'show'
+    if description is not None:
+        put_field["description"] = description
 
-    if min_width is not None:
-        put_field["minWidth"] = min_width
+    if nndss_label is not None:
+        put_field["nndssFieldLabel"] = nndss_label
 
     api_put(
         path=f"{METADATACOLUMN_PATH}/{field['metaDataColumnId']}",
