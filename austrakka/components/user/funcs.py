@@ -23,7 +23,7 @@ def list_users(show_disabled: bool, out_format: str):
     pd.set_option('display.max_rows', 500)
     urg = pd.json_normalize(data, record_path='userRoleGroup') \
         .pipe(lambda x: x.drop('role.id', axis=1)) \
-        .pipe(lambda x: x.drop('group.id', axis=1))
+        .pipe(lambda x: x.drop('group.groupId', axis=1))
 
     org = pd.json_normalize(data)\
         .pipe(lambda x: x.drop('lastUpdatedBy', axis=1))\
