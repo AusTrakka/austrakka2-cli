@@ -72,7 +72,7 @@ def plot_update(
         description: str,
         project: str,
         plottype: str,
-        spec: str,
+        spec: BufferedReader,
         is_active: bool,
 ):
     """Update a plot in AusTrakka"""
