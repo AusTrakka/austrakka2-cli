@@ -60,7 +60,7 @@ def plot_add(
 
 @plot.command('update', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=str)
-@opt_name()
+@opt_name(required=False)
 @opt_description(required=False)
 @opt_project(required=False)
 @opt_plottype(required=False)
