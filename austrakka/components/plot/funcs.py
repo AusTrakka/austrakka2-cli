@@ -65,6 +65,11 @@ def update_plot(
         spec: str,
         is_active: bool,
 ):
+    if spec is not None:
+        spec_string = spec.read()
+    else:
+        spec_string = None
+            
     plot = get_plot_by_abbrev(abbrev)
     plot_put = {
         prop: plot[prop] for prop in [
@@ -86,8 +91,8 @@ def update_plot(
         plot_put['isActive'] = is_active
     if plot_type is not None:
         plot_put['plotType'] = plot_type
-    if spec is not None:
-        plot_put['spec'] = spec
+    if spec_string is not None:
+        plot_put['spec'] = spec_string
 
     api_put(
         path=f'{PLOT_PATH}/{abbrev}',
