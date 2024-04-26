@@ -53,4 +53,3 @@ def change_user_group_assignment(user_id, group_roles, sub_path):
         path=f'{GROUP_PATH}/{sub_path}',
         data=payload,
     )
-
