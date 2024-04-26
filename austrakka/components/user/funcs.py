@@ -37,7 +37,7 @@ def add_user(
 
 @logger_wraps()
 def update_user(
-    user_id: int,
+    user_id: str,
     org: str,
     owner_group_roles: List[str],
     is_austrakka_process: bool,
