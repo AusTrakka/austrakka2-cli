@@ -502,10 +502,15 @@ def list_sequences(
 
 
 @logger_wraps()
-def purge_sequence(sample_id: str, skip: bool, force: bool):
+def purge_sequence(sample_id: str, skip: bool, force: bool, delete_all: bool):
     custom_headers = {}
     set_mode_header(custom_headers, force, skip)
+    api_path = "/".join([SEQUENCE_PATH, SEQUENCE_BY_SAMPLE_PATH, sample_id])
+
+    if delete_all:
+        api_path = api_path + '?deleteAll=true'
+
     api_delete(
-        path="/".join([SEQUENCE_PATH, SEQUENCE_BY_SAMPLE_PATH, sample_id]),
+        path=api_path,
         custom_headers=custom_headers
     )
