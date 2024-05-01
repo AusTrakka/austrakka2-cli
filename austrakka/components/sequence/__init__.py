@@ -10,6 +10,7 @@ from austrakka.utils.options import opt_read
 from austrakka.utils.options import opt_sample_id
 from austrakka.utils.options import opt_force_mutex_skip
 from austrakka.utils.options import opt_skip_mutex_force
+from austrakka.utils.options import opt_delete_all
 from austrakka.utils.cmd_filter import hide_admin_cmds
 
 from .funcs import take_sample_names
@@ -101,6 +102,12 @@ def seq_list(
 @opt_skip_mutex_force(help="Skip this command if the sample is still active.")
 @opt_force_mutex_skip(help="Forcefully purge sequences belonging to the sample "
                            "even if the sample is still active.")
-def sequence_purge(sample_id: [str], skip: bool = False, force: bool = False):
+@opt_delete_all(help='Delete active and inactive sequences for the specified sample. '
+                     'By default, only inactive sequences are deleted.')
+def sequence_purge(
+        sample_id: [str],
+        skip: bool = False,
+        force: bool = False,
+        delete_all: bool = False):
     """Purge all sequences associated with the specified sample."""
-    purge_sequence(sample_id, skip, force)
+    purge_sequence(sample_id, skip, force, delete_all)
