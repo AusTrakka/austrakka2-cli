@@ -47,12 +47,12 @@ def user_add(
 
 
 @user.command('update', hidden=hide_admin_cmds())
-@click.argument('user-id', type=int)
+@click.argument('user-id', type=str)
 @opt_organisation(required=False)
 @opt_owner_group_roles(required=False)
 @opt_is_austrakka_process()
 def user_update(
-    user_id: int,
+    user_id: str,
     org: str,
     owner_group_roles: List[str],
     is_austrakka_process: bool,

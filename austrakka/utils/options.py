@@ -532,6 +532,19 @@ def opt_recalc_hash(**attrs: t.Any):
     )
 
 
+def opt_delete_all(**attrs: t.Any):
+    defaults = {
+        'help': 'Delete active and inactive entities. '
+                'By default, only inactive entities are deleted.'
+    }
+    return _create_option(
+        '--delete-all',
+        type=bool,
+        is_flag=True,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_blanks_delete(**attrs: t.Any):
     defaults = {
         'help': "Blank cells in the CSV / Excel file will "
