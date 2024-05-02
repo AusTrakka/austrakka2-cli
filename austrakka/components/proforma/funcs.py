@@ -17,7 +17,7 @@ from austrakka.utils.helpers.fields import get_system_field_names
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
 from austrakka.utils.fs import FileHash, get_hash
-from .proforma_generate_utils import generate_template
+from .proforma_generation_utils import generate_template
 
 ATTACH = 'Attach'
 
@@ -190,7 +190,10 @@ def generate_proforma(abbrev: str, restrict: Dict[str, List[str]]):
     )
     field_df = _get_proforma_fields_df(response['data'])
     field_df.index = field_df['name']
-    restricted_values = {field:sum([v.split(',') for v in valuestr.split(';')],[]) for (field, valuestr) in restrict}
+    restricted_values = {
+        field:sum([v.split(',') for v in valuestr.split(';')],[])
+        for (field, valuestr) in restrict
+    }
     # Generate the spreadsheet
     filename = f"AusTrakka_metadata_submission_{abbrev}.xlsx"
     logger.info(f"Generating template draft {filename}")

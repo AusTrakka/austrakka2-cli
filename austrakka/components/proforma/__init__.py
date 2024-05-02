@@ -135,7 +135,8 @@ def proforma_attach(abbrev: str,
 @proforma.command('generate')
 @click.argument('abbrev', type=click.STRING)
 @click.option('-r', '--restrict', type=click.STRING, multiple=True, nargs=2,
-    help='Key-value pair; restrict the specified field to the specified comma-separated subset of values')
+    help='Key-value pair; restrict the specified field to the specified '+
+        'comma-separated subset of values')
 def proforma_generate(abbrev: str, restrict):
     """
     Generate a draft XLSX pro forma template from the current specification.

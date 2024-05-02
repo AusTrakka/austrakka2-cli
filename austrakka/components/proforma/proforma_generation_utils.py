@@ -1,5 +1,4 @@
 import xlsxwriter
-import pandas as pd
 
 # Defined Excel formats
 DEFAULT_FONT = 'Courier New'
@@ -31,6 +30,7 @@ SPECIAL_TYPES = {
     'Shared_groups': 'Controlled semicolon-separated strings'
 }
 
+# pylint: disable=too-many-locals
 def generate_template(filename, proforma, restricted_values, num_format_rows=21):
     fields = list(proforma['name'])
     
@@ -44,11 +44,14 @@ def generate_template(filename, proforma, restricted_values, num_format_rows=21)
             raise ValueError(f"Restricted values for field {field} which is not in proforma")
         bad_restricted_values = set(restricted_values[field]) - set(allowed_values[field])
         if len(bad_restricted_values) > 0:
-            raise ValueError(f"Restricted values for field {field} are not valid values: {bad_restricted_values}")
+            raise ValueError(
+                f"Restricted values for field {field} are not valid values: {bad_restricted_values}"
+            )
         allowed_values[field] = restricted_values[field]
     
-    # Required widths when populated with values, i.e. type dictionary tab - consider field name and values
-    required_widths = {field: max([len(v) for v in allowed_values[field]+[field]]) for field in fields}
+    # Required widths when populated with values, i.e. type dictionary tab
+    required_widths = {field: max(len(v) for v in (allowed_values[field]+[field]))
+                        for field in fields}
     
     workbook = xlsxwriter.Workbook(filename)
     workbook.set_size(1500, 800) # default size when first opened
@@ -86,7 +89,15 @@ def generate_template(filename, proforma, restricted_values, num_format_rows=21)
     
     # Data dictionary worksheet
     seq_id_length = 1.5*max([24]+[len(f) for f in fields])
-    datadict_columns = ['AusTrakka metadata label', 'NNDSS metadata label', 'Metadata class', 'Definition', 'Value Type', 'Example', 'Guidance']
+    datadict_columns = [
+        'AusTrakka metadata label',
+        'NNDSS metadata label',
+        'Metadata class',
+        'Definition',
+        'Value Type',
+        'Example',
+        'Guidance'
+    ]
     datadict_lengths = [seq_id_length, 26, 20, 45, 25, 30, 45]
     # Header row and column widths
     for (col,(name,length)) in enumerate(zip(datadict_columns,datadict_lengths)):
@@ -95,13 +106,21 @@ def generate_template(filename, proforma, restricted_values, num_format_rows=21)
     # Column values
     for row,field in enumerate(fields,1):
         datadict_sheet.write_string(row, 0, field, border_format)
-        datadict_sheet.write_string(row, 1, proforma.loc[field, 'nndssFieldLabel'], border_format)
-        # class (minimum, etc) - we only know if strictly required; project team must specify if required/optional
+        datadict_sheet.write_string(row, 1, 
+            proforma.loc[field, 'nndssFieldLabel'],
+            border_format)
+        # class (minimum, etc) - we only know if strictly required; 
+        # project team must specify if required/optional
         datadict_sheet.write_string(row, 2, 
-            "Minimum - can't be blank" if proforma.loc[field, 'isRequired'] else "", green_wrapped_border_format)
-        datadict_sheet.write_string(row, 3, proforma.loc[field, 'description'], wrapped_border_format)
+            "Minimum - can't be blank" if proforma.loc[field, 'isRequired'] else "",
+            green_wrapped_border_format)
+        datadict_sheet.write_string(row, 3, 
+            proforma.loc[field, 'description'],
+            wrapped_border_format)
         datadict_sheet.write_string(row, 4, _describe_type(field, proforma), wrapped_border_format)
-        datadict_sheet.write_string(row, 5, _give_examples(field, allowed_values, proforma.loc[field, 'type']), wrapped_border_format)
+        datadict_sheet.write_string(row, 5,
+            _give_examples(field, allowed_values, proforma.loc[field, 'type']),
+            wrapped_border_format)
         # guidance, wrapped - to be filled in by project leads
         datadict_sheet.write_string(row, 6, '', wrapped_border_format)
     
@@ -130,8 +149,7 @@ def _give_examples(field, allowed_values, field_type):
     if field_type != 'categorical':
         return ''
     values = allowed_values[field]
-    if len(values) < 5:
-        return ', '.join(values)
-    else:
+    if len(values) > 5:
         return ','.join(values[:4]+values[-1:])
-
+    return ', '.join(values)
+        
