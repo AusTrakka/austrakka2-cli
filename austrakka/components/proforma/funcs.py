@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Dict
 import pandas as pd
 from httpx import HTTPStatusError
 from loguru import logger
@@ -17,6 +17,7 @@ from austrakka.utils.helpers.fields import get_system_field_names
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
 from austrakka.utils.fs import FileHash, get_hash
+from .proforma_generate_utils import generate_template
 
 ATTACH = 'Attach'
 
@@ -181,6 +182,54 @@ def attach_proforma(abbrev: str,
 
 
 @logger_wraps()
+def generate_proforma(abbrev: str, restrict: Dict[str, List[str]]):
+    "Generate an XLSX template for a pro forma"    
+    # Get the pro forma spec
+    response = api_get(
+        path=f"{PROFORMA_PATH}/abbrev/{abbrev}"
+    )
+    field_df = _get_proforma_fields_df(response['data'])
+    field_df.index = field_df['name']
+    restricted_values = {field:sum([v.split(',') for v in valuestr.split(';')],[]) for (field, valuestr) in restrict}
+    # Generate the spreadsheet
+    filename = f"AusTrakka_metadata_submission_{abbrev}.xlsx"
+    logger.info(f"Generating template draft {filename}")
+    generate_template(filename, field_df, restricted_values)
+    
+   
+def _get_proforma_fields_df(data):
+    field_df = pd.DataFrame.from_dict(data['columnMappings'])[[
+        'metaDataColumnName',
+        'metaDataColumnDescription',
+        'nndssFieldLabel',
+        'metaDataColumnPrimitiveType',
+        'metaDataColumnValidValues',
+        'isRequired'
+    ]]
+
+    field_df.rename(
+        columns={
+            'metaDataColumnName': 'name',
+            'metaDataColumnDescription': 'description',
+            'metaDataColumnPrimitiveType': 'type',
+            'metaDataColumnValidValues': 'allowedValues',
+        },
+        inplace=True
+    )
+
+    field_df['type'].fillna('categorical', inplace=True)
+    field_df['nndssFieldLabel'].fillna('', inplace=True)
+    field_df['description'].fillna('', inplace=True)
+    field_df['isRequired'] = field_df['isRequired'].apply(
+        lambda x: True if x=='True' else (False if x=='False' else x)
+    )
+    field_df['allowedValues'] = field_df['allowedValues'].apply(
+        lambda x: ';'.join(x) if x else None
+    )
+
+    return field_df
+
+@logger_wraps()
 def pull_proforma(abbrev: str, n_previous: int = None):
     n_prev = n_previous if n_previous is not None else 1
     api_patch(path=f'{PROFORMA_PATH}/PullPrevious/{abbrev}?nPrevious={n_prev}')
@@ -229,26 +278,7 @@ def show_proforma(abbrev: str, out_format: str):
 
     logger.info('Pro forma fields:')
 
-    field_df = pd.DataFrame.from_dict(data['columnMappings'])[[
-        'metaDataColumnName',
-        'metaDataColumnPrimitiveType',
-        'metaDataColumnValidValues',
-        'isRequired'
-    ]]
-
-    field_df.rename(
-        columns={
-            'metaDataColumnName': 'name',
-            'metaDataColumnPrimitiveType': 'type',
-            'metaDataColumnValidValues': 'allowedValues',
-        },
-        inplace=True
-    )
-
-    field_df['type'].fillna('categorical', inplace=True)
-    field_df['allowedValues'] = field_df['allowedValues'].apply(
-        lambda x: ';'.join(x) if x else None
-    )
+    field_df = _get_proforma_fields_df(data)
     
     print_formatted(
         field_df,
