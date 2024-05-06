@@ -73,7 +73,6 @@ def update_analysis(
 
 @logger_wraps()
 def disable_analysis(abbrev: str):
-    print(f'Disabling analysis: {abbrev}... Path: {ANALYSIS_PATH}/disable/{abbrev}')
     api_patch(
         path=f'{ANALYSIS_PATH}/disable/{abbrev}',
     )
