@@ -1,4 +1,4 @@
-from austrakka.utils.api import api_post
+from austrakka.utils.api import api_post, api_patch
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.analysis import get_analysis_by_abbrev
 from austrakka.utils.helpers.output import call_get_and_print
@@ -68,4 +68,12 @@ def update_analysis(
     api_put(
         path=f'{ANALYSIS_PATH}/{abbrev}',
         data=analysis
+    )
+
+
+@logger_wraps()
+def disable_analysis(abbrev: str):
+    print(f'Disabling analysis: {abbrev}... Path: {ANALYSIS_PATH}/disable/{abbrev}')
+    api_patch(
+        path=f'{ANALYSIS_PATH}/disable/{abbrev}',
     )

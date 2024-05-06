@@ -3,7 +3,7 @@ import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.components.analysis.definition import definition
-from austrakka.components.analysis.funcs import list_analyses
+from austrakka.components.analysis.funcs import list_analyses, disable_analysis
 from austrakka.components.analysis.funcs import add_analysis
 from austrakka.components.analysis.funcs import update_analysis
 from austrakka.utils.cmd_filter import show_admin_cmds
@@ -35,7 +35,7 @@ def analysis_list(project: str, out_format: str):
     list_analyses(project, out_format)
 
 
-@analysis.command('add', hidden=hide_admin_cmds())
+@analysis.command('add')
 @opt_abbrev()
 @opt_name(help='Analysis Name')
 @opt_description()
@@ -64,7 +64,7 @@ def analysis_add(
     )
 
 
-@analysis.command('update', hidden=hide_admin_cmds())
+@analysis.command('update')
 @click.argument('abbrev', type=str)
 @opt_name(help='Analysis Name', required=False)
 @opt_description(required=False)
@@ -91,3 +91,10 @@ def analysis_update(
         filter_str,
         is_active,
     )
+
+
+@analysis.command('disable', hidden=hide_admin_cmds())
+@click.argument('abbrev', type=str)
+def analysis_disable(abbrev: str):
+    """Disable analysis in AusTrakka"""
+    disable_analysis(abbrev)
