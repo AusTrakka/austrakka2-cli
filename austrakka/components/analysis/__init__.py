@@ -102,6 +102,6 @@ def analysis_disable(abbrev: str):
 
 @analysis.command('enable', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=str)
-def analysis_disable(abbrev: str):
+def analysis_enable(abbrev: str):
     """Disable analysis in AusTrakka"""
     enable_analysis(abbrev)
