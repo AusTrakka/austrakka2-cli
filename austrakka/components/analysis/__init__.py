@@ -3,7 +3,7 @@ import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.components.analysis.definition import definition
-from austrakka.components.analysis.funcs import list_analyses, disable_analysis
+from austrakka.components.analysis.funcs import list_analyses, disable_analysis, enable_analysis
 from austrakka.components.analysis.funcs import add_analysis
 from austrakka.components.analysis.funcs import update_analysis
 from austrakka.utils.cmd_filter import show_admin_cmds
@@ -98,3 +98,10 @@ def analysis_update(
 def analysis_disable(abbrev: str):
     """Disable analysis in AusTrakka"""
     disable_analysis(abbrev)
+
+
+@analysis.command('enable', hidden=hide_admin_cmds())
+@click.argument('abbrev', type=str)
+def analysis_disable(abbrev: str):
+    """Disable analysis in AusTrakka"""
+    enable_analysis(abbrev)

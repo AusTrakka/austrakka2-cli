@@ -76,3 +76,10 @@ def disable_analysis(abbrev: str):
     api_patch(
         path=f'{ANALYSIS_PATH}/disable/{abbrev}',
     )
+
+
+@logger_wraps()
+def enable_analysis(abbrev: str):
+    api_patch(
+        path=f'{ANALYSIS_PATH}/enable/{abbrev}',
+    )
