@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Dict, Any
 
-from austrakka.utils.api import api_patch
+from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
@@ -10,7 +10,7 @@ from austrakka.utils.paths import USER_PATH
 
 @logger_wraps()
 def list_users(show_disabled: bool, out_format: str):
-    call_get_and_print(f'{USER_PATH}/minimal?includeall={show_disabled}', out_format)
+    call_get_and_print(f'{USER_PATH}/?includeall={show_disabled}', out_format)
 
 
 @logger_wraps()
@@ -35,23 +35,49 @@ def add_user(
     )
 
 
-@logger_wraps()
 def update_user(
-    user_id: str,
-    org: str,
-    owner_group_roles: List[str],
-    is_austrakka_process: bool,
+        object_id: str,
+        name: str = None,
+        email: str = None,
+        org: str = None,
+        group_roles: List[str] = None,
+        is_active: bool = None,
 ):
-    user = {
-        "organisation": {
-            "abbreviation": org
-        },
-        "ownerGroupRoles": list(owner_group_roles),
-        "isAusTrakkaProcess": is_austrakka_process,
+    user_resp = api_get(f'{USER_PATH}/userId/{object_id}')
+    user_full = user_resp['data']
+    user: Dict[str, Any] = {
+        "displayName": user_full['displayName'],
+        "contactEmail": user_full['contactEmail'],
+        "orgAbbrev": user_full['orgAbbrev'],
+        "groupRoles": [
+            {
+                "roleName": role_dto["role"]["name"],
+                "groupName": role_dto["group"]["name"],
+            }
+            for role_dto in user_full['groupRoles']
+        ],
+        "isActive": user_full['isActive'],
     }
 
+    if name is not None:
+        user['displayName'] = name
+    if email is not None:
+        user['contactEmail'] = email
+    if org is not None:
+        user['orgAbbrev'] = org
+    if group_roles is not None:
+        user['groupRoles'].extend(
+            {
+                "roleName": role_group.split(",")[1],
+                "groupName": role_group.split(",")[0]
+            }
+            for role_group in group_roles
+        )
+    if is_active is not None:
+        user['isActive'] = is_active
+
     api_put(
-        path=f'{USER_PATH}/{user_id}',
+        path=f'{USER_PATH}/{object_id}',
         data=user
     )
 
