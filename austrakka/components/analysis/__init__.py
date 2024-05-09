@@ -3,12 +3,12 @@ import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.components.analysis.definition import definition
-from austrakka.components.analysis.funcs import list_analyses
+from austrakka.components.analysis.funcs import list_analyses, disable_analysis, enable_analysis
 from austrakka.components.analysis.funcs import add_analysis
 from austrakka.components.analysis.funcs import update_analysis
 from austrakka.utils.cmd_filter import show_admin_cmds
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import opt_abbrev
+from austrakka.utils.options import opt_abbrev, opt_show_disabled
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_is_active
@@ -29,13 +29,14 @@ analysis.add_command(definition) if show_admin_cmds() else None
 
 @analysis.command('list')
 @opt_project(required=True)
+@opt_show_disabled()
 @table_format_option()
-def analysis_list(project: str, out_format: str):
+def analysis_list(project: str, show_disabled: bool, out_format: str):
     '''List analyses in AusTrakka'''
-    list_analyses(project, out_format)
+    list_analyses(project, show_disabled, out_format)
 
 
-@analysis.command('add', hidden=hide_admin_cmds())
+@analysis.command('add')
 @opt_abbrev()
 @opt_name(help='Analysis Name')
 @opt_description()
@@ -64,7 +65,7 @@ def analysis_add(
     )
 
 
-@analysis.command('update', hidden=hide_admin_cmds())
+@analysis.command('update')
 @click.argument('abbrev', type=str)
 @opt_name(help='Analysis Name', required=False)
 @opt_description(required=False)
@@ -91,3 +92,17 @@ def analysis_update(
         filter_str,
         is_active,
     )
+
+
+@analysis.command('disable', hidden=hide_admin_cmds())
+@click.argument('abbrev', type=str)
+def analysis_disable(abbrev: str):
+    """Disable analysis in AusTrakka"""
+    disable_analysis(abbrev)
+
+
+@analysis.command('enable', hidden=hide_admin_cmds())
+@click.argument('abbrev', type=str)
+def analysis_enable(abbrev: str):
+    """Enable analysis in AusTrakka"""
+    enable_analysis(abbrev)
