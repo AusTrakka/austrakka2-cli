@@ -8,7 +8,7 @@ from austrakka.components.analysis.funcs import add_analysis
 from austrakka.components.analysis.funcs import update_analysis
 from austrakka.utils.cmd_filter import show_admin_cmds
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import opt_abbrev
+from austrakka.utils.options import opt_abbrev, opt_show_disabled
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_is_active
@@ -29,10 +29,11 @@ analysis.add_command(definition) if show_admin_cmds() else None
 
 @analysis.command('list')
 @opt_project(required=True)
+@opt_show_disabled()
 @table_format_option()
-def analysis_list(project: str, out_format: str):
+def analysis_list(project: str, show_disabled: bool, out_format: str):
     '''List analyses in AusTrakka'''
-    list_analyses(project, out_format)
+    list_analyses(project, show_disabled, out_format)
 
 
 @analysis.command('add')
@@ -103,5 +104,5 @@ def analysis_disable(abbrev: str):
 @analysis.command('enable', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=str)
 def analysis_enable(abbrev: str):
-    """Disable analysis in AusTrakka"""
+    """Enable analysis in AusTrakka"""
     enable_analysis(abbrev)
