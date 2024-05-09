@@ -195,7 +195,7 @@ def generate_proforma(abbrev: str, restrict: Dict[str, List[str]]):
         for (field, valuestr) in restrict
     }
     # Generate the spreadsheet
-    filename = f"AusTrakka_metadata_submission_{abbrev}.xlsx"
+    filename = f"AusTrakka_metadata_submission_{abbrev}_DRAFT.xlsx"
     logger.info(f"Generating template draft {filename}")
     generate_template(filename, field_df, restricted_values)
     
