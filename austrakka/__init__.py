@@ -1,3 +1,3 @@
 # NOTE: do not change the name of this variable or the quote type,
 # doing so will break github actions.
-__version__ = "0.53.1"
+__version__ = "0.53.2"
