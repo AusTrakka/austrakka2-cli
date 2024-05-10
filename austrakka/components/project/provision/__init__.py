@@ -23,7 +23,7 @@ def provision(ctx):
     ctx.context = ctx.parent.context
 
 
-@provision.command('add')
+@provision.command('add', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=str)
 @opt_field_name()
 def project_add_provision(abbrev: str, field_names: List[str]):
@@ -31,7 +31,7 @@ def project_add_provision(abbrev: str, field_names: List[str]):
     add_provision_project(abbrev, field_names)
 
 
-@provision.command('remove')
+@provision.command('remove', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=str)
 @opt_prov_id()
 def project_remove_provision(abbrev: str, prov_id: str):
@@ -39,7 +39,7 @@ def project_remove_provision(abbrev: str, prov_id: str):
     remove_project_provision(abbrev, prov_id)
 
 
-@provision.command('update')
+@provision.command('update', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=str)
 @opt_field_name()
 @opt_prov_id()
