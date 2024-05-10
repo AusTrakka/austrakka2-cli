@@ -120,7 +120,7 @@ def get_cli():
     cli.add_command(group)
     cli.add_command(project)
     cli.add_command(analysis)
-    cli.add_command(tree) if show_admin_cmds() else None
+    cli.add_command(tree)
     cli.add_command(plot) if show_admin_cmds() else None
     cli.add_command(widget) if show_admin_cmds() else None
     cli.add_command(dashboard) if show_admin_cmds() else None

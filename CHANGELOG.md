@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.53.2] - 2024-05-10
+
+### Changed
+- Tree commands are no longer hidden by default
+- Admin-only project provision commands are now hidden by default
+
 # [0.53.1] - 2024-05-10
 
 ### Added
