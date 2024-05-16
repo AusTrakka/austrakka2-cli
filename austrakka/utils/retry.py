@@ -1,7 +1,8 @@
 
 from time import sleep
 from loguru import logger
-
+from austrakka.utils.exceptions import FailedResponseException
+from austrakka.utils.exceptions import UnknownResponseException
 
 def retry(func, retries, desc, delay=0):
     succeeded = False
@@ -12,7 +13,7 @@ def retry(func, retries, desc, delay=0):
             func()
             succeeded = True
         # pylint: disable=broad-exception-caught
-        except Exception as ex:
+        except (UnknownResponseException,FailedResponseException) as ex:
             logger.warning(f"Retry failed for '{desc}'. Error: '{ex}'")
             # 404 not found, 409 conflict
             if ex.status_code and ex.status_code in [404, 409]:
