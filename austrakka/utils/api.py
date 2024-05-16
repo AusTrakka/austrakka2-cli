@@ -51,7 +51,7 @@ def _check_response(response: httpx.Response):
         try:
             response.raise_for_status()
         except HTTPStatusError:
-            raise FailedResponseException(parsed_resp)
+            raise FailedResponseException(parsed_resp, response.status_code)
     except JSONDecodeError:
         if response.status_code == http.HTTPStatus.UNAUTHORIZED:
             err = 'Unauthorized'
