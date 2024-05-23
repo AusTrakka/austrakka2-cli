@@ -56,8 +56,10 @@ def download_dataset_view(
         abbrev: str,
         out_format: str
 ):
+    created_dir = False
     if not os.path.exists(output_dir):
         create_dir(output_dir)
+        created_dir = True
 
     query_path = "/".join([PROJECT_PATH, abbrev, 'download-project-view', dataset_view_id])
     try:
@@ -84,4 +86,5 @@ def download_dataset_view(
         logger.error(
             f'Failed downloading to: {output_dir}. Error: {ex}'
         )
-        os.remove(output_dir)
+        if created_dir:
+            os.remove(output_dir)
