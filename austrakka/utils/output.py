@@ -147,8 +147,10 @@ def write_dataframe(
     """
     output = convert_format(dataframe, output_format, headers)
     extension = _get_output_extension(output_format)
-    with open(base_filepath + "." + extension, "w") as file:
+    filename = base_filepath + "." + extension
+    with open(filename, "w") as file:
         file.write(output)
+    logger.info(f"Written file {filename}")
 
 
 def write_dict(
