@@ -39,11 +39,15 @@ def get_dataset_view_list(abbrev: str, out_format: str):
               help='Project metadata view to get', )
 @click.argument('abbrev', type=str)
 @opt_output_dir()
-def get_dataset_view(abbrev: str,
-                     output_dir: str,
-                     view_id: str,):
+@table_format_option()
+def get_dataset_view(
+        abbrev: str,
+        output_dir: str,
+        view_id: str,
+        out_format: str,
+):
     """Get a specific metadata view."""
-    download_dataset_view(output_dir, view_id, abbrev)
+    download_dataset_view(output_dir, view_id, abbrev, out_format)
 
 
 @metadata.command('set-merge')

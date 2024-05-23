@@ -5,7 +5,7 @@ import pandas as pd
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_patch
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_formatted
+from austrakka.utils.output import print_dataframe
 from austrakka.utils.paths import GROUP_PATH
 
 
@@ -53,7 +53,7 @@ def list_field_group(name: str, out_format: str):
     data = response['data'] if ('data' in response) else response
     result = pd.json_normalize(data, max_level=1)
 
-    print_formatted(
+    print_dataframe(
         result,
         out_format,
     )

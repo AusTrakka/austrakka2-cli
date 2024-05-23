@@ -18,6 +18,27 @@ from austrakka.utils.enums.api import RESPONSE_MESSAGES
 from austrakka.utils.enums.api import RESPONSE_MESSAGE
 
 FORMAT_PREFIX = '_format_'
+EXTENSION_PREFIX = '_extension_'
+
+
+def _extension_csv():
+    return "csv"
+
+
+def _extension_json():
+    return "json"
+
+
+def _extension_pretty():
+    return "out"
+
+
+def _extension_html():
+    return "html"
+
+
+def _extension_tsv():
+    return "tsv"
 
 
 def _format_csv(
@@ -66,21 +87,76 @@ def default_object_format():
     return _format_json.__name__[len(FORMAT_PREFIX):]
 
 
-def print_formatted(
+def print_dataframe(
         dataframe: pd.DataFrame,
         output_format: str = default_object_format(),
-        print_output: bool = True,
+        headers: Union[str, List[Any]] = 'keys',
+):
+    output = convert_format(dataframe, output_format, headers)
+
+    # pylint: disable=print-function
+    print(output, end='')
+
+
+def print_dict(
+        data: dict,
+        output_format: str = default_object_format(),
+        headers: Union[str, List[Any]] = 'keys',
+):
+    print_dataframe(_create_dataframe(data), output_format, headers)
+
+
+def convert_format(
+        dataframe: pd.DataFrame,
+        output_format: str = default_object_format(),
         headers: Union[str, List[Any]] = 'keys',
 ):
     format_func = f'{FORMAT_PREFIX}{output_format}'
+    return globals()[format_func](dataframe, headers)
 
-    output = globals()[format_func](dataframe, headers)
 
-    if print_output:
-        # pylint: disable=print-function
-        print(output, end='')
+def _get_output_extension(output_format: str):
+    format_func = f'{EXTENSION_PREFIX}{output_format}'
+    return globals()[format_func]()
 
-    return output
+
+def _create_dataframe(
+        data: dict
+) -> pd.DataFrame:
+    return pd.DataFrame.from_dict(data)
+
+
+def write_dataframe(
+        dataframe: pd.DataFrame,
+        base_filepath: str,
+        output_format: str = default_object_format(),
+        headers: Union[str, List[Any]] = 'keys',
+):
+    """
+    :param dataframe:
+    :param output_format:
+    :param headers:
+    :param base_filepath: Should NOT include an extension.
+    """
+    output = convert_format(dataframe, output_format, headers)
+    extension = _get_output_extension(output_format)
+    with open(base_filepath + "." + extension, "w") as file:
+        file.write(output)
+
+
+def write_dict(
+        data: dict,
+        base_filepath: str,
+        output_format: str = default_object_format(),
+        headers: Union[str, List[Any]] = 'keys',
+):
+    """
+    :param data:
+    :param output_format:
+    :param headers:
+    :param base_filepath: Should NOT include an extension.
+    """
+    write_dataframe(_create_dataframe(data), base_filepath, output_format, headers)
 
 
 def table_format_types():
