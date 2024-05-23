@@ -1,6 +1,7 @@
 import click
 
 from austrakka.utils.output import table_format_option
+from austrakka.utils.output import JSON_FORMAT
 from austrakka.utils.options import \
     opt_merge_algorithm, \
     opt_output_dir
@@ -39,7 +40,7 @@ def get_dataset_view_list(abbrev: str, out_format: str):
               help='Project metadata view to get', )
 @click.argument('abbrev', type=str)
 @opt_output_dir()
-@table_format_option()
+@table_format_option(JSON_FORMAT)
 def get_dataset_view(
         abbrev: str,
         output_dir: str,

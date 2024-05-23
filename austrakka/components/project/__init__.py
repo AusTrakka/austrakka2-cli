@@ -2,7 +2,6 @@
 import click
 from austrakka.utils.output import table_format_option
 from austrakka.utils.output import object_format_option
-from austrakka.utils.output import JSON_FORMAT
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_abbrev, opt_is_active
 from austrakka.utils.options import opt_name
@@ -96,7 +95,7 @@ def dashboard_get(project_id: int, out_format: str):
 
 
 @project.command('list')
-@table_format_option(JSON_FORMAT)
+@table_format_option()
 def projects_list(out_format: str):
     '''List projects in AusTrakka'''
     list_projects(out_format)
