@@ -1,9 +1,12 @@
 from typing import List
 
+from loguru import logger
+
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
+from austrakka.utils.helpers.users import get_user
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import USER_PATH
 
@@ -41,18 +44,26 @@ def update_user(
     org: str,
     owner_group_roles: List[str],
     is_austrakka_process: bool,
+    email: str,
 ):
-    user = {
+
+    user = get_user(user_id)
+    put_user = {
         "organisation": {
             "abbreviation": org
         },
         "ownerGroupRoles": list(owner_group_roles),
         "isAusTrakkaProcess": is_austrakka_process,
+        "contactEmail": user["contactEmail"]
     }
+
+    if email is not None:
+        logger.warning(f"Updating email from {user['contactEmail']} to {email}")
+        put_user["contactEmail"] = email
 
     api_put(
         path=f'{USER_PATH}/{user_id}',
-        data=user
+        data=put_user
     )
 
 

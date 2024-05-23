@@ -269,6 +269,18 @@ def opt_organisation(**attrs: t.Any):
     )
 
 
+def opt_email(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Email',
+    }
+    return _create_option(
+        '--email',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_proforma(**attrs: t.Any):
     defaults = {
         'required': True,
