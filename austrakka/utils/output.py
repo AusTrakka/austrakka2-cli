@@ -148,7 +148,7 @@ def write_dataframe(
     output = convert_format(dataframe, output_format, headers)
     extension = _get_output_extension(output_format)
     filename = base_filepath + "." + extension
-    with open(filename, "w") as file:
+    with open(filename, "w", encoding="utf-8") as file:
         file.write(output)
     logger.info(f"Written file {filename}")
 
