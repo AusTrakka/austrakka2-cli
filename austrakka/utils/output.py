@@ -17,8 +17,15 @@ from austrakka.utils.enums.api import RESPONSE_DATA
 from austrakka.utils.enums.api import RESPONSE_MESSAGES
 from austrakka.utils.enums.api import RESPONSE_MESSAGE
 
-FORMAT_PREFIX = '_format_'
-EXTENSION_PREFIX = '_extension_'
+_FORMAT_PREFIX = '_format_'
+_EXTENSION_PREFIX = '_extension_'
+_FORMAT_SUFFIX = "_FORMAT"
+
+PRETTY_FORMAT = 'pretty'
+CSV_FORMAT = 'csv'
+JSON_FORMAT = 'json'
+HTML_FORMAT = 'html'
+TSV_FORMAT = 'tsv'
 
 
 def _extension_csv():
@@ -80,11 +87,11 @@ def _format_tsv(
 
 
 def default_table_format():
-    return _format_pretty.__name__[len(FORMAT_PREFIX):]
+    return PRETTY_FORMAT
 
 
 def default_object_format():
-    return _format_json.__name__[len(FORMAT_PREFIX):]
+    return JSON_FORMAT
 
 
 def print_dataframe(
@@ -111,12 +118,12 @@ def convert_format(
         output_format: str = default_object_format(),
         headers: Union[str, List[Any]] = 'keys',
 ):
-    format_func = f'{FORMAT_PREFIX}{output_format}'
+    format_func = f'{_FORMAT_PREFIX}{output_format}'
     return globals()[format_func](dataframe, headers)
 
 
 def _get_output_extension(output_format: str):
-    format_func = f'{EXTENSION_PREFIX}{output_format}'
+    format_func = f'{_EXTENSION_PREFIX}{output_format}'
     return globals()[format_func]()
 
 
@@ -162,36 +169,32 @@ def write_dict(
 def table_format_types():
     formats = []
     for key, value in globals().items():
-        if (
-                callable(value) and value.__module__ == __name__
-                and key.startswith(FORMAT_PREFIX)
-        ):
-            formats.append(key[len(FORMAT_PREFIX):])
+        if key.endswith(_FORMAT_SUFFIX):
+            formats.append(value)
     return formats
 
 
 def object_format_types():
-    return [
-        _format_json.__name__[len(FORMAT_PREFIX):],
-        _format_html.__name__[len(FORMAT_PREFIX):],
-    ]
+    return [JSON_FORMAT, HTML_FORMAT]
 
 
-def table_format_option():
-    return _generic_format_option(default_table_format, table_format_types)
+def table_format_option(default: str = default_table_format()):
+    return _generic_format_option(default, table_format_types())
 
 
-def object_format_option():
-    return _generic_format_option(default_object_format, object_format_types)
+def object_format_option(default: str = default_object_format()):
+    return _generic_format_option(default, object_format_types())
 
 
-def _generic_format_option(default_func: Callable, format_list_func: Callable):
+def _generic_format_option(default: str, valid_formats: List[str]):
+    if default not in valid_formats:
+        raise ValueError(f"{default} not a valid format")
     return click.option(
         '-f',
         '--format',
         'out_format',
-        default=default_func(),
-        type=click.Choice(format_list_func()),
+        default=default,
+        type=click.Choice(valid_formats),
         help='Formatting option',
         show_default=True,
     )
