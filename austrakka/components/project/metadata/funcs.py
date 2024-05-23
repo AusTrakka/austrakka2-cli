@@ -5,7 +5,7 @@ import httpx
 import pandas as pd
 from httpx import HTTPStatusError
 from loguru import logger
-from austrakka.utils.api import api_get, api_get_stream_with_filename, api_patch
+from austrakka.utils.api import api_get, api_get_stream, api_patch
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from austrakka.utils.fs import create_dir
 from austrakka.utils.misc import logger_wraps
@@ -62,10 +62,17 @@ def download_dataset_view(
 
 def _download_dataset_view_file(dir_path, query_path):
     try:
-        def _write_chunks(resp: httpx.Response, file):
-            for chunk in resp.iter_bytes():
-                file.write(chunk)
-        api_get_stream_with_filename(query_path, _write_chunks, dir_path)
+        def _write_chunks(resp: httpx.Response):
+            content_disposition = resp.headers.get("Content-Disposition")
+            if content_disposition:
+                filename = content_disposition.split(";")[1].split("=")[1].strip('"')
+            else:
+                raise ValueError("Content-Disposition header not found in response")
+            with open(os.path.join(dir_path, filename), "wb") as file:
+                for chunk in resp.iter_bytes():
+                    file.write(chunk)
+
+        api_get_stream(query_path, _write_chunks)
 
         logger.success(f'Downloaded to: {dir_path}')
 
