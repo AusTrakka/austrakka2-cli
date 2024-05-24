@@ -1,17 +1,15 @@
 # pylint: disable=R0801
 import json
-import os
 
 import httpx
 from httpx import HTTPStatusError
 from loguru import logger
 from austrakka.utils.api import api_get, api_get_stream, api_patch
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
-from austrakka.utils.fs import create_dir
+from austrakka.utils.http import get_header_value, HEADERS
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dict
 from austrakka.utils.output import log_response_compact
-from austrakka.utils.output import write_dict
 from austrakka.utils.paths import PROJECT_PATH
 
 DATASET_UPLOAD_PATH = 'dataset'
@@ -51,32 +49,21 @@ def list_dataset_views(
 
 @logger_wraps()
 def download_dataset_view(
-        output_dir: str,
         dataset_view_id: str,
         abbrev: str,
         out_format: str
 ):
-    created_dir = False
-    if not os.path.exists(output_dir):
-        create_dir(output_dir)
-        created_dir = True
-
     query_path = "/".join([PROJECT_PATH, abbrev, 'download-project-view', dataset_view_id])
     try:
         def _write_chunks(resp: httpx.Response):
-            content_disposition = resp.headers.get("Content-Disposition")
-            if not content_disposition:
-                raise ValueError("Content-Disposition header not found in response")
-            filename = content_disposition.split(";")[1].split("=")[1].strip('"')
+            filename = get_header_value(resp, HEADERS.CONTENT_DISPOSITION, "filename")
+            logger.info(f"Downloading file {filename} for dataset {dataset_view_id} of {abbrev}")
             json_str = ""
             for chunk in resp.iter_bytes():
                 json_str += chunk.decode('utf-8')
-            filepath = os.path.join(output_dir, filename.split('.json')[0])
-            write_dict(json.loads(json_str), filepath, out_format)
+            print_dict(json.loads(json_str), out_format)
 
         api_get_stream(query_path, _write_chunks)
-
-        logger.success(f'Downloaded to: {output_dir}')
 
     except FailedResponseException as ex:
         log_response_compact(ex.parsed_resp)
@@ -84,7 +71,5 @@ def download_dataset_view(
         log_response_compact(ex)
     except HTTPStatusError as ex:
         logger.error(
-            f'Failed downloading to: {output_dir}. Error: {ex}'
+            f'Failed to download dataset {dataset_view_id} of {abbrev}. Error: {ex}'
         )
-        if created_dir:
-            os.remove(output_dir)
