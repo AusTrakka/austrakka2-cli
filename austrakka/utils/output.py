@@ -19,13 +19,14 @@ from austrakka.utils.enums.api import RESPONSE_MESSAGE
 
 _FORMAT_PREFIX = '_format_'
 _EXTENSION_PREFIX = '_extension_'
-_FORMAT_SUFFIX = "_FORMAT"
 
-PRETTY_FORMAT = 'pretty'
-CSV_FORMAT = 'csv'
-JSON_FORMAT = 'json'
-HTML_FORMAT = 'html'
-TSV_FORMAT = 'tsv'
+
+class FORMATS(object):
+    PRETTY = 'pretty'
+    CSV = 'csv'
+    JSON = 'json'
+    HTML = 'html'
+    TSV = 'tsv'
 
 
 def _extension_csv():
@@ -87,11 +88,11 @@ def _format_tsv(
 
 
 def default_table_format():
-    return PRETTY_FORMAT
+    return FORMATS.PRETTY
 
 
 def default_object_format():
-    return JSON_FORMAT
+    return FORMATS.JSON
 
 
 def print_dataframe(
@@ -170,14 +171,14 @@ def write_dict(
 
 def table_format_types():
     formats = []
-    for key, value in globals().items():
-        if key.endswith(_FORMAT_SUFFIX):
+    for key, value in FORMATS.__dict__.items():
+        if not key.startswith("__"):
             formats.append(value)
     return formats
 
 
 def object_format_types():
-    return [JSON_FORMAT, HTML_FORMAT]
+    return [FORMATS.JSON, FORMATS.HTML]
 
 
 def table_format_option(default: str = default_table_format()):

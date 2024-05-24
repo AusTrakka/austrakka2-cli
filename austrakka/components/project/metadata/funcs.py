@@ -62,6 +62,8 @@ def download_dataset_view(
             for chunk in resp.iter_bytes():
                 json_str += chunk.decode('utf-8')
             print_dict(json.loads(json_str), out_format)
+            logger.success(f"Successfully downloaded file {filename} "
+                           f"for dataset {dataset_view_id} of {abbrev}")
 
         api_get_stream(query_path, _write_chunks)
 
