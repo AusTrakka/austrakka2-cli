@@ -21,7 +21,7 @@ _FORMAT_PREFIX = '_format_'
 _EXTENSION_PREFIX = '_extension_'
 
 
-class FORMATS(object):
+class FORMATS:
     PRETTY = 'pretty'
     CSV = 'csv'
     JSON = 'json'

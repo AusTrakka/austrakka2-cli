@@ -3,7 +3,7 @@ import cgi
 import httpx
 
 
-class HEADERS(object):
+class HEADERS:
     CONTENT_DISPOSITION = 'Content-Disposition'
 
 
@@ -23,5 +23,5 @@ def get_header_value(resp: httpx.Response, header_name: str, value_name: str) ->
     _, params = parse_header(resp, header_name)
     try:
         return params[value_name]
-    except KeyError:
-        raise ValueError(f"Value {value_name} not found for header {header_name}")
+    except KeyError as ex:
+        raise ValueError(f"Value {value_name} not found for header {header_name}") from ex
