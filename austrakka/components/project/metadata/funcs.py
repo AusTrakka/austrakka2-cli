@@ -1,5 +1,6 @@
 # pylint: disable=R0801
 import json
+from typing import Optional
 
 import httpx
 from httpx import HTTPStatusError
@@ -49,23 +50,24 @@ def list_dataset_views(
 
 @logger_wraps()
 def download_dataset_view(
-        dataset_view_id: str,
+        dataset_view_id: Optional[str],
         abbrev: str,
         out_format: str
 ):
-    query_path = "/".join([PROJECT_PATH, abbrev, 'download-project-view', dataset_view_id])
+    query_path = f'?datasetViewId={dataset_view_id}' if dataset_view_id is not None else ''
+    api_path = "/".join([PROJECT_PATH, abbrev, f'download-project-view{query_path}'])
+    dataset_msg = f'dataset {dataset_view_id} of ' if dataset_view_id is not None else ''
     try:
         def _write_chunks(resp: httpx.Response):
             filename = get_header_value(resp, HEADERS.CONTENT_DISPOSITION, "filename")
-            logger.info(f"Downloading file {filename} for dataset {dataset_view_id} of {abbrev}")
+            logger.info(f"Downloading file {filename} for {dataset_msg}{abbrev}")
             json_str = ""
             for chunk in resp.iter_bytes():
                 json_str += chunk.decode('utf-8')
             print_dict(json.loads(json_str), out_format)
-            logger.success(f"Successfully downloaded file {filename} "
-                           f"for dataset {dataset_view_id} of {abbrev}")
+            logger.success(f"Successfully downloaded file {filename} for {dataset_msg}{abbrev}")
 
-        api_get_stream(query_path, _write_chunks)
+        api_get_stream(api_path, _write_chunks)
 
     except FailedResponseException as ex:
         log_response_compact(ex.parsed_resp)
@@ -73,5 +75,5 @@ def download_dataset_view(
         log_response_compact(ex)
     except HTTPStatusError as ex:
         logger.error(
-            f'Failed to download dataset {dataset_view_id} of {abbrev}. Error: {ex}'
+            f'Failed to download from {dataset_msg}{abbrev}. Error: {ex}'
         )

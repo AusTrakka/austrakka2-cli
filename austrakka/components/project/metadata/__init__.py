@@ -1,8 +1,11 @@
+from typing import Optional
+
 import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.utils.output import FORMATS
 from austrakka.utils.options import opt_merge_algorithm
+from austrakka.utils.options import opt_view_id
 
 from .funcs import list_dataset_views, \
     download_dataset_view, \
@@ -33,14 +36,12 @@ def get_dataset_view_list(abbrev: str, out_format: str):
 
 
 @metadata.command('get')
-@click.option('-id',
-              '--view-id',
-              help='Project metadata view to get', )
+@opt_view_id()
 @click.argument('abbrev', type=str)
 @table_format_option(FORMATS.JSON)
 def get_dataset_view(
         abbrev: str,
-        view_id: str,
+        view_id: Optional[str],
         out_format: str,
 ):
     """Get a specific metadata view."""
