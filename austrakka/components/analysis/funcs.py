@@ -1,4 +1,4 @@
-from austrakka.utils.api import api_post
+from austrakka.utils.api import api_post, api_patch
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.analysis import get_analysis_by_abbrev
 from austrakka.utils.helpers.output import call_get_and_print
@@ -7,9 +7,9 @@ from austrakka.utils.paths import ANALYSIS_PATH
 
 
 @logger_wraps()
-def list_analyses(project_abbrev: str, out_format: str):
+def list_analyses(project_abbrev: str, show_disabled: bool, out_format: str):
     call_get_and_print(
-        f'{ANALYSIS_PATH}/project/{project_abbrev}', out_format)
+        f'{ANALYSIS_PATH}/project/{project_abbrev}?includeall={show_disabled}', out_format)
 
 
 @logger_wraps()
@@ -68,4 +68,18 @@ def update_analysis(
     api_put(
         path=f'{ANALYSIS_PATH}/{abbrev}',
         data=analysis
+    )
+
+
+@logger_wraps()
+def disable_analysis(abbrev: str):
+    api_patch(
+        path=f'{ANALYSIS_PATH}/disable/{abbrev}',
+    )
+
+
+@logger_wraps()
+def enable_analysis(abbrev: str):
+    api_patch(
+        path=f'{ANALYSIS_PATH}/enable/{abbrev}',
     )

@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.53.2] - 2024-05-10
+
+### Changed
+- Tree commands are no longer hidden by default
+- Admin-only project provision commands are now hidden by default
+
+# [0.53.1] - 2024-05-10
+
+### Added
+- `analysis disable` and `analysis enable` commands added;
+- `analysis list` can now optionally show disabled analyses
+
+# [0.53.0] - 2024-05-01
+### Changed
+- `seq purge` by default purges only inactive sequences for a given sample.
+- `seq purge --delete-all` will purge all sequences for a given sample.
+- These commands are available to admins only.
+
+### Added
+- Replaced `group assign` command with `group role add`, `group role remove`, and `group role list` commands.
+
 # [0.52.3] - 2024-04-23
 ### Changed
 - `plot update` no longer requires the `name` parameter.
