@@ -38,7 +38,7 @@ def get_dataset_view_list(abbrev: str, out_format: str):
 @metadata.command('get')
 @opt_view_id()
 @click.argument('abbrev', type=str)
-@table_format_option(FORMATS.JSON)
+@table_format_option(FORMATS.CSV)
 def get_dataset_view(
         abbrev: str,
         view_id: Optional[str],
