@@ -24,6 +24,7 @@ cryptography = "==41.0.6"
 semver = "==3.0.1"
 httpx = {extras = ["http2"], version = "==0.24.1"}
 biopython = "==1.81"
+XlsxWriter = "==3.2.0"
 
 [requires]
 python_version = "3"
