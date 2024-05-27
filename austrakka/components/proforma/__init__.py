@@ -137,11 +137,21 @@ def proforma_attach(abbrev: str,
 @click.option('-r', '--restrict', type=click.STRING, multiple=True, nargs=2,
     help='Key-value pair; restrict the specified field to the specified '+
         'comma-separated subset of values')
-def proforma_generate(abbrev: str, restrict):
+@click.option(
+    '--nndss/--no-nndss',
+    type=bool,
+    default=False,
+    help='Include an NNDSS label column in the Data Dictionary',
+)
+@opt_project(
+    required=False,
+    help="Project to fill in on the Groups for Sharing tab",
+)
+def proforma_generate(abbrev: str, restrict, nndss, project):
     """
     Generate a draft XLSX pro forma template from the current specification.
     """
-    generate_proforma(abbrev, restrict)
+    generate_proforma(abbrev, restrict, nndss_column=nndss, project_abbrev=project)
 
 @proforma.command('list')
 @table_format_option()

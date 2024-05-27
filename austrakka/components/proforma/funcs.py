@@ -18,6 +18,7 @@ from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
 from austrakka.utils.fs import FileHash, get_hash
 from .proforma_generation_utils import generate_template
+from ...utils.helpers.project import get_project_by_abbrev
 
 ATTACH = 'Attach'
 
@@ -182,7 +183,8 @@ def attach_proforma(abbrev: str,
 
 
 @logger_wraps()
-def generate_proforma(abbrev: str, restrict: Dict[str, List[str]]):
+def generate_proforma(
+        abbrev: str, restrict: Dict[str, List[str]], nndss_column: bool, project_abbrev: str):
     "Generate an XLSX template for a pro forma"    
     # Get the pro forma spec
     response = api_get(
@@ -194,10 +196,13 @@ def generate_proforma(abbrev: str, restrict: Dict[str, List[str]]):
         field:sum([v.split(',') for v in valuestr.split(';')],[])
         for (field, valuestr) in restrict
     }
+    project = None
+    if project_abbrev:
+        project = get_project_by_abbrev(project_abbrev)
     # Generate the spreadsheet
     filename = f"AusTrakka_metadata_submission_{abbrev}_DRAFT.xlsx"
     logger.info(f"Generating template draft {filename}")
-    generate_template(filename, field_df, restricted_values)
+    generate_template(filename, field_df, restricted_values, nndss_column, project)
     
    
 def _get_proforma_fields_df(data):
