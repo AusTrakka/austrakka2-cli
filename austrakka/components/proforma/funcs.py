@@ -12,7 +12,7 @@ from austrakka.utils.api import api_put
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from austrakka.utils.helpers.upload import upload_multipart
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_formatted, log_response
+from austrakka.utils.output import print_dataframe, log_response
 from austrakka.utils.helpers.fields import get_system_field_names
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
@@ -211,7 +211,7 @@ def list_proformas(out_format: str):
                 axis='columns',
                 inplace=True)
 
-    print_formatted(
+    print_dataframe(
         result,
         out_format,
     )
@@ -250,7 +250,7 @@ def show_proforma(abbrev: str, out_format: str):
         lambda x: ';'.join(x) if x else None
     )
     
-    print_formatted(
+    print_dataframe(
         field_df,
         out_format,
     )
@@ -278,7 +278,7 @@ def list_groups_proforma(abbrev: str, out_format: str):
                 axis='columns',
                 inplace=True)
 
-    print_formatted(
+    print_dataframe(
         result,
         out_format,
     )
