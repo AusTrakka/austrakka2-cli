@@ -4,14 +4,14 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pylint = "*"
-autopep8 = "*"
-pycodestyle = "*"
-pylint-print = "*"
-pytest = "*"
+pylint = "==2.17.5"
+autopep8 = "==2.0.2"
+pycodestyle = "==2.11.0"
+pylint-print = "==1.0.1"
+pytest = "==7.4.0"
 pipenv-setup = "==3.2.0"
 vistir = "==0.6.1"
-pytest-azurepipelines = "*"
+pytest-azurepipelines = "==1.0.4"
 
 [packages]
 austrakka = {editable = true, path = "."}
