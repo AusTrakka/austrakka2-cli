@@ -35,7 +35,7 @@ from austrakka.utils.fs import create_dir
 from austrakka.utils.enums.seq import FASTA_UPLOAD_TYPE
 from austrakka.utils.enums.seq import FASTQ_UPLOAD_TYPE
 from austrakka.utils.enums.seq import READ_BOTH
-from austrakka.utils.output import print_formatted
+from austrakka.utils.output import print_dataframe
 from austrakka.utils.retry import retry
 from austrakka.utils.api import api_delete
 from austrakka.utils.fs import FileHash, verify_hash
@@ -495,7 +495,7 @@ def list_sequences(
         read,
         group_name,
     )
-    print_formatted(
+    print_dataframe(
         pd.DataFrame(data),
         out_format,
     )
