@@ -14,7 +14,7 @@ from austrakka.components.metadata.funcs import add_metadata
 from austrakka.components.metadata.funcs import validate_metadata
 from austrakka.components.metadata.funcs import append_metadata
 from austrakka.components.metadata.funcs import list_metadata, list_metadata_by_field
-from austrakka.utils.output import table_format_option
+from austrakka.utils.output import table_format_option, FORMATS
 
 ADD_APPEND_BATCH_SIZE_HELP = (
     'The number of rows to split the metadata upload into before uploading. '
@@ -88,7 +88,7 @@ def submission_validate(file: BufferedReader, proforma: str, is_update: bool, ba
 @opt_field_name(
     required=False, 
     help="Fields to retrieve; if none specified, all fields will be retrieved")
-@table_format_option()
+@table_format_option(FORMATS.CSV)
 def metadata_list(group_name: str, field_names: List[str], out_format: str):
     """List metadata for a specific group"""
     if len(field_names)==0:

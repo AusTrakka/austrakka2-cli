@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.54.0] - 2024-05-28
+
+### Added
+- New `proforma generate` command to generate an XLSX proforma draft.
+
+### Fixed
+- Removed redundant retries for `Not Found: 404` or `Conflict: 409` responses.
+
+### Changed
+- `project metadata get` now outputs to stdout rather than writing to a file.
+- `project metadata get` and `metadata get` now default to CSV output.
+- Improved the way `field list` outputs valid values.
+
 # [0.53.2] - 2024-05-10
 
 ### Changed

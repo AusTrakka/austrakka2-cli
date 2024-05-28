@@ -8,7 +8,7 @@ from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_formatted
+from austrakka.utils.output import print_dataframe
 from austrakka.utils.paths import METADATACOLUMN_PATH
 
 
@@ -24,14 +24,14 @@ def list_fields(out_format: str):
     data = response['data'] if ('data' in response) else response
     result = pd.DataFrame.from_dict(data)
 
-    if 'mappedSpecies' in result:
-        result.drop(['mappedSpecies'],
-                    axis='columns',
-                    inplace=True)
     if 'primitiveType' in result:
         result['primitiveType'].fillna('category', inplace=True)
+    if 'metaDataColumnValidValues' in result:
+        result['metaDataColumnValidValues'] = result['metaDataColumnValidValues'].apply(
+            lambda x: ';'.join(x) if x else ''
+        )
 
-    print_formatted(
+    print_dataframe(
         result,
         out_format,
     )
