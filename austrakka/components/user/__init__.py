@@ -4,7 +4,7 @@ import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import opt_owner_group_roles
+from austrakka.utils.options import opt_owner_group_roles, opt_name, opt_email_address
 from austrakka.utils.options import opt_email
 from austrakka.utils.options import opt_is_austrakka_process
 from austrakka.utils.options import opt_user_object_id
