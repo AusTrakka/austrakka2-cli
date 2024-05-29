@@ -4,11 +4,8 @@ import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import opt_owner_group_roles, \
-    opt_name, \
-    opt_email_address, \
-    opt_is_active, \
-    opt_group_role
+from austrakka.utils.options import opt_owner_group_roles
+from austrakka.utils.options import opt_email
 from austrakka.utils.options import opt_is_austrakka_process
 from austrakka.utils.options import opt_user_object_id
 from austrakka.utils.options import opt_organisation
@@ -55,18 +52,18 @@ def user_add(
 @opt_name(help="Display Name", required=False)
 @opt_email_address(required=False)
 @opt_organisation(required=False)
-@opt_group_role(required=False)
-@opt_is_active(required=False)
+@opt_owner_group_roles(required=False)
+@opt_is_austrakka_process()
+@opt_email()
 def user_update(
-        object_id: str,
-        name: str,
-        email: str,
-        org: str,
-        group_roles: List[str],
-        is_active: bool,
+    user_id: str,
+    org: str,
+    owner_group_roles: List[str],
+    is_austrakka_process: bool,
+    email: str
 ):
-    """Update a user in AusTrakka"""
-    update_user(object_id, name, email, org, group_roles, is_active)
+    """Add users in AusTrakka"""
+    update_user(user_id, org, owner_group_roles, is_austrakka_process, email)
 
 
 @user.command('enable')

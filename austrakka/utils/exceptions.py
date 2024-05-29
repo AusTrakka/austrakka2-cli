@@ -15,9 +15,10 @@ class UnauthorizedException(Exception):
 
 
 class FailedResponseException(Exception):
-    def __init__(self, parsed_resp):
+    def __init__(self, parsed_resp, status_code=None):
         self.parsed_resp = parsed_resp
         self.message = f'Request failed: {parsed_resp}'
+        self.status_code = status_code
         super().__init__(self.message)
 
     def get_messages(self, message_type: str):

@@ -1,9 +1,9 @@
 from typing import List
 from loguru import logger
-import pandas as pd
+
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_formatted
+from austrakka.utils.output import print_dict
 from austrakka.utils.paths import PROJECT_PATH
 
 
@@ -47,9 +47,8 @@ def get_project_field_list(
         logger.info("No Project Fields available")
         return
 
-    result = pd.DataFrame.from_dict(data)
-    print_formatted(
-        result,
+    print_dict(
+        data,
         out_format,
     )
 

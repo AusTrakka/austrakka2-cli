@@ -5,6 +5,7 @@ from austrakka.utils.api import api_patch, api_get, api_post_list
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
+from austrakka.utils.helpers.users import get_user
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import USER_PATH, USER_ROLE_GROUP_PATH
 
