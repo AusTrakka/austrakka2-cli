@@ -1,11 +1,12 @@
 from typing import List, Dict, Any
 
-from austrakka.utils.api import api_patch, api_get
+from loguru import logger
+from austrakka.utils.api import api_patch, api_get, api_post_list
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.paths import USER_PATH
+from austrakka.utils.paths import USER_PATH, USER_ROLE_GROUP_PATH
 
 
 @logger_wraps()
@@ -15,10 +16,10 @@ def list_users(show_disabled: bool, out_format: str):
 
 @logger_wraps()
 def add_user(
-    user_id: str,
-    org: str,
-    owner_group_roles: List[str],
-    is_austrakka_process: bool,
+        user_id: str,
+        org: str,
+        owner_group_roles: List[str],
+        is_austrakka_process: bool,
 ):
     user = {
         "objectId": user_id,
@@ -49,15 +50,17 @@ def update_user(
         "displayName": user_full['displayName'],
         "contactEmail": user_full['contactEmail'],
         "orgAbbrev": user_full['orgAbbrev'],
-        "groupRoles": [
-            {
-                "roleName": role_dto["role"]["name"],
-                "groupName": role_dto["group"]["name"],
-            }
-            for role_dto in user_full['groupRoles']
-        ],
         "isActive": user_full['isActive'],
     }
+
+    # something = {
+    #     "groupRoles": [
+    #         {
+    #             "roleName": role_dto["role"]["name"],
+    #             "groupName": role_dto["group"]["name"],
+    #         }
+    #         for role_dto in user_full['groupRoles']
+    #     ], }
 
     if name is not None:
         user['displayName'] = name
@@ -65,14 +68,6 @@ def update_user(
         user['contactEmail'] = email
     if org is not None:
         user['orgAbbrev'] = org
-    if group_roles is not None:
-        user['groupRoles'].extend(
-            {
-                "roleName": role_group.split(",")[1],
-                "groupName": role_group.split(",")[0]
-            }
-            for role_group in group_roles
-        )
     if is_active is not None:
         user['isActive'] = is_active
 

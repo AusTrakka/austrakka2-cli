@@ -205,6 +205,19 @@ def api_post(
 
 
 @_use_http_client(log_resp=True)
+def api_post_list(
+        path: str,
+        params: Dict = None,
+        data: List = None,
+        client: httpx.Client = None,
+):
+    return client.post(
+        _get_url(path),
+        data=json.dumps(data),
+        params=params,
+    )
+
+@_use_http_client(log_resp=True)
 def api_put(
         path: str,
         params: Dict = None,
