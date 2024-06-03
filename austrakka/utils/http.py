@@ -3,6 +3,7 @@ import cgi
 import httpx
 
 
+# pylint: disable=too-few-public-methods
 class HEADERS:
     CONTENT_DISPOSITION = 'Content-Disposition'
 

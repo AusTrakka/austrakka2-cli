@@ -21,6 +21,7 @@ _FORMAT_PREFIX = '_format_'
 _EXTENSION_PREFIX = '_extension_'
 
 
+# pylint: disable=too-few-public-methods
 class FORMATS:
     PRETTY = 'pretty'
     CSV = 'csv'
