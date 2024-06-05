@@ -24,6 +24,11 @@ def add_field_project(abbrev: str, field_names: List[str]):
     field_name_objs = {"fieldAndSourceDTOs": []}
     for field_name in field_names:
         field_name_split = field_name.split(',')
+
+        if len(field_name_split) != 2:
+            raise ValueError(f"Invalid field name / source: {field_name}. "
+                             f"Expecting 'field_name,source' format.")
+
         field_name_objs["fieldAndSourceDTOs"].append({
             "fieldName": field_name_split[0],
             "restrictionName": short_to_long(field_name_split[1]),
