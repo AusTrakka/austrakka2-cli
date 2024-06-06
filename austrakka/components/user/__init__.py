@@ -52,18 +52,16 @@ def user_add(
 @opt_name(help="Display Name", required=False)
 @opt_email_address(required=False)
 @opt_organisation(required=False)
-@opt_owner_group_roles(required=False)
 @opt_is_austrakka_process()
 @opt_email()
 def user_update(
     user_id: str,
     org: str,
-    owner_group_roles: List[str],
     is_austrakka_process: bool,
     email: str
 ):
     """Add users in AusTrakka"""
-    update_user(user_id, org, owner_group_roles, is_austrakka_process, email)
+    update_user(user_id, org, is_austrakka_process, email)
 
 
 @user.command('enable')

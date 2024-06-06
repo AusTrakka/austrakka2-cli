@@ -42,7 +42,6 @@ def update_user(
         name: str = None,
         email: str = None,
         org: str = None,
-        group_roles: List[str] = None,
         is_active: bool = None,
 ):
     user_resp = api_get(f'{USER_PATH}/userId/{object_id}')
@@ -53,15 +52,6 @@ def update_user(
         "orgAbbrev": user_full['orgAbbrev'],
         "isActive": user_full['isActive'],
     }
-
-    # something = {
-    #     "groupRoles": [
-    #         {
-    #             "roleName": role_dto["role"]["name"],
-    #             "groupName": role_dto["group"]["name"],
-    #         }
-    #         for role_dto in user_full['groupRoles']
-    #     ], }
 
     if name is not None:
         user['displayName'] = name
