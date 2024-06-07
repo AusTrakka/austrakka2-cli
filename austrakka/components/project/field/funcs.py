@@ -25,13 +25,21 @@ def add_field_project(abbrev: str, field_names: List[str]):
     for field_name in field_names:
         field_name_split = field_name.split(',')
 
-        if len(field_name_split) != 2:
+        if len(field_name_split) < 2 or len(field_name_split) > 3:
             raise ValueError(f"Invalid field name / source: {field_name}. "
-                             f"Expecting 'field_name,source' format.")
+                             f"Expecting 'field_name,source' format."
+                             f"Or 'field_name,source,hidden_boolean' format.")
+
+        # check if a third value is provided an if it is make sure it is a boolean
+        if len(field_name_split) == 3:
+            if field_name_split[2].lower() != 'hidden':
+                raise ValueError(f"Invalid hidden value: {field_name_split[2]}. "
+                                 f"Expecting flag 'hidden' if field is not to be visible.")
 
         field_name_objs["fieldAndSourceDTOs"].append({
             "fieldName": field_name_split[0],
             "restrictionName": short_to_long(field_name_split[1]),
+            "hidden": len(field_name_split) == 3
         })
 
     # Replace 'abbrev' with your actual value
