@@ -51,20 +51,20 @@ def user_add(
 
 
 @user.command('update', hidden=hide_admin_cmds())
-@click.argument('object-id', type=str)
+@opt_user_object_id()
 @opt_name(help="Display Name", required=False)
 @opt_email_address(required=False)
 @opt_organisation(required=False)
 @opt_is_active(required=False)
 def user_update(
-    object_id: str,
+    user_id: str,
     org: str,
     is_active: bool,
     email: str,
     name: str,
 ):
     """Add users in AusTrakka"""
-    update_user(object_id, name, email, org, is_active)
+    update_user(user_id, name, email, org, is_active)
 
 
 @user.command('enable')
