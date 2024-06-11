@@ -116,6 +116,20 @@ def opt_name(var_name='name', **attrs: t.Any):
     )
 
 
+def opt_email_address(var_name='email', **attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Email Address',
+    }
+    return _create_option(
+        "-e",
+        "--email",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_dashboard_name(var_name='dashboard_name', **attrs: t.Any):
     defaults = {
         'required': True,

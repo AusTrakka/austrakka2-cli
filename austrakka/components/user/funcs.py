@@ -1,27 +1,24 @@
-from typing import List
+from typing import List, Dict, Any
 
-from loguru import logger
-
-from austrakka.utils.api import api_patch
+from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
-from austrakka.utils.helpers.users import get_user
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import USER_PATH
 
 
 @logger_wraps()
 def list_users(show_disabled: bool, out_format: str):
-    call_get_and_print(f'{USER_PATH}/minimal?includeall={show_disabled}', out_format)
+    call_get_and_print(f'{USER_PATH}/?includeall={show_disabled}', out_format)
 
 
 @logger_wraps()
 def add_user(
-    user_id: str,
-    org: str,
-    owner_group_roles: List[str],
-    is_austrakka_process: bool,
+        user_id: str,
+        org: str,
+        owner_group_roles: List[str],
+        is_austrakka_process: bool,
 ):
     user = {
         "objectId": user_id,
@@ -38,32 +35,34 @@ def add_user(
     )
 
 
-@logger_wraps()
 def update_user(
-    user_id: str,
-    org: str,
-    owner_group_roles: List[str],
-    is_austrakka_process: bool,
-    email: str,
+        object_id: str,
+        name: str = None,
+        email: str = None,
+        org: str = None,
+        is_active: bool = None,
 ):
-
-    user = get_user(user_id)
-    put_user = {
-        "organisation": {
-            "abbreviation": org
-        },
-        "ownerGroupRoles": list(owner_group_roles),
-        "isAusTrakkaProcess": is_austrakka_process,
-        "contactEmail": user["contactEmail"]
+    user_resp = api_get(f'{USER_PATH}/userId/{object_id}')
+    user_full = user_resp['data']
+    user: Dict[str, Any] = {
+        "displayName": user_full['displayName'],
+        "contactEmail": user_full['contactEmail'],
+        "orgAbbrev": user_full['orgAbbrev'],
+        "isActive": user_full['isActive'],
     }
 
+    if name is not None:
+        user['displayName'] = name
     if email is not None:
-        logger.warning(f"Updating email from {user['contactEmail']} to {email}")
-        put_user["contactEmail"] = email
+        user['contactEmail'] = email
+    if org is not None:
+        user['orgAbbrev'] = org
+    if is_active is not None:
+        user['isActive'] = is_active
 
     api_put(
-        path=f'{USER_PATH}/{user_id}',
-        data=put_user
+        path=f'{USER_PATH}/{object_id}',
+        data=user
     )
 
 
