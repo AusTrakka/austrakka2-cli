@@ -53,7 +53,7 @@ def add_field(
 
     if can_visualise and typename in ["date", "number", "string"]:
         logger.warning(
-            f"Setting colour-nodes flag on field {name} of type {typename}. "
+            f"Setting viz flag on field {name} of type {typename}. "
             f"This may work poorly as colour visualisations are configured for a small "
             f"discrete set of values.")
     else:
@@ -61,9 +61,9 @@ def add_field(
         # Here booleans and categoricals give True
         if typename == "string":
             logger.warning(
-                f"Setting default of --no-colour-nodes on field {name} due to type {typename}. "
+                f"Setting default of --no-viz on field {name} due to type {typename}. "
                 f"If this string field should be allowed to be used for colour visualisations, "
-                f"set --colour-nodes.")
+                f"set --viz.")
         can_visualise = (typename not in ["date", "number", "string"])
 
     api_post(
