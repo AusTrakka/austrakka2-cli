@@ -43,7 +43,7 @@ def add_field(
         description: str,
         nndss_label: str,
         typename: str,
-        can_visualise: str,
+        can_visualise: bool,
         column_order: int,
 ):
     """
@@ -51,17 +51,12 @@ def add_field(
     """
     fieldtype = get_fieldtype_by_name(typename)
 
-    if can_visualise == 'viz':
-        if typename in ["date", "number", "string"]:
+    if can_visualise and typename in ["date", "number", "string"]:
             logger.warning(
                 f"Setting colour-nodes flag on field {name} of type {typename}. "
                 f"This may work poorly as colour visualisations are configured for a small "
                 f"discrete set of values.")
-        can_visualise = True
-    elif can_visualise == 'no_viz':
-        can_visualise = False
     else:
-        assert can_visualise is None
         # Set visualisation behaviour based on field type
         # Here booleans and categoricals give True
         if typename == "string":
@@ -92,7 +87,7 @@ def update_field(
         description: str,
         nndss_label: str,
         typename: str,
-        can_visualise: str,
+        can_visualise: bool,
         column_order: int,
 ):
     """
@@ -122,13 +117,13 @@ def update_field(
         put_field["metaDataColumnTypeId"] = fieldtype["metaDataColumnTypeId"]
 
     if can_visualise is not None:
-        if can_visualise == 'viz':
+        if can_visualise:
             if typename in ["date", "number", "string"]:
                 logger.warning(
                     f"Setting colour-nodes flag on field {name} of type {typename}. "
                     f"This may work poorly as colour visualisations are configured for a "
                     f"small discrete set of values.")
-        put_field["canVisualise"] = can_visualise == 'viz'
+        put_field["canVisualise"] = can_visualise
 
     if column_order is not None:
         put_field["columnOrder"] = column_order
