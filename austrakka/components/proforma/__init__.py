@@ -147,11 +147,22 @@ def proforma_attach(abbrev: str,
     required=False,
     help="Project to fill in on the Groups for Sharing tab",
 )
-def proforma_generate(abbrev: str, restrict, nndss, project):
+@click.option(
+    '-c','--metadata-class', type=click.STRING, multiple=True, nargs=2,
+    help='Key-value pair; add a metadata field class and assign it to the specified '+
+        'comma-separated subset of fields',
+)
+def proforma_generate(abbrev: str, restrict, nndss, project, metadata_class):
     """
     Generate a draft XLSX pro forma template from the current specification.
     """
-    generate_proforma(abbrev, restrict, nndss_column=nndss, project_abbrev=project)
+    generate_proforma(
+        abbrev,
+        restrict,
+        nndss_column=nndss,
+        project_abbrev=project,
+        metadata_classes=metadata_class
+        )
 
 @proforma.command('list')
 @table_format_option()
