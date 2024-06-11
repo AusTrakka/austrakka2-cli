@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.55.0] - 2024-06-11
+
+### Changed
+- Changed `user update` command to no longer modify the user's roles.
+
+### Fixed
+- Fixed crash in `project field add` command.
+
 # [0.54.0] - 2024-05-28
 
 ### Added
