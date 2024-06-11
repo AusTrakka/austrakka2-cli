@@ -109,6 +109,8 @@ def update_field(
         "columnOrder",
         "isActive",
         "metaDataColumnTypeId",
+        "description",
+        "nndssFieldLabel"
     ]}
 
     if new_name is not None:
