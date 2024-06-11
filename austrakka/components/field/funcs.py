@@ -52,10 +52,10 @@ def add_field(
     fieldtype = get_fieldtype_by_name(typename)
 
     if can_visualise and typename in ["date", "number", "string"]:
-            logger.warning(
-                f"Setting colour-nodes flag on field {name} of type {typename}. "
-                f"This may work poorly as colour visualisations are configured for a small "
-                f"discrete set of values.")
+        logger.warning(
+            f"Setting colour-nodes flag on field {name} of type {typename}. "
+            f"This may work poorly as colour visualisations are configured for a small "
+            f"discrete set of values.")
     else:
         # Set visualisation behaviour based on field type
         # Here booleans and categoricals give True
