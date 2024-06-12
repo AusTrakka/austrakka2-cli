@@ -55,6 +55,7 @@ def generate_template(
             assert field_classes[field] == 'Minimum'
             field_classes[field] = "Minimum - can't be blank"
     
+    fields = _sort_fields_by_class(fields, field_classes, metadata_classes)
     
     for field in restricted_values:
         if field not in allowed_values:
@@ -215,4 +216,11 @@ def _give_examples(field, allowed_values, field_type):
     if len(values) > 5:
         return ','.join(values[:4]+values[-1:])
     return ', '.join(values)
-        
+
+def _sort_fields_by_class(fields, field_classes, metadata_classes):
+    # Sort fields by class, but otherwise retain original sort order
+    # Treat anything starting with "Minimum" as the minimum class
+    sorted_fields = [f for f in fields if field_classes[f].startswith('Minimum')]
+    for mclass in metadata_classes:
+        sorted_fields.extend(f for f in fields if field_classes[f] == mclass)
+    return sorted_fields
