@@ -36,7 +36,14 @@ SPECIAL_TYPES = {
 
 # pylint: disable=too-many-locals disable=too-many-statements disable=too-many-branches
 def generate_template(
-        filename, proforma, restricted_values, metadata_classes, nndss_column, project, num_format_rows=21):
+    filename,
+    proforma,
+    restricted_values,
+    metadata_classes,
+    nndss_column,
+    project,
+    num_format_rows=21
+):
     fields = list(proforma['name'])
     
     allowed_values = {
@@ -94,7 +101,8 @@ def generate_template(
     }
     for (i, mclass) in enumerate(metadata_classes):
         header_formats[mclass] = workbook.add_format(BASE | {'bg_color': CLASS_COLOURS[i]})
-        mclass_formats[mclass] = workbook.add_format(BASE | WRAPPED | BORDER | {'bg_color': CLASS_COLOURS[i]})
+        mclass_formats[mclass] = workbook.add_format(
+            BASE | WRAPPED | BORDER | {'bg_color': CLASS_COLOURS[i]})
     
     # Worksheets
     metadata_sheet = workbook.add_worksheet('Metadata submission')
@@ -194,15 +202,6 @@ def generate_template(
         sharinggroups_sheet.write_string(1, 1, f"{project['name']} project", border_format)
     
     workbook.close()
-   
-
-def _get_field_class(field, metadata_classes, proforma):
-    if field in metadata_classes:
-        return metadata_classes[field]
-    if proforma.loc[field, 'isRequired']:
-        return 
-        return proforma.loc[field, 'metadataClass']
-    return ''
 
 def _describe_type(field, proforma):
     if field in SPECIAL_TYPES:

@@ -184,7 +184,12 @@ def attach_proforma(abbrev: str,
 
 @logger_wraps()
 def generate_proforma(
-        abbrev: str, restrict: Dict[str, List[str]], nndss_column: bool, project_abbrev: str, metadata_classes: Dict[str, List[str]]):
+    abbrev: str,
+    restrict: Dict[str, List[str]],
+    nndss_column: bool,
+    project_abbrev: str,
+    metadata_classes: Dict[str, List[str]]
+):
     "Generate an XLSX template for a pro forma"    
     # Get the pro forma spec
     response = api_get(
@@ -206,7 +211,8 @@ def generate_proforma(
     # Generate the spreadsheet
     filename = f"AusTrakka_metadata_submission_{abbrev}_DRAFT.xlsx"
     logger.info(f"Generating template draft {filename}")
-    generate_template(filename, field_df, restricted_values, metadata_classes, nndss_column, project)
+    generate_template(
+        filename, field_df, restricted_values, metadata_classes, nndss_column, project)
     
    
 def _get_proforma_fields_df(data):
