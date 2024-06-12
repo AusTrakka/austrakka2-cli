@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.56.0] - 2024-06-12
+
+### Changed
+- Changed `field update` command to use PATCH instead of PUT, inline with a server change.
+
 # [0.55.0] - 2024-06-11
 
 ### Changed
