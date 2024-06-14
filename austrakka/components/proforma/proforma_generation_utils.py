@@ -1,5 +1,9 @@
 import xlsxwriter
 
+# Colours for field headers and data dictionary metadata class
+MINIMUM_COLOUR = '#7ABBDE'
+CLASS_COLOURS = ['#9AD4E3', '#FCCD86', '#FFA07A', '#CCB5f7', '#FFB6C1']
+
 # Defined Excel formats
 DEFAULT_FONT = 'Courier New'
 DEFAULT_FONTSIZE = 12
@@ -32,14 +36,34 @@ SPECIAL_TYPES = {
 
 # pylint: disable=too-many-locals disable=too-many-statements disable=too-many-branches
 def generate_template(
-        filename, proforma, restricted_values, nndss_column, project, num_format_rows=21):
+    filename,
+    proforma,
+    restricted_values,
+    metadata_classes,
+    nndss_column,
+    project,
+    num_format_rows=21
+):
     fields = list(proforma['name'])
     
     allowed_values = {
-        field['name']: (field['allowedValues'].split(';') 
+        field['name']: (field['allowedValues'].split(';')
             if field['type']=='categorical' else []) 
         for (i,field) in proforma.iterrows()}
-        
+    
+    field_classes = {field:'Minimum' for field in fields}
+    for (mclass, field_list) in metadata_classes.items():
+        for field in field_list:
+            if field not in fields:
+                raise ValueError(f"Field {field} not in proforma")
+            field_classes[field] = mclass
+    for field in fields:
+        if proforma.loc[field, 'isRequired']:
+            assert field_classes[field] == 'Minimum'
+            field_classes[field] = "Minimum - can't be blank"
+    
+    fields = _sort_fields_by_class(fields, field_classes, metadata_classes)
+    
     for field in restricted_values:
         if field not in allowed_values:
             raise ValueError(f"Restricted values for field {field} which is not in proforma")
@@ -66,6 +90,19 @@ def generate_template(
     wrapped_border_format = workbook.add_format(BASE | WRAPPED | BORDER)
     green_wrapped_border_format = workbook.add_format(BASE | BG_GREEN | WRAPPED | BORDER)
     iso_date_format = workbook.add_format(BASE | ISO_DATE)
+    # Formats for coloured field cells/headers
+    header_formats = {
+        "Minimum": green_header_format,
+        "Minimum - can't be blank": green_header_format
+    }
+    mclass_formats = {
+        "Minimum": green_wrapped_border_format,
+        "Minimum - can't be blank": green_wrapped_border_format
+    }
+    for (i, mclass) in enumerate(metadata_classes):
+        header_formats[mclass] = workbook.add_format(BASE | {'bg_color': CLASS_COLOURS[i]})
+        mclass_formats[mclass] = workbook.add_format(
+            BASE | WRAPPED | BORDER | {'bg_color': CLASS_COLOURS[i]})
     
     # Worksheets
     metadata_sheet = workbook.add_worksheet('Metadata submission')
@@ -77,7 +114,7 @@ def generate_template(
     # Metadata worksheet
     for (col, field) in enumerate(fields):
         # Write header row and set column widths to fit field names
-        metadata_sheet.write_string(0, col, field, green_header_format)
+        metadata_sheet.write_string(0, col, field, header_formats[field_classes[field]])
         metadata_sheet.set_column(col, col, max(10, len(field)*1.5//1))
         # Add categorical field validation
         if proforma.loc[field, 'type'] == 'categorical':
@@ -121,8 +158,8 @@ def generate_template(
         # class (minimum, etc) - we only know if strictly required; 
         # project team must specify if minimum/optional
         datadict_sheet.write_string(row, 1+nndss_offset, 
-            "Minimum - can't be blank" if proforma.loc[field, 'isRequired'] else "",
-            green_wrapped_border_format)
+            field_classes[field],
+            mclass_formats[field_classes[field]])
         datadict_sheet.write_string(row, 2+nndss_offset,
             proforma.loc[field, 'description'],
             wrapped_border_format)
@@ -137,7 +174,7 @@ def generate_template(
     # Type dictionary worksheet
     for (col, field) in enumerate(fields):
         # Header row
-        typedict_sheet.write_string(0, col, field, green_header_format)
+        typedict_sheet.write_string(0, col, field, header_formats[field_classes[field]])
         # Set from length of field header or data values, whichever is longer
         typedict_sheet.set_column(col, col, max(required_widths[field]*1.5//1, 10))
         # Allowed values, or format specifier for date fields
@@ -161,11 +198,10 @@ def generate_template(
         sharinggroups_sheet.write_string(0, col, name, bold_border_format)
         sharinggroups_sheet.set_column(col, col, width)
     if project:
-        sharinggroups_sheet.write_string(1, 0, project['abbreviation'], border_format)
+        sharinggroups_sheet.write_string(1, 0, f"{project['abbreviation']}-Group", border_format)
         sharinggroups_sheet.write_string(1, 1, f"{project['name']} project", border_format)
     
     workbook.close()
-   
 
 def _describe_type(field, proforma):
     if field in SPECIAL_TYPES:
@@ -179,4 +215,11 @@ def _give_examples(field, allowed_values, field_type):
     if len(values) > 5:
         return ','.join(values[:4]+values[-1:])
     return ', '.join(values)
-        
+
+def _sort_fields_by_class(fields, field_classes, metadata_classes):
+    # Sort fields by class, but otherwise retain original sort order
+    # Treat anything starting with "Minimum" as the minimum class
+    sorted_fields = [f for f in fields if field_classes[f].startswith('Minimum')]
+    for mclass in metadata_classes:
+        sorted_fields.extend(f for f in fields if field_classes[f] == mclass)
+    return sorted_fields
