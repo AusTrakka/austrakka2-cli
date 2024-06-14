@@ -198,7 +198,7 @@ def generate_template(
         sharinggroups_sheet.write_string(0, col, name, bold_border_format)
         sharinggroups_sheet.set_column(col, col, width)
     if project:
-        sharinggroups_sheet.write_string(1, 0, project['abbreviation'], border_format)
+        sharinggroups_sheet.write_string(1, 0, f"{project['abbreviation']}-Group", border_format)
         sharinggroups_sheet.write_string(1, 1, f"{project['name']} project", border_format)
     
     workbook.close()
