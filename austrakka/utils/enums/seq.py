@@ -1,14 +1,13 @@
+from enum import Enum
 
-FASTQ_UPLOAD_TYPE = 'fastq'
-FASTA_UPLOAD_TYPE = 'fasta'
+# These enum values give the strings passed to the API to specify types
+# Should correspond to the server-side SequenceTypes consts
+# These strings are user-facing in the CLI as subcommands or type options
+class SeqType(Enum):
+    FASTQ_ILL_PE = 'fastq-ill-pe'
+    FASTA_CNS = 'fasta-cns'
 
 BY_IS_ACTIVE_FLAG = 'by-is-active-flag'
 BY_LATEST_DATE = 'by-latest-date'
 
-READ_1 = '1'
-READ_2 = '2'
-READ_BOTH = '-1'
-
-SEQ_TYPES = [FASTA_UPLOAD_TYPE, FASTQ_UPLOAD_TYPE]
 SEQ_FILTERS = [BY_IS_ACTIVE_FLAG, BY_LATEST_DATE]
-READS = [READ_1, READ_2, READ_BOTH]

@@ -35,11 +35,9 @@ TYPE_KEY = 'type'
 
 # Manifest file keys
 SEQ_ID_KEY = 'Seq_ID'
+# TODO check usage in tests, then delete
 FASTQ_R1_KEY = 'FASTQ_R1'
 FASTQ_R2_KEY = 'FASTQ_R2'
-HASH_FASTQ_R1_KEY = 'HASH_FASTQ_R1'
-HASH_FASTQ_R2_KEY = 'HASH_FASTQ_R2'
-FASTA_R1_KEY = 'FASTA_R1'
 
 # Workflow value constants
 DOWNLOADED = 'downloaded'
