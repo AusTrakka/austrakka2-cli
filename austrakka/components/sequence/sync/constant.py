@@ -48,12 +48,21 @@ MISSING = 'missing'
 DONE = 'done'
 
 # Command level value constants
-MANIFEST_FILE_NAME = 'manifest.csv'
-FASTA_AGGREGATE_FILE_NAME = 'all.fasta'
-INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME = 'intermediate-all.fasta'
-INTERMEDIATE_MANIFEST_FILE = 'intermediate-manifest.csv'
-OBSOLETE_OBJECTS_FILE = 'delete-targets.csv'
-SYNC_STATE_FILE = 'sync-state.json'
-FASTQ = 'fastq'
-FASTA = 'fasta'
+# SEQTYPE will be replaced with the seq type being operated on
+MANIFEST_FILE_NAME = 'manifest-SEQTYPE.csv'
+FASTA_AGGREGATE_FILE_NAME = 'consensus.fasta'
+INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME = 'intermediate-consensus.fasta'
+INTERMEDIATE_MANIFEST_FILE = 'intermediate-manifest-SEQTYPE.csv'
+OBSOLETE_OBJECTS_FILE = 'delete-targets-SEQTYPE.csv'
+SYNC_STATE_FILE = 'sync-state-SEQTYPE.json'
 TRASH_DIR = '.trash'
+
+# Used for migration from old sync system
+OLD_SYNC_STATE_FILE = 'sync-state.json'
+OLD_MANIFEST_FILE = 'manifest.csv'
+OLD_OBJS_FILE = 'delete-targets.csv'
+OLD_INTERMEDIATE_MANIFEST_FILE = 'intermediate-manifest.csv'
+MIGRATE_SEQ_TYPES = {
+    'fastq': 'fastq-ill-pe',
+    'fasta': 'fasta-cns'
+}

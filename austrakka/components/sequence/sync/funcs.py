@@ -4,23 +4,32 @@ from loguru import logger
 
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.fs import create_dir
-from .sync_state import initialise, load_state
-from .sync_workflow import select_start_state, configure_state_machine, reset
+from .sync_state import initialise, load_state, load_old_state
+from .sync_workflow import select_start_state, configure_state_machine, reset, list_expected_headers
+from .state_machine import SName
+from .sync_io import save_json, read_from_csv, get_path, save_to_csv
 
+from .constant import SEQ_ID_KEY
 from .constant import SYNC_STATE_FILE
 from .constant import OUTPUT_DIR_KEY
-from .constant import SYNC_STATE_FILE_KEY
 from .constant import CURRENT_STATE_KEY
 from .constant import GROUP_NAME_KEY
 from .constant import SEQ_TYPE_KEY
 from .constant import RECALCULATE_HASH_KEY
 from .constant import DOWNLOAD_BATCH_SIZE_KEY
-
-from .sync_io import save_json
+from .constant import SYNC_STATE_FILE_KEY
+from .constant import INTERMEDIATE_MANIFEST_FILE_KEY
+from .constant import MANIFEST_KEY
+from .constant import OBSOLETE_OBJECTS_FILE_KEY
+from .constant import OLD_SYNC_STATE_FILE
+from .constant import OLD_INTERMEDIATE_MANIFEST_FILE
+from .constant import OLD_MANIFEST_FILE
+from .constant import OLD_OBJS_FILE
+from .constant import MIGRATE_SEQ_TYPES
 
 
 @logger_wraps()
-def seq_get(
+def seq_sync_get(
         output_dir: str,
         group_name: str,
         recalc_hash: bool,
@@ -29,7 +38,7 @@ def seq_get(
         reset_opt: bool):
 
     sync_state = {}
-    state_file_path = os.path.join(output_dir, SYNC_STATE_FILE)
+    state_file_path = os.path.join(output_dir, SYNC_STATE_FILE.replace('SEQTYPE', seq_type))
 
     if os.path.exists(state_file_path):
         sync_state = load_state(
@@ -41,7 +50,7 @@ def seq_get(
         # We just opened the file, so it has to be set to
         # the same file name for later use. It's probably
         # already the same thing. This will guarantee that.
-        sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE
+        sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE.replace('SEQTYPE', seq_type)
 
         # Settings allowed to be overriden between runs.
         sync_state[RECALCULATE_HASH_KEY] = recalc_hash
@@ -75,3 +84,80 @@ def seq_get(
     state_machine = configure_state_machine()
     state_machine.run(sync_state)
     logger.success("Sync completed")
+
+@logger_wraps()
+def seq_sync_migrate(output_dir: str):
+    logger.info("Looking for old sync state file.")
+    state_file_path = os.path.join(output_dir, OLD_SYNC_STATE_FILE)
+    
+    if not os.path.exists(state_file_path):
+        logger.info("No old sync state file found.")
+        return
+
+    sync_state = load_old_state(
+        output_dir,
+        state_file_path)
+    
+    old_seq_type = sync_state[SEQ_TYPE_KEY]
+    if old_seq_type not in MIGRATE_SEQ_TYPES:
+        logger.info(f"Old seq type {old_seq_type} is not supported for migration.")
+        return
+    seq_type = MIGRATE_SEQ_TYPES[old_seq_type]
+    logger.info(f"Found state for seq type {old_seq_type}, will migrate to {seq_type}.")
+
+    # Read old manifest before updating state and paths
+    if not os.path.exists(os.path.join(output_dir, OLD_MANIFEST_FILE)):
+        logger.error("Old manifest file not found, cannot proceed with migration. "+
+                     "Has the migration already occured?")
+        return
+    manifest = read_from_csv(sync_state, MANIFEST_KEY)
+
+    # Update state
+    sync_state[SEQ_TYPE_KEY] = seq_type
+    sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE.replace('SEQTYPE', seq_type)
+    sync_state[MANIFEST_KEY] = MANIFEST_KEY.replace('SEQTYPE', seq_type)
+    sync_state[INTERMEDIATE_MANIFEST_FILE_KEY] = \
+        INTERMEDIATE_MANIFEST_FILE_KEY.replace('SEQTYPE', seq_type)
+    sync_state[OBSOLETE_OBJECTS_FILE_KEY] = OBSOLETE_OBJECTS_FILE_KEY.replace('SEQTYPE', seq_type)
+
+    # Proceed only if in the correct state and intermediate files do not exist
+    if sync_state[CURRENT_STATE_KEY] != SName.UP_TO_DATE:
+        logger.error("Cannot proceed with migration, sync state is not up to date.")
+        return
+    if os.path.exists(os.path.join(output_dir, OLD_INTERMEDIATE_MANIFEST_FILE)):
+        logger.error("Intermediate manifest file exists, cannot proceed with migration.")
+        return
+    if os.path.exists(os.path.join(output_dir, OLD_OBJS_FILE)):
+        logger.error("Deleted objects file exists, cannot proceed with migration.")
+        return
+    
+    # Create extra subdirectory structure and move sequence files
+    for (_i, row) in manifest.iterrows():
+        sample = row[SEQ_ID_KEY]
+        current_dir = os.path.join(output_dir, sample)
+        new_dir = os.path.join(output_dir, sample, seq_type)
+        create_dir(new_dir)
+        if old_seq_type == 'fastq':
+            r1 = row['FASTQ_R1']
+            r2 = row['FASTQ_R2']
+            print(current_dir, new_dir, r1, r2)
+            os.rename(os.path.join(current_dir, r1), os.path.join(new_dir, r1))
+            os.rename(os.path.join(current_dir, r2), os.path.join(new_dir, r2))
+        elif old_seq_type == 'fasta':
+            f = row['FASTA_R1']
+            os.rename(os.path.join(current_dir, f), os.path.join(new_dir, f))
+
+    # Save new manifest file with updated column names
+    if old_seq_type == 'fastq':
+        assert list(manifest.columns) == [
+            'Seq_ID', 'FASTQ_R1', 'FASTQ_R2', 'HASH_FASTQ_R1', 'HASH_FASTQ_R2'
+        ]
+    elif old_seq_type == 'fasta':
+        assert list(manifest.columns) == ['Seq_ID', 'FASTA_R1', 'HASH_FASTA_R1']
+    manifest.columns=list_expected_headers(seq_type)
+    m_path = get_path(sync_state, MANIFEST_KEY)
+    save_to_csv(manifest, m_path)
+    # Delete old manifest file
+    os.remove(os.path.join(output_dir, OLD_MANIFEST_FILE))
+    logger.success("Migration complete")
+    
