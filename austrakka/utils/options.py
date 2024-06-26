@@ -638,6 +638,44 @@ def opt_fieldtype_value(var_name='values', **attrs: t.Any):
     )
 
 
+def opt_tenant_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'AusTrakka Tenant ID. This refers to tenants within AusTrakka.',
+    }
+    return _create_option(
+        '--tenant-id',
+        type=click.INT,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_record_type(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Record type that is the subject of access control. '
+                'Supported record types are: [tenant]',
+    }
+    return _create_option(
+        '--record-type',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_role(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'The role name that is unique to the tenant.',
+    }
+    return _create_option(
+        "-r",
+        "--role",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_group_role(**attrs: t.Any):
     defaults = {
         'required': False,

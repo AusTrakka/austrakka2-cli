@@ -23,6 +23,7 @@ from .components.sample import sample
 from .components.widget import widget
 from .components.dashboard import dashboard
 from .components.plot import plot
+from .components.rbac import rbac
 
 from . import __version__ as VERSION
 from .utils.misc import AusTrakkaCliTopLevel
@@ -130,6 +131,7 @@ def get_cli():
     cli.add_command(proforma)
     cli.add_command(field)
     cli.add_command(fieldtype)
+    cli.add_command(rbac) if show_admin_cmds() else None
     return cli
 
 
