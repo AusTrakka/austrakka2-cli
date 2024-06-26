@@ -3,6 +3,7 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import *
 from .funcs import grant_role
 from .scope import scope
+from .role import role
 
 
 @click.group()
@@ -13,6 +14,7 @@ def rbac(ctx):
 
 
 rbac.add_command(scope)
+rbac.add_command(role)
 
 
 @rbac.command('grant', hidden=hide_admin_cmds())
