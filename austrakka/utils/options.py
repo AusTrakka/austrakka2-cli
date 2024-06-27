@@ -461,6 +461,21 @@ def opt_user_object_id(**attrs: t.Any):
     )
 
 
+def opt_ids(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'multiple': True,
+        'help': 'The IDs of the entities. Use a comma (,) to separate '
+                'multiple IDs.',
+    }
+    return _create_option(
+        '-ids',
+        '--ids',
+        type=click.INT,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_batch_size(**attrs: t.Any):
     defaults = {
         'required': False,
@@ -645,6 +660,18 @@ def opt_tenant_id(**attrs: t.Any):
     }
     return _create_option(
         '--tenant-id',
+        type=click.INT,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_scope_access_def_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Scope Access Definition ID',
+    }
+    return _create_option(
+        '--scope-access-def-id',
         type=click.INT,
         **{**defaults, **attrs}
     )
