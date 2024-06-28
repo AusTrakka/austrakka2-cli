@@ -22,6 +22,7 @@ def add(ctx):
     help="For each sample, skip upload if the sample has existing sequences of the same type.")
 @opt_force_mutex_skip(
     help="Upload sequences and supersede any existing sequences of the same type.")
+# pylint: disable=invalid-name
 def seq_add_fastq_ill_PE(
         csv_file: BufferedReader, skip: bool = False, force: bool = False
 ):
@@ -41,6 +42,7 @@ def seq_add_fastq_ill_PE(
     help="For each sample, skip upload if the sample has existing sequences of the same type.")
 @opt_force_mutex_skip(
     help="Upload sequences and supersede any existing sequences of the same type.")
+# pylint: disable=invalid-name
 def seq_add_fastq_ill_SE(
         csv_file: BufferedReader, skip: bool = False, force: bool = False
 ):

@@ -11,6 +11,7 @@ from loguru import logger
 from austrakka.components.sequence.funcs import _download_seq_file
 from austrakka.components.sequence.funcs import _get_seq_download_path
 from austrakka.utils.retry import retry
+from austrakka.utils.enums.seq import SeqType
 
 from .errors import WorkflowError
 from .sync_io import \
@@ -24,8 +25,6 @@ from .sync_io import \
     save_json
 
 from .state_machine import StateMachine, SName, State, Action
-
-from austrakka.utils.enums.seq import SeqType
 
 from .constant import CURRENT_STATE_KEY
 from .constant import CURRENT_ACTION_KEY
@@ -177,7 +176,7 @@ def pull_manifest(sync_state: dict):
     logger.info(f'Saving to intermediate manifest: {path}')
 
     with open(path, 'w', encoding='UTF-8') as file:
-        pd.DataFrame(data).to_csv(file, index=False)
+        data.to_csv(file, index=False)
 
     sync_state[CURRENT_STATE_KEY] = SName.DONE_PULLING_MANIFEST
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_analysing
@@ -662,9 +661,9 @@ def reset(state_file_path, sync_state):
 def manifest_column_key(file_or_hash: str, seq_type: str, read:str = None):
     """Define desired column header for the manifest file"""
     assert file_or_hash in [FILE_NAME_ON_DISK_KEY, SERVER_SHA_256_KEY]
-    header = (("HASH-" if file_or_hash==SERVER_SHA_256_KEY else "") + 
+    header = (("HASH_" if file_or_hash==SERVER_SHA_256_KEY else "") + 
               seq_type.upper().replace('_','-'))
     if seq_type==SeqType.FASTQ_ILL_PE.value:
         assert read is not None
-        header += f"-R{read}"
+        header += f"_R{read}"
     return header

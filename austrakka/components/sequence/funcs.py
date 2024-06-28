@@ -325,17 +325,18 @@ def _get_seq_download_path(
     download_path = f'{SEQUENCE_PATH}/{SEQUENCE_DOWNLOAD_PATH}/{seq_id}'
     params = {
         SEQUENCE_TYPE_QUERY: seq_type,
-        SEQUENCE_READ_QUERY: read,
     }
+    if seq_type==SeqType.FASTQ_ILL_PE.value:
+        params[SEQUENCE_READ_QUERY] = read
 
     return download_path, params
 
 
 def _download_sequences(
         output_dir: str,
-        samples_seq_info: list[Dict],
+        samples_seq_info: pd.DataFrame,
 ):
-    for ssi in samples_seq_info:
+    for _i,ssi in samples_seq_info.iterrows():
         sample_name = ssi['sampleName']
         dto_read = str(ssi['read'])
         filename = ssi['fileNameOnDisk']
@@ -397,7 +398,7 @@ def _get_seq_data(
     if group_name:
         api_path = _get_seq_api_by_group(group_name)
         data = api_get(path=api_path)['data']
-        return _filter_sequences(data, seq_type)
+        result = _filter_sequences(data, seq_type)
     else:
         api_paths = _get_seq_api_by_sample_names(sample_ids)
         for path in api_paths:
@@ -408,7 +409,10 @@ def _get_seq_data(
         if skipped_samples:
             logger.warning('Skipped samples with no available sequences: '
                            f'{",".join(skipped_samples)}')
-        return result
+    df = pd.DataFrame(result, dtype=str)
+    # pd DF from records is coercing read to a float and producing nans regardless of dtype
+    df['read'] = pd.Series([row['read'] for row in result], dtype=str)
+    return df
 
 
 # pylint: disable=duplicate-code
@@ -440,7 +444,7 @@ def list_sequences(
         group_name,
     )
     print_dataframe(
-        pd.DataFrame(data),
+        data,
         out_format,
     )
 
@@ -528,4 +532,3 @@ def _rename_fasta_asm_contigs(file: BufferedReader, seq_id: str) -> BufferedRead
     buffer.seek(0)
     file.close()
     return buffer
-
