@@ -2,16 +2,14 @@ import json
 import os
 import string
 import random
-import pandas as pd
+import tempfile
 
 from click.testing import CliRunner
 from austrakka.main import get_cli
 
-
 seq_id_field_name = 'Seq_ID'
 owner_group_field_name = 'Owner_group'
 shared_groups_field_name = 'Shared_groups'
-temp_test_dir = 'tmp_test_data/'
 
 
 class TestSeqAddCommands:
@@ -45,10 +43,6 @@ class TestSeqAddCommands:
         # Assert
         result = _get_seq_by_group(self.runner, shared_group)
         assert len(result) == 1, f'Failed to add fasta asm file to sequence: {result}'
-
-        # Cleanup
-        os.remove(temp_file_path)
-        os.remove(tmp_fasta_csv_file_path)
 
 
 def _upload_fasta_asm_file(
@@ -193,11 +187,15 @@ def _create_org(runner: CliRunner, name: str):
 
 
 def _save_to_test_dir(content: str) -> str:
-    temp_file_name = f'{_new_identifier(10)}.csv'
-    tmp_file_path = f'{temp_test_dir}{temp_file_name}'
+    temp_dir = tempfile.gettempdir()
+    # if temp_dir does not end with a slash, add one
+    if not temp_dir.endswith('/'):
+        temp_dir += '/'
 
-    if not os.path.exists(temp_test_dir):
-        os.makedirs(temp_test_dir)
+    print(f'Temp dir: {temp_dir}')
+
+    temp_file_name = f'{_new_identifier(10)}.csv'
+    tmp_file_path = f'{temp_dir}{temp_file_name}'
 
     with open(f'{tmp_file_path}', 'w') as file:
         file.write(content)
