@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from io import BufferedReader, StringIO, TextIOWrapper
+from io import BufferedReader, StringIO, TextIOWrapper, BytesIO
 import codecs
 import hashlib
 from dataclasses import dataclass
@@ -493,19 +493,39 @@ def _check_csv_files(csv_row: pd.Series, messages: List[Dict]):
 def _get_files_from_csv_paths(csv_row: pd.Series, seq_type: SeqType) -> List[SeqFile]:
     sample_files = []
     columns = _csv_columns(seq_type)
+    seq_id = csv_row[SEQ_ID_CSV]
     for column in columns:
         # We assume everything in the CSV that's not the Seq_ID is a file path
         if column==SEQ_ID_CSV:
             continue
-        sample_files.append(_get_file(csv_row[column]))
+        contig_rename_id = seq_id if seq_type==SeqType.FASTA_ASM else None
+        file = _get_file(csv_row[column], contig_rename_id)
+        sample_files.append(file)
     return sample_files
 
-def _get_file(filepath: str) -> SeqFile:
+def _get_file(filepath: str, contig_rename_id=None) -> SeqFile:
     # pylint: disable=consider-using-with
     file = open(filepath, 'rb')
     filename = os.path.basename(file.name)
+    if contig_rename_id is not None:
+        logger.info(f"Renaming contigs in {filename} to include Seq_ID {contig_rename_id}")
+        file = _rename_fasta_asm_contigs(file, contig_rename_id)
     return SeqFile(
         multipart=('files[]', (filename, file)),
         sha256=hashlib.sha256(file.read()).hexdigest(),
         filename=filename,
     )
+
+def _rename_fasta_asm_contigs(file: BufferedReader, seq_id: str) -> BufferedReader:
+    buffer = BytesIO()
+    for line in file:
+        linestr = line.decode('utf-8')
+        if linestr.startswith('>') and not linestr.startswith(f'>{seq_id}.'):
+            linestr = f'>{seq_id}.{linestr[1:]}'
+        buffer.write(linestr.encode('utf-8'))
+        # else:
+        #     buffer.write(line)
+    buffer.seek(0)
+    file.close()
+    return buffer
+

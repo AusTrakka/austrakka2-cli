@@ -95,7 +95,6 @@ def seq_add_fasta_cns(
     # and there is no CSV
     add_fasta_cns_submission(fasta_file, skip, force)
 
-# TODO contigs need to be renamed, possibly server-side
 @add.command(SeqType.FASTA_ASM.value)
 @click.argument('csv_file', type=click.File('rb'))
 @opt_skip_mutex_force(
