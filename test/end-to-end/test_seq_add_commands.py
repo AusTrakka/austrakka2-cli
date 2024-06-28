@@ -33,7 +33,7 @@ class TestSeqAddCommands:
         _create_org(self.runner, org_name)
         _create_group(self.runner, shared_group)
 
-        temp_file_path = _upload_min_metadata(
+        _upload_min_metadata(
             self.runner,
             proforma_name,
             [seq_id],
@@ -41,7 +41,7 @@ class TestSeqAddCommands:
             [shared_group])
 
         # Act
-        tmp_fasta_csv_file_path = _upload_fasta_asm_file(self.runner, 'test/test-assets/sequences/XYZ004.fasta', seq_id)
+        _upload_fasta_asm_file(self.runner, 'test/test-assets/sequences/XYZ004.fasta', seq_id)
 
         # Assert
         result = _get_seq_by_group(self.runner, shared_group)
