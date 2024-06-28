@@ -6,7 +6,7 @@ from test_cmd_bricks import (
     _create_min_proforma,
     _create_org,
     _create_group,
-    _get_seq_by_group,
+    _list_seq_by_group,
     _upload_fasta_asm_file, _upload_min_metadata)
 
 from test_utils import (
@@ -44,5 +44,5 @@ class TestSeqAddCommands:
         _upload_fasta_asm_file(self.runner, 'test/test-assets/sequences/XYZ004.fasta', seq_id)
 
         # Assert
-        result = _get_seq_by_group(self.runner, shared_group)
+        result = _list_seq_by_group(self.runner, shared_group)
         assert len(result) == 1, f'Failed to add fasta asm file to sequence: {result}'

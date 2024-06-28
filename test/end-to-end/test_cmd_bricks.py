@@ -146,7 +146,7 @@ def _create_org(runner: CliRunner, name: str):
     assert result.exit_code == 0, f'Failed to create org {name} as part of test setup: {result.output}'
 
 
-def _get_seq_by_group(runner: CliRunner, group: str):
+def _list_seq_by_group(runner: CliRunner, group: str):
     result = _invoke(runner, [
         'seq',
         'list',
