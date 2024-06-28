@@ -11,6 +11,10 @@ from .sync_io import save_json, read_from_csv, get_path, save_to_csv
 
 from .constant import SEQ_ID_KEY
 from .constant import SYNC_STATE_FILE
+from .constant import MANIFEST_FILE_NAME
+from .constant import INTERMEDIATE_MANIFEST_FILE
+from .constant import OBSOLETE_OBJECTS_FILE
+from .constant import FASTA_AGGREGATE_FILE_NAME
 from .constant import OUTPUT_DIR_KEY
 from .constant import CURRENT_STATE_KEY
 from .constant import GROUP_NAME_KEY
@@ -25,6 +29,7 @@ from .constant import OLD_SYNC_STATE_FILE
 from .constant import OLD_INTERMEDIATE_MANIFEST_FILE
 from .constant import OLD_MANIFEST_FILE
 from .constant import OLD_OBJS_FILE
+from .constant import OLD_FASTA_AGGREGATE_FILE_NAME
 from .constant import MIGRATE_SEQ_TYPES
 
 
@@ -115,10 +120,10 @@ def seq_sync_migrate(output_dir: str):
     # Update state
     sync_state[SEQ_TYPE_KEY] = seq_type
     sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE.replace('SEQTYPE', seq_type)
-    sync_state[MANIFEST_KEY] = MANIFEST_KEY.replace('SEQTYPE', seq_type)
+    sync_state[MANIFEST_KEY] = MANIFEST_FILE_NAME.replace('SEQTYPE', seq_type)
     sync_state[INTERMEDIATE_MANIFEST_FILE_KEY] = \
-        INTERMEDIATE_MANIFEST_FILE_KEY.replace('SEQTYPE', seq_type)
-    sync_state[OBSOLETE_OBJECTS_FILE_KEY] = OBSOLETE_OBJECTS_FILE_KEY.replace('SEQTYPE', seq_type)
+        INTERMEDIATE_MANIFEST_FILE.replace('SEQTYPE', seq_type)
+    sync_state[OBSOLETE_OBJECTS_FILE_KEY] = OBSOLETE_OBJECTS_FILE.replace('SEQTYPE', seq_type)
 
     # Proceed only if in the correct state and intermediate files do not exist
     if sync_state[CURRENT_STATE_KEY] != SName.UP_TO_DATE:
@@ -138,15 +143,16 @@ def seq_sync_migrate(output_dir: str):
         new_dir = os.path.join(output_dir, sample, seq_type)
         create_dir(new_dir)
         if old_seq_type == 'fastq':
-            r1 = row['FASTQ_R1']
-            r2 = row['FASTQ_R2']
-            print(current_dir, new_dir, r1, r2)
-            os.rename(os.path.join(current_dir, r1), os.path.join(new_dir, r1))
-            os.rename(os.path.join(current_dir, r2), os.path.join(new_dir, r2))
+            read1 = row['FASTQ_R1']
+            read2 = row['FASTQ_R2']
+            os.rename(os.path.join(current_dir, read1), os.path.join(new_dir, read1))
+            os.rename(os.path.join(current_dir, read2), os.path.join(new_dir, read2))
         elif old_seq_type == 'fasta':
-            f = row['FASTA_R1']
-            os.rename(os.path.join(current_dir, f), os.path.join(new_dir, f))
+            file = row['FASTA_R1']
+            os.rename(os.path.join(current_dir, file), os.path.join(new_dir, file))
 
+    # Save updated sync state
+    save_json(sync_state, get_path(sync_state, SYNC_STATE_FILE_KEY))
     # Save new manifest file with updated column names
     if old_seq_type == 'fastq':
         assert list(manifest.columns) == [
@@ -157,7 +163,14 @@ def seq_sync_migrate(output_dir: str):
     manifest.columns=list_expected_headers(seq_type)
     m_path = get_path(sync_state, MANIFEST_KEY)
     save_to_csv(manifest, m_path)
-    # Delete old manifest file
+    # Delete old manifest file and sync state
+    os.remove(os.path.join(output_dir, OLD_SYNC_STATE_FILE))
     os.remove(os.path.join(output_dir, OLD_MANIFEST_FILE))
+    # Move consensus sequences
+    if old_seq_type == 'fasta':
+        os.rename(
+            os.path.join(output_dir, OLD_FASTA_AGGREGATE_FILE_NAME),
+            os.path.join(output_dir, FASTA_AGGREGATE_FILE_NAME)
+        )
     logger.success("Migration complete")
     
