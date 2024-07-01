@@ -236,4 +236,3 @@ def api_delete(
         params=params,
         headers=dict(client.headers) | custom_headers
     )
-
