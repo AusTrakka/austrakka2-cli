@@ -225,10 +225,10 @@ def analyse(sync_state: dict):
 
 def build_hash_dict(published_manifest):
     hash_dict = {}
-    hash_keys = [c for c in published_manifest.columns if c.startswith('HASH-')]
+    hash_keys = [c for c in published_manifest.columns if c.startswith('HASH_')]
     for _, row in published_manifest.iterrows():
         for hash_key in hash_keys:
-            filename_key = hash_key[len('HASH-'):]
+            filename_key = hash_key[len('HASH_'):]
             hash_dict[row[filename_key]] = row[hash_key]
     return hash_dict
 
@@ -378,12 +378,14 @@ def finalise_each_file(int_med, sync_state):
         dest = os.path.join(
             output_dir,
             row[SAMPLE_NAME_KEY],
+            row[TYPE_KEY],
             row[FILE_NAME_ON_DISK_KEY])
 
         if row[STATUS_KEY] == DRIFTED:
             src = os.path.join(
                 output_dir,
                 row[SAMPLE_NAME_KEY],
+                row[TYPE_KEY],
                 row[HOT_SWAP_NAME_KEY])
 
             logger.warning(f'Hot swapping: {dest}')

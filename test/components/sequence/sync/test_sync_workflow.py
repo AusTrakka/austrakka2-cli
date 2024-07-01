@@ -11,7 +11,12 @@ from austrakka.components.sequence.sync.sync_workflow import purge
 from austrakka.components.sequence.sync.state_machine import SName
 from austrakka.components.sequence.sync.state_machine import Action
 from austrakka.components.sequence.sync.constant import *
+from austrakka.utils.enums.seq import SeqType
 
+# Test constants
+# These keys apply to fastq-ill-pe data
+FASTQ_R1_KEY = 'FASTQ-ILL-PE_R1'
+FASTQ_R2_KEY = 'FASTQ-ILL-PE_R2'
 
 class TestSyncWorkflow:
 
@@ -20,10 +25,10 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse1-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse1-int-manifest-clone.csv",
-            MANIFEST_KEY: "manifest.csv",
+            MANIFEST_KEY: "manifest-fastq-ill-se.csv",
             RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
-            SEQ_TYPE_KEY: FASTQ
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -52,10 +57,10 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse2-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse2-int-manifest-clone.csv",
-            MANIFEST_KEY: "manifest.csv",
+            MANIFEST_KEY: "manifest-fastq-ill-se.csv",
             RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
-            SEQ_TYPE_KEY: FASTQ
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -84,10 +89,10 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse3-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse3-int-manifest-clone.csv",
-            MANIFEST_KEY: "manifest.csv",
+            MANIFEST_KEY: "manifest-fastq-ill-se.csv",
             RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
-            SEQ_TYPE_KEY: FASTQ
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -116,10 +121,10 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse5-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse5-int-manifest-clone.csv",
-            MANIFEST_KEY: "manifest.csv",
+            MANIFEST_KEY: "manifest-fastq-ill-se.csv",
             RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
-            SEQ_TYPE_KEY: FASTQ
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -148,10 +153,10 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse6-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse6-int-manifest-clone.csv",
-            MANIFEST_KEY: "manifest.csv",
+            MANIFEST_KEY: "manifest-fastq-ill-se.csv",
             RECALCULATE_HASH_KEY: True,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse6",
-            SEQ_TYPE_KEY: FASTQ
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -185,10 +190,10 @@ class TestSyncWorkflow:
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse7-int-manifest-clone.csv",
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse7",
             CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
-            MANIFEST_KEY: "manifest.csv",
+            MANIFEST_KEY: "manifest-fastq-ill-se.csv",
             RECALCULATE_HASH_KEY: True,
             CURRENT_ACTION_KEY: Action.analyse,
-            SEQ_TYPE_KEY: FASTQ
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -222,10 +227,10 @@ class TestSyncWorkflow:
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse8-int-manifest-clone.csv",
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse8",
             CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
-            MANIFEST_KEY: "manifest.csv",
+            MANIFEST_KEY: "manifest-fastq-ill-se.csv",
             RECALCULATE_HASH_KEY: True,
             CURRENT_ACTION_KEY: Action.analyse,
-            SEQ_TYPE_KEY: FASTQ
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -261,9 +266,9 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse9",
             CURRENT_STATE_KEY: SName.FINALISATION_FAILED,
             CURRENT_ACTION_KEY: Action.analyse,
-            MANIFEST_KEY: "manifest.csv",
+            MANIFEST_KEY: "manifest-fastq-ill-se.csv",
             RECALCULATE_HASH_KEY: True,
-            SEQ_TYPE_KEY: FASTQ
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -295,7 +300,7 @@ class TestSyncWorkflow:
             MANIFEST_KEY: "test-analyse10-manifest-clone.csv",
             RECALCULATE_HASH_KEY: False,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/analyse10",
-            SEQ_TYPE_KEY: FASTQ
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_PE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -330,10 +335,10 @@ class TestSyncWorkflow:
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-analyse11-sync-state.json",
             INTERMEDIATE_MANIFEST_FILE_KEY: "test-analyse11-int-manifest-clone.csv",
-            MANIFEST_KEY: "manifest.csv",
+            MANIFEST_KEY: "manifest-fastq-ill-se.csv",
             RECALCULATE_HASH_KEY: False,
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
-            SEQ_TYPE_KEY: FASTQ
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -394,6 +399,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
             OBSOLETE_OBJECTS_FILE_KEY: "test-finalise2-delete-targets.csv",
             MANIFEST_KEY: "test-finalise2-manifest.csv",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -425,6 +431,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/test-assets",
             OBSOLETE_OBJECTS_FILE_KEY: "test-finalise3-delete-targets.csv",
             MANIFEST_KEY: "test-finalise3-manifest.csv",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -456,6 +463,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/finalise4",
             OBSOLETE_OBJECTS_FILE_KEY: "test-finalise4-delete-targets.csv",
             MANIFEST_KEY: "test-finalise4-manifest.csv",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -478,21 +486,16 @@ class TestSyncWorkflow:
 
         path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
         df = pd.read_csv(path)
+        # Only files in fastq-ill-se subdirectories should be added to the delete target
         r = df.loc[
-            (df[FILE_NAME_KEY] == "Sample60_20230614T00453848_a34d8705_R1.fastq") |
-            (df[FILE_NAME_KEY] == "Sample70_20230614T00453848_a34d8705_R1.fastq.gz") |
-            (df[FILE_NAME_KEY] == "Sample80_20230614T00453848_a34d8705_R1.fasta") |
-            (df[FILE_NAME_KEY] == "Sample90_20230614T00453848_a34d8705_R1.fasta.gz") |
-            (df[FILE_NAME_KEY] == "Sample100_20230614T00453848_a34d8705_R1.fq.gz")
+            (df[FILE_NAME_KEY] == "Sample60_20230614T00453848_a34d8705.fastq") |
+            (df[FILE_NAME_KEY] == "Sample70_20230614T00453848_a34d8705.fastq.gz")
             ]
-        assert len(r.index) == 5
-
-        print(df)
-        print(time_stamp_str)
+        assert len(r.index) == 2
 
         # Note! This is a string order comparision and not date time.
         d = df.loc[(df[DETECTION_DATE_KEY] > time_stamp_str)]
-        assert len(d.index) == 5
+        assert len(d.index) == 2
 
         # Clean up
         clean_up_path(clone)
@@ -508,6 +511,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/finalise5",
             OBSOLETE_OBJECTS_FILE_KEY: "test-finalise5-delete-targets.csv",
             MANIFEST_KEY: "test-finalise5-manifest.csv",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_PE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -555,6 +559,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/finalise6",
             OBSOLETE_OBJECTS_FILE_KEY: "test-finalise6-delete-targets.csv",
             MANIFEST_KEY: "test-finalise6-manifest.csv",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_PE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -602,6 +607,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/finalise7",
             OBSOLETE_OBJECTS_FILE_KEY: "test-finalise7-delete-targets.csv",
             MANIFEST_KEY: "test-finalise7-manifest.csv",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_PE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -613,15 +619,15 @@ class TestSyncWorkflow:
         # make a clone of original inputs so that when the files are moved by _finalise()
         # this test can still be re-run.
         a = os.path.join(sync_state[OUTPUT_DIR_KEY],
-                         "Sample5/Sample5_20230614T00453848_a34d8705_R1.fastq.fresh.original")
+                         "Sample5/fastq-ill-pe/Sample5_20230614T00453848_a34d8705_R1.fastq.fresh.original")
         b = os.path.join(sync_state[OUTPUT_DIR_KEY],
-                         "Sample5/Sample5_20230614T00453848_a34d8705_R1.fastq.fresh")
+                         "Sample5/fastq-ill-pe/Sample5_20230614T00453848_a34d8705_R1.fastq.fresh")
         shutil.copy(a, b)
 
         c = os.path.join(sync_state[OUTPUT_DIR_KEY],
-                         "Sample5/Sample5_20230614T00453848_a34d8705_R1.fastq.original")
+                         "Sample5/fastq-ill-pe/Sample5_20230614T00453848_a34d8705_R1.fastq.original")
         d = os.path.join(sync_state[OUTPUT_DIR_KEY],
-                         "Sample5/Sample5_20230614T00453848_a34d8705_R1.fastq")
+                         "Sample5/fastq-ill-pe/Sample5_20230614T00453848_a34d8705_R1.fastq")
         shutil.copy(c, d)
 
         # Check that the test data start out clean
@@ -675,6 +681,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/finalise8",
             OBSOLETE_OBJECTS_FILE_KEY: "test-finalise8-delete-targets.csv",
             MANIFEST_KEY: "test-finalise8-manifest.csv",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -695,7 +702,7 @@ class TestSyncWorkflow:
         # confirm the initial state of test-finalise8-delete-targets.csv
         dt = pd.read_csv(b)
         assert dt.at[0, FILE_PATH_KEY] == 'test/components/sequence/sync/finalise8/' \
-                                          'Sample5/Sample5_20230614T00453848_a34d8705_R1.fastq'
+                                          'Sample5/Sample5_20230614T00453848_a34d8705.fastq'
 
         # Act
         finalise(sync_state)
@@ -724,6 +731,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/finalise9",
             OBSOLETE_OBJECTS_FILE_KEY: "test-finalise9-delete-targets.csv",
             MANIFEST_KEY: "test-finalise9-manifest.csv",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -774,6 +782,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/finalise10",
             OBSOLETE_OBJECTS_FILE_KEY: "test-finalise10-delete-targets.csv",
             MANIFEST_KEY: "test-finalise10-manifest.csv",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -799,7 +808,7 @@ class TestSyncWorkflow:
         # Sample60 is the extra
         path = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
         df = pd.read_csv(path)
-        r = df.loc[(df[FILE_NAME_KEY] == "Sample60_20230614T00453848_a34d8705_R1.fastq")]
+        r = df.loc[(df[FILE_NAME_KEY] == "Sample60_20230614T00453848_a34d8705.fastq")]
         assert len(r.index) == 1
         assert len(df.index) == 1
 
@@ -818,6 +827,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/finalise11",
             OBSOLETE_OBJECTS_FILE_KEY: "test-finalise11-delete-targets.csv",
             MANIFEST_KEY: "test-finalise11-manifest.csv",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value,
         }
 
         # make a clone of the original test manifest because the test subject will
@@ -865,6 +875,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/purge1",
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge1-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value,
         }
 
         make_output_dir(sync_state)
@@ -883,7 +894,7 @@ class TestSyncWorkflow:
         d = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
         shutil.copy(c, d)
 
-        dest_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], "Sample60")
+        dest_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], "Sample60", "fastq-ont")
         os.makedirs(dest_dir, exist_ok=True)
         obsolete_fastq1 = "test/components/sequence/sync/test-assets/a.fastq"
         obsolete_fastq2 = "test/components/sequence/sync/test-assets/b.fq.gz"
@@ -912,6 +923,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/purge2",
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge2-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value,
         }
 
         make_output_dir(sync_state)
@@ -930,7 +942,7 @@ class TestSyncWorkflow:
         d = os.path.join(sync_state[OUTPUT_DIR_KEY], sync_state[OBSOLETE_OBJECTS_FILE_KEY])
         shutil.copy(c, d)
 
-        dest_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], "Sample60")
+        dest_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], "Sample60", "fastq-ill-se")
         os.makedirs(dest_dir, exist_ok=True)
         obsolete_fastq = "test/components/sequence/sync/test-assets/a.fastq"
         shutil.copy(obsolete_fastq, dest_dir)
@@ -946,7 +958,7 @@ class TestSyncWorkflow:
         # It's fine for this test.
         clean_up_dir(sync_state[OUTPUT_DIR_KEY])
 
-    def test_purge22_given_empty_sub_dir_unrelated_to_file_purge_expect_dir_not_deleted(self):
+    def test_purge2_2_given_empty_sub_dir_unrelated_to_file_purge_expect_dir_not_deleted(self):
         # Arrange
         sync_state = {
             SYNC_STATE_FILE_KEY: "test-purge2-sync-state.json",
@@ -954,6 +966,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/purge2",
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge2-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value,
         }
 
         make_output_dir(sync_state)
@@ -973,7 +986,7 @@ class TestSyncWorkflow:
         shutil.copy(c, d)
 
         # Place an obsolete file which should be deleted by purge() directory and all
-        dest_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], "Sample60")
+        dest_dir = os.path.join(sync_state[OUTPUT_DIR_KEY], "Sample60", "fastq-ill-se")
         os.makedirs(dest_dir, exist_ok=True)
         obsolete_fastq = "test/components/sequence/sync/test-assets/a.fastq"
         shutil.copy(obsolete_fastq, dest_dir)
@@ -1004,6 +1017,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/purge3",
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge3-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         make_output_dir(sync_state)
@@ -1044,6 +1058,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/purge4",
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge4-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         make_output_dir(sync_state)
@@ -1088,6 +1103,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/purge5",
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge5-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         make_output_dir(sync_state)
@@ -1125,6 +1141,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/purge6",
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge6-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value
         }
 
         make_output_dir(sync_state)
@@ -1171,6 +1188,7 @@ def get_file_path(df, sync_state, key):
     return os.path.join(
         sync_state[OUTPUT_DIR_KEY],
         df.at[0, SAMPLE_NAME_KEY],
+        sync_state[SEQ_TYPE_KEY],
         df.at[0, key]
     )
 
