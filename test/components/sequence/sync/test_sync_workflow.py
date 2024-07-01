@@ -966,7 +966,7 @@ class TestSyncWorkflow:
             OUTPUT_DIR_KEY: "test/components/sequence/sync/purge2",
             OBSOLETE_OBJECTS_FILE_KEY: "test-purge2-delete-targets.csv",
             TRASH_DIR_KEY: ".trash",
-            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value,s
+            SEQ_TYPE_KEY: SeqType.FASTQ_ILL_SE.value,
         }
 
         make_output_dir(sync_state)
