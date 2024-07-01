@@ -5,7 +5,7 @@ from austrakka.utils.options import opt_output_dir, opt_group_name
 from austrakka.utils.options import opt_recalc_hash
 from austrakka.utils.options import opt_seq_type
 from austrakka.utils.options import opt_batch_size
-from .funcs import seq_get
+from .funcs import seq_sync_get, seq_sync_migrate
 
 
 @click.group()
@@ -14,6 +14,13 @@ def sync(ctx):
     """Commands to sync sequences from server to disk"""
     ctx.context = ctx.parent.context
 
+@sync.command('migrate')
+@opt_output_dir()
+def sync_migrate(output_dir: str):
+    """
+    Migrate sequence files from the old sync system to the new one.
+    """
+    seq_sync_migrate(output_dir)
 
 @sync.command('get')
 @opt_output_dir()
@@ -43,7 +50,7 @@ def get_seq(
     files that have drifted, and soft-purge local files which are
     no longer shared with the group.
     """
-    seq_get(
+    seq_sync_get(
         output_dir,
         group_name,
         recalculate_hashes,
