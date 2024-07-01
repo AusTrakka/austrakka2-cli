@@ -1,8 +1,8 @@
 import json
 
 from click.testing import CliRunner
-from test_utils import _save_to_test_dir, _create_fasta_csv, _invoke
-from test_constants import seq_id_field_name, owner_group_field_name, shared_groups_field_name
+from ete_utils import _save_to_test_dir, _create_fasta_csv, _invoke
+from ete_constants import seq_id_field_name, owner_group_field_name, shared_groups_field_name
 
 
 def _upload_fasta_asm_file(

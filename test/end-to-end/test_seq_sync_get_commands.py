@@ -1,5 +1,4 @@
 from click.testing import CliRunner
-from test_utils import _new_identifier
 
 
 class TestSeqSyncGetCommands:
