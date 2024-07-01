@@ -36,7 +36,7 @@ def initialise(
     set_state_pulling_manifest(sync_state)
     sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE.replace('SEQTYPE', seq_type)
     sync_state[MANIFEST_KEY] = MANIFEST_FILE_NAME.replace('SEQTYPE', seq_type)
-    sync_state[OBSOLETE_OBJECTS_FILE_KEY] = OBSOLETE_OBJECTS_FILE
+    sync_state[OBSOLETE_OBJECTS_FILE_KEY] = OBSOLETE_OBJECTS_FILE.replace('SEQTYPE', seq_type)
     sync_state[INTERMEDIATE_MANIFEST_FILE_KEY] = \
         INTERMEDIATE_MANIFEST_FILE.replace('SEQTYPE', seq_type)
     sync_state[SEQ_TYPE_KEY] = seq_type
