@@ -11,14 +11,23 @@ from ete_cmd_bricks import (
     _create_group,
     _upload_fasta_asm_file,
     _upload_min_metadata,
-    _seq_sync_get, _upload_fasta_cns_file, _sample_unshare)
+    _seq_sync_get,
+    _upload_fasta_cns_file,
+    _sample_unshare,
+    _upload_fastq_ill_pe_file,
+    _upload_fastq_ill_se_file)
 
 from ete_utils import (
     _new_identifier,
     seq_id_field_name,
     owner_group_field_name,
-    shared_groups_field_name, _mk_temp_dir, _clone_cns_fasta_file, _read_sync_state, _calc_hash,
-    _undo_fasta_asm_transform)
+    shared_groups_field_name,
+    _mk_temp_dir,
+    _clone_cns_fasta_file,
+    _read_sync_state,
+    _calc_hash,
+    _undo_fasta_asm_transform,
+    _textwrap)
 
 
 class TestSeqSyncGetCommands:
@@ -183,10 +192,13 @@ class TestSeqSyncGetCommands:
         self.assert_manifest_file_exists(fasta_cns_type, temp_dir)
         seq_dir = f'{temp_dir}/{seq_id}'
         cns_dir = f'{temp_dir}/{seq_id}/{fasta_cns_type}'
-        assert os.path.exists(seq_dir) is True, f'The output directory should contain a sub directory for the sequence: {seq_dir}'
+        assert os.path.exists(seq_dir) is True, (f'The output directory should contain a sub directory '
+                                                 f'for the sequence: {seq_dir}')
+
         assert os.path.exists(cns_dir) is False, f'The sequence directory should have no fasta-cns subdir: {cns_dir}'
         assert os.path.exists(f'{temp_dir}/.trash/{seq_id}/{fasta_cns_type}') is True, \
-            f'The output directory should contain a trash directory for the sequence: {temp_dir}/.trash/{seq_id}/{fasta_cns_type}'
+            (f'The output directory should contain a trash directory for the sequence: '
+             f'{temp_dir}/.trash/{seq_id}/{fasta_cns_type}')
 
         trash_content = os.listdir(f'{temp_dir}/.trash/{seq_id}/{fasta_cns_type}')
         seq_file = trash_content[0]
@@ -198,7 +210,10 @@ class TestSeqSyncGetCommands:
         self.assert_manifest_file_exists(fasta_asm_type, temp_dir)
         self.assert_has_seq_dirs(f'{temp_dir}/{seq_id}/{fasta_asm_type}', 1)
 
-    def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original_with_transform__no_desc(self):
+    @pytest.mark.parametrize("original_file", [
+        'test/test-assets/sequences/asm/XYZ-asm-004.fasta',
+        'test/test-assets/sequences/asm/XYZ-asm-004-desc.fasta'])
+    def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original_with_transform(self, original_file):
         # Arrange
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
@@ -220,7 +235,7 @@ class TestSeqSyncGetCommands:
             owner_group,
             [shared_group])
 
-        _upload_fasta_asm_file(self.runner, 'test/test-assets/sequences/asm/XYZ-asm-004.fasta', seq_id)
+        _upload_fasta_asm_file(self.runner, original_file, seq_id)
 
         # Act
         temp_dir = _mk_temp_dir()
@@ -229,29 +244,164 @@ class TestSeqSyncGetCommands:
 
         # Assert
         # Undo transform to the downloaded file. It should have the same hash as the original
-        original_hash = _calc_hash('test/test-assets/sequences/asm/XYZ-asm-004.fasta')
+        original_hash = _calc_hash(original_file)
         clone_path = f'{temp_dir}/XYZ-asm-004-clone-from-assets.fasta'
-        shutil.copyfile('test/test-assets/sequences/asm/XYZ-asm-004.fasta', clone_path)
+        shutil.copyfile(original_file, clone_path)
 
         _undo_fasta_asm_transform(clone_path, seq_id)
 
         clone_hash = _calc_hash(clone_path)
         assert original_hash == clone_hash, \
-            f'The hash of the undone transformed downloaded file should match the original: {original_hash} != {clone_hash}'
+            (f'The hash of the undone transformed downloaded file should match the original: '
+             f'{original_hash} != {clone_hash}')
 
-    def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original_with_transform__with_desc(self):
-        raise NotImplementedError
-
-    @pytest.mark.skip(reason="Not implemented")
     def test_sync_get__given_group_has_fastq_ill_pe_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original(self):
-        raise NotImplementedError
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
 
-    @pytest.mark.skip(reason="Not implemented")
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file1 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r1.fastq'
+        original_file2 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r2.fastq'
+        _upload_fastq_ill_pe_file(self.runner, seq_id, original_file1, original_file2)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-pe'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        # Undo transform to the downloaded file. It should have the same hash as the original
+        original_hash1 = _calc_hash(original_file1)
+        original_hash2 = _calc_hash(original_file2)
+
+        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
+        downloaded_r1 = [f for f in dir_contents if '_R1' in f and f.endswith('.fastq')][0]
+        downloaded_r2 = [f for f in dir_contents if '_R2' in f and f.endswith('.fastq')][0]
+
+        downloaded_r1_hash = _calc_hash(f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_r1}')
+        downloaded_r2_hash = _calc_hash(f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_r2}')
+
+        assert original_hash1 == downloaded_r1_hash, \
+            (f'The hash of the downloaded r1 file should match the original: '
+             f'{original_hash1} != {downloaded_r1_hash}')
+
+        assert original_hash2 == downloaded_r2_hash, \
+            (f'The hash of the downloaded r2 file should match the original: '
+             f'{original_hash2} != {downloaded_r2_hash}')
+
     def test_sync_get__given_group_has_fastq_ill_se_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original(self):
-        raise NotImplementedError
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
 
-    @pytest.mark.skip(reason="Not implemented")
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
+        _upload_fastq_ill_se_file(self.runner, seq_id, original_file)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-se'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        # Undo transform to the downloaded file. It should have the same hash as the original
+        original_hash = _calc_hash(original_file)
+        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
+        downloaded_file = [f for f in dir_contents if f.endswith('.fastq')][0]
+        downloaded_file_hash = _calc_hash(f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}')
+
+        assert original_hash == downloaded_file_hash, \
+            (f'The hash of the downloaded ill-se file should match the original: '
+             f'{original_hash} != {downloaded_file_hash}')
+
     def test_sync_get__given_group_has_fasta_cns_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        cns_fasta_path = _clone_cns_fasta_file(
+            'test/test-assets/sequences/cns/ABC-cns-001.fasta',
+            'SEQ_ABC-cns-001',
+            seq_id)
+
+        print(cns_fasta_path)
+
+        _upload_fasta_cns_file(self.runner, cns_fasta_path)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        print(f'Temp dir: {temp_dir}')
+        seq_type = 'fasta-cns'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        # Undo transform to the downloaded file. It should have the same hash as the original
+        wrap_adjusted_file_path = f'{cns_fasta_path}-adjusted.bak'
+        print(wrap_adjusted_file_path)
+        _textwrap(60, cns_fasta_path, wrap_adjusted_file_path)
+
+        original_hash = _calc_hash(wrap_adjusted_file_path)
+        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
+        downloaded_file = [f for f in dir_contents if f.endswith('.fasta')][0]
+        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        print(downloaded_file_path)
+        downloaded_file_hash = _calc_hash(downloaded_file_path)
+
+        assert original_hash == downloaded_file_hash, \
+            (f'The hash of the downloaded cns file should match the original: '
+             f'{original_hash} != {downloaded_file_hash}')
+
+    def test_sync_get__given_group_has_fasta_cns_sequences_that_contains_description_and_download_was_successful__expect_description_in_downloaded_file(self):
         raise NotImplementedError
 
     @pytest.mark.skip(reason="Not implemented")

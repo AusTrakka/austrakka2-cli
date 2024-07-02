@@ -2,7 +2,7 @@ import json
 import tempfile
 
 from click.testing import CliRunner
-from ete_utils import _save_to_test_dir, _create_fasta_csv, _invoke, _new_identifier
+from ete_utils import _save_to_test_dir, _create_single_seq_csv, _invoke, _new_identifier, _create_paired_seq_csv
 from ete_constants import seq_id_field_name, owner_group_field_name, shared_groups_field_name
 
 
@@ -37,6 +37,65 @@ def _seq_sync_get(
         assert result.exit_code == 0, f'Failed to sync get for group {group} as part of test setup: {result.output}'
 
 
+def _upload_fastq_ill_se_file(
+        runner: CliRunner,
+        seq_id: str,
+        fastq_file_path: str,
+        skip: bool = False,
+        force: bool = False) -> str:
+
+    temp_csv_file_path = _create_single_seq_csv(seq_id, fastq_file_path)
+
+    args = [
+        'seq',
+        'add',
+        'fastq-ill-se',
+        temp_csv_file_path
+    ]
+
+    if skip:
+        args.append('--skip')
+
+    if force:
+        args.append('--force')
+
+    result = _invoke(runner, args)
+    assert result.exit_code == 0, (f'Failed to upload fastq ill se file {fastq_file_path}, '
+                                   f'with generated csv: {temp_csv_file_path}  as part of '
+                                   f'test setup: {result.output}')
+    return temp_csv_file_path
+
+
+def _upload_fastq_ill_pe_file(
+        runner: CliRunner,
+        seq_id: str,
+        fastq_file_path1: str,
+        fastq_file_path2: str,
+        skip: bool = False,
+        force: bool = False) -> str:
+
+    temp_csv_file_path = _create_paired_seq_csv(seq_id, fastq_file_path1, fastq_file_path2)
+
+    args = [
+        'seq',
+        'add',
+        'fastq-ill-pe',
+        temp_csv_file_path
+    ]
+
+    if skip:
+        args.append('--skip')
+
+    if force:
+        args.append('--force')
+
+    result = _invoke(runner, args)
+    assert result.exit_code == 0, (f'Failed to upload fastq ill pe file {fastq_file_path1} & '
+                                   f'{fastq_file_path2}, with generated csv: {temp_csv_file_path} '
+                                   f'as part of test setup: {result.output}')
+    return temp_csv_file_path
+
+
 def _upload_fasta_asm_file(
         runner: CliRunner,
         fasta_file_path:
@@ -44,7 +103,7 @@ def _upload_fasta_asm_file(
         skip: bool = False,
         force: bool = False) -> str:
 
-    temp_csv_file_path = _create_fasta_csv(seq_id, fasta_file_path)
+    temp_csv_file_path = _create_single_seq_csv(seq_id, fasta_file_path)
 
     args = [
         'seq',

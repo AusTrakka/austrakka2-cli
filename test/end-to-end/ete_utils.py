@@ -4,6 +4,7 @@ import os
 import string
 import random
 import tempfile
+import textwrap
 
 from click.testing import CliRunner
 from austrakka.main import get_cli
@@ -68,6 +69,21 @@ def _save_to_test_dir(content: str) -> str:
     return tmp_file_path
 
 
+def _textwrap(width_limit: int, original_file_path: str, dest_file_path):
+    with open(original_file_path, 'r') as file:
+        lines = list()
+        while True:
+            line = file.readline()
+            if not line:
+                break
+            wrapped_line = textwrap.wrap(line, width_limit)
+            lines.extend(wrapped_line)
+
+        with open(dest_file_path, 'w') as dest_file:
+            for wrapped_line in lines:
+                dest_file.write(f'{wrapped_line}\n')
+
+
 def _undo_fasta_asm_transform(clone_path, seq_id):
     with open(clone_path, 'r+', encoding='UTF-8') as file:
         original_content = file.read()
@@ -86,9 +102,15 @@ def _read_sync_state(path: str) -> dict:
         return {}
 
 
-def _create_fasta_csv(seq_id: str, fasta_file_path: str) -> str:
+def _create_single_seq_csv(seq_id: str, fasta_file_path: str) -> str:
     csv = f'{seq_id_field_name},filepath\n'
     csv += f'{seq_id},{fasta_file_path}\n'
+    return _save_to_test_dir(csv)
+
+
+def _create_paired_seq_csv(seq_id: str, fastq_file_path1: str, fastq_file_path2: str) -> str:
+    csv = f'{seq_id_field_name},filepath1,filepath2\n'
+    csv += f'{seq_id},{fastq_file_path1},{fastq_file_path2}\n'
     return _save_to_test_dir(csv)
 
 
