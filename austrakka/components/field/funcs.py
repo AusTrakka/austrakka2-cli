@@ -134,3 +134,72 @@ def update_field(
         path=f"{METADATACOLUMN_PATH}/{field['metaDataColumnId']}",
         data=patch_fields
     )
+
+@logger_wraps()
+def list_field_groups(name: str, out_format: str):
+    """List groups that a metadata field belongs to"""
+    result = api_get(
+        path=f"{METADATACOLUMN_PATH}/{name}/groups"
+    )
+    if len(result['data']) == 0:
+        logger.info("Field does not belong to any groups.")
+        return
+    print_dataframe(
+        pd.DataFrame(result['data']),
+        out_format,
+    )
+
+@logger_wraps()
+def list_field_projects(name: str, out_format: str):
+    """List projects that a metadata field belongs to"""
+    result = api_get(
+        path=f"{METADATACOLUMN_PATH}/{name}/projectFields"
+    )
+    if len(result['data']) == 0:
+        logger.info("Field does not belong to any projects.")
+        return
+    DISPLAY_COLUMNS = ['projectFieldId', 'projectAbbrev', 'fieldName', 'analysisLabels']
+    print_dataframe(
+        pd.DataFrame(result['data'])[DISPLAY_COLUMNS],
+        out_format,
+    )
+
+@logger_wraps()
+def list_field_proformas(name: str, out_format: str):
+    """List proformas that a metadata field belongs to"""
+    result = api_get(
+        path=f"{METADATACOLUMN_PATH}/{name}/proformas"
+    )
+    if len(result['data']) == 0:
+        logger.info("Field does not belong to any active proformas.")
+        return
+    DISPLAY_COLUMNS = ['proFormaId', 'proFormaVersionId', 'abbreviation', 'name', 'description', 'isActive', 'isCurrent']
+    data = pd.DataFrame(result['data'])[DISPLAY_COLUMNS]
+    data['fieldIsRequired'] = [
+        [mapping['isRequired'] for mapping in row['columnMappings']
+            if mapping['metaDataColumnName']==name][0]
+        for row in result['data']
+    ]
+    
+    print_dataframe(
+        data,
+        out_format,
+    )
+
+@logger_wraps()
+def disable_field(name: str):
+    """
+    Disable a field (MetaDataColumn) within AusTrakka.
+    """
+    api_patch(
+        path=f"{METADATACOLUMN_PATH}/{name}/disable"
+    )
+
+@logger_wraps()
+def enable_field(name: str):
+    """
+    Enable a field (MetaDataColumn) within AusTrakka.
+    """
+    api_patch(
+        path=f"{METADATACOLUMN_PATH}/{name}/enable"
+    )
