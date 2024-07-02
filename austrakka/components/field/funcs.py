@@ -6,7 +6,7 @@ from austrakka.utils.helpers.fieldtype import get_fieldtype_by_name
 from austrakka.utils.helpers.fields import get_field_by_name
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
-from austrakka.utils.api import api_put
+from austrakka.utils.api import api_patch
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe
 from austrakka.utils.paths import METADATACOLUMN_PATH
@@ -98,43 +98,35 @@ def update_field(
     """
     field = get_field_by_name(name)
 
-    put_field = {k: field[k] for k in [
-        "columnName",
-        "canVisualise",
-        "columnOrder",
-        "isActive",
-        "metaDataColumnTypeId",
-        "description",
-        "nndssFieldLabel"
-    ]}
+    patch_fields = {}
 
     if new_name is not None:
         logger.warning(f"Updating field name from {name} to {new_name}")
-        put_field["columnName"] = new_name
+        patch_fields["columnName"] = new_name
 
     if typename is not None:
         fieldtype = get_fieldtype_by_name(typename)
-        put_field["metaDataColumnTypeId"] = fieldtype["metaDataColumnTypeId"]
+        patch_fields["metaDataColumnTypeId"] = fieldtype["metaDataColumnTypeId"]
 
     if can_visualise is not None:
         if can_visualise:
             if typename in ["date", "number", "string"]:
                 logger.warning(
-                    f"Setting colour-nodes flag on field {name} of type {typename}. "
+                    f"Setting viz flag on field {name} of type {typename}. "
                     f"This may work poorly as colour visualisations are configured for a "
                     f"small discrete set of values.")
-        put_field["canVisualise"] = can_visualise
+        patch_fields["canVisualise"] = can_visualise
 
     if column_order is not None:
-        put_field["columnOrder"] = column_order
+        patch_fields["columnOrder"] = column_order
 
     if description is not None:
-        put_field["description"] = description
+        patch_fields["description"] = description
 
     if nndss_label is not None:
-        put_field["nndssFieldLabel"] = nndss_label
+        patch_fields["nndssFieldLabel"] = nndss_label
 
-    api_put(
+    api_patch(
         path=f"{METADATACOLUMN_PATH}/{field['metaDataColumnId']}",
-        data=put_field
+        data=patch_fields
     )
