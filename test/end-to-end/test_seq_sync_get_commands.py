@@ -1,5 +1,4 @@
 import os
-import tempfile
 
 import pytest
 from click.testing import CliRunner
@@ -17,7 +16,7 @@ from ete_utils import (
     _new_identifier,
     seq_id_field_name,
     owner_group_field_name,
-    shared_groups_field_name, _mk_temp_dir, _clone_cns_fasta_file)
+    shared_groups_field_name, _mk_temp_dir, _clone_cns_fasta_file, _read_sync_state)
 
 
 class TestSeqSyncGetCommands:
@@ -31,12 +30,12 @@ class TestSeqSyncGetCommands:
     def test_sync_migrate__given_existing_fastq__expect_migration_to_fastq_ill_pe_with_correct_files_and_contents(self):
         raise NotImplementedError
 
-    def test_sync_get__given_group_has_no_sequences__expect_no_sequence_downloaded(self):
+    @pytest.mark.parametrize("seq_type", ['fasta-asm', 'fasta-cns', 'fastq-ill-pe', 'fastq-ill-se'])
+    def test_sync_get__given_group_has_no_sequences__expect_no_sequence_downloaded(self, seq_type):
         # Arrange
         shared_group = f'sg-{_new_identifier(10)}'
         _create_group(self.runner, shared_group)
         temp_dir = _mk_temp_dir()
-        seq_type = 'fasta-asm'
 
         # Act
         _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
@@ -45,6 +44,88 @@ class TestSeqSyncGetCommands:
         self.assert_state_file_exists(seq_type, temp_dir)
         self.assert_no_seq_dirs(temp_dir)
         self.assert_manifest_file_exists(seq_type, temp_dir)
+
+    @pytest.mark.parametrize("seq_type", ['fasta-asm', 'fasta-cns', 'fastq-ill-pe', 'fastq-ill-se'])
+    def test_sync_get__given_group_has_no_sequences__expect_current_state_is__up_to_date(self, seq_type):
+        # Arrange
+        shared_group = f'sg-{_new_identifier(10)}'
+        _create_group(self.runner, shared_group)
+        temp_dir = _mk_temp_dir()
+
+        # Act
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        self.assert_state_file_exists(seq_type, temp_dir)
+        state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
+        assert state_dict['current_state'] == 'UP_TO_DATE', \
+            f'The current state should be up_to_date: {state_dict}'
+
+    @pytest.mark.parametrize("seq_type", ['fasta-asm', 'fasta-cns', 'fastq-ill-pe', 'fastq-ill-se'])
+    def test_sync_get__given_group_has_no_sequences__expect_current_action_is__pulling_manifest(self, seq_type):
+        # Arrange
+        shared_group = f'sg-{_new_identifier(10)}'
+        _create_group(self.runner, shared_group)
+        temp_dir = _mk_temp_dir()
+
+        # Act
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        self.assert_state_file_exists(seq_type, temp_dir)
+        state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
+        assert state_dict['current_action'] == 'set-state/pulling-manifest', \
+            f'The current action should be set-state/pulling-manifest: {state_dict}'
+
+    @pytest.mark.parametrize("seq_type", ['fasta-asm', 'fasta-cns', 'fastq-ill-pe', 'fastq-ill-se'])
+    def test_sync_get__given_group_has_sequences__expect_correct_state_file_name_and_contents(self, seq_type):
+        # Arrange
+        shared_group = f'sg-{_new_identifier(10)}'
+        _create_group(self.runner, shared_group)
+        temp_dir = _mk_temp_dir()
+
+        # Act
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        self.assert_state_file_exists(seq_type, temp_dir)
+        state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
+
+        assert state_dict['current_state'] == 'UP_TO_DATE', \
+            f'The current state should be up_to_date: {state_dict}'
+
+        assert state_dict['current_action'] == 'set-state/pulling-manifest', \
+            f'The current action should be set-state/pulling-manifest: {state_dict}'
+
+        assert state_dict['sync_state_file'] == f'sync-state-{seq_type}.json', \
+            f'The sync state file should be sync-state-{seq_type}.json: {state_dict}'
+
+        assert state_dict['manifest'] == f'manifest-{seq_type}.csv', \
+            f'The manifest file should be manifest-{seq_type}.csv: {state_dict}'
+
+        assert state_dict['output_dir'] == temp_dir, \
+            f'The output directory should be {temp_dir}: {state_dict}'
+
+        assert state_dict['seq_type'] == seq_type, \
+            f'The sequence type should be {seq_type}: {state_dict}'
+
+        assert state_dict['group_name'] == shared_group, \
+            f'The group name should be {shared_group}: {state_dict}'
+
+        assert state_dict['recalculate_hash'] == False, \
+            f'The recalculate hash should be False: {state_dict}'
+
+        assert state_dict['trash_dir'] == '.trash', \
+            f'The trash directory should be .trash: {state_dict}'
+
+        assert state_dict['download_batch_size'] == 1, \
+            f'The download batch size should be 1: {state_dict}'
+
+        assert state_dict['obsolete_objects_file'] == f'delete-targets-{seq_type}.csv', \
+            f'The obsolete objects file should be delete-targets-{seq_type}.csv: {state_dict}'
+
+        assert state_dict['intermediate_manifest_file'] == f'intermediate-manifest-{seq_type}.csv', \
+            f'The intermediate manifest file should be intermediate-manifest-{seq_type}.csv: {state_dict}'
 
     def test_sync_get__given_group_has_removed_fasta_cns_sequences__expect_fasta_cns_moved_to_trash_and_other_sequences_unchanged(self):
         # Arrange
@@ -116,20 +197,6 @@ class TestSeqSyncGetCommands:
         self.assert_state_file_exists(fasta_asm_type, temp_dir)
         self.assert_manifest_file_exists(fasta_asm_type, temp_dir)
         self.assert_has_seq_dirs(f'{temp_dir}/{seq_id}/{fasta_asm_type}', 1)
-
-    # parametrize for each sequence type
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_get__given_group_has_no_sequences__expect_current_state_is__up_to_date(self):
-        raise NotImplementedError
-
-
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_get__given_group_has_no_sequences__expect_current_action_is__pulling_manifest(self):
-        raise NotImplementedError
-
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_get__given_group_has_sequences__expect_correct_state_file_name_and_contents(self):
-        raise NotImplementedError
 
     @pytest.mark.skip(reason="Not implemented")
     def test_sync_get__given_group_has_sequences_untransformed_during_upload_and_download_was_successful__expect_hashes_of_downloads_to_match_original(self):

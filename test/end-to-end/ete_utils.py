@@ -1,3 +1,4 @@
+import json
 import os
 import string
 import random
@@ -57,6 +58,14 @@ def _save_to_test_dir(content: str) -> str:
         file.write(content)
 
     return tmp_file_path
+
+
+def _read_sync_state(path: str) -> dict:
+    if os.path.exists(path):
+        with open(path, encoding='UTF-8') as file:
+            return json.load(file)
+    else:
+        return {}
 
 
 def _create_fasta_csv(seq_id: str, fasta_file_path: str) -> str:
