@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import pytest
 from click.testing import CliRunner
@@ -16,7 +17,8 @@ from ete_utils import (
     _new_identifier,
     seq_id_field_name,
     owner_group_field_name,
-    shared_groups_field_name, _mk_temp_dir, _clone_cns_fasta_file, _read_sync_state)
+    shared_groups_field_name, _mk_temp_dir, _clone_cns_fasta_file, _read_sync_state, _calc_hash,
+    _undo_fasta_asm_transform)
 
 
 class TestSeqSyncGetCommands:
@@ -153,7 +155,7 @@ class TestSeqSyncGetCommands:
         _upload_fasta_asm_file(self.runner, 'test/test-assets/sequences/asm/XYZ-asm-004.fasta', seq_id)
         temp_dir = _mk_temp_dir()
         fasta_asm_type = 'fasta-asm'
-        _seq_sync_get(self.runner, shared_group, temp_dir, fasta_asm_type, assert_success=True)
+        _seq_sync_get(self.runner, shared_group, temp_dir, fasta_asm_type)
         self.assert_state_file_exists(fasta_asm_type, temp_dir)
         self.assert_manifest_file_exists(fasta_asm_type, temp_dir)
         self.assert_has_seq_dirs(f'{temp_dir}/{seq_id}/{fasta_asm_type}', 1)
@@ -164,8 +166,6 @@ class TestSeqSyncGetCommands:
             'SEQ_ABC-cns-001',
             seq_id)
 
-        print(f'Uploading fasta cns file: {cns_fasta_path}')
-        print(f'shared_group: {shared_group}')
         _upload_fasta_cns_file(self.runner, cns_fasta_path)
         fasta_cns_type = 'fasta-cns'
         _seq_sync_get(self.runner, shared_group, temp_dir, fasta_cns_type)
@@ -198,8 +198,60 @@ class TestSeqSyncGetCommands:
         self.assert_manifest_file_exists(fasta_asm_type, temp_dir)
         self.assert_has_seq_dirs(f'{temp_dir}/{seq_id}/{fasta_asm_type}', 1)
 
+    def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original_with_transform__no_desc(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        _upload_fasta_asm_file(self.runner, 'test/test-assets/sequences/asm/XYZ-asm-004.fasta', seq_id)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        fasta_asm_type = 'fasta-asm'
+        _seq_sync_get(self.runner, shared_group, temp_dir, fasta_asm_type)
+
+        # Assert
+        # Undo transform to the downloaded file. It should have the same hash as the original
+        original_hash = _calc_hash('test/test-assets/sequences/asm/XYZ-asm-004.fasta')
+        clone_path = f'{temp_dir}/XYZ-asm-004-clone-from-assets.fasta'
+        shutil.copyfile('test/test-assets/sequences/asm/XYZ-asm-004.fasta', clone_path)
+
+        _undo_fasta_asm_transform(clone_path, seq_id)
+
+        clone_hash = _calc_hash(clone_path)
+        assert original_hash == clone_hash, \
+            f'The hash of the undone transformed downloaded file should match the original: {original_hash} != {clone_hash}'
+
+    def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original_with_transform__with_desc(self):
+        raise NotImplementedError
+
     @pytest.mark.skip(reason="Not implemented")
-    def test_sync_get__given_group_has_sequences_untransformed_during_upload_and_download_was_successful__expect_hashes_of_downloads_to_match_original(self):
+    def test_sync_get__given_group_has_fastq_ill_pe_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original(self):
+        raise NotImplementedError
+
+    @pytest.mark.skip(reason="Not implemented")
+    def test_sync_get__given_group_has_fastq_ill_se_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original(self):
+        raise NotImplementedError
+
+    @pytest.mark.skip(reason="Not implemented")
+    def test_sync_get__given_group_has_fasta_cns_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original(self):
         raise NotImplementedError
 
     @pytest.mark.skip(reason="Not implemented")

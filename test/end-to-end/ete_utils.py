@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 import string
@@ -43,6 +44,13 @@ def _mk_temp_dir() -> str:
     return full_output_dir
 
 
+def _calc_hash(path):
+    with open(path, 'rb') as file:
+        file_hash = hashlib.sha256(file.read()).hexdigest().lower()
+        file.close()
+    return file_hash
+
+
 def _save_to_test_dir(content: str) -> str:
     temp_dir = tempfile.gettempdir()
     # if temp_dir does not end with a slash, add one
@@ -58,6 +66,16 @@ def _save_to_test_dir(content: str) -> str:
         file.write(content)
 
     return tmp_file_path
+
+
+def _undo_fasta_asm_transform(clone_path, seq_id):
+    with open(clone_path, 'r+', encoding='UTF-8') as file:
+        original_content = file.read()
+        untransformed_content = original_content.replace(f'>{seq_id}.', '')
+        file.seek(0)
+        file.truncate()
+        file.write(untransformed_content)
+    file.close()
 
 
 def _read_sync_state(path: str) -> dict:
