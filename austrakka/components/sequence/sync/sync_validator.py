@@ -24,8 +24,8 @@ def ensure_valid_state(sync_state):
         sync_state,
         SEQ_TYPE_KEY,
         f'{SEQ_TYPE_KEY} is not found in state. '
-        'It should have been saved from a previous run. Is the state'
-        'file corrupt? Check your output directory and perhaps delete'
+        'It should have been saved from a previous run. Is the state '
+        'file corrupt? Check your output directory and perhaps delete '
         'sync-state.json before continuing.')
 
 
@@ -33,9 +33,9 @@ def ensure_seq_type_matches(seq_type, sync_state):
     if sync_state[SEQ_TYPE_KEY] != seq_type:
         raise SyncError(
             f'{SEQ_TYPE_KEY} in saved state: "{sync_state[SEQ_TYPE_KEY]}" '
-            f'differs from the parameter: "{seq_type}". You are '
-            f'probably about to override data of a different purpose. '
-            f'This is not allowed. Please use a different output directory.')
+            f'differs from the parameter: "{seq_type}". Is the state '
+            'file corrupt? Check your output directory and perhaps delete '
+            'sync-state.json before continuing.')
 
 
 def ensure_group_names_match(group_name, sync_state):
@@ -43,8 +43,8 @@ def ensure_group_names_match(group_name, sync_state):
         raise SyncError(
             f'{GROUP_NAME_KEY} in saved state: {sync_state[GROUP_NAME_KEY]} '
             f'differs from the parameter: {group_name}. You are '
-            f'probably about to override files belonging to another '
-            f'group. This is not allowed.')
+            f'probably about to override files from another '
+            f'group or project. This is not allowed.')
 
 
 def ensure_download_batch_size_positive(download_batch_size):

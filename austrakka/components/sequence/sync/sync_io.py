@@ -32,7 +32,7 @@ def read_from_csv(sync_state: dict, state_key: str):
     return data_frame
 
 
-def read_from_csv_or_empty(sync_state: dict, state_key: str):
+def read_from_csv_or_empty(sync_state: dict, state_key: str) -> pd.DataFrame:
     path = get_path(sync_state, state_key)
     try:
         data_frame = pd.read_csv(path, dtype=str, index_col=False)
