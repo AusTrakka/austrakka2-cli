@@ -32,6 +32,7 @@ READ_KEY = 'read'
 BLOB_FILE_PATH_KEY = 'blobFilePath'
 SERVER_SHA_256_KEY = 'serverSha256'
 TYPE_KEY = 'type'
+IS_ACTIVE_KEY = 'isActive'
 
 # Manifest file keys
 SEQ_ID_KEY = 'Seq_ID'

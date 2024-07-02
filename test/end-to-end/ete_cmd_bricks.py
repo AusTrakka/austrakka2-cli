@@ -1,8 +1,40 @@
 import json
+import tempfile
 
 from click.testing import CliRunner
-from ete_utils import _save_to_test_dir, _create_fasta_csv, _invoke
+from ete_utils import _save_to_test_dir, _create_fasta_csv, _invoke, _new_identifier
 from ete_constants import seq_id_field_name, owner_group_field_name, shared_groups_field_name
+
+
+def _sample_unshare(runner: CliRunner, seq_id: str, group_name: str):
+    result = _invoke(runner, [
+        'sample',
+        'unshare',
+        '-s', seq_id,
+        '-g', group_name
+    ])
+
+    assert result.exit_code == 0, f'Failed to unshare sequence {seq_id} from group {group_name} as part of test setup: {result.output}'
+
+
+def _seq_sync_get(
+        runner: CliRunner, 
+        group: str, 
+        output_dir: str, 
+        seq_type: str,
+        assert_success: bool = False,):
+
+    result = _invoke(runner, [
+        'seq',
+        'sync',
+        'get',
+        '-g', group,
+        '-o', output_dir,
+        '-t', seq_type
+    ])
+
+    if assert_success:
+        assert result.exit_code == 0, f'Failed to sync get for group {group} as part of test setup: {result.output}'
 
 
 def _upload_fasta_asm_file(
@@ -30,6 +62,29 @@ def _upload_fasta_asm_file(
     result = _invoke(runner, args)
     assert result.exit_code == 0, f'Failed to upload fasta asm file {fasta_file_path} as part of test setup: {result.output}'
     return temp_csv_file_path
+
+
+def _upload_fasta_cns_file(
+        runner: CliRunner,
+        fasta_file_path: str,
+        skip: bool = False,
+        force: bool = False):
+
+    args = [
+        'seq',
+        'add',
+        'fasta-cns',
+        fasta_file_path
+    ]
+
+    if skip:
+        args.append('--skip')
+
+    if force:
+        args.append('--force')
+
+    result = _invoke(runner, args)
+    assert result.exit_code == 0, f'Failed to upload fasta cns file {fasta_file_path} as part of test setup: {result.output}'
 
 
 def _upload_min_metadata(

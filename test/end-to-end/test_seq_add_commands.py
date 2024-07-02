@@ -41,7 +41,7 @@ class TestSeqAddCommands:
             [shared_group])
 
         # Act
-        _upload_fasta_asm_file(self.runner, 'test/test-assets/sequences/XYZ004.fasta', seq_id)
+        _upload_fasta_asm_file(self.runner, 'test/test-assets/sequences/asm/XYZ-asm-004.fasta', seq_id)
 
         # Assert
         result = _list_seq_by_group(self.runner, shared_group)
