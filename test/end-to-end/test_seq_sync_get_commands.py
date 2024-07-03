@@ -1069,21 +1069,210 @@ class TestSeqSyncGetCommands:
         assert original_hash == downloaded_file_hash, (f'The hash of the downloaded ill-se file should match the '
                                                        f'original: {original_hash} != {downloaded_file_hash}')
 
-    @pytest.mark.skip(reason="Not implemented")
     def test_sync_get__given_previous_successful_download_and_local_file_is_altered__expect_file_is_repaired(self):
-        raise NotImplementedError
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
 
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_get__given_previous_successful_download_and_sample_is_removed_from_group__expect_local_file_is_moved_to_trash(self):
-        raise NotImplementedError
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
 
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_get__given_stray_files_were_added_to_output_directory_and_the_next_run_is_successful__expect_stray_files_are_moved_to_trash(self):
-        raise NotImplementedError
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
 
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_get__given_output_dir_contains_state_file_for_GroupA_and_sync_get_is_run_for_GroupB__expect_command_is_refused(self):
-        raise NotImplementedError
+        original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
+        _upload_fastq_ill_se_file(self.runner, seq_id, original_file)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-se'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # check that the downloaded file exists, and then alter it.
+        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
+        downloaded_file = [f for f in dir_contents if f.endswith('.fastq')][0]
+        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
+
+        with open(downloaded_file_path, 'a') as file:
+            file.write('This is a test')
+
+        # Re-run the sync get
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type, recalculate_hash=True)
+
+        # Assert
+        assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should be repaired: {downloaded_file_path}'
+
+        original_hash = _calc_hash(original_file)
+        downloaded_file_hash = _calc_hash(downloaded_file_path)
+        assert original_hash == downloaded_file_hash, (f'The hash of the downloaded ill-se file should match the '
+                                                       f'original: {original_hash} != {downloaded_file_hash}')
+
+    def test_sync_get__given_previous_successful_download_and_sample_is_unshared_from_group__expect_local_file_is_moved_to_trash(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
+        _upload_fastq_ill_se_file(self.runner, seq_id, original_file)
+
+        # Sync the file and that it exists
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-se'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # check that the downloaded file exists, and then alter it.
+        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
+        downloaded_file = [f for f in dir_contents if f.endswith('.fastq')][0]
+        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
+
+        # Act
+        _sample_unshare(self.runner, seq_id, shared_group)
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        assert os.path.exists(downloaded_file_path) is False, \
+            f'The downloaded file should be moved to trash: {downloaded_file_path}'
+
+        trash_content = os.listdir(f'{temp_dir}/.trash/{seq_id}/{seq_type}')
+        seq_file = trash_content[0]
+        assert seq_file.startswith(seq_id) and seq_file.endswith('.fastq'), \
+            f'The trash directory should contain a fastq file: {trash_content}'
+
+    def test_sync_get__given_stray_sequence_files_were_added_to_output_directory_and_the_next_run_is_successful__expect_stray_files_are_moved_to_trash(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
+        _upload_fastq_ill_se_file(self.runner, seq_id, original_file)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-se'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # check that the downloaded file exists, and then add stray files.
+        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
+        downloaded_file = [f for f in dir_contents if f.endswith('.fastq')][0]
+        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
+
+        # add stray file
+        stray_file1 = f'{temp_dir}/{seq_id}/{seq_type}/seq-8TD25CBOC2_20240703T05413366_bbbbbbbb.fastq'
+        with open(stray_file1, 'w') as file:
+            file.write('This is a test')
+
+        # Re-run the sync get
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        assert os.path.exists(stray_file1) is False, f'The stray file should be moved to trash: {stray_file1}'
+        expected_stray_file_trash_path = f'{temp_dir}/.trash/{seq_id}/{seq_type}/seq-8TD25CBOC2_20240703T05413366_bbbbbbbb.fastq'
+        assert os.path.exists(expected_stray_file_trash_path) is True, \
+            f'The stray file should be moved to trash: {expected_stray_file_trash_path}'
+
+        # check that the downloaded file is still intact
+        assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
+
+    def test_sync_get__given_stray_non_sequence_files_were_added_to_output_directory_and_the_next_run_is_successful__expect_stray_files_left_alone(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
+        _upload_fastq_ill_se_file(self.runner, seq_id, original_file)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-se'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # check that the downloaded file exists, and then add stray files.
+        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
+        downloaded_file = [f for f in dir_contents if f.endswith('.fastq')][0]
+        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
+
+        # add stray file
+        stray_file1 = f'{temp_dir}/{seq_id}/{seq_type}/stray-text-file.txt'
+        with open(stray_file1, 'w') as file:
+            file.write('This is a test')
+
+        # Re-run the sync get
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        assert os.path.exists(stray_file1) is True, f'The stray file should left untouched: {stray_file1}'
+        expected_stray_file_trash_path = f'{temp_dir}/.trash/{seq_id}/{seq_type}/stray-text-file.txt'
+        assert os.path.exists(expected_stray_file_trash_path) is False, \
+            f'The stray file should not be moved to trash: {expected_stray_file_trash_path}'
+
+        # check that the downloaded file is still intact
+        assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
 
     def assert_state_file_exists(self, seq_type, temp_dir):
         expected_state_file = f'{temp_dir}/sync-state-{seq_type}.json'

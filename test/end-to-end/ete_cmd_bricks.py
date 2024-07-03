@@ -18,20 +18,26 @@ def _sample_unshare(runner: CliRunner, seq_id: str, group_name: str):
 
 
 def _seq_sync_get(
-        runner: CliRunner, 
-        group: str, 
-        output_dir: str, 
+        runner: CliRunner,
+        group: str,
+        output_dir: str,
         seq_type: str,
+        recalculate_hash: bool = False,
         assert_success: bool = False,):
 
-    result = _invoke(runner, [
+    args = [
         'seq',
         'sync',
         'get',
         '-g', group,
         '-o', output_dir,
         '-t', seq_type
-    ])
+    ]
+
+    if recalculate_hash:
+        args.append('--recalculate-hashes')
+
+    result = _invoke(runner, args)
 
     if assert_success:
         assert result.exit_code == 0, f'Failed to sync get for group {group} as part of test setup: {result.output}'
