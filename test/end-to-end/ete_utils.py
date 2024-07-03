@@ -87,7 +87,7 @@ def _textwrap(width_limit: int, original_file_path: str, dest_file_path):
 def _undo_fasta_asm_transform(clone_path, seq_id):
     with open(clone_path, 'r+', encoding='UTF-8') as file:
         original_content = file.read()
-        untransformed_content = original_content.replace(f'>{seq_id}.', '')
+        untransformed_content = original_content.replace(f'>{seq_id}.', '>')
         file.seek(0)
         file.truncate()
         file.write(untransformed_content)

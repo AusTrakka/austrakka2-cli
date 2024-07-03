@@ -1,6 +1,7 @@
 import os
 import shutil
 
+import pandas as pd
 import pytest
 from click.testing import CliRunner
 
@@ -210,10 +211,14 @@ class TestSeqSyncGetCommands:
         self.assert_manifest_file_exists(fasta_asm_type, temp_dir)
         self.assert_has_seq_dirs(f'{temp_dir}/{seq_id}/{fasta_asm_type}', 1)
 
-    @pytest.mark.parametrize("original_file", [
-        'test/test-assets/sequences/asm/XYZ-asm-004.fasta',
-        'test/test-assets/sequences/asm/XYZ-asm-004-desc.fasta'])
-    def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original_with_transform(self, original_file):
+    @pytest.mark.parametrize("original_file_dir, original_file_name", [
+        ('test/test-assets/sequences/asm/', 'XYZ-asm-004.fasta'),
+        ('test/test-assets/sequences/asm/', 'XYZ-asm-004-desc.fasta')])
+    def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original_with_transform(
+            self,
+            original_file_dir,
+            original_file_name):
+
         # Arrange
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
@@ -228,6 +233,8 @@ class TestSeqSyncGetCommands:
         _create_org(self.runner, org_name)
         _create_group(self.runner, shared_group)
 
+        original_file = f'{original_file_dir}{original_file_name}'
+
         _upload_min_metadata(
             self.runner,
             proforma_name,
@@ -239,14 +246,19 @@ class TestSeqSyncGetCommands:
 
         # Act
         temp_dir = _mk_temp_dir()
-        fasta_asm_type = 'fasta-asm'
-        _seq_sync_get(self.runner, shared_group, temp_dir, fasta_asm_type)
+        print(f'Temp dir: {temp_dir}')
+        seq_type = 'fasta-asm'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
 
         # Assert
         # Undo transform to the downloaded file. It should have the same hash as the original
         original_hash = _calc_hash(original_file)
-        clone_path = f'{temp_dir}/XYZ-asm-004-clone-from-assets.fasta'
-        shutil.copyfile(original_file, clone_path)
+        clone_path = f'{temp_dir}/clone-{original_file_name}'
+
+        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
+        downloaded_file = [f for f in dir_contents if f.endswith('.fasta')][0]
+        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        shutil.copyfile(downloaded_file_path, clone_path)
 
         _undo_fasta_asm_transform(clone_path, seq_id)
 
@@ -254,6 +266,14 @@ class TestSeqSyncGetCommands:
         assert original_hash == clone_hash, \
             (f'The hash of the undone transformed downloaded file should match the original: '
              f'{original_hash} != {clone_hash}')
+
+        # Check the downloaded file against the hash in the manifest.
+        df = pd.read_csv(f'{temp_dir}/manifest-{seq_type}.csv')
+        hash_in_manifest = df.loc[df['Seq_ID'] == seq_id]['HASH_FASTA-ASM'].values[0].casefold()
+        downloaded_file_hash = _calc_hash(downloaded_file_path)
+
+        assert downloaded_file_hash == hash_in_manifest, \
+            'The hash of the downloaded fasta asm file should match the hash declared in the manifest: '
 
     def test_sync_get__given_group_has_fastq_ill_pe_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original(self):
         # Arrange
@@ -287,7 +307,6 @@ class TestSeqSyncGetCommands:
         _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
 
         # Assert
-        # Undo transform to the downloaded file. It should have the same hash as the original
         original_hash1 = _calc_hash(original_file1)
         original_hash2 = _calc_hash(original_file2)
 
@@ -298,11 +317,17 @@ class TestSeqSyncGetCommands:
         downloaded_r1_hash = _calc_hash(f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_r1}')
         downloaded_r2_hash = _calc_hash(f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_r2}')
 
-        assert original_hash1 == downloaded_r1_hash, \
+        # read the expected hash from the manifest file. All three
+        # (original, downloaded, manifest) should match
+        df = pd.read_csv(f'{temp_dir}/manifest-{seq_type}.csv')
+        r1_hash_in_manifest = df.loc[df['Seq_ID'] == seq_id]['HASH_FASTQ-ILL-PE_R1'].values[0].casefold()
+        r2_hash_in_manifest = df.loc[df['Seq_ID'] == seq_id]['HASH_FASTQ-ILL-PE_R2'].values[0].casefold()
+
+        assert original_hash1 == downloaded_r1_hash and downloaded_r1_hash == r1_hash_in_manifest, \
             (f'The hash of the downloaded r1 file should match the original: '
              f'{original_hash1} != {downloaded_r1_hash}')
 
-        assert original_hash2 == downloaded_r2_hash, \
+        assert original_hash2 == downloaded_r2_hash and downloaded_r2_hash == r2_hash_in_manifest, \
             (f'The hash of the downloaded r2 file should match the original: '
              f'{original_hash2} != {downloaded_r2_hash}')
 
@@ -343,7 +368,12 @@ class TestSeqSyncGetCommands:
         downloaded_file = [f for f in dir_contents if f.endswith('.fastq')][0]
         downloaded_file_hash = _calc_hash(f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}')
 
-        assert original_hash == downloaded_file_hash, \
+        # read the expected hash from the manifest file. All three
+        # (original, downloaded, manifest) should match
+        df = pd.read_csv(f'{temp_dir}/manifest-{seq_type}.csv')
+        hash_in_manifest = df.loc[df['Seq_ID'] == seq_id]['HASH_FASTQ-ILL-SE'].values[0].casefold()
+
+        assert original_hash == downloaded_file_hash and downloaded_file_hash == hash_in_manifest, \
             (f'The hash of the downloaded ill-se file should match the original: '
              f'{original_hash} != {downloaded_file_hash}')
 
@@ -385,21 +415,26 @@ class TestSeqSyncGetCommands:
         _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
 
         # Assert
-        # Undo transform to the downloaded file. It should have the same hash as the original
+        # During upload, the cli would have line wrapped at 60 char. In order to compare
+        # the hashes, we need to word wrap the original file as well.
         wrap_adjusted_file_path = f'{cns_fasta_path}-adjusted.bak'
-        print(wrap_adjusted_file_path)
         _textwrap(60, cns_fasta_path, wrap_adjusted_file_path)
+        line_wrapped_original_hash = _calc_hash(wrap_adjusted_file_path)
 
-        original_hash = _calc_hash(wrap_adjusted_file_path)
+        # Get the downloaded file
         dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
         downloaded_file = [f for f in dir_contents if f.endswith('.fasta')][0]
         downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
-        print(downloaded_file_path)
         downloaded_file_hash = _calc_hash(downloaded_file_path)
 
-        assert original_hash == downloaded_file_hash, \
+        # read the expected hash from the manifest file. All three
+        # (original, downloaded, manifest) should match
+        df = pd.read_csv(f'{temp_dir}/manifest-{seq_type}.csv')
+        hash_in_manifest = df.loc[df['Seq_ID'] == seq_id]['HASH_FASTA-CNS'].values[0].casefold()
+
+        assert line_wrapped_original_hash == downloaded_file_hash and downloaded_file_hash == hash_in_manifest, \
             (f'The hash of the downloaded cns file should match the original: '
-             f'{original_hash} != {downloaded_file_hash}')
+             f'{line_wrapped_original_hash} != {downloaded_file_hash}')
 
     @pytest.mark.skip(reason="Not implemented")
     def test_sync_get__given_group_has_fasta_cns_sequences_that_contains_description_and_download_was_successful__expect_description_in_downloaded_file(self):
