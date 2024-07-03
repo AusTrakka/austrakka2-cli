@@ -295,17 +295,14 @@ def set_state_finalising(sync_state: dict):
 
 def finalise(sync_state: dict):
     logger.success(f'Started: {Action.finalise}')
-    print('p0')
 
     int_med = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
-    print('p1')
     errors = int_med.loc[(int_med[STATUS_KEY] != MATCH) &
                          (int_med[STATUS_KEY] != DOWNLOADED) &
                          (int_med[STATUS_KEY] != DRIFTED) &
                          (int_med[STATUS_KEY] != DONE)]
 
     if len(errors.index) > 0:
-        print('p2')
         im_path = get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
 
         logger.error(f'Found entries which are failed or missing after the '
@@ -316,7 +313,6 @@ def finalise(sync_state: dict):
         sync_state[CURRENT_ACTION_KEY] = Action.set_state_analysing
         logger.error('Finalise failed.')
     else:
-        print('p3')
         finalise_each_file(int_med, sync_state)
         publish_new_manifest(int_med, sync_state)
         detect_and_record_obsolete_files(int_med, sync_state)
@@ -521,13 +517,11 @@ def initialise_empty_int_manifest(sync_state):
 
 
 def publish_new_manifest(int_med, sync_state):
-    print('x1')
     sample_table = int_med.pivot(
         index=SAMPLE_NAME_KEY,
         columns=[TYPE_KEY, READ_KEY],
         values=[FILE_NAME_ON_DISK_KEY, SERVER_SHA_256_KEY])
 
-    print('x2')
     # Multiindex approach ok, but this format needs changing
     # when dealing with FASTA in the same table
     sample_table.columns = [manifest_column_key(file_or_hash, seq_type, read)
