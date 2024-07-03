@@ -1,72 +1,72 @@
-# resources:
-#   repositories:
-#     - repository: CLI 
-#       type: github
-#       name: AusTrakka/austrakka2-cli
-#       ref: $(Build.SourceBranchName) 
-#       endpoint: AusTrakka
-#     - repository: Pipelines
-#       type: github
-#       name: AusTrakka/austrakka-pipelines
-#       ref: Development 
-#       endpoint: AusTrakka
-#     - repository: Infra
-#       type: github
-#       endpoint: AusTrakka
-#       name: AusTrakka/austrakka2-infra
-#       ref: $(infraBranch)
-#     - repository: Portal 
-#       type: github
-#       endpoint: AusTrakka
-#       name: AusTrakka/austrakka-portal
-#       ref: $(portalBranch)
-#       
-# trigger:
-#   branches:
-#     include:
-#       - Development
-#
-# pr: none
-#
-# pool:
-#   name: Test
-#
-# variables:
-#   azureConnection: 'AusTrakka Dev (austrakka tenancy)'
-#   azureConnectionAdmin: 'AusTrakka Admin (austrakka tenancy)'
-#   backendAzureRmResourceGroupName: 'rg-devterf-shd-as-1'
-#   backendAzureRmStorageAccountName: 'stdevterfshdas1'
-#   backendAzureRmContainerName: 'env'
-#   backendAzureRmKey: '$(Build.DefinitionName)/$(Build.BuildNumber).tfstate'
-#   terraformOutputArtifact: 'TerraformOutput'
-#   terraformVarsArtifact: 'TerraformVars'
-#   buildDir: '$(Build.BinariesDirectory)/$(Build.BuildNumber)'
-#   sourceDir: '$(Pipeline.Workspace)/$(Build.BuildNumber)'
-#
-# stages:
-#   - template: templates/stages/env/create.yml@Pipelines 
-#   - stage: RunTests
-#     jobs:
-#       - job: RunUnitTests
-#         steps:
-#           - template: templates/checkout/cli.yml@Pipelines
-#           - template: templates/checkout/infra.yml@Pipelines
-#           - task: PowerShell@2
-#             displayName: Generate .env file 
-#             inputs:
-#               targetType: 'inline'
-#               workingDirectory: $(sourceDir)/infra/scripts/output
-#               script: |
-#                 ./cli_env_json.ps1 @(Get-ChildItem $(buildDir)/tf/*.json)[0].FullName > $(sourceDir)/cli/.env
-#           - task: Bash@3
-#             displayName: Run pytest 
-#             inputs:
-#               targetType: 'inline'
-#               workingDirectory: $(sourceDir)/cli
-#               script: |
-#                 pipenv shell
-#                 pipenv install --dev
-#                 export AT_TOKEN=$(austrakka auth process)
-#                 pytest end_to_end 
-#   - template: templates/stages/env/create.yml@Pipelines
-#
+resources:
+  repositories:
+    - repository: CLI 
+      type: github
+      name: AusTrakka/austrakka2-cli
+      ref: $(Build.SourceBranchName) 
+      endpoint: AusTrakka
+    - repository: Pipelines
+      type: github
+      name: AusTrakka/austrakka-pipelines
+      ref: Development 
+      endpoint: AusTrakka
+    - repository: Infra
+      type: github
+      endpoint: AusTrakka
+      name: AusTrakka/austrakka2-infra
+      ref: $(infraBranch)
+    - repository: Portal 
+      type: github
+      endpoint: AusTrakka
+      name: AusTrakka/austrakka-portal
+      ref: $(portalBranch)
+      
+trigger:
+  branches:
+    include:
+      - Development
+
+pr: none
+
+pool:
+  name: Test
+
+variables:
+  azureConnection: 'AusTrakka Dev (austrakka tenancy)'
+  azureConnectionAdmin: 'AusTrakka Admin (austrakka tenancy)'
+  backendAzureRmResourceGroupName: 'rg-devterf-shd-as-1'
+  backendAzureRmStorageAccountName: 'stdevterfshdas1'
+  backendAzureRmContainerName: 'env'
+  backendAzureRmKey: '$(Build.DefinitionName)/$(Build.BuildNumber).tfstate'
+  terraformOutputArtifact: 'TerraformOutput'
+  terraformVarsArtifact: 'TerraformVars'
+  buildDir: '$(Build.BinariesDirectory)/$(Build.BuildNumber)'
+  sourceDir: '$(Pipeline.Workspace)/$(Build.BuildNumber)'
+
+stages:
+  - template: templates/stages/env/create.yml@Pipelines 
+  - stage: RunTests
+    jobs:
+      - job: RunUnitTests
+        steps:
+          - template: templates/checkout/cli.yml@Pipelines
+          - template: templates/checkout/infra.yml@Pipelines
+          - task: PowerShell@2
+            displayName: Generate .env file 
+            inputs:
+              targetType: 'inline'
+              workingDirectory: $(sourceDir)/infra/scripts/output
+              script: |
+                ./cli_env_json.ps1 @(Get-ChildItem $(buildDir)/tf/*.json)[0].FullName > $(sourceDir)/cli/.env
+          - task: Bash@3
+            displayName: Run pytest 
+            inputs:
+              targetType: 'inline'
+              workingDirectory: $(sourceDir)/cli
+              script: |
+                pipenv shell
+                pipenv install --dev
+                export AT_TOKEN=$(austrakka auth process)
+                pytest unit #TODO: change this to end_to_end 
+  - template: templates/stages/env/create.yml@Pipelines
+
