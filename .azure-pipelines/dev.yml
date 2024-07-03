@@ -25,7 +25,6 @@ trigger:
   branches:
     include:
       - Development
-      - dependabot/** #TODO: might need to rethink this until the dependabot PRs are fixed
 
 pr: none
 
