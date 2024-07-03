@@ -401,6 +401,7 @@ class TestSeqSyncGetCommands:
             (f'The hash of the downloaded cns file should match the original: '
              f'{original_hash} != {downloaded_file_hash}')
 
+    @pytest.mark.skip(reason="Not implemented")
     def test_sync_get__given_group_has_fasta_cns_sequences_that_contains_description_and_download_was_successful__expect_description_in_downloaded_file(self):
         raise NotImplementedError
 
