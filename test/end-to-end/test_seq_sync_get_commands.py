@@ -273,7 +273,7 @@ class TestSeqSyncGetCommands:
         downloaded_file_hash = _calc_hash(downloaded_file_path)
 
         assert downloaded_file_hash == hash_in_manifest, \
-            'The hash of the downloaded fasta asm file should match the hash declared in the manifest: '
+            'The hash of the downloaded fasta asm file should match the hash declared in the manifest.'
 
     def test_sync_get__given_group_has_fastq_ill_pe_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original(self):
         # Arrange
@@ -377,7 +377,13 @@ class TestSeqSyncGetCommands:
             (f'The hash of the downloaded ill-se file should match the original: '
              f'{original_hash} != {downloaded_file_hash}')
 
-    def test_sync_get__given_group_has_fasta_cns_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original(self):
+    @pytest.mark.parametrize("original_file", [
+        'test/test-assets/sequences/cns/ABC-cns-001.fasta',
+        'test/test-assets/sequences/cns/ABC-cns-001-desc.fasta'])
+    def test_sync_get__given_group_has_fasta_cns_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_original(
+            self,
+            original_file):
+
         # Arrange
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
@@ -400,17 +406,14 @@ class TestSeqSyncGetCommands:
             [shared_group])
 
         cns_fasta_path = _clone_cns_fasta_file(
-            'test/test-assets/sequences/cns/ABC-cns-001.fasta',
+            original_file,
             'SEQ_ABC-cns-001',
             seq_id)
-
-        print(cns_fasta_path)
 
         _upload_fasta_cns_file(self.runner, cns_fasta_path)
 
         # Act
         temp_dir = _mk_temp_dir()
-        print(f'Temp dir: {temp_dir}')
         seq_type = 'fasta-cns'
         _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
 
@@ -436,41 +439,635 @@ class TestSeqSyncGetCommands:
             (f'The hash of the downloaded cns file should match the original: '
              f'{line_wrapped_original_hash} != {downloaded_file_hash}')
 
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_get__given_group_has_fasta_cns_sequences_that_contains_description_and_download_was_successful__expect_description_in_downloaded_file(self):
-        raise NotImplementedError
-
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_hashes_of_downloads_to_match_transformed_uploads(self):
-        raise NotImplementedError
-
-    @pytest.mark.skip(reason="Not implemented")
     def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_contigs_are_renamed(self):
-        raise NotImplementedError
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
 
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_get__given_group_has_sequences_and_download_was_successful__expect_sequences_are_listed_in_manifest(self):
-        raise NotImplementedError
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
 
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_get__given_group_has_sequences_and_download_was_successful__expect_current_state_is__up_to_date(self):
-        raise NotImplementedError
+        original_file_dir = 'test/test-assets/sequences/asm/'
+        original_file_name = 'XYZ-asm-004.fasta'
+        original_file = f'{original_file_dir}{original_file_name}'
 
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_get__given_group_has_sequences_and_download_was_successful__expect_current_action_is__pulling_manifest(self):
-        raise NotImplementedError
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
 
-    @pytest.mark.skip(reason="Not implemented")
+        _upload_fasta_asm_file(self.runner, original_file, seq_id)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fasta-asm'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        # Undo transform to the downloaded file. It should have the same hash as the original
+        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
+        downloaded_file = [f for f in dir_contents if f.endswith('.fasta')][0]
+        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+
+        with open(downloaded_file_path, 'r') as file:
+            first_line = file.readline()
+            assert first_line.startswith(f'>{seq_id}.SEQ_XYZ-asm-004'), \
+                f'The first line of the downloaded fasta asm file should be renamed to include the Seq_ID: {first_line}'
+
+    def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_sequences_are_listed_in_manifest(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        original_file_dir = 'test/test-assets/sequences/asm/'
+        original_file_name = 'XYZ-asm-004.fasta'
+        original_file = f'{original_file_dir}{original_file_name}'
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        _upload_fasta_asm_file(self.runner, original_file, seq_id)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fasta-asm'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        df = pd.read_csv(f'{temp_dir}/manifest-{seq_type}.csv')
+        assert seq_id in df['Seq_ID'].values, f'The Seq_ID should be in the manifest: {df}'
+
+    def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_current_state_is__up_to_date(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        original_file_dir = 'test/test-assets/sequences/asm/'
+        original_file_name = 'XYZ-asm-004.fasta'
+        original_file = f'{original_file_dir}{original_file_name}'
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        _upload_fasta_asm_file(self.runner, original_file, seq_id)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fasta-asm'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        self.assert_state_file_exists(seq_type, temp_dir)
+        state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
+        assert state_dict['current_state'] == 'UP_TO_DATE', f'The current state should be up_to_date: {state_dict}'
+
+    def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_current_action_is__pulling_manifest(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        original_file_dir = 'test/test-assets/sequences/asm/'
+        original_file_name = 'XYZ-asm-004.fasta'
+        original_file = f'{original_file_dir}{original_file_name}'
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        _upload_fasta_asm_file(self.runner, original_file, seq_id)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fasta-asm'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        self.assert_state_file_exists(seq_type, temp_dir)
+        state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
+        assert state_dict['current_action'] == 'PULLING_MANIFEST', \
+            f'The current action should be PULLING_MANIFEST: {state_dict}'
+
+    def test_sync_get__given_group_has_fasta_cns_sequences_and_download_was_successful__expect_sequences_are_listed_in_manifest(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/cns/ABC-cns-001.fasta'
+
+        cns_fasta_path = _clone_cns_fasta_file(
+            original_file,
+            'SEQ_ABC-cns-001',
+            seq_id)
+
+        _upload_fasta_cns_file(self.runner, cns_fasta_path)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fasta-cns'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        df = pd.read_csv(f'{temp_dir}/manifest-{seq_type}.csv')
+        assert seq_id in df['Seq_ID'].values, f'The Seq_ID should be in the manifest: {df}'
+        assert seq_id in df['Seq_ID'].values, f'The Seq_ID should be in the manifest: {df}'
+
+    def test_sync_get__given_group_has_fasta_cns_sequences_and_download_was_successful__expect_current_state_is__up_to_date(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/cns/ABC-cns-001.fasta'
+
+        cns_fasta_path = _clone_cns_fasta_file(
+            original_file,
+            'SEQ_ABC-cns-001',
+            seq_id)
+
+        _upload_fasta_cns_file(self.runner, cns_fasta_path)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fasta-cns'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        self.assert_state_file_exists(seq_type, temp_dir)
+        state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
+        assert state_dict['current_state'] == 'UP_TO_DATE', f'The current state should be up_to_date: {state_dict}'
+
+    def test_sync_get__given_group_has_fasta_cns_sequences_and_download_was_successful__expect_current_action_is__pulling_manifest(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/cns/ABC-cns-001.fasta'
+
+        cns_fasta_path = _clone_cns_fasta_file(
+            original_file,
+            'SEQ_ABC-cns-001',
+            seq_id)
+
+        _upload_fasta_cns_file(self.runner, cns_fasta_path)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fasta-cns'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        self.assert_state_file_exists(seq_type, temp_dir)
+        state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
+        assert state_dict['current_action'] == 'PULLING_MANIFEST', \
+            f'The current action should be pulling_manifest: {state_dict}'
+
+    def test_sync_get__given_group_has_fastq_ill_pe_sequences_and_download_was_successful__expect_sequences_are_listed_in_manifest(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file1 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r1.fastq'
+        original_file2 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r2.fastq'
+        _upload_fastq_ill_pe_file(self.runner, seq_id, original_file1, original_file2)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-pe'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        df = pd.read_csv(f'{temp_dir}/manifest-{seq_type}.csv')
+        assert seq_id in df['Seq_ID'].values, f'The Seq_ID should be in the manifest: {df}'
+
+    def test_sync_get__given_group_has_fastq_ill_pe_sequences_and_download_was_successful__expect_current_state_is__up_to_date(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file1 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r1.fastq'
+        original_file2 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r2.fastq'
+        _upload_fastq_ill_pe_file(self.runner, seq_id, original_file1, original_file2)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-pe'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        self.assert_state_file_exists(seq_type, temp_dir)
+        state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
+        assert state_dict['current_state'] == 'UP_TO_DATE', f'The current state should be up_to_date: {state_dict}'
+
+    def test_sync_get__given_group_has_fastq_ill_pe_sequences_and_download_was_successful__expect_current_action_is__pulling_manifest(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file1 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r1.fastq'
+        original_file2 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r2.fastq'
+        _upload_fastq_ill_pe_file(self.runner, seq_id, original_file1, original_file2)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-pe'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        self.assert_state_file_exists(seq_type, temp_dir)
+        state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
+        assert state_dict['current_action'] == 'PULLING_MANIFEST', \
+            f'The current action should be pulling_manifest: {state_dict}'
+
+    def test_sync_get__given_group_has_fastq_ill_se_sequences_and_download_was_successful__expect_sequences_are_listed_in_manifest(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
+        _upload_fastq_ill_se_file(self.runner, seq_id, original_file)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-se'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        df = pd.read_csv(f'{temp_dir}/manifest-{seq_type}.csv')
+        assert seq_id in df['Seq_ID'].values, f'The Seq_ID should be in the manifest: {df}'
+
+    def test_sync_get__given_group_has_fastq_ill_se_sequences_and_download_was_successful__expect_current_state_is__up_to_date(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
+        _upload_fastq_ill_se_file(self.runner, seq_id, original_file)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-se'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        self.assert_state_file_exists(seq_type, temp_dir)
+        state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
+        assert state_dict['current_state'] == 'UP_TO_DATE', f'The current state should be up_to_date: {state_dict}'
+
+    def test_sync_get__given_group_has_fastq_ill_se_sequences_and_download_was_successful__expect_current_action_is__pulling_manifest(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
+        _upload_fastq_ill_se_file(self.runner, seq_id, original_file)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-se'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        self.assert_state_file_exists(seq_type, temp_dir)
+        state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
+        assert state_dict['current_action'] == 'PULLING_MANIFEST', \
+            f'The current action should be pulling_manifest: {state_dict}'
+
     def test_sync_get__given_successful_successive_download_of_multiple_sequence_types__expect_multiple_manifest_and_state_files_and_correct_directory_structure(self):
-        raise NotImplementedError
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
 
-    @pytest.mark.skip(reason="Not implemented")
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+        temp_dir = _mk_temp_dir()
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        # Act upload and sync get for two types of sequences
+        # FASTQ ILL SE
+        original_file1 = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
+        _upload_fastq_ill_se_file(self.runner, seq_id, original_file1)
+
+        seq_type1 = 'fastq-ill-se'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type1)
+
+        # FASTQ ILL PE
+        original_file2 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r1.fastq'
+        original_file3 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r2.fastq'
+        _upload_fastq_ill_pe_file(self.runner, seq_id, original_file2, original_file3)
+
+        seq_type2 = 'fastq-ill-pe'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type2)
+
+        # Assert
+        self.assert_manifest_file_exists(seq_type1, temp_dir)
+        self.assert_manifest_file_exists(seq_type2, temp_dir)
+        self.assert_state_file_exists(seq_type1, temp_dir)
+        self.assert_state_file_exists(seq_type2, temp_dir)
+
+        assert os.path.exists(f'{temp_dir}/{seq_id}/{seq_type1}') is True, \
+            f'The output directory should contain a sub directory for the sequence type: {temp_dir}'
+
+        assert os.path.exists(f'{temp_dir}/{seq_id}/{seq_type2}') is True, \
+            f'The output directory should contain a sub directory for the sequence type: {temp_dir}'
+
     def test_sync_get__given_output_dir_was_used_for_group_A_and_now_used_for_group_B__expect_command_is_refused(self):
-        raise NotImplementedError
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        shared_group2 = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
 
-    @pytest.mark.skip(reason="Not implemented")
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+        _create_group(self.runner, shared_group2)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
+        _upload_fastq_ill_se_file(self.runner, seq_id, original_file)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-se'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+        result = _seq_sync_get(self.runner, shared_group2, temp_dir, seq_type)
+
+        # Assert
+        assert result.exit_code == 1, f'The command should be refused: {result.output}'
+
     def test_sync_get__given_previous_successful_download_and_local_file_is_deleted__expect_file_is_repaired(self):
-        raise NotImplementedError
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
+        _upload_fastq_ill_se_file(self.runner, seq_id, original_file)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fastq-ill-se'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # check that the downloaded file exists, and then delete it.
+        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
+        downloaded_file = [f for f in dir_contents if f.endswith('.fastq')][0]
+        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
+        os.remove(downloaded_file_path)
+
+        # Re-run the sync get
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should be repaired: {downloaded_file_path}'
+
+        original_hash = _calc_hash(original_file)
+        downloaded_file_hash = _calc_hash(downloaded_file_path)
+        assert original_hash == downloaded_file_hash, (f'The hash of the downloaded ill-se file should match the '
+                                                       f'original: {original_hash} != {downloaded_file_hash}')
 
     @pytest.mark.skip(reason="Not implemented")
     def test_sync_get__given_previous_successful_download_and_local_file_is_altered__expect_file_is_repaired(self):

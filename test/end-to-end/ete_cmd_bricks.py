@@ -35,6 +35,7 @@ def _seq_sync_get(
 
     if assert_success:
         assert result.exit_code == 0, f'Failed to sync get for group {group} as part of test setup: {result.output}'
+    return result
 
 
 def _upload_fastq_ill_se_file(

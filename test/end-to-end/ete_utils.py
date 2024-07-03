@@ -16,8 +16,8 @@ shared_groups_field_name = 'Shared_groups'
 
 
 def _clone_cns_fasta_file(
-        original_file_path: str, 
-        old_seq_id: str, 
+        original_file_path: str,
+        old_seq_id: str,
         seq_id_override: str) -> str:
 
     with open(original_file_path, 'r') as file:
