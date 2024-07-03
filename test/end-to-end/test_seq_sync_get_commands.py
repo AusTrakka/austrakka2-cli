@@ -594,8 +594,8 @@ class TestSeqSyncGetCommands:
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
         state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
-        assert state_dict['current_action'] == 'PULLING_MANIFEST', \
-            f'The current action should be PULLING_MANIFEST: {state_dict}'
+        assert state_dict['current_action'] == 'set-state/pulling-manifest', \
+            f'The current action should be set-state/pulling-manifest: {state_dict}'
 
     def test_sync_get__given_group_has_fasta_cns_sequences_and_download_was_successful__expect_sequences_are_listed_in_manifest(self):
         # Arrange
@@ -718,8 +718,8 @@ class TestSeqSyncGetCommands:
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
         state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
-        assert state_dict['current_action'] == 'PULLING_MANIFEST', \
-            f'The current action should be pulling_manifest: {state_dict}'
+        assert state_dict['current_action'] == 'set-state/pulling-manifest', \
+            f'The current action should be set-state/pulling-manifest: {state_dict}'
 
     def test_sync_get__given_group_has_fastq_ill_pe_sequences_and_download_was_successful__expect_sequences_are_listed_in_manifest(self):
         # Arrange
@@ -826,8 +826,8 @@ class TestSeqSyncGetCommands:
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
         state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
-        assert state_dict['current_action'] == 'PULLING_MANIFEST', \
-            f'The current action should be pulling_manifest: {state_dict}'
+        assert state_dict['current_action'] == 'set-state/pulling-manifest', \
+            f'The current action should be set-state/pulling-manifest: {state_dict}'
 
     def test_sync_get__given_group_has_fastq_ill_se_sequences_and_download_was_successful__expect_sequences_are_listed_in_manifest(self):
         # Arrange
@@ -931,8 +931,8 @@ class TestSeqSyncGetCommands:
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
         state_dict = _read_sync_state(f'{temp_dir}/sync-state-{seq_type}.json')
-        assert state_dict['current_action'] == 'PULLING_MANIFEST', \
-            f'The current action should be pulling_manifest: {state_dict}'
+        assert state_dict['current_action'] == 'set-state/pulling-manifest', \
+            f'The current action should be set-state/pulling-manifest: {state_dict}'
 
     def test_sync_get__given_successful_successive_download_of_multiple_sequence_types__expect_multiple_manifest_and_state_files_and_correct_directory_structure(self):
         # Arrange
