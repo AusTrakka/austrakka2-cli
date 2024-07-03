@@ -8,7 +8,7 @@ resources:
     - repository: Pipelines
       type: github
       name: AusTrakka/austrakka-pipelines
-      ref: Development
+      ref: 5825-stage-templates
       endpoint: AusTrakka
     - repository: Infra
       type: github
@@ -44,73 +44,31 @@ variables:
   sourceDir: '$(Pipeline.Workspace)/$(Build.BuildNumber)'
 
 stages:
-  - stage: test
+  # TODO: this whole page can be a template now
+  - template: templates/stages/env/create.yml@Pipelines 
+  - stage: RunTests
     jobs:
-      - job: testAgain
+      - job: RunUnitTests
         steps:
-          - template: templates/checkout/cli.yml
+          - template: templates/checkout/cli.yml@Pipelines
+          - template: templates/checkout/infra.yml@Pipelines
+          - task: PowerShell@2
+            displayName: Generate .env file 
+            inputs:
+              targetType: 'inline'
+              workingDirectory: $(sourceDir)/infra/scripts/output
+              script: |
+                ./cli_env_json.ps1 @(Get-ChildItem $(buildDir)/tf/*.json)[0].FullName > $(sourceDir)/cli/.env
+          # TODO: will pipenv shell call install if it's the first time it's ran
           - task: Bash@3
-            displayName: Testing if i can use Build.SourceBranchName
+            displayName: Run pytest 
             inputs:
               targetType: 'inline'
               workingDirectory: $(sourceDir)/cli
-              script: ls -la
-  # - stage: CreateEnvironment
-  #   jobs:
-  #     - job: CreateInfra
-  #       steps:
-  #         - template: templates/checkout/infra.yml@Pipelines
-  #         - template: templates/infra/create.yml@Pipelines
-  #     - job: DeployServer
-  #       dependsOn: 'CreateInfra'
-  #       steps:
-  #         - template: templates/checkout/portal.yml@Pipelines
-  #         - template: templates/checkout/pipelines.yml@Pipelines
-  #         - template: templates/checkout/infra.yml@Pipelines
-  #         - template: templates/deployment/temp-env.yml@Pipelines
-  # - stage: RunTests
-  #   jobs:
-  #     - job: RunUnitTests
-  #       steps:
-  #         - template: templates/checkout/cli.yml
-  #         - template: templates/checkout/infra.yml@Pipelines
-  #         - task: PowerShell@2
-  #           displayName: Generate .env file 
-  #           inputs:
-  #             targetType: 'inline'
-  #             workingDirectory: $(sourceDir)/infra/scripts/output
-  #             script: |
-  #               ./cli_env_json.ps1 @(Get-ChildItem $(buildDir)/tf/*.json)[0].FullName > $(sourceDir)/cli/.env
-  #         # TODO: will pipenv shell call install if it's the first time it's ran
-  #         - task: Bash@3
-  #           displayName: Run pytest 
-  #           inputs:
-  #             targetType: 'inline'
-  #             workingDirectory: $(sourceDir)/cli
-  #             script: |
-  #               pipenv shell
-  #               pipenv install --dev
-  #               export AT_TOKEN=$(austrakka auth process)
-  #               pytest
-  # - stage: DestroyEnvironment
-  #   dependsOn:
-  #     - CreateEnvironment
-  #     - RunTests
-  #   condition: |
-  #     or
-  #     (
-  #       in(dependencies.CreateEnvironment.result, 'Failed', 'Canceled'),
-  #       in(dependencies.RunTests.result, 'Succeeded', 'SucceededWithIssues')
-  #     )
-  #   jobs:
-  #     - job: DestroyInfra
-  #       steps:
-  #         - template: templates/checkout/infra.yml@Pipelines
-  #         - task: DownloadPipelineArtifact@2
-  #           inputs:
-  #             artifact: $(terraformVarsArtifact)
-  #             path: $(sourceDir)/infra/autotests
-  #         - template: templates/infra/destroy.yml@Pipelines
-  #         - template: templates/devops/tag/add.yml@Pipelines
-  #           parameters:
-  #             tag: env-destroyed
+              script: |
+                pipenv shell
+                pipenv install --dev
+                export AT_TOKEN=$(austrakka auth process)
+                pytest
+  - template: templates/stages/env/create.yml@Pipelines
+
