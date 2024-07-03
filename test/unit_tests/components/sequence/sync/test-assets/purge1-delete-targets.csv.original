@@ -1,3 +1,3 @@
 file_path,file_name,detection_date
-test/components/sequence/sync/purge1/Sample60/a.fastq,a.fastq,
-test/components/sequence/sync/purge1/Sample60/b.fq.gz,b.fq.gz,
+test/unit_tests/components/sequence/sync/purge1/Sample60/a.fastq,a.fastq,
+test/unit_tests/components/sequence/sync/purge1/Sample60/b.fq.gz,b.fq.gz,
