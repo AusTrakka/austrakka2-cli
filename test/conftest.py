@@ -27,3 +27,12 @@ def pytest_configure(config):
         mark_name = dir_.stem.removesuffix('_tests')
         config.addinivalue_line('markers', mark_name)
 
+
+@pytest.fixture
+def rootdir(request):
+    """
+    Access the root directory in a test. Useful for accessing files
+    """
+    rootdir = request.config.rootdir
+    return rootdir
+
