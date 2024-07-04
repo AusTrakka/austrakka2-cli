@@ -1,0 +1,3 @@
+steps:
+  - checkout: CLI 
+    path: '$(Build.BuildNumber)/cli'
