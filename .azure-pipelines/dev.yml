@@ -68,9 +68,8 @@ stages:
               targetType: 'inline'
               workingDirectory: $(sourceDir)/cli
               script: |
-                pipenv shell
                 pipenv install --dev
                 export AT_TOKEN=$(austrakka auth process)
-                pytest
+                pipenv run pytest
   - template: templates/stages/env/destroy.yml@Pipelines
 
