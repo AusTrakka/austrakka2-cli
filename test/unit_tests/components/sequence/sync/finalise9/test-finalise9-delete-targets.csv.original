@@ -1,2 +1,2 @@
 file_path,file_name,detection_date
-test/components/sequence/sync/finalise9/Sample5/something-to-be-deleted.fastq,something-to-be-deleted.fastq,2005-05-05
+test/unit_tests/components/sequence/sync/finalise9/Sample5/something-to-be-deleted.fastq,something-to-be-deleted.fastq,2005-05-05
