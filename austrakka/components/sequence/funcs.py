@@ -438,10 +438,12 @@ def list_sequences(
         out_format: str,
         seq_type: str,
         group_name: str,
+        sample_ids: List[str] = None,
 ):
     data = _get_seq_data(
         seq_type,
         group_name,
+        sample_ids,
     )
     print_dataframe(
         data,
