@@ -28,19 +28,172 @@ from ete_utils import (
     _read_sync_state,
     _calc_hash,
     _undo_fasta_asm_transform,
-    _textwrap)
+    _textwrap, _read_cns_to_set, _get_single_seq_file_path)
 
 
 class TestSeqSyncGetCommands:
     runner = CliRunner()
 
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_migrate__given_existing_fasta__expect_migration_to_fasta_cns_with_correct_files_and_contents(self):
-        raise NotImplementedError
+    def test_sync_get__given_consensus_fasta_with_multi_sequences_is_uploaded_and_then_syncd_to_disk__expect_all_sequences_are_also_merged_into_a_single_file(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        seq_id2 = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
 
-    @pytest.mark.skip(reason="Not implemented")
-    def test_sync_migrate__given_existing_fastq__expect_migration_to_fastq_ill_pe_with_correct_files_and_contents(self):
-        raise NotImplementedError
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id, seq_id2],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
+        cns_fasta_path = _clone_cns_fasta_file(
+            original_file,
+            [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
+
+        _upload_fasta_cns_file(self.runner, cns_fasta_path)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fasta-cns'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        # The output directory should contain a single fasta file with all sequences
+        merged_file = f'{temp_dir}/consensus.fasta'
+        assert os.path.exists(merged_file) is True, (f'The output directory should contain '
+                                                     f'a merged fasta file: {merged_file}')
+
+        # The merged file should contain both sequences
+        with open(merged_file, 'r') as file:
+            merged_content = set(file.read().split('\n'))
+
+            # open cns_fasta_path and read the content
+            with open(cns_fasta_path, 'r') as file:
+                original_content = set(file.read().split('\n'))
+                assert merged_content == original_content, \
+                    'The merged file should contain all sequences from the original file.'
+
+    def test_sync_get__given_consensus_fasta_with_multi_sequences_is_uploaded_and_then_syncd_to_disk__expect_each_sequence_to_also_have_its_own_file(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        seq_id2 = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id, seq_id2],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
+        cns_fasta_path = _clone_cns_fasta_file(
+            original_file,
+            [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
+
+        _upload_fasta_cns_file(self.runner, cns_fasta_path)
+
+        # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fasta-cns'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        seq1_file = _get_single_seq_file_path(seq_id, seq_type, '.fasta', temp_dir)
+        seq2_file = _get_single_seq_file_path(seq_id2, seq_type, '.fasta', temp_dir)
+        original_content = _read_cns_to_set(cns_fasta_path)
+        seq1_content = _read_cns_to_set(seq1_file)
+        seq2_content = _read_cns_to_set(seq2_file)
+
+        assert seq1_content.issubset(original_content), \
+            'The content of the sequence file should match the original content.'
+        assert seq2_content.issubset(original_content), \
+            'The content of the sequence file should match the original content.'
+
+    def test_sync_get__given_csn_fasta_with_seq1_and_seq2_is_uploaded_and_syncd_and_then_cns_fasta_with_newer_seq1_is_uploaded_and_syncd__expect_seq1_to_be_updated_merged_file_and_individual_file(self):
+        # Arrange
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        seq_id2 = f'seq-{_new_identifier(10)}'
+        seq_id3 = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
+        shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.runner, seq_id_field_name)
+        _create_field_if_not_exists(self.runner, owner_group_field_name)
+        _create_field_if_not_exists(self.runner, shared_groups_field_name)
+        _create_min_proforma(self.runner, proforma_name)
+        _create_org(self.runner, org_name)
+        _create_group(self.runner, shared_group)
+
+        _upload_min_metadata(
+            self.runner,
+            proforma_name,
+            [seq_id, seq_id2, seq_id3],
+            owner_group,
+            [shared_group])
+
+        original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
+        cns_fasta_path = _clone_cns_fasta_file(
+            original_file,
+            [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
+
+        _upload_fasta_cns_file(self.runner, cns_fasta_path)
+
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fasta-cns'
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Act
+        updated_file = 'test/test-assets/sequences/cns/multi-seq-cns-updated.fasta'
+        csn_fasta_path_updated = _clone_cns_fasta_file(
+            updated_file,
+            [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-003', seq_id3)])
+
+        _upload_fasta_cns_file(self.runner, csn_fasta_path_updated)
+        _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
+
+        # Assert
+        seq1_file = _get_single_seq_file_path(seq_id, seq_type, '.fasta', temp_dir)
+        seq2_file = _get_single_seq_file_path(seq_id2, seq_type, '.fasta', temp_dir)
+        seq3_file = _get_single_seq_file_path(seq_id3, seq_type, '.fasta', temp_dir)
+        original_content = _read_cns_to_set(cns_fasta_path)
+        original_without_seq1 = set(filter(lambda k: seq_id in k, original_content))
+        original_updated_content = _read_cns_to_set(csn_fasta_path_updated)
+        original_superset_with_update = original_without_seq1.union(original_updated_content)
+        seq1_content = _read_cns_to_set(seq1_file)
+        seq2_content = _read_cns_to_set(seq2_file)
+        seq3_content = _read_cns_to_set(seq3_file)
+
+        assert seq1_content.issubset(original_superset_with_update), \
+            'The content of the sequence file should match the original content.'
+        assert seq2_content.issubset(original_content), \
+            'The content of the sequence file should match the original content.'
+        assert seq3_content.issubset(original_updated_content), \
+            'The content of the sequence file should match the original content.'
 
     @pytest.mark.parametrize("seq_type", ['fasta-asm', 'fasta-cns', 'fastq-ill-pe', 'fastq-ill-se'])
     def test_sync_get__given_group_has_no_sequences__expect_no_sequence_downloaded(self, seq_type):
@@ -173,8 +326,7 @@ class TestSeqSyncGetCommands:
         # Upload a fasta cns file, so it can be removed as per the test case
         cns_fasta_path = _clone_cns_fasta_file(
             'test/test-assets/sequences/cns/ABC-cns-001.fasta',
-            'SEQ_ABC-cns-001',
-            seq_id)
+            [('SEQ_ABC-cns-001', seq_id)])
 
         _upload_fasta_cns_file(self.runner, cns_fasta_path)
         fasta_cns_type = 'fasta-cns'
@@ -255,9 +407,8 @@ class TestSeqSyncGetCommands:
         original_hash = _calc_hash(original_file)
         clone_path = f'{temp_dir}/clone-{original_file_name}'
 
-        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
-        downloaded_file = [f for f in dir_contents if f.endswith('.fasta')][0]
-        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        seq_type_ext = '.fasta'
+        downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, seq_type_ext, temp_dir)
         shutil.copyfile(downloaded_file_path, clone_path)
 
         _undo_fasta_asm_transform(clone_path, seq_id)
@@ -407,8 +558,7 @@ class TestSeqSyncGetCommands:
 
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
-            'SEQ_ABC-cns-001',
-            seq_id)
+            [('SEQ_ABC-cns-001', seq_id)])
 
         _upload_fasta_cns_file(self.runner, cns_fasta_path)
 
@@ -425,9 +575,7 @@ class TestSeqSyncGetCommands:
         line_wrapped_original_hash = _calc_hash(wrap_adjusted_file_path)
 
         # Get the downloaded file
-        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
-        downloaded_file = [f for f in dir_contents if f.endswith('.fasta')][0]
-        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fasta', temp_dir)
         downloaded_file_hash = _calc_hash(downloaded_file_path)
 
         # read the expected hash from the manifest file. All three
@@ -474,9 +622,7 @@ class TestSeqSyncGetCommands:
 
         # Assert
         # Undo transform to the downloaded file. It should have the same hash as the original
-        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
-        downloaded_file = [f for f in dir_contents if f.endswith('.fasta')][0]
-        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fasta', temp_dir)
 
         with open(downloaded_file_path, 'r') as file:
             first_line = file.readline()
@@ -623,8 +769,7 @@ class TestSeqSyncGetCommands:
 
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
-            'SEQ_ABC-cns-001',
-            seq_id)
+            [('SEQ_ABC-cns-001', seq_id)])
 
         _upload_fasta_cns_file(self.runner, cns_fasta_path)
 
@@ -664,8 +809,7 @@ class TestSeqSyncGetCommands:
 
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
-            'SEQ_ABC-cns-001',
-            seq_id)
+            [('SEQ_ABC-cns-001', seq_id)])
 
         _upload_fasta_cns_file(self.runner, cns_fasta_path)
 
@@ -705,8 +849,7 @@ class TestSeqSyncGetCommands:
 
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
-            'SEQ_ABC-cns-001',
-            seq_id)
+            [('SEQ_ABC-cns-001', seq_id)])
 
         _upload_fasta_cns_file(self.runner, cns_fasta_path)
 
@@ -1052,9 +1195,7 @@ class TestSeqSyncGetCommands:
         _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
 
         # check that the downloaded file exists, and then delete it.
-        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
-        downloaded_file = [f for f in dir_contents if f.endswith('.fastq')][0]
-        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fastq', temp_dir)
         assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
         os.remove(downloaded_file_path)
 
@@ -1100,9 +1241,7 @@ class TestSeqSyncGetCommands:
         _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
 
         # check that the downloaded file exists, and then alter it.
-        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
-        downloaded_file = [f for f in dir_contents if f.endswith('.fastq')][0]
-        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fastq', temp_dir)
         assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
 
         with open(downloaded_file_path, 'a') as file:
@@ -1150,9 +1289,7 @@ class TestSeqSyncGetCommands:
         _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
 
         # check that the downloaded file exists, and then alter it.
-        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
-        downloaded_file = [f for f in dir_contents if f.endswith('.fastq')][0]
-        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fastq', temp_dir)
         assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
 
         # Act
@@ -1199,9 +1336,7 @@ class TestSeqSyncGetCommands:
         _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
 
         # check that the downloaded file exists, and then add stray files.
-        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
-        downloaded_file = [f for f in dir_contents if f.endswith('.fastq')][0]
-        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fastq', temp_dir)
         assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
 
         # add stray file
@@ -1252,9 +1387,7 @@ class TestSeqSyncGetCommands:
         _seq_sync_get(self.runner, shared_group, temp_dir, seq_type)
 
         # check that the downloaded file exists, and then add stray files.
-        dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
-        downloaded_file = [f for f in dir_contents if f.endswith('.fastq')][0]
-        downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+        downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fastq', temp_dir)
         assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
 
         # add stray file

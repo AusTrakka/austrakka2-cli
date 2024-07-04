@@ -15,19 +15,41 @@ owner_group_field_name = 'Owner_group'
 shared_groups_field_name = 'Shared_groups'
 
 
+def _get_single_seq_file_path(seq_id, seq_type, seq_type_ext, temp_dir) -> str:
+    dir_contents = os.listdir(f'{temp_dir}/{seq_id}/{seq_type}')
+    downloaded_file = [f for f in dir_contents if f.endswith(seq_type_ext)][0]
+    downloaded_file_path = f'{temp_dir}/{seq_id}/{seq_type}/{downloaded_file}'
+    return downloaded_file_path
+
+
+def _read_cns_to_set(cns_fasta_path: str) -> set[str]:
+    content_set = set()
+
+    with open(cns_fasta_path, 'r') as file:
+        # Keep reading pairs of lines until EOF
+        while True:
+            seq = file.readline()
+            seq_value = file.readline()
+            if not seq or not seq_value:
+                break
+            content_set.add(f'{seq.strip()}{seq_value.strip()}')
+    return content_set
+
+
 def _clone_cns_fasta_file(
         original_file_path: str,
-        old_seq_id: str,
-        seq_id_override: str) -> str:
+        seq_id_updates: list[tuple[str, str]]) -> str:
 
     with open(original_file_path, 'r') as file:
         content = file.read()
 
     temp_dir = tempfile.gettempdir()
-    temp_file_name = f'{seq_id_override}.fasta'
+    temp_file_name = f'{_new_identifier(10)}.fasta'
     temp_file_path = f'{temp_dir}/{temp_file_name}'
 
-    content = content.replace(old_seq_id, seq_id_override)
+    for old_seq_id, seq_id_override in seq_id_updates:
+        content = content.replace(old_seq_id, seq_id_override)
+
     with open(temp_file_path, 'w') as file:
         file.write(content)
 
