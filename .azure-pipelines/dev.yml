@@ -51,6 +51,10 @@ stages:
         steps:
           - template: templates/checkout/cli.yml@Pipelines
           - template: templates/checkout/infra.yml@Pipelines
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: $(terraformOutputArtifact)
+              path: $(buildDir)/tf
           - task: PowerShell@2
             displayName: Generate .env file 
             inputs:
