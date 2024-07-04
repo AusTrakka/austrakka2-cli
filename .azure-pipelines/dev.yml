@@ -67,6 +67,6 @@ stages:
                 pipenv shell
                 pipenv install --dev
                 export AT_TOKEN=$(austrakka auth process)
-                pytest unit #TODO: change this to end_to_end 
+                pytest
   - template: templates/stages/env/destroy.yml@Pipelines
 
