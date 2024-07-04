@@ -47,7 +47,7 @@ seq.add_command(sync)
     help='The Seq_IDs of specific sequences to download',
     cls=RequiredMutuallyExclusiveOption,
     mutually_exclusive=['group_name'])
-def get(
+def seq_get(
         output_dir,
         seq_type: str,
         group_name: str,
@@ -70,16 +70,29 @@ def get(
 @seq.command('list')
 @table_format_option()
 @opt_seq_type(default=None, required=False)
-@opt_group_name(default=None, multiple=False, required=True)
+@opt_group_name(
+    required=False,
+    default=None,
+    multiple=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['sample_id'])
+@opt_sample_id(
+    required=False,
+    default=None,
+    help='The Seq_IDs of specific sequences to download',
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['group_name'])
 def seq_list(
         out_format: str,
         seq_type: str,
         group_name: str,
+        sample_id: List[str],
 ):
     list_sequences(
         out_format,
         seq_type,
         group_name,
+        sample_id
     )
 
 
