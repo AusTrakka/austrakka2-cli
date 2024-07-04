@@ -69,7 +69,7 @@ stages:
               workingDirectory: $(sourceDir)/cli
               script: |
                 pipenv install --dev
-                export AT_TOKEN=$(austrakka auth process)
+                export AT_TOKEN=$(pipenv run austrakka auth process)
                 pipenv run pytest
   - template: templates/stages/env/destroy.yml@Pipelines
 
