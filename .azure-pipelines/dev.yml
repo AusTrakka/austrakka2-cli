@@ -3,7 +3,7 @@ resources:
     - repository: CLI 
       type: github
       name: AusTrakka/austrakka2-cli
-      ref: $(Build.SourceBranchName) 
+      ref: $(Build.SourceBranch) 
       endpoint: AusTrakka
     - repository: Pipelines
       type: github
