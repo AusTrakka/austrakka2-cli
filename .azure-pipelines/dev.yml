@@ -42,7 +42,9 @@ variables:
   sourceDir: '$(Pipeline.Workspace)/$(Build.DefinitionName)/$(Build.BuildNumber)'
 
 stages:
-  - template: templates/stages/env/create.yml@Pipelines 
-  - template: templates/jobs/test/cli.yml@Pipelines 
+  - template: templates/stages/env/create.yml@Pipelines
+  - stage: RunTests
+    jobs:
+      - template: templates/jobs/test/cli.yml@Pipelines 
   - template: templates/stages/env/destroy.yml@Pipelines
 
