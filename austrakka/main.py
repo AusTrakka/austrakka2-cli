@@ -7,6 +7,7 @@ from click.core import Context
 from loguru import logger
 
 from austrakka.utils.context import CxtKey
+from austrakka.utils.context import format_as_option 
 from .components.auth import auth
 from .components.user import user
 from .components.org import org
@@ -46,13 +47,13 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 # auto_envvar_prefix due to limitations with CliRunner tests
 @click.group(cls=AusTrakkaCliTopLevel, context_settings=CONTEXT_SETTINGS)
 @click.option(
-    f"--{CxtKey.CTX_URI.value}",
+    format_as_option(CxtKey.CTX_URI),
     show_envvar=True,
     envvar='AT_URI',
     required=True
 )
 @click.option(
-    f"--{CxtKey.CTX_TOKEN.value}",
+    format_as_option(CxtKey.CTX_TOKEN),
     show_envvar=True,
     envvar='AT_TOKEN',
     required=True
@@ -67,7 +68,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     show_default=True
 )
 @click.option(
-    f"--{CxtKey.CTX_VERIFY_CERT.value}",
+    format_as_option(CxtKey.CTX_VERIFY_CERT),
     show_envvar=True,
     required=True,
     default=True,
@@ -76,13 +77,22 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     help="Skip verification of certificate"
 )
 @click.option(
-    f"--{CxtKey.CTX_USE_HTTP2.value}",
+    format_as_option(CxtKey.CTX_USE_HTTP2),
     show_envvar=True,
     required=True,
     default=False,
     show_default=True,
     type=bool,
     help="Use HTTP2 (experimental)"
+)
+@click.option(
+    format_as_option(CxtKey.CTX_SKIP_VERSION_CHECK),
+    show_envvar=True,
+    required=True,
+    default=False,
+    show_default=True,
+    type=bool,
+    help="Skip check for new AusTrakka CLI version"
 )
 @click.option(
     '--log',
@@ -99,6 +109,7 @@ def cli(
         log: str,
         verify_cert: bool,
         use_http2: bool,
+        skip_version_check: bool,
 ):
     """
     A cli for interfacing with AusTrakka.
@@ -108,9 +119,11 @@ def cli(
         CxtKey.CTX_TOKEN.value: token,
         CxtKey.CTX_VERIFY_CERT.value: verify_cert,
         CxtKey.CTX_USE_HTTP2.value: use_http2,
+        CxtKey.CTX_SKIP_VERSION_CHECK.value: skip_version_check,
     }
     setup_logger(log_level, log)
-    check_version(VERSION)
+    if not skip_version_check:
+        check_version(VERSION)
 
 
 def get_cli():
