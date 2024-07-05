@@ -38,8 +38,8 @@ variables:
   backendAzureRmStorageAccountName: 'stdevterfshdas1'
   backendAzureRmContainerName: 'env'
   backendAzureRmKey: '$(Build.DefinitionName)/$(Build.BuildNumber).tfstate'
-  buildDir: '$(Build.BinariesDirectory)/$(Build.BuildNumber)'
-  sourceDir: '$(Pipeline.Workspace)/$(Build.BuildNumber)'
+  buildDir: '$(Build.BinariesDirectory)/$(Build.DefinitionName)/$(Build.BuildNumber)'
+  sourceDir: '$(Pipeline.Workspace)/$(Build.DefinitionName)/$(Build.BuildNumber)'
 
 stages:
   - template: templates/stages/env/create.yml@Pipelines 
