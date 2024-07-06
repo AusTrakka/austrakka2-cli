@@ -23,11 +23,6 @@ CONTENT_TYPE_MULTIPART = 'multipart/form-data; charset=utf-8; boundary=+++'
 WWW_AUTHENTICATE = 'www-authenticate'
 INVALID_TOKEN = 'invalid_token'
 
-MODE_SKIP = 'skip'
-MODE_OVERWRITE = 'overwrite'
-MODE = 'mode'
-
-
 def _get_default_headers(
         content_type: str = CONTENT_TYPE_JSON,
 ) -> Dict:
@@ -122,12 +117,15 @@ def api_get(
 def api_get_stream(
         path: str,
         func: Callable[[httpx.Response], None],
+        params: Dict = None,
 ):
     """
-    Throws httpx.HTTPStatusError with status is not 2xx.
+    Throws httpx.HTTPStatusError if status is not 2xx.
     """
+    if params is None:
+        params = {}
     resp: httpx.Response
-    with _get_client().stream("GET", _get_url(path)) as resp:
+    with _get_client().stream("GET", _get_url(path), params=params) as resp:
         resp.raise_for_status()
         func(resp)
 
@@ -238,10 +236,3 @@ def api_delete(
         params=params,
         headers=dict(client.headers) | custom_headers
     )
-
-
-def set_mode_header(custom_headers, force, skip):
-    if skip:
-        custom_headers[MODE] = MODE_SKIP
-    if force:
-        custom_headers[MODE] = MODE_OVERWRITE
