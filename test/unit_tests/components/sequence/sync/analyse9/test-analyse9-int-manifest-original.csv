@@ -1,0 +1,2 @@
+sequenceId,sampleName,fileName,fileNameOnDisk,blobFilePath,serverSha256,type,read,created,isActive,status
+1,Sample5,Sample5_20230614T00453848_a34d8705.fastq,Sample5_20230614T00453848_a34d8705.fastq,Sequences/2023/6/12,SOME-HASH-THAT-WONT-MATCH-TO-PROVE-NO-HASH-CHECK,fastq-ill-se,1,2023-06-12T01:26:51.385267Z,True,failed

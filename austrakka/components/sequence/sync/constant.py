@@ -32,14 +32,10 @@ READ_KEY = 'read'
 BLOB_FILE_PATH_KEY = 'blobFilePath'
 SERVER_SHA_256_KEY = 'serverSha256'
 TYPE_KEY = 'type'
+IS_ACTIVE_KEY = 'isActive'
 
 # Manifest file keys
 SEQ_ID_KEY = 'Seq_ID'
-FASTQ_R1_KEY = 'FASTQ_R1'
-FASTQ_R2_KEY = 'FASTQ_R2'
-HASH_FASTQ_R1_KEY = 'HASH_FASTQ_R1'
-HASH_FASTQ_R2_KEY = 'HASH_FASTQ_R2'
-FASTA_R1_KEY = 'FASTA_R1'
 
 # Workflow value constants
 DOWNLOADED = 'downloaded'
@@ -50,12 +46,22 @@ MISSING = 'missing'
 DONE = 'done'
 
 # Command level value constants
-MANIFEST_FILE_NAME = 'manifest.csv'
-FASTA_AGGREGATE_FILE_NAME = 'all.fasta'
-INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME = 'intermediate-all.fasta'
-INTERMEDIATE_MANIFEST_FILE = 'intermediate-manifest.csv'
-OBSOLETE_OBJECTS_FILE = 'delete-targets.csv'
-SYNC_STATE_FILE = 'sync-state.json'
-FASTQ = 'fastq'
-FASTA = 'fasta'
+# SEQTYPE will be replaced with the seq type being operated on
+MANIFEST_FILE_NAME = 'manifest-SEQTYPE.csv'
+FASTA_AGGREGATE_FILE_NAME = 'consensus.fasta'
+INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME = 'intermediate-consensus.fasta'
+INTERMEDIATE_MANIFEST_FILE = 'intermediate-manifest-SEQTYPE.csv'
+OBSOLETE_OBJECTS_FILE = 'delete-targets-SEQTYPE.csv'
+SYNC_STATE_FILE = 'sync-state-SEQTYPE.json'
 TRASH_DIR = '.trash'
+
+# Used for migration from old sync system
+OLD_SYNC_STATE_FILE = 'sync-state.json'
+OLD_MANIFEST_FILE = 'manifest.csv'
+OLD_OBJS_FILE = 'delete-targets.csv'
+OLD_INTERMEDIATE_MANIFEST_FILE = 'intermediate-manifest.csv'
+OLD_FASTA_AGGREGATE_FILE_NAME = 'all.fasta'
+MIGRATE_SEQ_TYPES = {
+    'fastq': 'fastq-ill-pe',
+    'fasta': 'fasta-cns'
+}
