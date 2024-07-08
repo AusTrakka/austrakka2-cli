@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.57.1] - 2024-07-08
+
+### Fixed
+- Revert semver dependency to fix runtime error
+
 # [0.57.0] - 2024-07-08
 
 ### Changed
