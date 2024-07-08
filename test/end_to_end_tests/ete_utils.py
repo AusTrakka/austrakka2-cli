@@ -136,9 +136,5 @@ def _create_paired_seq_csv(seq_id: str, fastq_file_path1: str, fastq_file_path2:
     return _save_to_test_dir(csv)
 
 
-def _invoke(runner: CliRunner, args):
-    return runner.invoke(get_cli(), args)
-
-
 def _new_identifier(n: int) -> str:
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=n))
