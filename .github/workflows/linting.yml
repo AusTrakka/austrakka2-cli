@@ -17,4 +17,4 @@ jobs:
           pip install -r requirements.txt
       - name: Analysing the code with pylint
         run: |
-          pylint --disable=import-error,too-few-public-methods austrakka
+          pylint --disable=import-error,too-few-public-methods austrakka test
