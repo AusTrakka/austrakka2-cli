@@ -1,0 +1,2 @@
+class CliTestException(Exception):
+    pass

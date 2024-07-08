@@ -20,7 +20,7 @@ class CxtKey(Enum):
     LOG_LEVEL = 'log_level'
 
 
-class AusTrakkaCtx:
+class AusTrakkaCxt:
     """
     Provides helper methods to deal with top-level options and environment variables
     """

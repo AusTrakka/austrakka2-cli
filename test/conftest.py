@@ -1,6 +1,8 @@
 import pathlib
 import pytest
 
+from austrakka.main import get_cli
+from test.utils.austrakka_test_cli import AusTrakkaTestCli
 
 def pytest_collection_modifyitems(config, items):
     """
@@ -27,3 +29,10 @@ def pytest_configure(config):
         mark_name = dir_.stem.removesuffix('_tests')
         config.addinivalue_line('markers', mark_name)
 
+
+@pytest.fixture()
+def austrakka_test_cli():
+    """
+    Access the AusTrakka CLI in a test.
+    """
+    return AusTrakkaTestCli(get_cli()) 

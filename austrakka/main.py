@@ -7,7 +7,7 @@ from click.core import Context
 from loguru import logger
 
 from austrakka.utils.context import CxtKey
-from austrakka.utils.context import AusTrakkaCtx
+from austrakka.utils.context import AusTrakkaCxt
 from .components.auth import auth
 from .components.user import user
 from .components.org import org
@@ -43,30 +43,30 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 
 @click.group(cls=AusTrakkaCliTopLevel, context_settings=CONTEXT_SETTINGS)
 @click.option(
-    AusTrakkaCtx.get_option_name(CxtKey.URI), 
+    AusTrakkaCxt.get_option_name(CxtKey.URI), 
     show_envvar=True,
-    envvar=AusTrakkaCtx.get_env_var_name(CxtKey.URI),
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.URI),
     required=True
 )
 @click.option(
-    AusTrakkaCtx.get_option_name(CxtKey.TOKEN),
+    AusTrakkaCxt.get_option_name(CxtKey.TOKEN),
     show_envvar=True,
-    envvar=AusTrakkaCtx.get_env_var_name(CxtKey.TOKEN),
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.TOKEN),
     required=True
 )
 @click.option(
-    AusTrakkaCtx.get_option_name(CxtKey.LOG_LEVEL), 
+    AusTrakkaCxt.get_option_name(CxtKey.LOG_LEVEL), 
     show_envvar=True,
-    envvar=AusTrakkaCtx.get_env_var_name(CxtKey.LOG_LEVEL),
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.LOG_LEVEL),
     required=True,
     default=LOG_LEVEL_INFO,
     type=click.Choice(LOG_LEVELS),
     show_default=True
 )
 @click.option(
-    AusTrakkaCtx.get_option_name(CxtKey.SKIP_CERT_VERIFY),
+    AusTrakkaCxt.get_option_name(CxtKey.SKIP_CERT_VERIFY),
     show_envvar=True,
-    envvar=AusTrakkaCtx.get_env_var_name(CxtKey.SKIP_CERT_VERIFY),
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.SKIP_CERT_VERIFY),
     required=True,
     default=False,
     show_default=True,
@@ -74,9 +74,9 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     help="Skip verification of certificate"
 )
 @click.option(
-    AusTrakkaCtx.get_option_name(CxtKey.USE_HTTP2), 
+    AusTrakkaCxt.get_option_name(CxtKey.USE_HTTP2), 
     show_envvar=True,
-    envvar=AusTrakkaCtx.get_env_var_name(CxtKey.USE_HTTP2),
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.USE_HTTP2),
     required=True,
     default=False,
     show_default=True,
@@ -84,9 +84,9 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     help="Use HTTP2 (experimental)"
 )
 @click.option(
-    AusTrakkaCtx.get_option_name(CxtKey.SKIP_VERSION_CHECK),
+    AusTrakkaCxt.get_option_name(CxtKey.SKIP_VERSION_CHECK),
     show_envvar=True,
-    envvar=AusTrakkaCtx.get_env_var_name(CxtKey.SKIP_VERSION_CHECK),
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.SKIP_VERSION_CHECK),
     required=True,
     default=False,
     show_default=True,
@@ -155,8 +155,8 @@ def main():
         log_response(ex.parsed_resp)
         sys.exit(1)
     except Exception as ex:  # pylint: disable=broad-except
-        # Cannot use AusTrakkaCtx.value here because there is no click context
-        if is_debug(os.getenv(AusTrakkaCtx.get_env_var_name(CxtKey.LOG_LEVEL), '')):
+        # Cannot use AusTrakkaCxt.value here because there is no click context
+        if is_debug(os.getenv(AusTrakkaCxt.get_env_var_name(CxtKey.LOG_LEVEL), '')):
             logger.exception(ex)
         else:
             logger.error(ex)
