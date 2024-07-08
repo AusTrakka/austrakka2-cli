@@ -8,7 +8,6 @@ from loguru import logger
 
 from austrakka.utils.context import CxtKey
 from austrakka.utils.context import AusTrakkaCtx
-from austrakka.utils.context import CLI_PREFIX
 from .components.auth import auth
 from .components.user import user
 from .components.org import org
@@ -42,8 +41,6 @@ from .utils.version import check_version
 CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 
 
-# NOTE: envvar below needs to be explicitly specified despite using
-# auto_envvar_prefix due to limitations with CliRunner tests
 @click.group(cls=AusTrakkaCliTopLevel, context_settings=CONTEXT_SETTINGS)
 @click.option(
     AusTrakkaCtx.get_option_name(CxtKey.URI), 
@@ -151,9 +148,8 @@ def get_cli():
 
 def main():
     try:
-        get_cli()
-        # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
-        cli(auto_envvar_prefix=CLI_PREFIX)
+        # pylint: disable=no-value-for-parameter
+        get_cli()()
     except FailedResponseException as ex:
         logger.error("Request failed")
         log_response(ex.parsed_resp)
