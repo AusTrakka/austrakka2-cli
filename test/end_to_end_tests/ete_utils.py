@@ -6,9 +6,6 @@ import random
 import tempfile
 import textwrap
 
-from click.testing import CliRunner
-from austrakka.main import get_cli
-
 
 seq_id_field_name = 'Seq_ID'
 owner_group_field_name = 'Owner_group'

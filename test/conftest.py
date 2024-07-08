@@ -1,8 +1,9 @@
 import pathlib
+from test.utils.austrakka_test_cli import AusTrakkaTestCli
 import pytest
 
 from austrakka.main import get_cli
-from test.utils.austrakka_test_cli import AusTrakkaTestCli
+
 
 def pytest_collection_modifyitems(config, items):
     """
@@ -13,7 +14,9 @@ def pytest_collection_modifyitems(config, items):
     rootdir = pathlib.Path(config.rootdir)
     for item in items:
         rel_path = pathlib.Path(item.fspath).relative_to(rootdir)
-        mark_name = next((part for part in rel_path.parts if part.endswith('_tests')), '').removesuffix('_tests')
+        mark_name = next(
+            (part for part in rel_path.parts if part.endswith('_tests')),
+            '').removesuffix('_tests')
         if mark_name:
             mark = getattr(pytest.mark, mark_name)
             item.add_marker(mark)
@@ -35,4 +38,4 @@ def austrakka_test_cli():
     """
     Access the AusTrakka CLI in a test.
     """
-    return AusTrakkaTestCli(get_cli()) 
+    return AusTrakkaTestCli(get_cli())
