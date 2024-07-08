@@ -41,3 +41,8 @@ class FailedResponseException(Exception):
 
 class IncorrectHashException(Exception):
     pass
+
+
+class AusTrakkaCliException(Exception):
+    pass
+

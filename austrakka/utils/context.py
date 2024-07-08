@@ -2,6 +2,8 @@ from enum import Enum
 
 from click import get_current_context
 
+from austrakka.utils.exceptions import AusTrakkaCliException
+
 
 CLI_PREFIX = 'AT'
 
@@ -26,17 +28,18 @@ class AusTrakkaCtx:
     def get_value(ctx_key: CxtKey):
         """
         This method relies on a click context being active.
-        If there is no click context, eg. top level exception catch, then directly probe the environment
+        If there is no click context, eg. top level exception catch, then 
+        directly probe the environment
         :param ctx_key: context key
         :return: value of the context key
         """
         try:
             return get_current_context().parent.context[ctx_key.value]
-        except RuntimeError:
-            raise Exception(
+        except RuntimeError as ex:
+            raise AusTrakkaCliException(
                 f"Error accessing CLI context for key {ctx_key.name}."
                 + "Context may not be active, or key does not exist." 
-            ) 
+            ) from ex 
 
     @staticmethod
     def get_option_name(ctx_key: CxtKey):
