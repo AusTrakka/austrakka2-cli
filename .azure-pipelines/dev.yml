@@ -8,7 +8,7 @@ resources:
     - repository: Pipelines
       type: github
       name: AusTrakka/austrakka-pipelines
-      ref: 5837-cli-test-job-template
+      ref: Development 
       endpoint: AusTrakka
     - repository: Infra
       type: github
