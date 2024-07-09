@@ -15,7 +15,7 @@ from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.exceptions import UnauthorizedException
 from austrakka.utils.output import log_response
 from austrakka.utils.context import CxtKey
-from austrakka.utils.context import get_ctx_value
+from austrakka.utils.context import AusTrakkaCxt
 from austrakka import __version__
 
 CONTENT_TYPE_JSON = 'application/json'
@@ -28,7 +28,7 @@ def _get_default_headers(
 ) -> Dict:
     default_headers = {
         'Content-Type': content_type,
-        'Authorization': f'Bearer {get_ctx_value(CxtKey.CTX_TOKEN)}',
+        'Authorization': f'Bearer {AusTrakkaCxt.get_value(CxtKey.TOKEN)}',
         'User-Agent': f'austrakka/{__version__}',
     }
     return default_headers
@@ -63,7 +63,7 @@ def _get_data(body: Union[Dict, List] = None) -> str:
 
 
 def _get_url(path: str):
-    return f'{get_ctx_value(CxtKey.CTX_URI)}/api/{path}'
+    return f'{AusTrakkaCxt.get_value(CxtKey.URI)}/api/{path}'
 
 
 def get_response(response: httpx.Response, log_resp: bool = False) -> Dict:
@@ -80,9 +80,9 @@ def _get_client(
 ):
     return httpx.Client(
         headers=_get_default_headers(content_type),
-        verify=get_ctx_value(CxtKey.CTX_VERIFY_CERT),
+        verify=not AusTrakkaCxt.get_value(CxtKey.SKIP_CERT_VERIFY),
         timeout=None,
-        http2=get_ctx_value(CxtKey.CTX_USE_HTTP2),
+        http2=AusTrakkaCxt.get_value(CxtKey.USE_HTTP2),
     )
 
 

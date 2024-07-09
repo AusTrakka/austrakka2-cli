@@ -1,4 +1,4 @@
-from click.testing import CliRunner
+import pytest
 
 from ete_cmd_bricks import (
     _create_field_if_not_exists,
@@ -10,13 +10,15 @@ from ete_cmd_bricks import (
 
 from ete_utils import (
     _new_identifier,
-    seq_id_field_name,
     owner_group_field_name,
     shared_groups_field_name)
-
+from test.utils.austrakka_test_cli import AusTrakkaTestCli
 
 class TestSeqAddCommands:
-    runner = CliRunner()
+    @pytest.fixture(autouse=True)
+    def _use_cli(self, austrakka_test_cli: AusTrakkaTestCli):
+        self.cli = austrakka_test_cli
+
 
     def test_seq_add_fasta_asm__given_sample_has_no_prior_asm_sequences__expect_success_without_needing_skip_or_force(self):
         # Arrange
@@ -26,23 +28,22 @@ class TestSeqAddCommands:
         shared_group = f'sg-{_new_identifier(10)}'
         proforma_name = f'{_new_identifier(10)}'
 
-        _create_field_if_not_exists(self.runner, seq_id_field_name)
-        _create_field_if_not_exists(self.runner, owner_group_field_name)
-        _create_field_if_not_exists(self.runner, shared_groups_field_name)
-        _create_min_proforma(self.runner, proforma_name)
-        _create_org(self.runner, org_name)
-        _create_group(self.runner, shared_group)
+        _create_field_if_not_exists(self.cli, owner_group_field_name)
+        _create_field_if_not_exists(self.cli, shared_groups_field_name)
+        _create_min_proforma(self.cli, proforma_name)
+        _create_org(self.cli, org_name)
+        _create_group(self.cli, shared_group)
 
         _upload_min_metadata(
-            self.runner,
+            self.cli,
             proforma_name,
             [seq_id],
             owner_group,
             [shared_group])
 
         # Act
-        _upload_fasta_asm_file(self.runner, 'test/test-assets/sequences/asm/XYZ-asm-004.fasta', seq_id)
+        _upload_fasta_asm_file(self.cli, 'test/test-assets/sequences/asm/XYZ-asm-004.fasta', seq_id)
 
         # Assert
-        result = _list_seq_by_group(self.runner, shared_group)
+        result = _list_seq_by_group(self.cli, shared_group)
         assert len(result) == 1, f'Failed to add fasta asm file to sequence: {result}'
