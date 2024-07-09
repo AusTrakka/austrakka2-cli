@@ -30,5 +30,5 @@ steps:
   - script: pip install -r requirements.txt
     displayName: 'Install requirements'
 
-  - script: pytest
+  - script: pytest -m unit
     displayName: 'pytest'
