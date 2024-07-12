@@ -648,6 +648,30 @@ def opt_tenant_id(**attrs: t.Any):
     )
 
 
+def opt_owning_tenant_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'AusTrakka Tenant ID that owns the resource being operated on.',
+    }
+    return _create_option(
+        '--owning-tenant-id',
+        type=click.INT,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_record_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'The record referenced by a privilege entry. Eg., ProjectId, etc..',
+    }
+    return _create_option(
+        '--record-id',
+        type=click.INT,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_scope_access_def_id(**attrs: t.Any):
     defaults = {
         'required': True,

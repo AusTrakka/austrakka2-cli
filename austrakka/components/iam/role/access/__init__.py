@@ -1,4 +1,4 @@
-from austrakka.components.rbac.role.access.funcs import get_access, add_access, remove_access
+from austrakka.components.iam.role.access.funcs import get_access, add_access, remove_access
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import *
 from austrakka.utils.output import table_format_option
