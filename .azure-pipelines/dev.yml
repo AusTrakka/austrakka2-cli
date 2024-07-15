@@ -32,14 +32,10 @@ pool:
   name: Test
 
 variables:
-  azureConnection: 'AusTrakka Dev (austrakka tenancy)'
-  azureConnectionAdmin: 'AusTrakka Admin (austrakka tenancy)'
-  backendAzureRmResourceGroupName: 'rg-devterf-shd-as-1'
-  backendAzureRmStorageAccountName: 'stdevterfshdas1'
-  backendAzureRmContainerName: 'env'
-  backendAzureRmKey: '$(Build.DefinitionName)/$(Build.BuildNumber).tfstate'
-  buildDir: '$(Build.BinariesDirectory)/$(Build.DefinitionName)/$(Build.BuildNumber)'
-  sourceDir: '$(Pipeline.Workspace)/$(Build.DefinitionName)/$(Build.BuildNumber)'
+- template: variables/dev/azure/connection.yml@Pipelines
+- template: variables/dev/terraform/storage.yml@Pipelines
+- template: variables/dev/terraform/key.yml@Pipelines
+- template: variables/devops/setup.yml@Pipelines
 
 stages:
   - template: templates/stages/env/create.yml@Pipelines
