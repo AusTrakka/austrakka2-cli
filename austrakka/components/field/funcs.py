@@ -158,9 +158,9 @@ def list_field_projects(name: str, out_format: str):
     if len(result['data']) == 0:
         logger.info("Field does not belong to any projects.")
         return
-    DISPLAY_COLUMNS = ['projectFieldId', 'projectAbbrev', 'fieldName', 'analysisLabels']
+    display_columns = ['projectFieldId', 'projectAbbrev', 'fieldName', 'analysisLabels']
     print_dataframe(
-        pd.DataFrame(result['data'])[DISPLAY_COLUMNS],
+        pd.DataFrame(result['data'])[display_columns],
         out_format,
     )
 
@@ -173,8 +173,9 @@ def list_field_proformas(name: str, out_format: str):
     if len(result['data']) == 0:
         logger.info("Field does not belong to any active proformas.")
         return
-    DISPLAY_COLUMNS = ['proFormaId', 'proFormaVersionId', 'abbreviation', 'name', 'description', 'isActive', 'isCurrent']
-    data = pd.DataFrame(result['data'])[DISPLAY_COLUMNS]
+    display_columns = ['proFormaId', 'proFormaVersionId', 'abbreviation', 'name', 'description',
+                       'isActive', 'isCurrent']
+    data = pd.DataFrame(result['data'])[display_columns]
     data['fieldIsRequired'] = [
         [mapping['isRequired'] for mapping in row['columnMappings']
             if mapping['metaDataColumnName']==name][0]
