@@ -41,9 +41,9 @@ class AusTrakkaCliTopLevel(click.Group):
         except click.MissingParameter as exc:
             # If there is a missing top level parameter (eg. URI or TOKEN)
             # provide extended error message
-            if exc.param.name == CxtKey.CTX_TOKEN.value:
+            if exc.param.name == CxtKey.TOKEN.value:
                 click.echo(MISSING_TOKEN_HELP)
-            elif exc.param.name == CxtKey.CTX_URI.value:
+            elif exc.param.name == CxtKey.URI.value:
                 click.echo(MISSING_URI_HELP)
             else:
                 exc.ctx = None

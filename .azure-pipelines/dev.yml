@@ -1,0 +1,50 @@
+resources:
+  repositories:
+    - repository: CLI 
+      type: github
+      name: AusTrakka/austrakka2-cli
+      ref: $(Build.SourceBranch) 
+      endpoint: AusTrakka
+    - repository: Pipelines
+      type: github
+      name: AusTrakka/austrakka-pipelines
+      ref: Development 
+      endpoint: AusTrakka
+    - repository: Infra
+      type: github
+      endpoint: AusTrakka
+      name: AusTrakka/austrakka2-infra
+      ref: $(infraBranch)
+    - repository: Portal 
+      type: github
+      endpoint: AusTrakka
+      name: AusTrakka/austrakka-portal
+      ref: $(portalBranch)
+      
+trigger:
+  branches:
+    include:
+      - Development
+
+pr: none
+
+pool:
+  name: Test
+
+variables:
+  azureConnection: 'AusTrakka Dev (austrakka tenancy)'
+  azureConnectionAdmin: 'AusTrakka Admin (austrakka tenancy)'
+  backendAzureRmResourceGroupName: 'rg-devterf-shd-as-1'
+  backendAzureRmStorageAccountName: 'stdevterfshdas1'
+  backendAzureRmContainerName: 'env'
+  backendAzureRmKey: '$(Build.DefinitionName)/$(Build.BuildNumber).tfstate'
+  buildDir: '$(Build.BinariesDirectory)/$(Build.DefinitionName)/$(Build.BuildNumber)'
+  sourceDir: '$(Pipeline.Workspace)/$(Build.DefinitionName)/$(Build.BuildNumber)'
+
+stages:
+  - template: templates/stages/env/create.yml@Pipelines
+  - stage: RunTests
+    jobs:
+      - template: templates/jobs/test/cli.yml@Pipelines 
+  - template: templates/stages/env/destroy.yml@Pipelines
+

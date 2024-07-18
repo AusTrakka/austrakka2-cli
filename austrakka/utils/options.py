@@ -3,9 +3,7 @@ import typing as t
 
 import click
 
-from austrakka.utils.enums.seq import SEQ_TYPES
-from austrakka.utils.enums.seq import READS
-from austrakka.utils.enums.seq import READ_BOTH
+from austrakka.utils.enums.seq import SeqType
 from austrakka.utils.option_utils import *
 
 def opt_abbrev(**attrs: t.Any):
@@ -288,7 +286,7 @@ def opt_seq_type(**attrs: t.Any):
         "-t",
         '--type',
         'seq_type',
-        type=click.Choice(SEQ_TYPES),
+        type=click.Choice([t.value for t in SeqType]),
         **{**defaults, **attrs}
     )
 
@@ -304,20 +302,6 @@ def opt_output_dir(**attrs: t.Any):
         '--outdir',
         'output_dir',
         type=click.Path(exists=False),
-        **{**defaults, **attrs}
-    )
-
-
-def opt_read(**attrs: t.Any):
-    defaults = {
-        'help': f'Fastq read. Defaults to {READ_BOTH}, meaning both 1 and 2',
-        'default': READ_BOTH,
-    }
-    return create_option(
-        "-r",
-        '--read',
-        'read',
-        type=click.Choice(READS),
         **{**defaults, **attrs}
     )
 
