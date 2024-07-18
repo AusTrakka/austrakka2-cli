@@ -4,7 +4,7 @@ import click
 
 def create_option(*param_decls: str, **attrs: t.Any):
     def inner_func(func):
-        if 'cls' in attrs.keys():
+        if 'cls' in attrs:
             return click.option(
                 *param_decls,
                 show_default=True,
@@ -67,7 +67,7 @@ class RequiredMutuallyExclusiveOption(AusTrakkaCliOption):
             ex_str = ', '.join(self.mutually_exclusive)
             kwargs['help'] = help_text + (
                     ' Mutually exclusive with [' + ex_str + '].'
-                                                            ' At least one of these options are required'
+                    ' At least one of these options are required'
             )
         super().__init__(*args, **kwargs)
 

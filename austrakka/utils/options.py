@@ -4,7 +4,7 @@ import typing as t
 import click
 
 from austrakka.utils.enums.seq import SeqType
-from austrakka.utils.option_utils import *
+from austrakka.utils.option_utils import create_option, MutuallyExclusiveOption
 
 def opt_abbrev(**attrs: t.Any):
     defaults = {
@@ -643,5 +643,3 @@ def opt_view_id(**attrs: t.Any):
         '--view-id',
         **{**defaults, **attrs}
     )
-
-
