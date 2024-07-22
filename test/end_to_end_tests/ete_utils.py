@@ -6,9 +6,6 @@ import random
 import tempfile
 import textwrap
 
-from click.testing import CliRunner
-from austrakka.main import get_cli
-
 
 seq_id_field_name = 'Seq_ID'
 owner_group_field_name = 'Owner_group'
@@ -134,12 +131,6 @@ def _create_paired_seq_csv(seq_id: str, fastq_file_path1: str, fastq_file_path2:
     csv = f'{seq_id_field_name},filepath1,filepath2\n'
     csv += f'{seq_id},{fastq_file_path1},{fastq_file_path2}\n'
     return _save_to_test_dir(csv)
-
-
-def _invoke(runner: CliRunner, args):
-    global_options = ['--verify_cert', 'false', '--uri', 'https://localhost:5001']
-    combined_args = global_options + args
-    return runner.invoke(get_cli(), combined_args)
 
 
 def _new_identifier(n: int) -> str:

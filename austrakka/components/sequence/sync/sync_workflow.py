@@ -197,7 +197,7 @@ def analyse(sync_state: dict):
     int_man = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     published_manifest = read_from_csv_or_empty(sync_state, MANIFEST_KEY)
 
-    if len(published_manifest.columns) == 0:
+    if len(published_manifest) == 0:
         published_manifest = initialise_empty_manifest(sync_state)
 
     use_hash_cache = not sync_state[RECALCULATE_HASH_KEY]
