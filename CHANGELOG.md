@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.58.0] - 2024-07-22
+
+### Fixed
+- Initialising of `seq sync get` manifest file for empty list of sequences
+
+### Changed
+- Allow data dictionary to distinguish minimum metadata from other classes; colour fields by class
+- Sort metadata fields by metadata class
+- Write project group name, not project name
+- Allow CLI version check to be skipped
+
+### Added
+- Added commands to disable and enable fields
+
 # [0.57.1] - 2024-07-08
 
 ### Fixed
