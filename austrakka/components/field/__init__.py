@@ -89,34 +89,34 @@ def field_update(
         column_order,
     )
 
-@field.command('list-groups')
+@field.command('list-groups', hidden=hide_admin_cmds())
 @click.argument('fieldname')
 @table_format_option()
 def field_list_groups(fieldname: str, out_format: str):
     """List groups that a metadata field belongs to"""
     list_field_groups(fieldname, out_format)
     
-@field.command('list-projects')
+@field.command('list-projects', hidden=hide_admin_cmds())
 @click.argument('fieldname')
 @table_format_option()
 def field_list_projects(fieldname: str, out_format: str):
     """List projects that a metadata field belongs to"""
     list_field_projects(fieldname, out_format)
 
-@field.command('list-proformas')
+@field.command('list-proformas', hidden=hide_admin_cmds())
 @click.argument('fieldname')
 @table_format_option()
 def field_list_proformas(fieldname: str, out_format: str):
     """List proformas that a metadata field belongs to"""
     list_field_proformas(fieldname, out_format)
 
-@field.command('disable')
+@field.command('disable', hidden=hide_admin_cmds())
 @click.argument('fieldname')
 def field_disable(fieldname: str):
     """Disable a metadata field within AusTrakka"""
     disable_field(fieldname)
 
-@field.command('enable')
+@field.command('enable', hidden=hide_admin_cmds())
 @click.argument('fieldname')
 def field_enable(fieldname: str):
     """Enable a metadata field within AusTrakka"""
