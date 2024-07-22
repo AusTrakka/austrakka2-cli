@@ -4,12 +4,16 @@ from typing import List
 import click
 
 from austrakka.utils.output import table_format_option
-from austrakka.utils.options import RequiredMutuallyExclusiveOption, opt_seq_type, opt_group_name
+
+from austrakka.utils.option_utils import RequiredMutuallyExclusiveOption
+from austrakka.utils.options import opt_seq_type
+from austrakka.utils.options import opt_group_name
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_sample_id
 from austrakka.utils.options import opt_force_mutex_skip
 from austrakka.utils.options import opt_skip_mutex_force
 from austrakka.utils.options import opt_delete_all
+
 from austrakka.utils.cmd_filter import hide_admin_cmds
 
 from .funcs import take_sample_names

@@ -38,38 +38,13 @@ variables:
   backendAzureRmStorageAccountName: 'stdevterfshdas1'
   backendAzureRmContainerName: 'env'
   backendAzureRmKey: '$(Build.DefinitionName)/$(Build.BuildNumber).tfstate'
-  terraformOutputArtifact: 'TerraformOutput'
-  terraformVarsArtifact: 'TerraformVars'
-  buildDir: '$(Build.BinariesDirectory)/$(Build.BuildNumber)'
-  sourceDir: '$(Pipeline.Workspace)/$(Build.BuildNumber)'
+  buildDir: '$(Build.BinariesDirectory)/$(Build.DefinitionName)/$(Build.BuildNumber)'
+  sourceDir: '$(Pipeline.Workspace)/$(Build.DefinitionName)/$(Build.BuildNumber)'
 
 stages:
-  - template: templates/stages/env/create.yml@Pipelines 
+  - template: templates/stages/env/create.yml@Pipelines
   - stage: RunTests
     jobs:
-      - job: RunUnitTests
-        steps:
-          - template: templates/checkout/cli.yml@Pipelines
-          - template: templates/checkout/infra.yml@Pipelines
-          - task: DownloadPipelineArtifact@2
-            inputs:
-              artifact: $(terraformOutputArtifact)
-              path: $(buildDir)/tf
-          - task: PowerShell@2
-            displayName: Generate .env file 
-            inputs:
-              targetType: 'inline'
-              workingDirectory: $(sourceDir)/infra/scripts/output
-              script: |
-                ./cli_env_json.ps1 @(Get-ChildItem $(buildDir)/tf/*.json)[0].FullName > $(sourceDir)/cli/.env
-          - task: Bash@3
-            displayName: Run pytest 
-            inputs:
-              targetType: 'inline'
-              workingDirectory: $(sourceDir)/cli
-              script: |
-                pipenv install --dev
-                export AT_TOKEN=$(pipenv run austrakka auth process)
-                pipenv run pytest
+      - template: templates/jobs/test/cli.yml@Pipelines 
   - template: templates/stages/env/destroy.yml@Pipelines
 
