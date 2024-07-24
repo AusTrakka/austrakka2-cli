@@ -688,7 +688,7 @@ def opt_record_type(**attrs: t.Any):
     defaults = {
         'required': True,
         'help': 'Record type that is the subject of access control. '
-                'Supported record types are: [tenant]',
+                'Supported record types are: [tenant, organisation]',
     }
     return _create_option(
         '--record-type',

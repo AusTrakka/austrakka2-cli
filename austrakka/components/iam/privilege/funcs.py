@@ -2,7 +2,7 @@ from austrakka.utils.api import api_get, api_delete, api_post
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dict
 
-supported_record_types = ["tenant"]
+supported_record_types = ["tenant", "organisationv2"]
 
 
 @logger_wraps()
@@ -14,8 +14,10 @@ def list_privileges(tenant_id: str, record_type: str, record_id: str, out_format
         raise ValueError(f"Unsupported record type: {record_type}. "
                          f"Supported record types: {supported_record_types}")
 
+    path = f"v2/{record_type}/{record_id}/privilege/?owningTenantId={tenant_id}"
+    print(path)
     response = api_get(
-        path=f"v2/{record_type}/{record_id}/privilege/?owningTenantId={tenant_id}",
+        path=path,
     )
 
     data = response['data'] if ('data' in response) else response
