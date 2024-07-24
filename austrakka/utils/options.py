@@ -692,7 +692,7 @@ def opt_record_type(**attrs: t.Any):
     }
     return _create_option(
         '--record-type',
-        type=click.STRING,
+        type=click.Choice(['Tenant', 'OrganisationV2']),
         **{**defaults, **attrs}
     )
 

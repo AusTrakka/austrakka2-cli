@@ -2,18 +2,11 @@ from austrakka.utils.api import api_get, api_delete, api_post
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dict
 
-supported_record_types = ["tenant", "organisationv2"]
-
-
 @logger_wraps()
 def list_privileges(tenant_id: str, record_type: str, record_id: str, out_format: str):
     """
     List the privileges assigned to a record.
     """
-    if record_type not in supported_record_types:
-        raise ValueError(f"Unsupported record type: {record_type}. "
-                         f"Supported record types: {supported_record_types}")
-
     path = f"v2/{record_type}/{record_id}/privilege/?owningTenantId={tenant_id}"
     print(path)
     response = api_get(
@@ -33,10 +26,6 @@ def list_by_role_privileges(tenant_id: str, role: str, record_type: str, record_
     """
     List by role the privileges assigned to a record.
     """
-    if record_type not in supported_record_types:
-        raise ValueError(f"Unsupported record type: {record_type}. "
-                         f"Supported record types: {supported_record_types}")
-
     roles = api_get(
         path=f"v2/tenant/{tenant_id}/role",
     )
@@ -65,10 +54,6 @@ def list_by_user_privileges(user_id: str, tenant_id: str, record_type: str, reco
     """
     List by user the privileges assigned to a record.
     """
-    if record_type not in supported_record_types:
-        raise ValueError(f"Unsupported record type: {record_type}. "
-                         f"Supported record types: {supported_record_types}")
-
     response = api_get(
         path=f"v2/{record_type}/{record_id}/privilege/user/{user_id}?owningTenantId={tenant_id}",
     )
@@ -88,10 +73,6 @@ def grant_privilege(
         record_id: str,
         record_type: str,
         owning_tenant_id: str):
-
-    if record_type not in supported_record_types:
-        raise ValueError(f"Unsupported record type: {record_type}. "
-                         f"Supported record types: {supported_record_types}")
 
     tenant = _get_root_record('tenant', owning_tenant_id)
     tenant_name = tenant["data"]['name']
@@ -115,10 +96,6 @@ def deny_privilege(
         record_type: str,
         owning_tenant_id: str,
         privilege_id: str):
-
-    if record_type not in supported_record_types:
-        raise ValueError(f"Unsupported record type: {record_type}. "
-                         f"Supported record types: {supported_record_types}")
 
     uri_path = f"v2/{record_type}/{record_id}/privilege/{privilege_id}/?owningTenantId={owning_tenant_id}"
 
