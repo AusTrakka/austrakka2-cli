@@ -92,6 +92,7 @@ def seq_list(
         group_name: str,
         sample_id: List[str],
 ):
+    """List sequences for a group or sample"""
     list_sequences(
         out_format,
         seq_type,
