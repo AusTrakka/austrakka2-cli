@@ -11,9 +11,7 @@ and this project adheres to [Semantic Versioning].
 - Initialising of `seq sync get` manifest file for empty list of sequences
 
 ### Changed
-- Allow data dictionary to distinguish minimum metadata from other classes; colour fields by class
-- Sort metadata fields by metadata class
-- Write project group name, not project name
+- Improvements to auto-generation of proforma template
 - Allow CLI version check to be skipped
 
 ### Added
