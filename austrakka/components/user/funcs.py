@@ -19,6 +19,7 @@ def add_user(
         org: str,
         owner_group_roles: List[str],
         is_austrakka_process: bool,
+        server_username: str,
 ):
     user = {
         "objectId": user_id,
@@ -27,6 +28,7 @@ def add_user(
         },
         "ownerGroupRoles": list(owner_group_roles),
         "isAusTrakkaProcess": is_austrakka_process,
+        "analysisServerUsername": server_username,
     }
 
     api_post(
@@ -40,6 +42,7 @@ def update_user(
         name: str = None,
         email: str = None,
         org: str = None,
+        server_username: str = None,
         is_active: bool = None,
 ):
     user_resp = api_get(f'{USER_PATH}/userId/{object_id}')
@@ -49,6 +52,7 @@ def update_user(
         "contactEmail": user_full['contactEmail'],
         "orgAbbrev": user_full['orgAbbrev'],
         "isActive": user_full['isActive'],
+        "analysisServerUsername": user_full['analysisServerUsername'],
     }
 
     if name is not None:
@@ -59,6 +63,8 @@ def update_user(
         user['orgAbbrev'] = org
     if is_active is not None:
         user['isActive'] = is_active
+    if server_username is not None:
+        user['analysisServerUsername'] = server_username
 
     api_put(
         path=f'{USER_PATH}/{object_id}',

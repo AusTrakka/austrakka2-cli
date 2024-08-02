@@ -702,6 +702,18 @@ def opt_view_id(**attrs: t.Any):
     )
 
 
+def opt_server_username(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Analysis Server Username',
+    }
+    return _create_option(
+        "--server-username",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
 def _create_option(*param_decls: str, **attrs: t.Any):
     def inner_func(func):
         if 'cls' in attrs.keys():
