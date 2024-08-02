@@ -235,9 +235,9 @@ def _get_proforma_fields_df(data):
         inplace=True
     )
 
-    field_df['type'].fillna('categorical', inplace=True)
-    field_df['nndssFieldLabel'].fillna('', inplace=True)
-    field_df['description'].fillna('', inplace=True)
+    field_df['type'] = field_df['type'].fillna('categorical')
+    field_df['nnssFieldLabel'] = field_df['nndssFieldLabel'].fillna('')
+    field_df['description'] = field_df['description'].fillna('')
     field_df['isRequired'] = field_df['isRequired'].apply(
         lambda x: True if x=='True' else (False if x=='False' else x)
     )

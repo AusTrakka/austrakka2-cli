@@ -253,7 +253,7 @@ def proforma_unshare(abbrev: str, group_names: List[str]):
     unshare_proforma(abbrev, group_names)
 
 
-@proforma.command('listgroups')
+@proforma.command('list-groups')
 @click.argument('abbrev', type=click.STRING)
 @table_format_option()
 def proforma_list_groups(abbrev: str, out_format: str):
