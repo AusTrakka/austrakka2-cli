@@ -2,7 +2,8 @@ import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from .funcs import list_fields, add_field, update_field
+from .funcs import list_fields, add_field, update_field, disable_field, enable_field, \
+    list_field_groups, list_field_projects, list_field_proformas
 from ...utils.options import *
 
 
@@ -87,3 +88,36 @@ def field_update(
         colour_nodes,
         column_order,
     )
+
+@field.command('list-groups', hidden=hide_admin_cmds())
+@click.argument('fieldname')
+@table_format_option()
+def field_list_groups(fieldname: str, out_format: str):
+    """List groups that a metadata field belongs to"""
+    list_field_groups(fieldname, out_format)
+    
+@field.command('list-projects', hidden=hide_admin_cmds())
+@click.argument('fieldname')
+@table_format_option()
+def field_list_projects(fieldname: str, out_format: str):
+    """List projects that a metadata field belongs to"""
+    list_field_projects(fieldname, out_format)
+
+@field.command('list-proformas', hidden=hide_admin_cmds())
+@click.argument('fieldname')
+@table_format_option()
+def field_list_proformas(fieldname: str, out_format: str):
+    """List proformas that a metadata field belongs to"""
+    list_field_proformas(fieldname, out_format)
+
+@field.command('disable', hidden=hide_admin_cmds())
+@click.argument('fieldname')
+def field_disable(fieldname: str):
+    """Disable a metadata field within AusTrakka"""
+    disable_field(fieldname)
+
+@field.command('enable', hidden=hide_admin_cmds())
+@click.argument('fieldname')
+def field_enable(fieldname: str):
+    """Enable a metadata field within AusTrakka"""
+    enable_field(fieldname)

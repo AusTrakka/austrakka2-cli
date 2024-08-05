@@ -197,7 +197,7 @@ class TestSeqSyncGetCommands:
         assert seq3_content.issubset(original_updated_content), \
             'The content of the sequence file should match the original content.'
 
-    @pytest.mark.parametrize("seq_type", ['fasta-asm', 'fasta-cns', 'fastq-ill-pe', 'fastq-ill-se'])
+    @pytest.mark.parametrize("seq_type", ['fasta-asm', 'fasta-cns', 'fastq-ill-pe', 'fastq-ill-se', 'fastq-ont'])
     def test_sync_get__given_group_has_no_sequences__expect_no_sequence_downloaded(self, seq_type):
         # Arrange
         shared_group = f'sg-{_new_identifier(10)}'
@@ -244,14 +244,39 @@ class TestSeqSyncGetCommands:
         assert state_dict['current_action'] == 'set-state/pulling-manifest', \
             f'The current action should be set-state/pulling-manifest: {state_dict}'
 
-    @pytest.mark.parametrize("seq_type", ['fasta-asm', 'fasta-cns', 'fastq-ill-pe', 'fastq-ill-se'])
-    def test_sync_get__given_group_has_sequences__expect_correct_state_file_name_and_contents(self, seq_type):
+    def test_sync_get__given_group_has_sequences__expect_correct_state_file_name_and_contents(self):
         # Arrange
+        original_file_dir = 'test/test-assets/sequences/asm/'
+        original_file_name = 'XYZ-asm-004.fasta'
+
+        org_name = f'org-{_new_identifier(4)}'
+        seq_id = f'seq-{_new_identifier(10)}'
+        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
+        proforma_name = f'{_new_identifier(10)}'
+
+        _create_field_if_not_exists(self.cli, seq_id_field_name)
+        _create_field_if_not_exists(self.cli, owner_group_field_name)
+        _create_field_if_not_exists(self.cli, shared_groups_field_name)
+        _create_min_proforma(self.cli, proforma_name)
+        _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
-        temp_dir = _mk_temp_dir()
+
+        original_file = f'{original_file_dir}{original_file_name}'
+
+        _upload_min_metadata(
+            self.cli,
+            proforma_name,
+            [seq_id],
+            owner_group,
+            [shared_group])
+
+        _upload_fasta_asm_file(self.cli, original_file, seq_id)
 
         # Act
+        temp_dir = _mk_temp_dir()
+        seq_type = 'fasta-asm'
+
         _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
 
         # Assert
@@ -400,7 +425,6 @@ class TestSeqSyncGetCommands:
 
         # Act
         temp_dir = _mk_temp_dir()
-        print(f'Temp dir: {temp_dir}')
         seq_type = 'fasta-asm'
         _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
 
