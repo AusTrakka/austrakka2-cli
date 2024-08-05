@@ -25,7 +25,7 @@ def list_fields(out_format: str):
     result = pd.DataFrame.from_dict(data)
 
     if 'primitiveType' in result:
-        result['primitiveType'].fillna('category', inplace=True)
+        result['primitiveType'] = result['primitiveType'].fillna('category')
     if 'metaDataColumnValidValues' in result:
         result['metaDataColumnValidValues'] = result['metaDataColumnValidValues'].apply(
             lambda x: ';'.join(x) if x else ''

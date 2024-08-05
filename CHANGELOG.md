@@ -5,15 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.58.1] - 2024-08-05
+
+### Fixed
+- Integer metadata fields will now be correctly rendered as integers, rather than floats, in downloaded metadata
+- Some missing command descriptions have been added to the CLI help
+- Fixed FutureWarnings that were appearing with newer versions of Pandas
+
+### Changed
+- The `sample listgroups` command is now `sample list-groups`, to be consistent with other commands
+- When creating an analysis with `analysis add`, it is no longer necessary to specify `--definition upload`
+
 # [0.58.0] - 2024-07-22
 
 ### Fixed
 - Initialising of `seq sync get` manifest file for empty list of sequences
 
 ### Changed
-- Allow data dictionary to distinguish minimum metadata from other classes; colour fields by class
-- Sort metadata fields by metadata class
-- Write project group name, not project name
+- Improvements to auto-generation of proforma template
 - Allow CLI version check to be skipped
 
 ### Added

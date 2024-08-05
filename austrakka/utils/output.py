@@ -132,7 +132,7 @@ def _get_output_extension(output_format: str):
 def _create_dataframe(
         data: dict
 ) -> pd.DataFrame:
-    return pd.DataFrame.from_dict(data)
+    return pd.DataFrame.from_dict(data, dtype=object)
 
 
 def write_dataframe(
