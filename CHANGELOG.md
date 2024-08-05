@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.58.1] - 2024-08-05
+
+### Fixed
+- Integer metadata fields will now be correctly rendered as integers, rather than floats, in downloaded metadata
+- Some missing command descriptions have been added to the CLI help
+- Fixed FutureWarnings that were appearing with newer versions of Pandas
+
+### Changed
+- The `sample listgroups` command is now `sample list-groups`, to be consistent with other commands
+- When creating an analysis with `analysis add`, it is no longer necessary to specify `--definition upload`
+
 # [0.58.0] - 2024-07-22
 
 ### Fixed
