@@ -13,6 +13,7 @@ def list_users(show_disabled: bool, out_format: str):
     call_get_and_print(f'{USER_PATH}/?includeall={show_disabled}', out_format)
 
 
+# pylint: disable=duplicate-code
 @logger_wraps()
 def add_user(
         user_id: str,
