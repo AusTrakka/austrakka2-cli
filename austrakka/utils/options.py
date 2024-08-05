@@ -196,8 +196,8 @@ def opt_project(**attrs: t.Any):
 
 def opt_definition(var_name='definition', **attrs: t.Any):
     defaults = {
-        'required': True,
         'multiple': False,
+        'default': 'upload',
         'help': 'Analysis definition name',
     }
     return create_option(
