@@ -59,6 +59,7 @@ def seq_groups(
         sample_id: str,
         out_format: str
 ):
+    """List the groups that the sample is in (shared with, or owned by)."""
     get_groups(
         sample_id,
         out_format,

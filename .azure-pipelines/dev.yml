@@ -32,44 +32,15 @@ pool:
   name: Test
 
 variables:
-  azureConnection: 'AusTrakka Dev (austrakka tenancy)'
-  azureConnectionAdmin: 'AusTrakka Admin (austrakka tenancy)'
-  backendAzureRmResourceGroupName: 'rg-devterf-shd-as-1'
-  backendAzureRmStorageAccountName: 'stdevterfshdas1'
-  backendAzureRmContainerName: 'env'
-  backendAzureRmKey: '$(Build.DefinitionName)/$(Build.BuildNumber).tfstate'
-  terraformOutputArtifact: 'TerraformOutput'
-  terraformVarsArtifact: 'TerraformVars'
-  buildDir: '$(Build.BinariesDirectory)/$(Build.DefinitionName)/$(Build.BuildNumber)'
-  sourceDir: '$(Pipeline.Workspace)/$(Build.DefinitionName)/$(Build.BuildNumber)'
+- template: variables/dev/azure/connection.yml@Pipelines
+- template: variables/dev/terraform/storage.yml@Pipelines
+- template: variables/dev/terraform/key.yml@Pipelines
+- template: variables/devops/setup.yml@Pipelines
 
 stages:
-  - template: templates/stages/env/create.yml@Pipelines 
+  - template: templates/stages/env/create.yml@Pipelines
   - stage: RunTests
     jobs:
-      - job: RunUnitTests
-        steps:
-          - template: templates/checkout/cli.yml@Pipelines
-          - template: templates/checkout/infra.yml@Pipelines
-          - task: DownloadPipelineArtifact@2
-            inputs:
-              artifact: $(terraformOutputArtifact)
-              path: $(buildDir)/tf
-          - task: PowerShell@2
-            displayName: Generate .env file 
-            inputs:
-              targetType: 'inline'
-              workingDirectory: $(sourceDir)/infra/scripts/output
-              script: |
-                ./cli_env_json.ps1 @(Get-ChildItem $(buildDir)/tf/*.json)[0].FullName > $(sourceDir)/cli/.env
-          - task: Bash@3
-            displayName: Run pytest 
-            inputs:
-              targetType: 'inline'
-              workingDirectory: $(sourceDir)/cli
-              script: |
-                pipenv install --dev
-                export AT_TOKEN=$(pipenv run austrakka auth process)
-                pipenv run pytest
+      - template: templates/jobs/test/cli.yml@Pipelines 
   - template: templates/stages/env/destroy.yml@Pipelines
 
