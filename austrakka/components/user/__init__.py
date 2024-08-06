@@ -13,6 +13,7 @@ from austrakka.utils.options import opt_is_austrakka_process
 from austrakka.utils.options import opt_user_object_id
 from austrakka.utils.options import opt_organisation
 from austrakka.utils.options import opt_show_disabled
+from austrakka.utils.options import opt_server_username
 from .funcs import list_users
 from .funcs import add_user
 from .funcs import update_user
@@ -40,14 +41,16 @@ def user_list(show_disabled: bool, out_format: str):
 @opt_organisation()
 @opt_owner_group_roles(required=False)
 @opt_is_austrakka_process(default=False)
+@opt_server_username()
 def user_add(
         user_id: str,
         org: str,
         owner_group_roles: List[str],
         is_austrakka_process: bool,
+        server_username: str,
 ):
     """Add users in AusTrakka"""
-    add_user(user_id, org, owner_group_roles, is_austrakka_process)
+    add_user(user_id, org, owner_group_roles, is_austrakka_process, server_username)
 
 
 @user.command('update', hidden=hide_admin_cmds())
@@ -56,15 +59,17 @@ def user_add(
 @opt_email_address(required=False)
 @opt_organisation(required=False)
 @opt_is_active(required=False)
+@opt_server_username(required=False)
 def user_update(
     user_id: str,
     org: str,
     is_active: bool,
     email: str,
     name: str,
+    server_username: str,
 ):
     """Add users in AusTrakka"""
-    update_user(user_id, name, email, org, is_active)
+    update_user(user_id, name, email, org, server_username, is_active)
 
 
 @user.command('enable')
