@@ -12,32 +12,29 @@ def access(ctx):
 
 
 @access.command('get', hidden=hide_admin_cmds())
-@opt_tenant_id()
 @opt_role()
 @table_format_option()
-def access_get(tenant_id: str, role: str, out_format: str):
+def access_get(role: str, out_format: str):
     """
     Get the list of access defined for a role.
     """
-    get_access(tenant_id, role, out_format)
+    get_access(role, out_format)
 
 
 @access.command('add', hidden=hide_admin_cmds())
-@opt_tenant_id()
 @opt_role()
-@opt_ids(help="Comma separated list of scope ids to assign to the role")
-def access_add(tenant_id: str, role: str, ids: list[int]):
+@opt_global_ids(help="Comma separated list of scope global ids to assign to the role")
+def access_add(role: str, global_ids: list[str]):
     """
     Add access to a role.
     """
-    add_access(tenant_id, role, ids)
+    add_access(role, global_ids)
 
 
 @access.command('remove', hidden=hide_admin_cmds())
-@opt_tenant_id()
-@opt_scope_access_def_id(help="The id of the scope access definition enry to remove")
-def access_remove(tenant_id: str, scope_access_def_id: int):
+@opt_scope_access_def_global_id(help="The id of the scope access definition enry to remove")
+def access_remove(scope_access_def_global_id: str):
     """
     Remove access from a role.
     """
-    remove_access(tenant_id, scope_access_def_id)
+    remove_access(scope_access_def_global_id)

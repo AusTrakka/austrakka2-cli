@@ -1,14 +1,17 @@
+from austrakka.components.iam.shared_funcs import _get_default_tenant, _get_role_by_name
 from austrakka.utils.api import api_get, api_delete, api_post
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dict
 
+
 @logger_wraps()
-def list_privileges(tenant_id: str, record_type: str, record_id: str, out_format: str):
+def list_privileges(record_type: str, record_global_id: str, out_format: str):
     """
     List the privileges assigned to a record.
     """
-    path = f"v2/{record_type}/{record_id}/privilege/?owningTenantId={tenant_id}"
-    print(path)
+    tenant_global_id = _get_default_tenant()
+    path = f"v2/{record_type}/{record_global_id}/privilege/?owningTenantGlobalId={tenant_global_id}"
+
     response = api_get(
         path=path,
     )
@@ -22,23 +25,22 @@ def list_privileges(tenant_id: str, record_type: str, record_id: str, out_format
 
 
 @logger_wraps()
-def list_by_role_privileges(tenant_id: str, role: str, record_type: str, record_id: str, out_format: str):
+def list_by_role_privileges(role: str, record_type: str, record_global_id: str, out_format: str):
     """
     List by role the privileges assigned to a record.
     """
-    roles = api_get(
-        path=f"v2/tenant/{tenant_id}/role",
-    )
-
+    tenant_global_id = _get_default_tenant()
+    roles = api_get(path=f"v2/tenant/{tenant_global_id}/role")
     role_obj = next((r for r in roles['data'] if r['name'] == role), None)
 
     if role_obj is None:
-        raise ValueError(f"Role {role} not found in tenant {tenant_id}")
+        raise ValueError(f"Role {role} not found in tenant {tenant_global_id}")
 
-    role_id = role_obj['roleId']
+    print(role_obj)
+    role_global_id = role_obj['globalId']
 
     response = api_get(
-        path=f"v2/{record_type}/{record_id}/privilege/role/{role_id}?owningTenantId={tenant_id}",
+        path=f"v2/{record_type}/{record_global_id}/privilege/role/{role_global_id}?owningTenantGlobalId={tenant_global_id}",
     )
 
     data = response['data'] if ('data' in response) else response
@@ -50,12 +52,13 @@ def list_by_role_privileges(tenant_id: str, role: str, record_type: str, record_
 
 
 @logger_wraps()
-def list_by_user_privileges(user_id: str, tenant_id: str, record_type: str, record_id: str, out_format: str):
+def list_by_user_privileges(user_id: str, record_type: str, record_global_id: str, out_format: str):
     """
     List by user the privileges assigned to a record.
     """
+    tenant_global_id = _get_default_tenant()
     response = api_get(
-        path=f"v2/{record_type}/{record_id}/privilege/user/{user_id}?owningTenantId={tenant_id}",
+        path=f"v2/{record_type}/{record_global_id}/privilege/user/{user_id}?owningTenantGlobalId={tenant_global_id}",
     )
 
     data = response['data'] if ('data' in response) else response
@@ -70,20 +73,19 @@ def list_by_user_privileges(user_id: str, tenant_id: str, record_type: str, reco
 def grant_privilege(
         user_id: str,
         role: str,
-        record_id: str,
-        record_type: str,
-        owning_tenant_id: str):
+        record_global_id: str,
+        record_type: str):
 
-    tenant = _get_root_record('tenant', owning_tenant_id)
-    tenant_name = tenant["data"]['name']
+    owning_tenant_global_id = _get_default_tenant()
+    role_obj = _get_role_by_name(role, owning_tenant_global_id)
 
     payload = {
-        "owningTenantName": tenant_name,
-        "roleName": role,
+        "owningTenantGlobalId": owning_tenant_global_id,
+        "roleGlobalId": role_obj['globalId'],
         "assigneeObjectId": user_id
     }
 
-    uri_path = f"v2/{record_type}/{record_id}/privilege"
+    uri_path = f"v2/{record_type}/{record_global_id}/privilege"
     return api_post(
         path=uri_path,
         data=payload,
@@ -92,12 +94,12 @@ def grant_privilege(
 
 @logger_wraps()
 def deny_privilege(
-        record_id: str,
+        record_global_id: str,
         record_type: str,
-        owning_tenant_id: str,
-        privilege_id: str):
+        privilege_global_id: str):
 
-    uri_path = f"v2/{record_type}/{record_id}/privilege/{privilege_id}/?owningTenantId={owning_tenant_id}"
+    owning_tenant_global_id = _get_default_tenant()
+    uri_path = f"v2/{record_type}/{record_global_id}/privilege/{privilege_global_id}/?owningTenantGlobalId={owning_tenant_global_id}"
 
     api_delete(
         path=uri_path,
@@ -105,14 +107,14 @@ def deny_privilege(
     )
 
 
-def _get_root_record(root_record_type: str, root_record_id: str) -> str:
+def _get_root_record(root_record_type: str, root_record_global_id: str) -> str:
     return api_get(
-        path=f"v2/{root_record_type}/{root_record_id}",
+        path=f"v2/{root_record_type}/{root_record_global_id}",
     )
 
 
-def _get_privilege_by_user_id(user_id: str, record_type: str, record_id: str, tenant_id: str):
-    uri_path = f"v2/{record_type}/{record_id}/privilege/User/{user_id}/?owningTenantId={tenant_id}"
+def _get_privilege_by_user_id(user_id: str, record_type: str, record_global_id: str, tenant_global_id: str):
+    uri_path = f"v2/{record_type}/{record_global_id}/privilege/User/{user_id}/?owningTenantGlobalId={tenant_global_id}"
     return api_get(
         path=uri_path
     )

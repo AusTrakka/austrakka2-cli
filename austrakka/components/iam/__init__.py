@@ -2,6 +2,7 @@ from austrakka.utils.options import *
 from .privilege import privilege
 from .scope import scope
 from .role import role
+from .tenant import tenant
 
 
 @click.group()
@@ -14,3 +15,4 @@ def iam(ctx):
 iam.add_command(scope)
 iam.add_command(role)
 iam.add_command(privilege)
+iam.add_command(tenant)
