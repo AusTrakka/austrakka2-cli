@@ -6,6 +6,7 @@ import click
 from austrakka.utils.enums.seq import SeqType
 from austrakka.utils.option_utils import create_option, MutuallyExclusiveOption
 
+
 def opt_abbrev(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -613,8 +614,7 @@ def opt_merge_algorithm(**attrs: t.Any):
     defaults = {
         'required': True,
         'help': 'Determines which merge algorithm to use when merging datasets. '
-                'Valid options are: show-all, override'
-    }
+        'Valid options are: show-all, override'}
     return create_option(
         '--merge-algorithm', '-ma',
         type=click.Choice(['show-all', 'override']),
@@ -641,5 +641,17 @@ def opt_view_id(**attrs: t.Any):
     }
     return create_option(
         '--view-id',
+        **{**defaults, **attrs}
+    )
+
+
+def opt_server_username(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Analysis Server Username',
+    }
+    return create_option(
+        "--server-username",
+        type=click.STRING,
         **{**defaults, **attrs}
     )
