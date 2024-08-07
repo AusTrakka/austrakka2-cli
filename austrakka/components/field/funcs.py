@@ -45,6 +45,7 @@ def add_field(
         typename: str,
         can_visualise: str,
         column_order: int,
+        private: bool,
 ):
     """
     Add a field (MetaDataColumn) to AusTrakka.
@@ -79,6 +80,7 @@ def add_field(
             "ColumnOrder": column_order,
             "MetaDataColumnTypeId": fieldtype["metaDataColumnTypeId"],
             "IsActive": True,
+            "IsPrivate": private,
             "Description": description,
             "NndssFieldLabel": nndss_label,
         }
