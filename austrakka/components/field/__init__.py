@@ -50,7 +50,6 @@ def field_add(
         private: bool,
 ):
     """Add a metadata field to AusTrakka"""
-    print(private);
     add_field(name, description, nndss, field_type, colour_nodes, column_order, private)
 
 
