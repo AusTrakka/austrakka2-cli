@@ -30,10 +30,8 @@ def field_list(out_format: str):
 @click.option('--nndss', 'nndss',
               help="The corresponding National Notifiable Diseases Surveillance System label, "
                    "where it exists.")
-@click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
-              help="This field may be used to colour nodes on the tree")
-@click.option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
-              help="This field may not be used to colour nodes on the tree")
+@click.option('--viz/--no-viz', default=False,
+              help="This field may be used for colour visualisation in trees or plots")
 @click.option('-O', '--column-order', type=int, default=9000,
               help="Default order in which this column will be sorted in tables relative to other '"
                    "fields. If no value is specifed, the column will be placed after ordered "
@@ -43,11 +41,11 @@ def field_add(
         description: str,
         nndss: str,
         field_type: str,
-        colour_nodes: str,
+        viz: bool,
         column_order: int,
 ):
     """Add a metadata field to AusTrakka"""
-    add_field(name, description, nndss, field_type, colour_nodes, column_order)
+    add_field(name, description, nndss, field_type, viz, column_order)
 
 
 @field.command('update', hidden=hide_admin_cmds())
@@ -61,10 +59,8 @@ def field_add(
 @click.option('--nndss', 'nndss',
               help="The corresponding National Notifiable Diseases Surveillance System label, " 
                    "where it exists.")
-@click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
-              help="This field may be used to colour nodes on the tree")
-@click.option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
-              help="This field may not be used to colour nodes on the tree")
+@click.option('--viz/--no-viz', default=None,
+                help="This field may be used for colour visualisation in trees or plots")
 @click.option('-O', '--column-order', type=int, default=None,
               help="Default order in which this column will be sorted in tables relative to other "
                    "fields. If no value is specifed, the column will be placed after ordered "
@@ -75,7 +71,7 @@ def field_update(
         description: str,
         nndss: str,
         field_type: str,
-        colour_nodes: str,
+        viz: bool,
         column_order: int,
 ):
     """Update a metadata field within AusTrakka"""
@@ -85,7 +81,7 @@ def field_update(
         description,
         nndss,
         field_type,
-        colour_nodes,
+        viz,
         column_order,
     )
 
