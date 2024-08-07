@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.58.2] - 2024-08-07
+### Added
+- Can now set analysis server username in `user` commands.
+
 # [0.58.1] - 2024-08-05
 
 ### Fixed
