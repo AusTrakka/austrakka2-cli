@@ -38,6 +38,8 @@ def field_list(out_format: str):
               help="Default order in which this column will be sorted in tables relative to other '"
                    "fields. If no value is specifed, the column will be placed after ordered "
                     "columns.")
+@click.option('--private', 'private', is_flag=True, default=False,
+              help="This field is private and not visible to non admins when listing all fields")
 def field_add(
         name: str,
         description: str,
@@ -45,9 +47,11 @@ def field_add(
         field_type: str,
         colour_nodes: str,
         column_order: int,
+        private: bool,
 ):
     """Add a metadata field to AusTrakka"""
-    add_field(name, description, nndss, field_type, colour_nodes, column_order)
+    print(private);
+    add_field(name, description, nndss, field_type, colour_nodes, column_order, private)
 
 
 @field.command('update', hidden=hide_admin_cmds())
