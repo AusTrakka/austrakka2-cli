@@ -370,16 +370,18 @@ def finalise_each_file(int_med, sync_state):
     output_dir = get_output_dir(sync_state)
     for index, row in int_med.iterrows():
 
+        sample_name = str(row[SAMPLE_NAME_KEY])
+
         dest = os.path.join(
             output_dir,
-            row[SAMPLE_NAME_KEY],
+            sample_name,
             row[TYPE_KEY],
             row[FILE_NAME_ON_DISK_KEY])
 
         if row[STATUS_KEY] == DRIFTED:
             src = os.path.join(
                 output_dir,
-                row[SAMPLE_NAME_KEY],
+                sample_name,
                 row[TYPE_KEY],
                 row[HOT_SWAP_NAME_KEY])
 
@@ -540,7 +542,7 @@ def get_file_from_server(data_frame, index, row, sync_state):
     file_path = ""
     try:
         filename = row[FILE_NAME_ON_DISK_KEY]
-        sample_name = row[SAMPLE_NAME_KEY]
+        sample_name = str(row[SAMPLE_NAME_KEY])
         read = str(row[READ_KEY])
         seq_type = row[TYPE_KEY]
         dest_dir = os.path.join(get_output_dir(sync_state), sample_name, seq_type)
@@ -566,7 +568,7 @@ def get_file_from_server(data_frame, index, row, sync_state):
         check_download_hash(data_frame, file_path, index, row)
 
         # Drifted entries are left for finalisation to hot swap.
-        # Otherwise mark the entry as successfully downloaded.
+        # Otherwise, mark the entry as successfully downloaded.
         if data_frame.at[index, STATUS_KEY] != DRIFTED and \
                 data_frame.at[index, STATUS_KEY] != FAILED:
 
