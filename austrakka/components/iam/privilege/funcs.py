@@ -16,12 +16,7 @@ def list_privileges(record_type: str, record_global_id: str, out_format: str):
         path=path,
     )
 
-    data = response['data'] if ('data' in response) else response
-
-    print_dict(
-        data,
-        out_format,
-    )
+    _print_response_data(out_format, response)
 
 
 @logger_wraps()
@@ -36,19 +31,14 @@ def list_by_role_privileges(role: str, record_type: str, record_global_id: str, 
     if role_obj is None:
         raise ValueError(f"Role {role} not found in tenant {tenant_global_id}")
 
-    print(role_obj)
     role_global_id = role_obj['globalId']
 
     response = api_get(
-        path=f"v2/{record_type}/{record_global_id}/privilege/role/{role_global_id}?owningTenantGlobalId={tenant_global_id}",
+        path=f"v2/{record_type}/{record_global_id}/privilege/role/{role_global_id}"
+             f"?owningTenantGlobalId={tenant_global_id}",
     )
 
-    data = response['data'] if ('data' in response) else response
-
-    print_dict(
-        data,
-        out_format,
-    )
+    _print_response_data(out_format, response)
 
 
 @logger_wraps()
@@ -58,15 +48,11 @@ def list_by_user_privileges(user_id: str, record_type: str, record_global_id: st
     """
     tenant_global_id = _get_default_tenant()
     response = api_get(
-        path=f"v2/{record_type}/{record_global_id}/privilege/user/{user_id}?owningTenantGlobalId={tenant_global_id}",
+        path=f"v2/{record_type}/{record_global_id}/privilege/user/{user_id}"
+             f"?owningTenantGlobalId={tenant_global_id}",
     )
 
-    data = response['data'] if ('data' in response) else response
-
-    print_dict(
-        data,
-        out_format,
-    )
+    _print_response_data(out_format, response)
 
 
 @logger_wraps()
@@ -99,11 +85,20 @@ def deny_privilege(
         privilege_global_id: str):
 
     owning_tenant_global_id = _get_default_tenant()
-    uri_path = f"v2/{record_type}/{record_global_id}/privilege/{privilege_global_id}/?owningTenantGlobalId={owning_tenant_global_id}"
+    uri_path = (f"v2/{record_type}/{record_global_id}/privilege/"
+                f"{privilege_global_id}/?owningTenantGlobalId={owning_tenant_global_id}")
 
     api_delete(
         path=uri_path,
         custom_headers={}
+    )
+
+
+def _print_response_data(out_format, response):
+    data = response['data'] if ('data' in response) else response
+    print_dict(
+        data,
+        out_format,
     )
 
 
@@ -113,8 +108,11 @@ def _get_root_record(root_record_type: str, root_record_global_id: str) -> str:
     )
 
 
-def _get_privilege_by_user_id(user_id: str, record_type: str, record_global_id: str, tenant_global_id: str):
-    uri_path = f"v2/{record_type}/{record_global_id}/privilege/User/{user_id}/?owningTenantGlobalId={tenant_global_id}"
+def _get_privilege_by_user_id(
+        user_id: str,
+        record_type: str, record_global_id: str, tenant_global_id: str):
+    uri_path = (f"v2/{record_type}/{record_global_id}/privilege/User/{user_id}/"
+                f"?owningTenantGlobalId={tenant_global_id}")
     return api_get(
         path=uri_path
     )

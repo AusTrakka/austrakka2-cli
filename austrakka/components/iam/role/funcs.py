@@ -1,6 +1,10 @@
 from austrakka.components.iam.shared_funcs import _get_default_tenant, _get_role_by_name
 from austrakka.utils.api import api_get, api_post, api_patch
-from austrakka.utils.enums.privilege_level import *
+from austrakka.utils.enums.privilege_level import (
+    AUSTRAKKA_ADMIN_LEVEL,
+    FUNCTIONAL_ADMIN_LEVEL,
+    USER_LEVEL)
+
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dict
 
@@ -101,7 +105,7 @@ def _assign_allowed_role_root_types(allowed_record_types, payload, tenant_global
         if record_type_obj is None:
             raise ValueError(f"Record type {record_type} not found in tenant {tenant_global_id}")
         allowed_record_types_global_ids.append(record_type_obj['globalId'])
-    if len(allowed_record_types_global_ids):
+    if len(allowed_record_types_global_ids) > 0:
         payload["AllowedRootTypeGlobalIds"] = allowed_record_types_global_ids
 
 

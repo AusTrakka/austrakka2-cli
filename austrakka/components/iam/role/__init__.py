@@ -25,6 +25,7 @@ def roles_get(out_format: str):
     get_roles(out_format)
 
 
+# pylint: disable=redefined-outer-name
 @role.command('add', hidden=hide_admin_cmds())
 @opt_role()
 @opt_description()
@@ -41,6 +42,8 @@ def role_add(
     add_role(role, description, privilege_level, allowed_record_types)
 
 
+# pylint: disable=expression-not-assigned,duplicate-code
+# pylint: disable=redefined-outer-name
 @role.command('update', hidden=hide_admin_cmds())
 @opt_role()
 @opt_new_name(required=False)

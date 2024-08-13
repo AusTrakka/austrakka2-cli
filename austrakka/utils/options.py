@@ -3,7 +3,11 @@ import typing as t
 
 import click
 
-from austrakka.utils.enums.privilege_level import *
+from austrakka.utils.enums.privilege_level import (
+    AUSTRAKKA_ADMIN_LEVEL,
+    FUNCTIONAL_ADMIN_LEVEL,
+    USER_LEVEL)
+
 from austrakka.utils.enums.seq import SeqType
 from austrakka.utils.option_utils import create_option, MutuallyExclusiveOption
 
