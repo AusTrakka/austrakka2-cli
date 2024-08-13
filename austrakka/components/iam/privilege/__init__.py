@@ -1,7 +1,12 @@
 import click
 
-from austrakka.components.iam.privilege.funcs import list_privileges, list_by_role_privileges, list_by_user_privileges, \
-    grant_privilege, deny_privilege
+from austrakka.components.iam.privilege.funcs import (
+    list_privileges,
+    list_by_role_privileges,
+    list_by_user_privileges,
+    grant_privilege,
+    deny_privilege)
+
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_record_type, opt_role, opt_user_object_id, opt_record_global_id
 from austrakka.utils.output import table_format_option
@@ -22,7 +27,8 @@ def privilege_list(record_type: str, record_global_id: str, out_format: str):
     """
     List the privileges assigned to a record.
     """
-    list_privileges(record_type, record_global_id, out_format)
+    rt = convert_record_type_to_route_string(record_type)
+    list_privileges(rt, record_global_id, out_format)
 
 
 @privilege.command('list-by-role', hidden=hide_admin_cmds())
@@ -34,7 +40,8 @@ def privilege_list_by_role(role: str, record_type: str, record_global_id: str, o
     """
     List the privileges assigned to a record.
     """
-    list_by_role_privileges(role, record_type, record_global_id, out_format)
+    rt = convert_record_type_to_route_string(record_type)
+    list_by_role_privileges(role, rt, record_global_id, out_format)
 
 
 @privilege.command('list-by-user', hidden=hide_admin_cmds())
@@ -46,7 +53,8 @@ def privilege_list_by_user(user_id: str, record_type: str, record_id: str, out_f
     """
     List the privileges assigned to a record.
     """
-    list_by_user_privileges(user_id, record_type, record_id, out_format)
+    rt = convert_record_type_to_route_string(record_type)
+    list_by_user_privileges(user_id, rt, record_id, out_format)
 
 
 @privilege.command('grant', hidden=hide_admin_cmds())
@@ -62,7 +70,8 @@ def privilege_grant(
     """
     Grant a user access to a record limited by their role.
     """
-    grant_privilege(user_id, role, record_global_id, record_type)
+    rt = convert_record_type_to_route_string(record_type)
+    grant_privilege(user_id, role, record_global_id, rt)
 
 
 @privilege.command('deny', hidden=hide_admin_cmds())
@@ -76,4 +85,12 @@ def privilege_deny(
     """
     Deny a user access to a record. Ie, remove the access if it was previously granted.
     """
-    deny_privilege(record_global_id, record_type, privilege_global_id)
+    rt = convert_record_type_to_route_string(record_type)
+    deny_privilege(record_global_id, rt, privilege_global_id)
+
+
+def convert_record_type_to_route_string(record_type):
+    rt = record_type
+    if record_type == 'Organisation':
+        rt = "OrganisationV2"
+    return rt

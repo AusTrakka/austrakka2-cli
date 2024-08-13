@@ -612,7 +612,7 @@ def opt_record_type(**attrs: t.Any):
     }
     return create_option(
         '--record-type',
-        type=click.Choice(['Tenant', 'OrganisationV2']),
+        type=click.Choice(['Tenant', 'Organisation']),
         **{**defaults, **attrs}
     )
 
@@ -626,6 +626,20 @@ def opt_privilege_level(**attrs: t.Any):
         '-pv',
         '--privilege-level',
         type=click.Choice([AUSTRAKKA_ADMIN_LEVEL, FUNCTIONAL_ADMIN_LEVEL, USER_LEVEL]),
+        **{**defaults, **attrs}
+    )
+
+
+def opt_allowed_record_types(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Name of each allowed record types where a role can be used to control access. ',
+        'multiple': True,
+    }
+    return create_option(
+        "-art",
+        "--allowed-record-types",
+        type=click.Choice(['Tenant', 'Organisation']),
         **{**defaults, **attrs}
     )
 

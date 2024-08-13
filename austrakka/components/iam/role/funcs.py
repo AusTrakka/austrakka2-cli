@@ -23,7 +23,7 @@ def get_roles(out_format: str):
 
 
 @logger_wraps()
-def add_role(role: str, description: str, privilege_level: str):
+def add_role(role: str, description: str, privilege_level: str, allowed_record_types: list[str]):
     """
     Add a new role to a tenant.
     """
@@ -36,6 +36,8 @@ def add_role(role: str, description: str, privilege_level: str):
         "privilegeLevel": level[privilege_level],
     }
 
+    _assign_allowed_role_root_types(allowed_record_types, payload, tenant_global_id)
+
     api_post(
         path=f"v2/tenant/{tenant_global_id}/role",
         data=payload,
@@ -43,12 +45,23 @@ def add_role(role: str, description: str, privilege_level: str):
 
 
 @logger_wraps()
-def update_role(role: str, new_name: str, description: str, privilege_level: str):
+def update_role(
+        role: str,
+        new_name: str,
+        description: str,
+        privilege_level: str,
+        allowed_record_types: list[str],
+        clear_allowed_record_types: bool):
     """
     Update a role.
     """
-    if not new_name and not description and not privilege_level:
-        raise ValueError("At least one of new_name, description or privilege_level must be provided")
+    if (not new_name and
+            not description and
+            not privilege_level and
+            not allowed_record_types and
+            not clear_allowed_record_types):
+        raise ValueError("At least one of new_name, description, privilege_level, "
+                         "clear_allowed_record_types, or allowed_record_types must be provided")
 
     tenant_global_id = _get_default_tenant()
     role_obj = _get_role_by_name(role, tenant_global_id)
@@ -64,10 +77,32 @@ def update_role(role: str, new_name: str, description: str, privilege_level: str
         level = _privilege_name_to_int()
         payload["privilegeLevel"] = level[privilege_level]
 
+    if not clear_allowed_record_types and allowed_record_types:
+        _assign_allowed_role_root_types(allowed_record_types, payload, tenant_global_id)
+
+    if clear_allowed_record_types:
+        payload["AllowedRootTypeGlobalIds"] = []
+
     api_patch(
         path=f"v2/tenant/{tenant_global_id}/role/{role_obj['globalId']}",
         data=payload,
     )
+
+
+def _assign_allowed_role_root_types(allowed_record_types, payload, tenant_global_id):
+    root_types = api_get(
+        path=f"v2/tenant/{tenant_global_id}/roottype",
+    )
+    # Match allowed record types to root types by name.
+    # Gather the global ID of the root type into a list.
+    allowed_record_types_global_ids = []
+    for record_type in allowed_record_types:
+        record_type_obj = next((r for r in root_types['data'] if r['name'] == record_type), None)
+        if record_type_obj is None:
+            raise ValueError(f"Record type {record_type} not found in tenant {tenant_global_id}")
+        allowed_record_types_global_ids.append(record_type_obj['globalId'])
+    if len(allowed_record_types_global_ids):
+        payload["AllowedRootTypeGlobalIds"] = allowed_record_types_global_ids
 
 
 def _privilege_name_to_int():
