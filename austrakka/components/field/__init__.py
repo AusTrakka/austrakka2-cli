@@ -24,22 +24,21 @@ def field_list(out_format: str):
 @field.command('add', hidden=hide_admin_cmds())
 @opt_name(help="Field name")
 @opt_fieldtype()
-@click.option('-d', '--description', 'description',
-              help="This field describes the purpose of the metadata field. "
-                   "Its value is also used for generating XLSX pro forma files.")
-@click.option('--nndss', 'nndss',
-              help="The corresponding National Notifiable Diseases Surveillance System label, "
-                   "where it exists.")
-@click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
-              help="This field may be used to colour nodes on the tree")
-@click.option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
-              help="This field may not be used to colour nodes on the tree")
-@click.option('-O', '--column-order', type=int, default=9000,
-              help="Default order in which this column will be sorted in tables relative to other '"
-                   "fields. If no value is specifed, the column will be placed after ordered "
+@create_option('-d', '--description', 'description',
+               help="This field describes the purpose of the metadata field. "
+                    "Its value is also used for generating XLSX pro forma files.")
+@create_option('--nndss', 'nndss',
+               help="The corresponding National Notifiable Diseases Surveillance System label, "
+                    "where it exists.")
+@create_option('--colour-nodes', 'colour_nodes', flag_value='viz',
+               help="This field may be used to colour nodes on the tree")
+@create_option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
+               help="This field may not be used to colour nodes on the tree")
+@create_option('-O', '--column-order', type=int, default=9000,
+               help="Default order in which this column will be sorted in tables relative to other "
+                    "fields. If no value is specifed, the column will be placed after ordered "
                     "columns.")
-@click.option('--private', 'private', is_flag=True, default=False,
-              help="This field is private and not visible to non admins when listing all fields")
+@opt_private()
 def field_add(
         name: str,
         description: str,
@@ -47,10 +46,10 @@ def field_add(
         field_type: str,
         colour_nodes: str,
         column_order: int,
-        private: bool,
+        is_private: bool,
 ):
     """Add a metadata field to AusTrakka"""
-    add_field(name, description, nndss, field_type, colour_nodes, column_order, private)
+    add_field(name, description, nndss, field_type, colour_nodes, column_order, is_private)
 
 
 @field.command('update', hidden=hide_admin_cmds())
@@ -58,20 +57,21 @@ def field_add(
 @opt_name(required=False,
           help="New field name - if this argument is provided, the field name will be changed")
 @opt_fieldtype(required=False)
-@click.option('-d', '--description', 'description',
-              help="This field describes the purpose of the metadata field. "
-                   "Its value is also used for generating XLSX pro forma files.")
-@click.option('--nndss', 'nndss',
-              help="The corresponding National Notifiable Diseases Surveillance System label, " 
-                   "where it exists.")
-@click.option('--colour-nodes', 'colour_nodes', flag_value='viz',
-              help="This field may be used to colour nodes on the tree")
-@click.option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
-              help="This field may not be used to colour nodes on the tree")
-@click.option('-O', '--column-order', type=int, default=None,
-              help="Default order in which this column will be sorted in tables relative to other "
-                   "fields. If no value is specifed, the column will be placed after ordered "
-                   "columns.")
+@create_option('-d', '--description', 'description',
+               help="This field describes the purpose of the metadata field. "
+                    "Its value is also used for generating XLSX pro forma files.")
+@create_option('--nndss', 'nndss',
+               help="The corresponding National Notifiable Diseases Surveillance System label, "
+                    "where it exists.")
+@create_option('--colour-nodes', 'colour_nodes', flag_value='viz',
+               help="This field may be used to colour nodes on the tree")
+@create_option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
+               help="This field may not be used to colour nodes on the tree")
+@create_option('-O', '--column-order', type=int, default=None,
+               help="Default order in which this column will be sorted in tables relative to other "
+                    "fields. If no value is specifed, the column will be placed after ordered "
+                    "columns.")
+@opt_private(is_update=True)
 def field_update(
         fieldname: str,
         name: str,
@@ -80,6 +80,7 @@ def field_update(
         field_type: str,
         colour_nodes: str,
         column_order: int,
+        is_private: bool,
 ):
     """Update a metadata field within AusTrakka"""
     update_field(
@@ -90,7 +91,9 @@ def field_update(
         field_type,
         colour_nodes,
         column_order,
+        is_private
     )
+
 
 @field.command('list-groups', hidden=hide_admin_cmds())
 @click.argument('fieldname')
@@ -98,13 +101,15 @@ def field_update(
 def field_list_groups(fieldname: str, out_format: str):
     """List groups that a metadata field belongs to"""
     list_field_groups(fieldname, out_format)
-    
+
+
 @field.command('list-projects', hidden=hide_admin_cmds())
 @click.argument('fieldname')
 @table_format_option()
 def field_list_projects(fieldname: str, out_format: str):
     """List projects that a metadata field belongs to"""
     list_field_projects(fieldname, out_format)
+
 
 @field.command('list-proformas', hidden=hide_admin_cmds())
 @click.argument('fieldname')
@@ -113,11 +118,13 @@ def field_list_proformas(fieldname: str, out_format: str):
     """List proformas that a metadata field belongs to"""
     list_field_proformas(fieldname, out_format)
 
+
 @field.command('disable', hidden=hide_admin_cmds())
 @click.argument('fieldname')
 def field_disable(fieldname: str):
     """Disable a metadata field within AusTrakka"""
     disable_field(fieldname)
+
 
 @field.command('enable', hidden=hide_admin_cmds())
 @click.argument('fieldname')
