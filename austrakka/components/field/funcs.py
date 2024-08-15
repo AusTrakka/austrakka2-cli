@@ -45,6 +45,7 @@ def add_field(
         typename: str,
         can_visualise: bool,
         column_order: int,
+        private: bool,
 ):
     """
     Add a field (MetaDataColumn) to AusTrakka.
@@ -74,6 +75,7 @@ def add_field(
             "ColumnOrder": column_order,
             "MetaDataColumnTypeId": fieldtype["metaDataColumnTypeId"],
             "IsActive": True,
+            "IsPrivate": private,
             "Description": description,
             "NndssFieldLabel": nndss_label,
         }
@@ -89,6 +91,7 @@ def update_field(
         typename: str,
         can_visualise: bool,
         column_order: int,
+        is_private: bool,
 ):
     """
     Update a field (MetaDataColumn) within AusTrakka.
@@ -126,10 +129,14 @@ def update_field(
     if nndss_label is not None:
         patch_fields["nndssFieldLabel"] = nndss_label
 
+    if is_private is not None:
+        patch_fields["isPrivate"] = is_private
+
     api_patch(
         path=f"{METADATACOLUMN_PATH}/{field['metaDataColumnId']}",
         data=patch_fields
     )
+
 
 @logger_wraps()
 def list_field_groups(name: str, out_format: str):
@@ -144,6 +151,7 @@ def list_field_groups(name: str, out_format: str):
         pd.DataFrame(result['data']),
         out_format,
     )
+
 
 @logger_wraps()
 def list_field_projects(name: str, out_format: str):
@@ -160,6 +168,7 @@ def list_field_projects(name: str, out_format: str):
         out_format,
     )
 
+
 @logger_wraps()
 def list_field_proformas(name: str, out_format: str):
     """List proformas that a metadata field belongs to"""
@@ -174,14 +183,15 @@ def list_field_proformas(name: str, out_format: str):
     data = pd.DataFrame(result['data'])[display_columns]
     data['fieldIsRequired'] = [
         [mapping['isRequired'] for mapping in row['columnMappings']
-            if mapping['metaDataColumnName']==name][0]
+         if mapping['metaDataColumnName'] == name][0]
         for row in result['data']
     ]
-    
+
     print_dataframe(
         data,
         out_format,
     )
+
 
 @logger_wraps()
 def disable_field(name: str):
@@ -191,6 +201,7 @@ def disable_field(name: str):
     api_patch(
         path=f"{METADATACOLUMN_PATH}/{name}/disable"
     )
+
 
 @logger_wraps()
 def enable_field(name: str):
