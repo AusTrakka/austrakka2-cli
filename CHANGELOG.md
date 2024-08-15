@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.59.0] - 2024-08-16
+### Added
+- `sample show` command.
+- Added `--is-private/--not-private` to `field [add|update]`.
+
+### Changed
+- Replaced `--colour-nodes` with `--viz/--no-viz` in `field [add|update]`.
+
 # [0.58.3] - 2024-08-09
 ### Fixed
 - Fixed `sync get` command to correctly handle numeric sequence IDs.
