@@ -43,32 +43,28 @@ def add_field(
         description: str,
         nndss_label: str,
         typename: str,
-        can_visualise: str,
+        can_visualise: bool,
         column_order: int,
+        private: bool,
 ):
     """
     Add a field (MetaDataColumn) to AusTrakka.
     """
     fieldtype = get_fieldtype_by_name(typename)
 
-    if can_visualise == 'viz':
-        if typename in ["date", "number", "string"]:
-            logger.warning(
-                f"Setting colour-nodes flag on field {name} of type {typename}. "
-                f"This may work poorly as colour visualisations are configured for a small "
-                f"discrete set of values.")
-        can_visualise = True
-    elif can_visualise == 'no_viz':
-        can_visualise = False
+    if can_visualise and typename in ["date", "number", "string"]:
+        logger.warning(
+            f"Setting viz flag on field {name} of type {typename}. "
+            f"This may work poorly as colour visualisations are configured for a small "
+            f"discrete set of values.")
     else:
-        assert can_visualise is None
         # Set visualisation behaviour based on field type
         # Here booleans and categoricals give True
         if typename == "string":
             logger.warning(
-                f"Setting default of --no-colour-nodes on field {name} due to type {typename}. "
+                f"Setting default of --no-viz on field {name} due to type {typename}. "
                 f"If this string field should be allowed to be used for colour visualisations, "
-                f"set --colour-nodes.")
+                f"set --viz.")
         can_visualise = (typename not in ["date", "number", "string"])
 
     api_post(
@@ -79,6 +75,7 @@ def add_field(
             "ColumnOrder": column_order,
             "MetaDataColumnTypeId": fieldtype["metaDataColumnTypeId"],
             "IsActive": True,
+            "IsPrivate": private,
             "Description": description,
             "NndssFieldLabel": nndss_label,
         }
@@ -92,8 +89,9 @@ def update_field(
         description: str,
         nndss_label: str,
         typename: str,
-        can_visualise: str,
+        can_visualise: bool,
         column_order: int,
+        is_private: bool,
 ):
     """
     Update a field (MetaDataColumn) within AusTrakka.
@@ -102,6 +100,7 @@ def update_field(
     corresponding values will only be updated if they are specified.
     """
     field = get_field_by_name(name)
+
     patch_fields = {}
 
     if new_name is not None:
@@ -113,13 +112,13 @@ def update_field(
         patch_fields["metaDataColumnTypeId"] = fieldtype["metaDataColumnTypeId"]
 
     if can_visualise is not None:
-        if can_visualise == 'viz':
+        if can_visualise:
             if typename in ["date", "number", "string"]:
                 logger.warning(
-                    f"Setting colour-nodes flag on field {name} of type {typename}. "
+                    f"Setting viz flag on field {name} of type {typename}. "
                     f"This may work poorly as colour visualisations are configured for a "
                     f"small discrete set of values.")
-        patch_fields["canVisualise"] = can_visualise == 'viz'
+        patch_fields["canVisualise"] = can_visualise
 
     if column_order is not None:
         patch_fields["columnOrder"] = column_order
@@ -130,10 +129,14 @@ def update_field(
     if nndss_label is not None:
         patch_fields["nndssFieldLabel"] = nndss_label
 
+    if is_private is not None:
+        patch_fields["isPrivate"] = is_private
+
     api_patch(
         path=f"{METADATACOLUMN_PATH}/{field['metaDataColumnId']}",
         data=patch_fields
     )
+
 
 @logger_wraps()
 def list_field_groups(name: str, out_format: str):
@@ -148,6 +151,7 @@ def list_field_groups(name: str, out_format: str):
         pd.DataFrame(result['data']),
         out_format,
     )
+
 
 @logger_wraps()
 def list_field_projects(name: str, out_format: str):
@@ -164,6 +168,7 @@ def list_field_projects(name: str, out_format: str):
         out_format,
     )
 
+
 @logger_wraps()
 def list_field_proformas(name: str, out_format: str):
     """List proformas that a metadata field belongs to"""
@@ -178,14 +183,15 @@ def list_field_proformas(name: str, out_format: str):
     data = pd.DataFrame(result['data'])[display_columns]
     data['fieldIsRequired'] = [
         [mapping['isRequired'] for mapping in row['columnMappings']
-            if mapping['metaDataColumnName']==name][0]
+         if mapping['metaDataColumnName'] == name][0]
         for row in result['data']
     ]
-    
+
     print_dataframe(
         data,
         out_format,
     )
+
 
 @logger_wraps()
 def disable_field(name: str):
@@ -195,6 +201,7 @@ def disable_field(name: str):
     api_patch(
         path=f"{METADATACOLUMN_PATH}/{name}/disable"
     )
+
 
 @logger_wraps()
 def enable_field(name: str):
