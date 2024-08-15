@@ -57,9 +57,8 @@ def field_add(
 @opt_name(required=False,
           help="New field name - if this argument is provided, the field name will be changed")
 @opt_fieldtype(required=False)
-@create_option('-d', '--description', 'description',
-               help="This field describes the purpose of the metadata field. "
-                    "Its value is also used for generating XLSX pro forma files.")
+@opt_description(required=False, help="This field describes the purpose of the metadata field. "
+                                      "Its value is also used for generating XLSX pro forma files.")
 @create_option('--nndss', 'nndss',
                help="The corresponding National Notifiable Diseases Surveillance System label, "
                     "where it exists.")
