@@ -57,6 +57,18 @@ def opt_name(var_name='name', **attrs: t.Any):
     )
 
 
+def opt_private(is_update=False, **attrs: t.Any):
+    defaults = {
+        'help': 'Determines if the field is private'
+    }
+    return create_option(
+        '--is-private/--not-private',
+        type=bool,
+        default=None if is_update else False,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_email_address(var_name='email', **attrs: t.Any):
     defaults = {
         'required': True,

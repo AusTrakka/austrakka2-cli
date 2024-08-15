@@ -1,6 +1,6 @@
-
 import typing as t
 import click
+
 
 def create_option(*param_decls: str, **attrs: t.Any):
     def inner_func(func):
@@ -18,6 +18,7 @@ def create_option(*param_decls: str, **attrs: t.Any):
 
     return inner_func
 
+
 def _get_custom_help_record(orig_help, multiple):
     if multiple:
         tmp_list = list(orig_help)
@@ -29,10 +30,12 @@ def _get_custom_help_record(orig_help, multiple):
         orig_help = tuple(tmp_list)
     return orig_help
 
+
 class AusTrakkaCliOption(click.Option):
     def get_help_record(self, ctx):
         orig_help = super().get_help_record(ctx)
         return _get_custom_help_record(orig_help, self.multiple)
+
 
 class MutuallyExclusiveOption(AusTrakkaCliOption):
     def __init__(self, *args, **kwargs):
