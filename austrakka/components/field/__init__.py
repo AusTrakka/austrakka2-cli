@@ -24,32 +24,29 @@ def field_list(out_format: str):
 @field.command('add', hidden=hide_admin_cmds())
 @opt_name(help="Field name")
 @opt_fieldtype()
-@create_option('-d', '--description', 'description',
-               help="This field describes the purpose of the metadata field. "
-                    "Its value is also used for generating XLSX pro forma files.")
+@opt_description(help="This field describes the purpose of the metadata field. "
+                      "Its value is also used for generating XLSX pro forma files.")
 @create_option('--nndss', 'nndss',
                help="The corresponding National Notifiable Diseases Surveillance System label, "
                     "where it exists.")
-@create_option('--colour-nodes', 'colour_nodes', flag_value='viz',
-               help="This field may be used to colour nodes on the tree")
-@create_option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
-               help="This field may not be used to colour nodes on the tree")
 @create_option('-O', '--column-order', type=int, default=9000,
                help="Default order in which this column will be sorted in tables relative to other "
                     "fields. If no value is specifed, the column will be placed after ordered "
                     "columns.")
+@click.option('--viz/--no-viz', default=False,
+              help="This field may be used for colour visualisation in trees or plots")
 @opt_private()
 def field_add(
         name: str,
         description: str,
         nndss: str,
         field_type: str,
-        colour_nodes: str,
+        viz: bool,
         column_order: int,
         is_private: bool,
 ):
     """Add a metadata field to AusTrakka"""
-    add_field(name, description, nndss, field_type, colour_nodes, column_order, is_private)
+    add_field(name, description, nndss, field_type, viz, column_order, is_private)
 
 
 @field.command('update', hidden=hide_admin_cmds())
@@ -62,22 +59,20 @@ def field_add(
 @create_option('--nndss', 'nndss',
                help="The corresponding National Notifiable Diseases Surveillance System label, "
                     "where it exists.")
-@create_option('--colour-nodes', 'colour_nodes', flag_value='viz',
-               help="This field may be used to colour nodes on the tree")
-@create_option('--no-colour-nodes', 'colour_nodes', flag_value='no_viz',
-               help="This field may not be used to colour nodes on the tree")
 @create_option('-O', '--column-order', type=int, default=None,
                help="Default order in which this column will be sorted in tables relative to other "
                     "fields. If no value is specifed, the column will be placed after ordered "
                     "columns.")
 @opt_private(is_update=True)
+@click.option('--viz/--no-viz', default=None,
+              help="This field may be used for colour visualisation in trees or plots")
 def field_update(
         fieldname: str,
         name: str,
         description: str,
         nndss: str,
         field_type: str,
-        colour_nodes: str,
+        viz: bool,
         column_order: int,
         is_private: bool,
 ):
@@ -88,7 +83,7 @@ def field_update(
         description,
         nndss,
         field_type,
-        colour_nodes,
+        viz,
         column_order,
         is_private
     )

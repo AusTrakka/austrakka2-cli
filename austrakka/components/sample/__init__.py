@@ -3,13 +3,16 @@ from io import BufferedReader
 import click
 
 from austrakka.utils.options import opt_sample_id, opt_group_name
+from austrakka.utils.cmd_filter import hide_admin_cmds
 from ...utils.output import table_format_option
+from ...utils.output import object_format_option
 from .funcs import \
     disable_sample, \
     enable_sample, \
     unshare_sample, \
     share_sample, \
-    get_groups
+    get_groups, \
+    show_sample
 
 
 
@@ -18,6 +21,12 @@ from .funcs import \
 def sample(ctx):
     """Commands related to samples"""
     ctx.context = ctx.parent.context
+
+@sample.command('show', hidden=hide_admin_cmds())
+@opt_sample_id(multiple=False)
+@object_format_option()
+def sample_show(sample_id: str, out_format: str):
+    show_sample(sample_id, out_format)
 
 
 @sample.command('unshare')

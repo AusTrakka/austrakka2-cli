@@ -43,7 +43,7 @@ def add_field(
         description: str,
         nndss_label: str,
         typename: str,
-        can_visualise: str,
+        can_visualise: bool,
         column_order: int,
         private: bool,
 ):
@@ -52,24 +52,19 @@ def add_field(
     """
     fieldtype = get_fieldtype_by_name(typename)
 
-    if can_visualise == 'viz':
-        if typename in ["date", "number", "string"]:
-            logger.warning(
-                f"Setting colour-nodes flag on field {name} of type {typename}. "
-                f"This may work poorly as colour visualisations are configured for a small "
-                f"discrete set of values.")
-        can_visualise = True
-    elif can_visualise == 'no_viz':
-        can_visualise = False
+    if can_visualise and typename in ["date", "number", "string"]:
+        logger.warning(
+            f"Setting viz flag on field {name} of type {typename}. "
+            f"This may work poorly as colour visualisations are configured for a small "
+            f"discrete set of values.")
     else:
-        assert can_visualise is None
         # Set visualisation behaviour based on field type
         # Here booleans and categoricals give True
         if typename == "string":
             logger.warning(
-                f"Setting default of --no-colour-nodes on field {name} due to type {typename}. "
+                f"Setting default of --no-viz on field {name} due to type {typename}. "
                 f"If this string field should be allowed to be used for colour visualisations, "
-                f"set --colour-nodes.")
+                f"set --viz.")
         can_visualise = (typename not in ["date", "number", "string"])
 
     api_post(
@@ -94,7 +89,7 @@ def update_field(
         description: str,
         nndss_label: str,
         typename: str,
-        can_visualise: str,
+        can_visualise: bool,
         column_order: int,
         is_private: bool,
 ):
@@ -105,6 +100,7 @@ def update_field(
     corresponding values will only be updated if they are specified.
     """
     field = get_field_by_name(name)
+
     patch_fields = {}
 
     if new_name is not None:
@@ -116,13 +112,13 @@ def update_field(
         patch_fields["metaDataColumnTypeId"] = fieldtype["metaDataColumnTypeId"]
 
     if can_visualise is not None:
-        if can_visualise == 'viz':
+        if can_visualise:
             if typename in ["date", "number", "string"]:
                 logger.warning(
-                    f"Setting colour-nodes flag on field {name} of type {typename}. "
+                    f"Setting viz flag on field {name} of type {typename}. "
                     f"This may work poorly as colour visualisations are configured for a "
                     f"small discrete set of values.")
-        patch_fields["canVisualise"] = can_visualise == 'viz'
+        patch_fields["canVisualise"] = can_visualise
 
     if column_order is not None:
         patch_fields["columnOrder"] = column_order

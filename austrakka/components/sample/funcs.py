@@ -2,12 +2,24 @@ from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.paths import SAMPLE_PATH
 from austrakka.utils.helpers.groups import format_group_dto_for_output
+from austrakka.utils.helpers.output import call_get_and_print
 
 DISABLE = 'Disable'
 ENABLE = 'Enable'
 UNSHARE = 'UnShare'
 SHARE = 'Share'
 GROUPS = 'Groups'
+
+
+@logger_wraps()
+def show_sample(
+        sample_id: str,
+        out_format: str,
+):
+    call_get_and_print(
+        path="/".join([SAMPLE_PATH, sample_id]),
+        out_format=out_format
+    )
 
 
 @logger_wraps()
