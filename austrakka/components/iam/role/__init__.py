@@ -2,7 +2,7 @@ import click
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import *
 from austrakka.utils.output import table_format_option
-from .access import access
+from .definition import definition
 from .funcs import get_roles, add_role, update_role
 
 
@@ -13,7 +13,7 @@ def role(ctx):
     ctx.context = ctx.parent.context
 
 
-role.add_command(access)
+role.add_command(definition)
 
 
 @role.command('get', hidden=hide_admin_cmds())

@@ -1,4 +1,4 @@
-from austrakka.components.iam.shared_funcs import _get_default_tenant, _get_role_by_name
+from austrakka.components.iam.shared_funcs import _get_default_tenant_global_id, _get_role_by_name
 from austrakka.utils.api import api_get, api_delete, api_post
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dict
@@ -9,7 +9,7 @@ def list_privileges(record_type: str, record_global_id: str, out_format: str):
     """
     List the privileges assigned to a record.
     """
-    tenant_global_id = _get_default_tenant()
+    tenant_global_id = _get_default_tenant_global_id()
     path = f"v2/{record_type}/{record_global_id}/privilege/?owningTenantGlobalId={tenant_global_id}"
 
     response = api_get(
@@ -24,7 +24,7 @@ def list_by_role_privileges(role: str, record_type: str, record_global_id: str, 
     """
     List by role the privileges assigned to a record.
     """
-    tenant_global_id = _get_default_tenant()
+    tenant_global_id = _get_default_tenant_global_id()
     roles = api_get(path=f"v2/tenant/{tenant_global_id}/role")
     role_obj = next((r for r in roles['data'] if r['name'] == role), None)
 
@@ -46,7 +46,7 @@ def list_by_user_privileges(user_id: str, record_type: str, record_global_id: st
     """
     List by user the privileges assigned to a record.
     """
-    tenant_global_id = _get_default_tenant()
+    tenant_global_id = _get_default_tenant_global_id()
     response = api_get(
         path=f"v2/{record_type}/{record_global_id}/privilege/user/{user_id}"
              f"?owningTenantGlobalId={tenant_global_id}",
@@ -56,13 +56,13 @@ def list_by_user_privileges(user_id: str, record_type: str, record_global_id: st
 
 
 @logger_wraps()
-def grant_privilege(
+def assign_privilege(
         user_id: str,
         role: str,
         record_global_id: str,
         record_type: str):
 
-    owning_tenant_global_id = _get_default_tenant()
+    owning_tenant_global_id = _get_default_tenant_global_id()
     role_obj = _get_role_by_name(role, owning_tenant_global_id)
 
     payload = {
@@ -79,12 +79,12 @@ def grant_privilege(
 
 
 @logger_wraps()
-def deny_privilege(
+def unassign_privilege(
         record_global_id: str,
         record_type: str,
         privilege_global_id: str):
 
-    owning_tenant_global_id = _get_default_tenant()
+    owning_tenant_global_id = _get_default_tenant_global_id()
     uri_path = (f"v2/{record_type}/{record_global_id}/privilege/"
                 f"{privilege_global_id}/?owningTenantGlobalId={owning_tenant_global_id}")
 
@@ -99,20 +99,4 @@ def _print_response_data(out_format, response):
     print_dict(
         data,
         out_format,
-    )
-
-
-def _get_root_record(root_record_type: str, root_record_global_id: str) -> str:
-    return api_get(
-        path=f"v2/{root_record_type}/{root_record_global_id}",
-    )
-
-
-def _get_privilege_by_user_id(
-        user_id: str,
-        record_type: str, record_global_id: str, tenant_global_id: str):
-    uri_path = (f"v2/{record_type}/{record_global_id}/privilege/User/{user_id}/"
-                f"?owningTenantGlobalId={tenant_global_id}")
-    return api_get(
-        path=uri_path
     )

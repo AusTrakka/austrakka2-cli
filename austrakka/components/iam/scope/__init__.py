@@ -1,4 +1,3 @@
-import click
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import *
 from austrakka.utils.output import table_format_option

@@ -4,8 +4,8 @@ from austrakka.components.iam.privilege.funcs import (
     list_privileges,
     list_by_role_privileges,
     list_by_user_privileges,
-    grant_privilege,
-    deny_privilege)
+    assign_privilege,
+    unassign_privilege)
 
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import (
@@ -62,36 +62,36 @@ def privilege_list_by_user(user_id: str, record_type: str, record_id: str, out_f
     list_by_user_privileges(user_id, record_type_route, record_id, out_format)
 
 
-@privilege.command('grant', hidden=hide_admin_cmds())
+@privilege.command('assign', hidden=hide_admin_cmds())
 @opt_user_object_id()
 @opt_role()
 @opt_record_global_id()
 @opt_record_type()
-def privilege_grant(
+def privilege_assign(
         user_id: str,
         role: str,
         record_global_id: str,
         record_type: str):
     """
-    Grant a user access to a record limited by their role.
+    Assign privileges to access a record by a user.
     """
     record_type_route = convert_record_type_to_route_string(record_type)
-    grant_privilege(user_id, role, record_global_id, record_type_route)
+    assign_privilege(user_id, role, record_global_id, record_type_route)
 
 
-@privilege.command('deny', hidden=hide_admin_cmds())
+@privilege.command('unassign', hidden=hide_admin_cmds())
 @opt_record_global_id()
 @opt_record_type()
 @click.argument('privilege-global-id', type=str)
-def privilege_deny(
+def privilege_unassign(
         record_global_id: str,
         record_type: str,
         privilege_global_id: str):
     """
-    Deny a user access to a record. Ie, remove the access if it was previously granted.
+    Unassign privileges to access a record by a user.
     """
     record_type_route = convert_record_type_to_route_string(record_type)
-    deny_privilege(record_global_id, record_type_route, privilege_global_id)
+    unassign_privilege(record_global_id, record_type_route, privilege_global_id)
 
 
 def convert_record_type_to_route_string(record_type):

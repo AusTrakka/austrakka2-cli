@@ -1,15 +1,15 @@
-from austrakka.components.iam.shared_funcs import _get_default_tenant
+from austrakka.components.iam.shared_funcs import _get_default_tenant_global_id
 from austrakka.utils.api import api_get, api_post, api_delete
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dict
 
 
 @logger_wraps()
-def get_access(role: str, out_format: str):
+def get_role_definition(role: str, out_format: str):
     """
     Get the list of scope access defined for a role.
     """
-    tenant_global_id = _get_default_tenant()
+    tenant_global_id = _get_default_tenant_global_id()
     resp = api_get(path=f"v2/tenant/{tenant_global_id}/role")
     role_global_id = _get_role_global_id_by_name(resp, role, tenant_global_id)
 
@@ -25,11 +25,11 @@ def get_access(role: str, out_format: str):
 
 
 @logger_wraps()
-def add_access(role: str, global_ids: list[str]):
+def add_role_definition(role: str, global_ids: list[str]):
     """
     Add a new access definition to a role.
     """
-    tenant_global_id = _get_default_tenant()
+    tenant_global_id = _get_default_tenant_global_id()
     resp = api_get(path=f"v2/tenant/{tenant_global_id}/role",)
     role_global_id = _get_role_global_id_by_name(resp, role, tenant_global_id)
 
@@ -39,11 +39,12 @@ def add_access(role: str, global_ids: list[str]):
     )
 
 
-def remove_access(scope_access_def_global_id: str):
+@logger_wraps()
+def remove_role_definition(scope_access_def_global_id: str):
     """
     Remove access from a role.
     """
-    tenant_global_id = _get_default_tenant()
+    tenant_global_id = _get_default_tenant_global_id()
     api_delete(
         path=f"v2/tenant/{tenant_global_id}/role/ScopeAccessDefinition/"
              f"{scope_access_def_global_id}",
