@@ -30,7 +30,7 @@ def privilege(ctx):
 @table_format_option()
 def privilege_list(record_type: str, record_global_id: str, out_format: str):
     """
-    List the privileges assigned to a record.
+    List all privileges assigned to a record.
     """
     record_type_route = convert_record_type_to_route_string(record_type)
     list_privileges(record_type_route, record_global_id, out_format)
@@ -43,7 +43,7 @@ def privilege_list(record_type: str, record_global_id: str, out_format: str):
 @table_format_option()
 def privilege_list_by_role(role: str, record_type: str, record_global_id: str, out_format: str):
     """
-    List the privileges assigned to a record.
+    List the privileges assigned to a record for a specific role.
     """
     record_type_route = convert_record_type_to_route_string(record_type)
     list_by_role_privileges(role, record_type_route, record_global_id, out_format)
@@ -56,7 +56,7 @@ def privilege_list_by_role(role: str, record_type: str, record_global_id: str, o
 @table_format_option()
 def privilege_list_by_user(user_id: str, record_type: str, record_id: str, out_format: str):
     """
-    List the privileges assigned to a record.
+    List the privileges assigned to a record for a specific user.
     """
     record_type_route = convert_record_type_to_route_string(record_type)
     list_by_user_privileges(user_id, record_type_route, record_id, out_format)
