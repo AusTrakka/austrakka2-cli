@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.60.0] - 2024-08-23
+### Changed
+- `seq add` commands now sends a hash of the file to the server for verification.
+
 # [0.59.0] - 2024-08-16
 ### Added
 - `sample show` command.
