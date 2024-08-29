@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.60.0] - 2024-08-29
+### Added
+- `iam` Permission V2 commands for managing user privileges with role-based access control (RBAC).
+- Initial coverage of RBAC is limited but will be expanded in future releases.
+
 # [0.59.0] - 2024-08-16
 ### Added
 - `sample show` command.
