@@ -3,6 +3,11 @@ import typing as t
 
 import click
 
+from austrakka.utils.enums.privilege_level import (
+    AUSTRAKKA_ADMIN_LEVEL,
+    FUNCTIONAL_ADMIN_LEVEL,
+    USER_LEVEL)
+
 from austrakka.utils.enums.seq import SeqType
 from austrakka.utils.option_utils import create_option, MutuallyExclusiveOption
 
@@ -400,6 +405,21 @@ def opt_user_object_id(**attrs: t.Any):
     )
 
 
+def opt_global_ids(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'multiple': True,
+        'help': 'The IDs of the entities. Use a comma (,) to separate '
+                'multiple IDs.',
+    }
+    return create_option(
+        '-gis',
+        '--global-ids',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_batch_size(**attrs: t.Any):
     defaults = {
         'required': False,
@@ -572,6 +592,82 @@ def opt_fieldtype_value(var_name='values', **attrs: t.Any):
         '-v',
         '--value',
         var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_record_global_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'The record referenced by a privilege entry. Eg., ProjectId, etc..',
+    }
+    return create_option(
+        '--record-global-id',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_scope_access_def_global_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'The global id of the Scope Access Definition',
+    }
+    return create_option(
+        '--scope-access-def-global-id',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_record_type(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Record type that is the subject of access control. ',
+    }
+    return create_option(
+        '--record-type',
+        type=click.Choice(['Tenant', 'Organisation']),
+        **{**defaults, **attrs}
+    )
+
+
+def opt_privilege_level(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'A privilege level in the permission system. ',
+    }
+    return create_option(
+        '-pv',
+        '--privilege-level',
+        type=click.Choice([AUSTRAKKA_ADMIN_LEVEL, FUNCTIONAL_ADMIN_LEVEL, USER_LEVEL]),
+        **{**defaults, **attrs}
+    )
+
+
+def opt_allowed_record_types(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Name of each allowed record types where a role can be used to control access. ',
+        'multiple': True,
+    }
+    return create_option(
+        "-art",
+        "--allowed-record-types",
+        type=click.Choice(['Tenant', 'Organisation']),
+        **{**defaults, **attrs}
+    )
+
+
+def opt_role(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'The role name that is unique to the tenant.',
+    }
+    return create_option(
+        "-r",
+        "--role",
         type=click.STRING,
         **{**defaults, **attrs}
     )
