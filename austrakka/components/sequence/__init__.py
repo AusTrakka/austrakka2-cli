@@ -16,13 +16,11 @@ from austrakka.utils.options import opt_delete_all
 
 from austrakka.utils.cmd_filter import hide_admin_cmds
 
-from .funcs import take_sample_names
 from .funcs import get_sequences
 from .funcs import list_sequences
 from .funcs import purge_sequence
 from .add import add
 from .sync import sync
-
 
 
 @click.group()
