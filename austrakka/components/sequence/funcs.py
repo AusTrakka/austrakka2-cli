@@ -72,6 +72,7 @@ class SeqFile:
     multipart: tuple
     sha256: str
     filename: str
+    read_hint: str = None
 
 
 @logger_wraps()
@@ -485,9 +486,9 @@ def _build_headers(seq_type, csv_row, force, skip, seq_files: List[SeqFile]):
 def _set_hash_headers(headers, seq_files):
     if len(seq_files) == 2:
         for seq_file in seq_files:
-            if '_r1' in seq_file.filename:
+            if seq_file.read_hint == 'r1':
                 headers[f'{PATH_1_HEADER}-hash'] = seq_file.sha256
-            elif '_r2' in seq_file.filename:
+            elif seq_file.read_hint == "r2":
                 headers[f'{PATH_2_HEADER}-hash'] = seq_file.sha256
     elif len(seq_files) == 1:
         headers[f'{PATH_HEADER}-hash'] = seq_files[0].sha256
@@ -523,12 +524,36 @@ def _get_files_from_csv_paths(csv_row: pd.Series, seq_type: SeqType) -> List[Seq
         if column==SEQ_ID_CSV:
             continue
         contig_rename_id = seq_id if seq_type==SeqType.FASTA_ASM else None
-        file = _get_file(csv_row[column], contig_rename_id)
+        read_hint = _col_name_to_read_hint(column)
+        file = _get_file(csv_row[column], contig_rename_id, read_hint)
+        _ensure_read_hint_and_filename_agrees(file)
         sample_files.append(file)
     return sample_files
 
 
-def _get_file(filepath: str, contig_rename_id=None) -> SeqFile:
+def _col_name_to_read_hint(column):
+    read_hint = None
+    if column == PATH_1_CSV:
+        read_hint = 'r1'
+    elif column == PATH_2_CSV:
+        read_hint = 'r2'
+    return read_hint
+
+
+def _ensure_read_hint_and_filename_agrees(file):
+    file_path = Path(file.filename)
+    file_name = file_path.stem.casefold()
+    
+    if file.read_hint == "r1" and file_name.endswith("_r2"):
+        raise ValueError(f"File {file.filename} ends with '_r2' but "
+                         f"is assigned to {PATH_1_CSV} which is reserved for read one.")
+
+    if file.read_hint == "r2" and file_name.endswith("_r1"):
+        raise ValueError(f"File {file.filename} ends with '_r1' but "
+                         f"is assigned to {PATH_2_CSV} which is reserved for read two.")
+
+
+def _get_file(filepath: str, contig_rename_id=None, read_hint: str = None) -> SeqFile:
     # pylint: disable=consider-using-with
     file = open(filepath, 'rb')
     filename = os.path.basename(file.name)
@@ -539,6 +564,7 @@ def _get_file(filepath: str, contig_rename_id=None) -> SeqFile:
         multipart=('files[]', (filename, file)),
         sha256=hashlib.sha256(file.read()).hexdigest(),
         filename=filename,
+        read_hint=read_hint
     )
 
 
