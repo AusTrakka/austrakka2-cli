@@ -34,10 +34,11 @@ def initialise(
         download_batch_size) -> dict:
     sync_state = {}
     set_state_pulling_manifest(sync_state)
-    sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE
-    sync_state[MANIFEST_KEY] = MANIFEST_FILE_NAME
-    sync_state[OBSOLETE_OBJECTS_FILE_KEY] = OBSOLETE_OBJECTS_FILE
-    sync_state[INTERMEDIATE_MANIFEST_FILE_KEY] = INTERMEDIATE_MANIFEST_FILE
+    sync_state[SYNC_STATE_FILE_KEY] = SYNC_STATE_FILE.replace('SEQTYPE', seq_type)
+    sync_state[MANIFEST_KEY] = MANIFEST_FILE_NAME.replace('SEQTYPE', seq_type)
+    sync_state[OBSOLETE_OBJECTS_FILE_KEY] = OBSOLETE_OBJECTS_FILE.replace('SEQTYPE', seq_type)
+    sync_state[INTERMEDIATE_MANIFEST_FILE_KEY] = \
+        INTERMEDIATE_MANIFEST_FILE.replace('SEQTYPE', seq_type)
     sync_state[SEQ_TYPE_KEY] = seq_type
     sync_state[GROUP_NAME_KEY] = group_name
     sync_state[RECALCULATE_HASH_KEY] = recalc_hash
@@ -53,6 +54,20 @@ def load_state(group_name, output_dir, state_file_path, seq_type):
     ensure_group_names_match(group_name, sync_state)
     ensure_output_dir_match(output_dir, sync_state)
     ensure_seq_type_matches(seq_type, sync_state)
+    ensure_download_batch_size_positive(sync_state[DOWNLOAD_BATCH_SIZE_KEY])
+    ensure_is_present(
+        sync_state,
+        TRASH_DIR_KEY,
+        "No trash directory found in the current state file. "
+        "The state file might be corrupt. Ask an admin for help")
+
+    return sync_state
+
+# Used for migration from old sync system. Does not attempt to enforce group or type
+def load_old_state(output_dir, state_file_path):
+    sync_state = read_sync_state(state_file_path)
+    ensure_valid_state(sync_state)
+    ensure_output_dir_match(output_dir, sync_state)
     ensure_download_batch_size_positive(sync_state[DOWNLOAD_BATCH_SIZE_KEY])
     ensure_is_present(
         sync_state,

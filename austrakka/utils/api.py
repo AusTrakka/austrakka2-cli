@@ -15,7 +15,7 @@ from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.exceptions import UnauthorizedException
 from austrakka.utils.output import log_response
 from austrakka.utils.context import CxtKey
-from austrakka.utils.context import get_ctx_value
+from austrakka.utils.context import AusTrakkaCxt
 from austrakka import __version__
 
 CONTENT_TYPE_JSON = 'application/json'
@@ -23,17 +23,12 @@ CONTENT_TYPE_MULTIPART = 'multipart/form-data; charset=utf-8; boundary=+++'
 WWW_AUTHENTICATE = 'www-authenticate'
 INVALID_TOKEN = 'invalid_token'
 
-MODE_SKIP = 'skip'
-MODE_OVERWRITE = 'overwrite'
-MODE = 'mode'
-
-
 def _get_default_headers(
         content_type: str = CONTENT_TYPE_JSON,
 ) -> Dict:
     default_headers = {
         'Content-Type': content_type,
-        'Authorization': f'Bearer {get_ctx_value(CxtKey.CTX_TOKEN)}',
+        'Authorization': f'Bearer {AusTrakkaCxt.get_value(CxtKey.TOKEN)}',
         'User-Agent': f'austrakka/{__version__}',
     }
     return default_headers
@@ -68,7 +63,7 @@ def _get_data(body: Union[Dict, List] = None) -> str:
 
 
 def _get_url(path: str):
-    return f'{get_ctx_value(CxtKey.CTX_URI)}/api/{path}'
+    return f'{AusTrakkaCxt.get_value(CxtKey.URI)}/api/{path}'
 
 
 def get_response(response: httpx.Response, log_resp: bool = False) -> Dict:
@@ -85,9 +80,9 @@ def _get_client(
 ):
     return httpx.Client(
         headers=_get_default_headers(content_type),
-        verify=get_ctx_value(CxtKey.CTX_VERIFY_CERT),
+        verify=not AusTrakkaCxt.get_value(CxtKey.SKIP_CERT_VERIFY),
         timeout=None,
-        http2=get_ctx_value(CxtKey.CTX_USE_HTTP2),
+        http2=AusTrakkaCxt.get_value(CxtKey.USE_HTTP2),
     )
 
 
@@ -122,12 +117,15 @@ def api_get(
 def api_get_stream(
         path: str,
         func: Callable[[httpx.Response], None],
+        params: Dict = None,
 ):
     """
-    Throws httpx.HTTPStatusError with status is not 2xx.
+    Throws httpx.HTTPStatusError if status is not 2xx.
     """
+    if params is None:
+        params = {}
     resp: httpx.Response
-    with _get_client().stream("GET", _get_url(path)) as resp:
+    with _get_client().stream("GET", _get_url(path), params=params) as resp:
         resp.raise_for_status()
         func(resp)
 
@@ -238,10 +236,3 @@ def api_delete(
         params=params,
         headers=dict(client.headers) | custom_headers
     )
-
-
-def set_mode_header(custom_headers, force, skip):
-    if skip:
-        custom_headers[MODE] = MODE_SKIP
-    if force:
-        custom_headers[MODE] = MODE_OVERWRITE

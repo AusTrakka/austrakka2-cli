@@ -5,6 +5,93 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.61.0] - 2024-09-05
+### Changed
+- `seq add` commands now sends a hash of the file to the server for verification, rather than checking it after upload.
+
+# [0.60.0] - 2024-08-29
+### Added
+- `iam` Permission V2 commands for managing user privileges with role-based access control (RBAC).
+- Initial coverage of RBAC is limited but will be expanded in future releases.
+
+# [0.59.0] - 2024-08-16
+### Added
+- `sample show` command.
+- Added `--is-private/--not-private` to `field [add|update]`.
+
+### Changed
+- Replaced `--colour-nodes` with `--viz/--no-viz` in `field [add|update]`.
+
+# [0.58.3] - 2024-08-09
+### Fixed
+- Fixed `sync get` command to correctly handle numeric sequence IDs.
+
+# [0.58.2] - 2024-08-07
+### Added
+- Can now set analysis server username in `user` commands.
+
+# [0.58.1] - 2024-08-05
+
+### Fixed
+- Integer metadata fields will now be correctly rendered as integers, rather than floats, in downloaded metadata
+- Some missing command descriptions have been added to the CLI help
+- Fixed FutureWarnings that were appearing with newer versions of Pandas
+
+### Changed
+- The `sample listgroups` command is now `sample list-groups`, to be consistent with other commands
+- When creating an analysis with `analysis add`, it is no longer necessary to specify `--definition upload`
+
+# [0.58.0] - 2024-07-22
+
+### Fixed
+- Initialising of `seq sync get` manifest file for empty list of sequences
+
+### Changed
+- Improvements to auto-generation of proforma template
+- Allow CLI version check to be skipped
+
+### Added
+- Added commands to disable and enable fields
+
+# [0.57.1] - 2024-07-08
+
+### Fixed
+- Revert semver dependency to fix runtime error
+
+# [0.57.0] - 2024-07-08
+
+### Changed
+- Several changes have been made to support more types of sequence data (see below). 
+These changes involve backwards-incompatible changes to syntax. Sequence data types are now:
+  - fastq-ill-pe - paired-end Illuminq FASTQ data (previously called fastq)
+  - fastq-ill-se - single-end Illumina FASTQ data
+  - fastq-ont - Oxford Nanopore FASTQ data
+  - fasta-asm - FASTA assembly, may be multi-contig
+  - fasta-cns - single-contig consensus FASTA sequence (previously called fasta)
+- The `seq add` command has been updated to support more types of sequence data. 
+ The syntax for uploading single-contig consensus sequences is now `austrakka seq add fasta-cns seqs.fasta`. 
+ The syntax for uploading other types of sequence data is now `austrakka seq add <seqtype> files.csv`.
+- The `seq sync get` and `seq get` commands have been updated to support more types of sequence data. 
+It is now possible to sync multiple types of sequence data from the same group or project to the same output directory.
+Sequences will now be downloaded to a subdirectory specific to the sequence type, i.e. <seq_id>/<seqtype>/<file> .
+Each sequence type will have a separate state and manifest file. 
+In the case of fasta-cns data, the aggregated sequence file, previously named all.fasta, is now named consensus.fasta .
+- It is now possible to list sequences by sample with the `seq list` command, using a `-s` parameter.
+- The admin `seq purge` command now requires a `-t` parameter to specify the sequence type.
+
+# [0.56.0] - 2024-06-12
+
+### Changed
+- Changed `field update` command to use PATCH instead of PUT, inline with a server change.
+
+# [0.55.0] - 2024-06-11
+
+### Changed
+- Changed `user update` command to no longer modify the user's roles.
+
+### Fixed
+- Fixed crash in `project field add` command.
+
 # [0.54.0] - 2024-05-28
 
 ### Added

@@ -27,23 +27,29 @@ def proforma(ctx):
     """Commands related to metadata pro formas"""
     ctx.context = ctx.parent.context
 
+# proforma-specific options used in multiple commands
+opt_required = create_option(
+    '-req',
+    '--required-field',
+    help='Required field in this pro forma; users must populate this field in every upload. '
+         'Multiple fields may be specified.',
+    type=click.STRING,
+    multiple=True)
+
+opt_optional = create_option(
+    '-opt',
+    '--optional-field',
+    help='Optional field in this pro forma; users may include this field in uploads. '
+         'Multiple fields may be specified.',
+    type=click.STRING,
+    multiple=True)
 
 @proforma.command('add', hidden=hide_admin_cmds())
 @opt_abbrev()
 @opt_name()
 @opt_description(required=False)
-@click.option('-req',
-              '--required-field',
-              help='Required field in this pro forma; users must populate this field in every '
-                   'upload. Multiple fields may be added.',
-              type=click.STRING,
-              multiple=True)
-@click.option('-opt',
-              '--optional-field',
-              help='Optional field in this pro forma; users may include this field in uploads. '
-                   'Multiple fields may be added.',
-              type=click.STRING,
-              multiple=True)
+@opt_required
+@opt_optional
 def proforma_add(
         abbrev: str,
         name: str,
@@ -61,20 +67,9 @@ def proforma_add(
         required_field,
         optional_field)
 
-
 @proforma.command('update', hidden=hide_admin_cmds())
-@click.option('-req',
-              '--required-field',
-              help='Required field in this pro forma; users must populate this field in every '
-                   'upload. Multiple fields may be added.',
-              type=click.STRING,
-              multiple=True)
-@click.option('-opt',
-              '--optional-field',
-              help='Optional field in this pro forma; users may include this field in uploads. '
-                   'Multiple fields may be added.',
-              type=click.STRING,
-              multiple=True)
+@opt_required
+@opt_optional
 @click.argument('abbrev', type=click.STRING)
 def proforma_update(
         abbrev: str,
@@ -93,13 +88,13 @@ def proforma_update(
 
 @proforma.command('attach', hidden=hide_admin_cmds())
 @click.argument('abbrev', type=click.STRING)
-@click.option('-f',
+@create_option('-f',
               '--file-path',
               help='File that you may want to link.  '
                    'Only one xlsx filepath will be accepted',
               cls=MutuallyExclusiveOption,
               mutually_exclusive=["n_previous"])
-@click.option('-n',
+@create_option('-n',
               '--n-previous',
               cls=MutuallyExclusiveOption,
               help="If pulling a file from a previous version, "
@@ -134,10 +129,15 @@ def proforma_attach(abbrev: str,
 
 @proforma.command('generate')
 @click.argument('abbrev', type=click.STRING)
-@click.option('-r', '--restrict', type=click.STRING, multiple=True, nargs=2,
+@create_option(
+    '-r',
+    '--restrict',
+    type=click.STRING,
+    multiple=True,
+    nargs=2,
     help='Key-value pair; restrict the specified field to the specified '+
-        'comma-separated subset of values')
-@click.option(
+        'comma-separated subset of values. Multiple restrictions may be specifed')
+@create_option(
     '--nndss/--no-nndss',
     type=bool,
     default=False,
@@ -147,11 +147,26 @@ def proforma_attach(abbrev: str,
     required=False,
     help="Project to fill in on the Groups for Sharing tab",
 )
-def proforma_generate(abbrev: str, restrict, nndss, project):
+@create_option(
+    '-c',
+    '--metadata-class',
+    type=click.STRING,
+    multiple=True,
+    nargs=2,
+    help='Key-value pair; add a metadata field class and assign it to the specified '+
+        'comma-separated subset of fields',
+)
+def proforma_generate(abbrev: str, restrict, nndss, project, metadata_class):
     """
     Generate a draft XLSX pro forma template from the current specification.
     """
-    generate_proforma(abbrev, restrict, nndss_column=nndss, project_abbrev=project)
+    generate_proforma(
+        abbrev,
+        restrict,
+        nndss_column=nndss,
+        project_abbrev=project,
+        metadata_classes=metadata_class
+        )
 
 @proforma.command('list')
 @table_format_option()
@@ -162,7 +177,6 @@ def proforma_list(out_format: str):
 
 @proforma.command('show')
 @click.argument('abbrev', type=click.STRING)
-# Consider option instead: @opt_abbrev("Abbreviated name of the pro forma")
 @table_format_option()
 def proforma_show(abbrev: str, out_format: str):
     """
@@ -239,7 +253,7 @@ def proforma_unshare(abbrev: str, group_names: List[str]):
     unshare_proforma(abbrev, group_names)
 
 
-@proforma.command('listgroups')
+@proforma.command('list-groups')
 @click.argument('abbrev', type=click.STRING)
 @table_format_option()
 def proforma_list_groups(abbrev: str, out_format: str):

@@ -1,0 +1,46 @@
+resources:
+  repositories:
+    - repository: CLI 
+      type: github
+      name: AusTrakka/austrakka2-cli
+      ref: $(Build.SourceBranch) 
+      endpoint: AusTrakka
+    - repository: Pipelines
+      type: github
+      name: AusTrakka/austrakka-pipelines
+      ref: Development 
+      endpoint: AusTrakka
+    - repository: Infra
+      type: github
+      endpoint: AusTrakka
+      name: AusTrakka/austrakka2-infra
+      ref: $(infraBranch)
+    - repository: Portal 
+      type: github
+      endpoint: AusTrakka
+      name: AusTrakka/austrakka-portal
+      ref: $(portalBranch)
+      
+trigger:
+  branches:
+    include:
+      - Development
+
+pr: none
+
+pool:
+  name: Test
+
+variables:
+- template: variables/dev/azure/connection.yml@Pipelines
+- template: variables/dev/terraform/storage.yml@Pipelines
+- template: variables/dev/terraform/key.yml@Pipelines
+- template: variables/devops/setup.yml@Pipelines
+
+stages:
+  - template: templates/stages/env/create.yml@Pipelines
+  - stage: RunTests
+    jobs:
+      - template: templates/jobs/test/cli.yml@Pipelines 
+  - template: templates/stages/env/destroy.yml@Pipelines
+

@@ -1,5 +1,6 @@
 # pylint: disable=broad-exception-caught
 import os.path
+from glob import glob
 import re
 from datetime import datetime
 import shutil
@@ -7,10 +8,10 @@ import pandas as pd
 
 from loguru import logger
 
-from austrakka.utils.enums.seq import READ_BOTH
 from austrakka.components.sequence.funcs import _download_seq_file
 from austrakka.components.sequence.funcs import _get_seq_download_path
 from austrakka.utils.retry import retry
+from austrakka.utils.enums.seq import SeqType
 
 from .errors import WorkflowError
 from .sync_io import \
@@ -25,7 +26,7 @@ from .sync_io import \
 
 from .state_machine import StateMachine, SName, State, Action
 
-from .constant import CURRENT_STATE_KEY
+from .constant import CURRENT_STATE_KEY, IS_ACTIVE_KEY
 from .constant import CURRENT_ACTION_KEY
 from .constant import RECALCULATE_HASH_KEY
 from .constant import STATUS_KEY
@@ -50,11 +51,6 @@ from .constant import READ_KEY
 from .constant import GROUP_NAME_KEY
 from .constant import BLOB_FILE_PATH_KEY
 from .constant import SERVER_SHA_256_KEY
-from .constant import FASTQ_R1_KEY
-from .constant import FASTQ_R2_KEY
-from .constant import FASTA_R1_KEY
-from .constant import FASTQ
-from .constant import FASTA
 
 from .constant import MATCH
 from .constant import DOWNLOADED
@@ -124,8 +120,8 @@ def set_state_aggregating(sync_state: dict):
 def aggregate(sync_state: dict):
     logger.success(f'Started: {Action.aggregate}')
 
-    if sync_state[SEQ_TYPE_KEY] == FASTQ:
-        logger.info(f'No aggregation for {FASTQ}')
+    if sync_state[SEQ_TYPE_KEY] != SeqType.FASTA_CNS.value:
+        logger.info(f'No aggregation for {sync_state[SEQ_TYPE_KEY]}')
         sync_state[CURRENT_STATE_KEY] = SName.DONE_AGGREGATING
         sync_state[CURRENT_ACTION_KEY] = Action.set_state_purging
         logger.success(f'Finished: {Action.aggregate}')
@@ -139,7 +135,9 @@ def aggregate(sync_state: dict):
         logger.info(f'Aggregating {len(p_man.index)} fasta files.')
         logger.info(f'Generating {INTERMEDIATE_FASTA_AGGREGATE_FILE_NAME}..')
         for _, row in p_man.iterrows():
-            single_fasta_path = os.path.join(o_dir, row[SEQ_ID_KEY], row[FASTA_R1_KEY])
+            header_key = manifest_column_key(FILE_NAME_ON_DISK_KEY, SeqType.FASTA_CNS.value)
+            single_fasta_path = os.path.join(
+                o_dir, row[SEQ_ID_KEY], SeqType.FASTA_CNS.value, row[header_key])
             if not os.path.exists(single_fasta_path):
                 logger.error('Fasta file not found. Cannot aggregate '
                              'fasta files listed in the published manifest.')
@@ -170,7 +168,6 @@ def pull_manifest(sync_state: dict):
     logger.success(f'Started: {Action.pull_manifest}')
     data = _get_seq_data(
         sync_state[SEQ_TYPE_KEY],
-        READ_BOTH,
         sync_state[GROUP_NAME_KEY],
     )
 
@@ -178,8 +175,11 @@ def pull_manifest(sync_state: dict):
     path = get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     logger.info(f'Saving to intermediate manifest: {path}')
 
-    with open(path, 'w', encoding='UTF-8') as file:
-        pd.DataFrame(data).to_csv(file, index=False)
+    if len(data) > 0:
+        with open(path, 'w', encoding='UTF-8') as file:
+            data.to_csv(file, index=False)
+    else:
+        initialise_empty_int_manifest(sync_state)
 
     sync_state[CURRENT_STATE_KEY] = SName.DONE_PULLING_MANIFEST
     sync_state[CURRENT_ACTION_KEY] = Action.set_state_analysing
@@ -196,10 +196,14 @@ def analyse(sync_state: dict):
 
     int_man = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
     published_manifest = read_from_csv_or_empty(sync_state, MANIFEST_KEY)
+
+    if len(published_manifest) == 0:
+        published_manifest = initialise_empty_manifest(sync_state)
+
     use_hash_cache = not sync_state[RECALCULATE_HASH_KEY]
 
     ensure_valid(published_manifest, use_hash_cache, sync_state[SEQ_TYPE_KEY])
-    
+
     if use_hash_cache:
         hash_cache = build_hash_dict(published_manifest)
     else:
@@ -209,11 +213,11 @@ def analyse(sync_state: dict):
         int_man[STATUS_KEY] = ""
 
     output_dir = get_output_dir(sync_state)
-
     for index, row in int_man.iterrows():
         seq_path = os.path.join(
             output_dir,
             str(row[SAMPLE_NAME_KEY]),
+            str(row[TYPE_KEY]),
             str(row[FILE_NAME_ON_DISK_KEY]))
 
         ctx = {DF: int_man, IDX: index, ROW: row}
@@ -227,40 +231,26 @@ def analyse(sync_state: dict):
 
 def build_hash_dict(published_manifest):
     hash_dict = {}
+    hash_keys = [c for c in published_manifest.columns if c.startswith('HASH_')]
     for _, row in published_manifest.iterrows():
-        for filename_key in [FASTQ_R1_KEY, FASTQ_R2_KEY, FASTA_R1_KEY]:
-            if filename_key in row:
-                hash_key = f"HASH_{filename_key}"
-                hash_dict[row[filename_key]] = row[hash_key]
+        for hash_key in hash_keys:
+            filename_key = hash_key[len('HASH_'):]
+            hash_dict[row[filename_key]] = row[hash_key]
     return hash_dict
 
 
 def ensure_valid(manifest, use_hash_cache, seq_type):
-    if use_hash_cache and \
-        seq_type == FASTQ and \
-        manifest is not None and \
-        len(manifest.index) > 0 and \
-        not (
-             SEQ_ID_KEY in manifest.columns and
-             manifest_column_key(FILE_NAME_ON_DISK_KEY, seq_type, "1") in manifest.columns and
-             manifest_column_key(FILE_NAME_ON_DISK_KEY, seq_type, "2") in manifest.columns and
-             manifest_column_key("", seq_type, "1") in manifest.columns and
-             manifest_column_key("", seq_type, "2") in manifest.columns):
+    """Check that the manifest contains the expected column headers"""
 
-        raise WorkflowError("Cannot parse published manifest "
-                            "for fastq. It is missing some columns.")
+    if not use_hash_cache:
+        return
 
-    if use_hash_cache and \
-        seq_type == FASTA and \
-        manifest is not None and \
-        len(manifest.index) > 0 and \
-        not (
-             SEQ_ID_KEY in manifest.columns and
-             manifest_column_key(FILE_NAME_ON_DISK_KEY, seq_type, "1") in manifest.columns and
-             manifest_column_key("", seq_type, "1") in manifest.columns):
+    expected_headers = list_expected_headers(seq_type)
 
-        raise WorkflowError("Cannot parse published manifest "
-                            "for fasta. It is missing some columns.")
+    if not set(manifest.columns) == set(expected_headers):
+        raise WorkflowError(f"Cannot parse published manifest for seq type {seq_type}. "
+                            f"Expected columns: {expected_headers}, "
+                            f"found columns: {list(manifest.columns)}")
 
 
 def set_state_downloading(sync_state: dict):
@@ -307,7 +297,6 @@ def finalise(sync_state: dict):
     logger.success(f'Started: {Action.finalise}')
 
     int_med = read_from_csv(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
-
     errors = int_med.loc[(int_med[STATUS_KEY] != MATCH) &
                          (int_med[STATUS_KEY] != DOWNLOADED) &
                          (int_med[STATUS_KEY] != DRIFTED) &
@@ -381,15 +370,19 @@ def finalise_each_file(int_med, sync_state):
     output_dir = get_output_dir(sync_state)
     for index, row in int_med.iterrows():
 
+        sample_name = str(row[SAMPLE_NAME_KEY])
+
         dest = os.path.join(
             output_dir,
-            row[SAMPLE_NAME_KEY],
+            sample_name,
+            row[TYPE_KEY],
             row[FILE_NAME_ON_DISK_KEY])
 
         if row[STATUS_KEY] == DRIFTED:
             src = os.path.join(
                 output_dir,
-                row[SAMPLE_NAME_KEY],
+                sample_name,
+                row[TYPE_KEY],
                 row[HOT_SWAP_NAME_KEY])
 
             logger.warning(f'Hot swapping: {dest}')
@@ -431,11 +424,8 @@ def detect_and_record_obsolete_files(int_med, sync_state):
         DETECTION_DATE_KEY: []
     })
 
-    sample_subdirectories = [
-        f.path for f in os.scandir(
-            get_output_dir(sync_state)) if f.is_dir()]
-    files = sum([[f.path for f in os.scandir(subdir) if not f.is_dir()]
-                 for subdir in sample_subdirectories], [])
+    # Subdirectories to scan are of form outdir/*/seqtype
+    files = glob(os.path.join(get_output_dir(sync_state),'*',sync_state[SEQ_TYPE_KEY],'*'))
 
     seq_ext_regexstr = '|'.join(FASTQ_EXTS + FASTA_EXTS)
     seqfile_regex = re.compile(
@@ -492,6 +482,42 @@ def log_warn_or_success(count, msg):
         logger.success(msg)
 
 
+def list_expected_headers(seq_type):
+    reads = ['1', '2'] if seq_type == SeqType.FASTQ_ILL_PE.value else [None]
+    expected_file_headers = [manifest_column_key(FILE_NAME_ON_DISK_KEY, seq_type, read)
+                             for read in reads]
+    expected_hash_headers = [manifest_column_key(SERVER_SHA_256_KEY, seq_type, read)
+                             for read in reads]
+    return [SEQ_ID_KEY] + expected_file_headers + expected_hash_headers
+
+
+def list_default_int_manifest_headers():
+    return [
+        SEQ_ID_KEY,
+        SAMPLE_NAME_KEY,
+        INT_FILE_NAME_KEY,
+        FILE_NAME_ON_DISK_KEY,
+        BLOB_FILE_PATH_KEY,
+        SERVER_SHA_256_KEY,
+        TYPE_KEY,
+        READ_KEY,
+        IS_ACTIVE_KEY]
+
+
+def initialise_empty_manifest(sync_state):
+    default_headers = list_expected_headers(sync_state[SEQ_TYPE_KEY])
+    published_manifest = pd.DataFrame(columns=default_headers)
+    save_to_csv(published_manifest, get_path(sync_state, MANIFEST_KEY))
+    return published_manifest
+
+
+def initialise_empty_int_manifest(sync_state):
+    default_headers = list_default_int_manifest_headers()
+    int_man = pd.DataFrame(columns=default_headers)
+    save_to_csv(int_man, get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY))
+    return int_man
+
+
 def publish_new_manifest(int_med, sync_state):
     sample_table = int_med.pivot(
         index=SAMPLE_NAME_KEY,
@@ -512,22 +538,17 @@ def publish_new_manifest(int_med, sync_state):
     logger.success(f'Published final manifest: {m_path}')
 
 
-def manifest_column_key(file_or_hash, seq_type, read):
-    return ("" if file_or_hash.casefold() == FILE_NAME_ON_DISK_KEY.casefold()
-            else "HASH_") + f"{seq_type}_R{read}".upper()
-
-
 def get_file_from_server(data_frame, index, row, sync_state):
     file_path = ""
     try:
         filename = row[FILE_NAME_ON_DISK_KEY]
-        sample_name = row[SAMPLE_NAME_KEY]
+        sample_name = str(row[SAMPLE_NAME_KEY])
         read = str(row[READ_KEY])
         seq_type = row[TYPE_KEY]
-        sample_dir = os.path.join(get_output_dir(sync_state), sample_name)
-        file_path = os.path.join(sample_dir, filename)
+        dest_dir = os.path.join(get_output_dir(sync_state), sample_name, seq_type)
+        file_path = os.path.join(dest_dir, filename)
 
-        query_path = _get_seq_download_path(
+        query_path, params = _get_seq_download_path(
             sample_name,
             read,
             seq_type,)
@@ -537,17 +558,17 @@ def get_file_from_server(data_frame, index, row, sync_state):
             logger.info(f'Drifted from server: {file_path}')
             logger.info(f'Downloading fresh copy to temp file: {fresh_name}')
             data_frame.at[index, HOT_SWAP_NAME_KEY] = fresh_name
-            file_path = os.path.join(sample_dir, fresh_name)
+            file_path = os.path.join(dest_dir, fresh_name)
 
-        retry(lambda fp=file_path, fn=filename, qp=query_path, sd=sample_dir:
-              _download_seq_file(fp, fn, qp, sd),
+        retry(lambda fp=file_path, fn=filename, qp=query_path, pm=params, sd=dest_dir:
+              _download_seq_file(fp, fn, qp, pm, sd),
               1,
               query_path)
 
         check_download_hash(data_frame, file_path, index, row)
 
         # Drifted entries are left for finalisation to hot swap.
-        # Otherwise mark the entry as successfully downloaded.
+        # Otherwise, mark the entry as successfully downloaded.
         if data_frame.at[index, STATUS_KEY] != DRIFTED and \
                 data_frame.at[index, STATUS_KEY] != FAILED:
 
@@ -633,9 +654,16 @@ def move_delete_targets_to_trash(
                 f'Moving to trash: {row[FILE_PATH_KEY]} ==> {dest_file}')
             shutil.move(row[FILE_PATH_KEY], dest_file)
 
+            # Clean up parent (seq type) directory, and grandparent (sample) directory if empty
+            # Note a parallel process for a different seq type could create a race condition
             src_dir = os.path.dirname(row[FILE_PATH_KEY])
             if len(os.listdir(src_dir)) == 0:
+                logger.info(f"Removing empty directory: {src_dir}")
                 os.rmdir(src_dir)
+                sample_dir = os.path.dirname(src_dir)
+                if len(os.listdir(sample_dir)) == 0:
+                    logger.info(f"Removing empty directory: {sample_dir}")
+                    os.rmdir(sample_dir)
 
 
 def mirror_parent_sub_dirs(output_dir, row, trash_dir_path):
@@ -664,3 +692,14 @@ def reset(state_file_path, sync_state):
     remove_int_manifest(output_dir, sync_state)
     set_state_pulling_manifest(sync_state)
     save_json(sync_state, state_file_path)
+
+
+def manifest_column_key(file_or_hash: str, seq_type: str, read:str = None):
+    """Define desired column header for the manifest file"""
+    assert file_or_hash in [FILE_NAME_ON_DISK_KEY, SERVER_SHA_256_KEY]
+    header = (("HASH_" if file_or_hash==SERVER_SHA_256_KEY else "") + 
+              seq_type.upper().replace('_','-'))
+    if seq_type==SeqType.FASTQ_ILL_PE.value:
+        assert read is not None
+        header += f"_R{read}"
+    return header

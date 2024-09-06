@@ -7,6 +7,7 @@ from click.core import Context
 from loguru import logger
 
 from austrakka.utils.context import CxtKey
+from austrakka.utils.context import AusTrakkaCxt
 from .components.auth import auth
 from .components.user import user
 from .components.org import org
@@ -23,6 +24,7 @@ from .components.sample import sample
 from .components.widget import widget
 from .components.dashboard import dashboard
 from .components.plot import plot
+from .components.iam import iam
 
 from . import __version__ as VERSION
 from .utils.misc import AusTrakkaCliTopLevel
@@ -36,53 +38,61 @@ from .utils.logger import LOG_LEVELS
 from .utils.cmd_filter import show_admin_cmds
 from .utils.version import check_version
 
-CLI_PREFIX = 'AT'
-CLI_LOG_LEVEL = 'LOG_LEVEL'
 
 CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 
 
-# NOTE: envvar below needs to be explicitly specified despite using
-# auto_envvar_prefix due to limitations with CliRunner tests
 @click.group(cls=AusTrakkaCliTopLevel, context_settings=CONTEXT_SETTINGS)
 @click.option(
-    f"--{CxtKey.CTX_URI.value}",
+    AusTrakkaCxt.get_option_name(CxtKey.URI), 
     show_envvar=True,
-    envvar='AT_URI',
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.URI),
     required=True
 )
 @click.option(
-    f"--{CxtKey.CTX_TOKEN.value}",
+    AusTrakkaCxt.get_option_name(CxtKey.TOKEN),
     show_envvar=True,
-    envvar='AT_TOKEN',
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.TOKEN),
     required=True
 )
 @click.option(
-    "--log-level",
+    AusTrakkaCxt.get_option_name(CxtKey.LOG_LEVEL), 
     show_envvar=True,
-    envvar=f"{CLI_PREFIX}_{CLI_LOG_LEVEL}",
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.LOG_LEVEL),
     required=True,
     default=LOG_LEVEL_INFO,
     type=click.Choice(LOG_LEVELS),
     show_default=True
 )
 @click.option(
-    f"--{CxtKey.CTX_VERIFY_CERT.value}",
+    AusTrakkaCxt.get_option_name(CxtKey.SKIP_CERT_VERIFY),
     show_envvar=True,
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.SKIP_CERT_VERIFY),
     required=True,
-    default=True,
+    default=False,
     show_default=True,
     type=bool,
     help="Skip verification of certificate"
 )
 @click.option(
-    f"--{CxtKey.CTX_USE_HTTP2.value}",
+    AusTrakkaCxt.get_option_name(CxtKey.USE_HTTP2), 
     show_envvar=True,
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.USE_HTTP2),
     required=True,
     default=False,
     show_default=True,
     type=bool,
     help="Use HTTP2 (experimental)"
+)
+@click.option(
+    AusTrakkaCxt.get_option_name(CxtKey.SKIP_VERSION_CHECK),
+    show_envvar=True,
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.SKIP_VERSION_CHECK),
+    required=True,
+    default=False,
+    show_default=True,
+    type=bool,
+    help="Skip check for new AusTrakka CLI version"
 )
 @click.option(
     '--log',
@@ -96,21 +106,25 @@ def cli(
         uri: str,
         token: str,
         log_level: str,
-        log: str,
-        verify_cert: bool,
+        skip_cert_verify: bool,
         use_http2: bool,
+        skip_version_check: bool,
+        log: str,
 ):
     """
     A cli for interfacing with AusTrakka.
     """
     ctx.context = {
-        CxtKey.CTX_URI.value: uri,
-        CxtKey.CTX_TOKEN.value: token,
-        CxtKey.CTX_VERIFY_CERT.value: verify_cert,
-        CxtKey.CTX_USE_HTTP2.value: use_http2,
+        CxtKey.URI.value: uri,
+        CxtKey.TOKEN.value: token,
+        CxtKey.SKIP_CERT_VERIFY.value: skip_cert_verify,
+        CxtKey.SKIP_VERSION_CHECK .value: skip_version_check,
+        CxtKey.USE_HTTP2.value: use_http2,
+        CxtKey.LOG_LEVEL.value: log_level,
     }
     setup_logger(log_level, log)
-    check_version(VERSION)
+    if not skip_version_check:
+        check_version(VERSION)
 
 
 def get_cli():
@@ -130,20 +144,21 @@ def get_cli():
     cli.add_command(proforma)
     cli.add_command(field)
     cli.add_command(fieldtype)
+    cli.add_command(iam) if show_admin_cmds() else None
     return cli
 
 
 def main():
     try:
-        get_cli()
-        # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
-        cli(auto_envvar_prefix=CLI_PREFIX)
+        # pylint: disable=no-value-for-parameter
+        get_cli()()
     except FailedResponseException as ex:
         logger.error("Request failed")
         log_response(ex.parsed_resp)
         sys.exit(1)
     except Exception as ex:  # pylint: disable=broad-except
-        if is_debug(os.environ.get(f"{CLI_PREFIX}_{CLI_LOG_LEVEL}")):
+        # Cannot use AusTrakkaCxt.value here because there is no click context
+        if is_debug(os.getenv(AusTrakkaCxt.get_env_var_name(CxtKey.LOG_LEVEL), '')):
             logger.exception(ex)
         else:
             logger.error(ex)

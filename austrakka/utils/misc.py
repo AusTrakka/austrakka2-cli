@@ -41,32 +41,14 @@ class AusTrakkaCliTopLevel(click.Group):
         except click.MissingParameter as exc:
             # If there is a missing top level parameter (eg. URI or TOKEN)
             # provide extended error message
-            if exc.param.name == CxtKey.CTX_TOKEN.value:
+            if exc.param.name == CxtKey.TOKEN.value:
                 click.echo(MISSING_TOKEN_HELP)
-            elif exc.param.name == CxtKey.CTX_URI.value:
+            elif exc.param.name == CxtKey.URI.value:
                 click.echo(MISSING_URI_HELP)
             else:
                 exc.ctx = None
                 exc.show(file=sys.stdout)
             sys.exit(exc.exit_code)
-
-
-def _get_custom_help_record(orig_help, multiple):
-    if multiple:
-        tmp_list = list(orig_help)
-        split_str = tmp_list[len(tmp_list) - 1].rsplit("]", 1)
-        if len(split_str) > 1:
-            tmp_list[len(tmp_list) - 1] = split_str[0] + ";Accepts Multiple]"
-        else:
-            tmp_list[len(tmp_list) - 1] += " [Accepts Multiple]"
-        orig_help = tuple(tmp_list)
-    return orig_help
-
-
-class AusTrakkaCliOption(click.Option):
-    def get_help_record(self, ctx):
-        orig_help = super().get_help_record(ctx)
-        return _get_custom_help_record(orig_help, self.multiple)
 
 
 def logger_wraps(*, entry=True, exit_func=True):
