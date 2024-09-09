@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.62.0] - Unreleased
+### Added
+- `field add` and `field update` commands now support the `hidden` property,
+    which can be used to hide fields by default in the table view. This is an optional property.
+
 # [0.61.0] - 2024-09-05
 ### Changed
 - `seq add` commands now sends a hash of the file to the server for verification, rather than checking it after upload.
