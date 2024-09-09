@@ -30,7 +30,7 @@ def add_field_project(abbrev: str, field_names: List[str]):
                              f"Expecting 'field_name,source' format."
                              f"Or 'field_name,source,hidden_boolean' format.")
 
-        # check if a third value is provided an if it is make sure it is a boolean
+        # check if a third value is provided and if it is make sure it's the switch 'hidden'
         if len(field_name_split) == 3:
             if field_name_split[2].lower() != 'hidden':
                 raise ValueError(f"Invalid hidden value: {field_name_split[2]}. "
