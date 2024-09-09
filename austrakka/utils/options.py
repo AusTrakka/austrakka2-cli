@@ -693,10 +693,12 @@ def opt_field_and_source(**attrs: t.Any):
     defaults = {
         'required': True,
         'multiple': True,
-        'help': 'The field and source to remove from the specified dataset. Use '
-                'comma (,) as a separator. Format is <field>,<source> '
-                'Eg. field1,source1. '
-                'Sources include: both, sample, dataset',
+        'help': 'The field and source to target for a specified dataset. Use '
+                'comma (,) as a separator. Format is <field>,<source>,<hidden>. '
+                'Where hidden is optional. '
+                'Eg. field1,source1. or field2,source2,hidden '
+                'Sources include: both, sample, dataset'
+                'Hidden boolean is an optional flag to hide the field in the UI from the beginning',
     }
     return create_option(
         '-fs',
