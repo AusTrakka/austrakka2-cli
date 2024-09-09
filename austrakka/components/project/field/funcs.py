@@ -25,7 +25,7 @@ def add_field_project(abbrev: str, field_names: List[str]):
     for field_name in field_names:
         field_name_split = field_name.split(',')
 
-        if len(field_name_split) < 2 or len(field_name_split) > 3:
+        if len(field_name_split) not in [2, 3]:
             raise ValueError(f"Invalid field name / source: {field_name}. "
                              f"Expecting 'field_name,source' format."
                              f"Or 'field_name,source,hidden_boolean' format.")
