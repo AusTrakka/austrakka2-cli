@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-# [0.62.0] - Unreleased
+# [0.62.0] - 2024-09-09
 ### Added
 - `field add` and `field update` commands now support the `hidden` property,
     which can be used to hide fields by default in the table view. This is an optional property.
