@@ -24,8 +24,11 @@ def field_list(out_format: str):
 @field.command('add', hidden=hide_admin_cmds())
 @opt_name(help="Field name")
 @opt_fieldtype()
-@opt_description(help="This field describes the purpose of the metadata field. "
-                      "Its value is also used for generating XLSX pro forma files.")
+@opt_description(
+    required=False,
+    default="",
+    help="This field describes the purpose of the metadata field. "
+         "Its value is also used for generating XLSX pro forma files.")
 @create_option('--nndss', 'nndss',
                help="The corresponding National Notifiable Diseases Surveillance System label, "
                     "where it exists.")
