@@ -7,6 +7,7 @@ from austrakka.utils.helpers.fields import get_field_by_name
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
+from austrakka.utils.helpers.tenant import get_default_tenant_global_id
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe
 from austrakka.utils.paths import METADATACOLUMN_PATH
@@ -17,11 +18,12 @@ def list_fields(out_format: str):
     """
     List all metadata fields (MetaDataColumns) within AusTrakka.
     """
+    tenant_global_id = get_default_tenant_global_id()
     response = api_get(
-        path=METADATACOLUMN_PATH,
+        path=f"v2/tenant/{tenant_global_id}/metadatacolumn",
     )
 
-    data = response['data'] if ('data' in response) else response
+    data = response['data'] if ('data' in response) else response 
     result = pd.DataFrame.from_dict(data)
 
     if 'primitiveType' in result:
