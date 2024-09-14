@@ -77,7 +77,7 @@ def add_field(
             "CanVisualise": can_visualise,
             "ColumnOrder": column_order,
             "MetaDataColumnTypeId": field_type["metaDataColumnTypeId"],
-            "MetaDataColumnTypeGlobalId": field_type["metaDataColumnTypeGlobalId"],
+            "MetaDataColumnTypeGlobalId": field_type["globalId"],
             "IsActive": True,
             "IsPrivate": private,
             "Description": description,
