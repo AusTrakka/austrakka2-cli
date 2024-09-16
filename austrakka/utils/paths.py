@@ -24,5 +24,5 @@ PLOT_PATH = "Plots"
 WIDGET_PATH = "Widgets"
 PROJECT_DASHBOARD_PATH = 'ProjectDashboards'
 SET_DASHBOARD = 'set-dashboard'
-DASHBOARD_WIDGETS = 'dashboard-widgets'
+ASSIGNED_DASHBOARD = 'assigned-dashboard'
 PROJECT_SETTINGS = 'project-settings'

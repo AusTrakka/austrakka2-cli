@@ -2,6 +2,7 @@
 
 from loguru import logger
 
+from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
@@ -10,7 +11,7 @@ from austrakka.utils.helpers.project import get_project_by_abbrev
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import PROJECT_PATH
 from austrakka.utils.paths import SET_DASHBOARD
-from austrakka.utils.paths import DASHBOARD_WIDGETS
+from austrakka.utils.paths import ASSIGNED_DASHBOARD
 from austrakka.utils.paths import PROJECT_SETTINGS
 
 @logger_wraps()
@@ -80,9 +81,9 @@ def update_project(
     )
 
 @logger_wraps()
-def set_dashboard(project_id: int, dashboard_name: str):
+def set_dashboard(project_abbreviation: str, dashboard_name: str):
     return api_patch(
-        path='/'.join([PROJECT_PATH, SET_DASHBOARD, str(project_id)]),
+        path='/'.join([PROJECT_PATH, SET_DASHBOARD, project_abbreviation]),
         data=dashboard_name
     )
 
@@ -93,9 +94,10 @@ def list_projects(out_format: str):
 
 
 @logger_wraps()
-def get_dashboard(project_id: int, out_format: str):
-    joined_path = '/'.join([PROJECT_PATH, DASHBOARD_WIDGETS, str(project_id)])
-    call_get_and_print(joined_path, out_format)
+def get_dashboard(project_abbreviation: str):
+    joined_path = '/'.join([PROJECT_PATH, ASSIGNED_DASHBOARD, project_abbreviation])
+    response = api_get(joined_path)
+    print(response['data'])
 
 @logger_wraps()
 def show_project_settings(abbrev: str, out_format: str):

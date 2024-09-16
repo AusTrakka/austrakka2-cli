@@ -76,22 +76,21 @@ def project_update(
 
 @project.command('set-dashboard', hidden=hide_admin_cmds())
 @opt_name(help="name of a known dashboard")
-@click.argument('project-id', type=int)
-def dashboard_set(project_id: int, name: str):
+@click.argument('project-abbreviation', type=str)
+def dashboard_set(project_abbreviation: str, name: str):
     '''
     Assign a dashboard to a project.
     '''
-    set_dashboard(project_id, name)
+    set_dashboard(project_abbreviation, name)
 
 
 @project.command('get-dashboard', hidden=hide_admin_cmds())
-@click.argument('project-id', type=int)
-@table_format_option()
-def dashboard_get(project_id: int, out_format: str):
+@click.argument('project-abbreviation', type=str)
+def dashboard_get(project_abbreviation: str):
     '''
-    Get all widgets of the dashboard currently assigned to a project.
+    Get the name of the dashboard currently assigned to a project.
     '''
-    get_dashboard(project_id, out_format)
+    get_dashboard(project_abbreviation)
 
 
 @project.command('list')
