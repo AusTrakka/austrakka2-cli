@@ -12,8 +12,8 @@ from .funcs import \
     unshare_sample, \
     share_sample, \
     get_groups, \
-    show_sample
-
+    show_sample, \
+    purge_sample
 
 
 @click.group()
@@ -74,6 +74,7 @@ def seq_groups(
         out_format,
     )
 
+
 @sample.command('enable')
 @opt_sample_id(
     help='The id of the sample to be re-enable. Multiple ids can be specified.'
@@ -81,3 +82,16 @@ def seq_groups(
 def sample_enable(sample_id: [str]):
     """Enable a sample. This re-enables a previously disabled sample."""
     enable_sample(sample_id)
+
+
+@sample.command('purge')
+@opt_sample_id(
+    help='The id of the sample to be purged.',
+    multiple=False)
+def sample_purge(sample_id: str):
+    """Purge a sample. This will purge all metadata including the original CSV 
+    file which it was uploaded from. If more than one sample was uploaded from 
+    the same CSV file, the other samples will not be purged, but will lose the 
+    link to the original CSV file. This action is irreversible. Any sequences 
+    must be purged prior to purging the sample."""
+    purge_sample(sample_id)
