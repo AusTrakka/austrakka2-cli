@@ -1,5 +1,6 @@
 SUBMISSION_PATH = 'Submissions'
 USER_PATH = 'Users'
+USER_PATH_V2 = 'V2/UsersV2'
 USER_ROLE_GROUP_PATH = 'UserRoleGroup'
 ORG_PATH = 'Organisations'
 ANALYSIS_PATH = 'Analyses'

@@ -4,15 +4,19 @@ from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
+from austrakka.utils.helpers.tenant import get_default_tenant_global_id
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.paths import USER_PATH
+from austrakka.utils.paths import USER_PATH, TENANT_PATH, USER_PATH_V2
 
 
 @logger_wraps()
 def list_users(show_disabled: bool, out_format: str):
     call_get_and_print(f'{USER_PATH}/?includeall={show_disabled}', out_format)
 
-
+@logger_wraps()
+def get_user_me(out_format: str):
+    tenant_global_id = get_default_tenant_global_id()
+    call_get_and_print(f'{USER_PATH_V2}/Me?tenantGlobalId={tenant_global_id}', out_format)
 # pylint: disable=duplicate-code
 @logger_wraps()
 def add_user(

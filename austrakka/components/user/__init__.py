@@ -14,7 +14,7 @@ from austrakka.utils.options import opt_user_object_id
 from austrakka.utils.options import opt_organisation
 from austrakka.utils.options import opt_show_disabled
 from austrakka.utils.options import opt_server_username
-from .funcs import list_users
+from .funcs import list_users, get_user_me
 from .funcs import add_user
 from .funcs import update_user
 from .funcs import enable_user
@@ -26,6 +26,12 @@ from .funcs import disable_user
 def user(ctx):
     '''Commands related to users'''
     ctx.context = ctx.parent.context
+    
+@user.command('me')
+@table_format_option()
+def user_me(out_format: str):
+    '''List your information in AusTrakka'''
+    get_user_me(out_format)
 
 
 @user.command('list')
