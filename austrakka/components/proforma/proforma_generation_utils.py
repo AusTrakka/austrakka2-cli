@@ -1,4 +1,5 @@
 import xlsxwriter
+import pandas as pd
 
 # Colours for field headers and data dictionary metadata class
 MINIMUM_COLOUR = '#7ABBDE'
