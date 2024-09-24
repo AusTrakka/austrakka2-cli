@@ -84,7 +84,7 @@ def sample_enable(sample_id: [str]):
     enable_sample(sample_id)
 
 
-@sample.command('purge')
+@sample.command('purge', hidden=hide_admin_cmds())
 @opt_sample_id(
     help='The id of the sample to be purged.',
     multiple=False)
