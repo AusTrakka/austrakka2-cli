@@ -93,6 +93,3 @@ def privilege_unassign(
     """
     record_type_route = convert_record_type_to_route_string(record_type)
     unassign_privilege(record_global_id, record_type_route, privilege_global_id)
-
-
-
