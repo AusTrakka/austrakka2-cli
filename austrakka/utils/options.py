@@ -603,6 +603,7 @@ def opt_record_global_id(**attrs: t.Any):
         'help': 'The record referenced by a privilege entry. Eg., ProjectId, etc..',
     }
     return create_option(
+        '-rguid',
         '--record-global-id',
         type=click.STRING,
         **{**defaults, **attrs}
@@ -627,6 +628,7 @@ def opt_record_type(**attrs: t.Any):
         'help': 'Record type that is the subject of access control. ',
     }
     return create_option(
+        '-rt',
         '--record-type',
         type=click.Choice(['Tenant', 'Organisation']),
         **{**defaults, **attrs}

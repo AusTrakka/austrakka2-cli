@@ -7,6 +7,7 @@ from austrakka.components.iam.privilege.funcs import (
     assign_privilege,
     unassign_privilege)
 
+from austrakka.utils.privilege import convert_record_type_to_route_string
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import (
     opt_record_type,
@@ -94,8 +95,4 @@ def privilege_unassign(
     unassign_privilege(record_global_id, record_type_route, privilege_global_id)
 
 
-def convert_record_type_to_route_string(record_type):
-    record_type_route = record_type
-    if record_type == 'Organisation':
-        record_type_route = "OrganisationV2"
-    return record_type_route
+
