@@ -11,7 +11,7 @@ from austrakka.utils.output import print_dict
 
 
 @logger_wraps()
-def get_roles(out_format: str):
+def list_roles(out_format: str):
     """
     Get the list of roles defined for a tenant.
     """
