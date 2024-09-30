@@ -9,6 +9,7 @@ ENABLE = 'Enable'
 UNSHARE = 'UnShare'
 SHARE = 'Share'
 GROUPS = 'Groups'
+PURGE = 'Purge'
 
 
 @logger_wraps()
@@ -79,4 +80,13 @@ def enable_sample(
         data={
             "seqIds": sample_ids
         },
+    )
+
+
+@logger_wraps()
+def purge_sample(
+        sample_id: str
+):
+    api_patch(
+        path="/".join([SAMPLE_PATH, sample_id, PURGE]),
     )
