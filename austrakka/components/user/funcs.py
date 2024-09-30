@@ -11,18 +11,18 @@ from austrakka.utils.paths import USER_PATH, TENANT_PATH, USER_PATH_V2
 
 @logger_wraps()
 def list_users(show_disabled: bool, out_format: str):
-    call_get_and_print(f'{USER_PATH}/?includeall={show_disabled}', out_format)
+    call_get_and_print(f'{USER_PATH_V2}/?includeall={show_disabled}', out_format)
 
 @logger_wraps()
 def get_user_me(out_format: str):
     tenant_global_id = get_default_tenant_global_id()
     call_get_and_print(f'{USER_PATH_V2}/Me?tenantGlobalId={tenant_global_id}', out_format)
+    
 # pylint: disable=duplicate-code
 @logger_wraps()
 def add_user(
         user_id: str,
         org: str,
-        owner_group_roles: List[str],
         is_austrakka_process: bool,
         server_username: str,
 ):
@@ -31,13 +31,12 @@ def add_user(
         "organisation": {
             "abbreviation": org
         },
-        "ownerGroupRoles": list(owner_group_roles),
         "isAusTrakkaProcess": is_austrakka_process,
         "analysisServerUsername": server_username,
     }
 
     api_post(
-        path=USER_PATH,
+        path=USER_PATH_V2,
         data=user
     )
 
@@ -50,7 +49,7 @@ def update_user(
         server_username: str = None,
         is_active: bool = None,
 ):
-    user_resp = api_get(f'{USER_PATH}/userId/{object_id}')
+    user_resp = api_get(f'{USER_PATH_V2}/{object_id}')
     user_full = user_resp['data']
     user: Dict[str, Any] = {
         "displayName": user_full['displayName'],
@@ -72,16 +71,16 @@ def update_user(
         user['analysisServerUsername'] = server_username
 
     api_put(
-        path=f'{USER_PATH}/{object_id}',
+        path=f'{USER_PATH_V2}/{object_id}',
         data=user
     )
 
 
 @logger_wraps()
 def enable_user(user_id: str):
-    api_patch(path=f'{USER_PATH}/enable/{user_id}')
+    api_patch(path=f'{USER_PATH_V2}/enable/{user_id}')
 
 
 @logger_wraps()
 def disable_user(user_id: str):
-    api_patch(path=f'{USER_PATH}/disable/{user_id}')
+    api_patch(path=f'{USER_PATH_V2}/disable/{user_id}')

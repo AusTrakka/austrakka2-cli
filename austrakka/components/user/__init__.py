@@ -45,18 +45,16 @@ def user_list(show_disabled: bool, out_format: str):
 @user.command('add', hidden=hide_admin_cmds())
 @opt_user_object_id()
 @opt_organisation()
-@opt_owner_group_roles(required=False)
 @opt_is_austrakka_process(default=False)
 @opt_server_username()
 def user_add(
         user_id: str,
         org: str,
-        owner_group_roles: List[str],
         is_austrakka_process: bool,
         server_username: str,
 ):
     """Add users in AusTrakka"""
-    add_user(user_id, org, owner_group_roles, is_austrakka_process, server_username)
+    add_user(user_id, org, is_austrakka_process, server_username)
 
 
 @user.command('update', hidden=hide_admin_cmds())
