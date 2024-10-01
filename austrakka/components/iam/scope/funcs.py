@@ -5,7 +5,7 @@ from austrakka.utils.output import print_dict
 
 
 @logger_wraps()
-def get_scopes(out_format: str):
+def list_scopes(out_format: str):
     """
     Get the list of scopes defined for a tenant.
     """
