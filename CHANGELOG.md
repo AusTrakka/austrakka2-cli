@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.63.0] - 2024-09-30
+### Added
+- `sample purge` command to completely remove a sample from the system.
+
 # [0.62.0] - 2024-09-09
 ### Added
 - `field add` and `field update` commands now support the `hidden` property,
