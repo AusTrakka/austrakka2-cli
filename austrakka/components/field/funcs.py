@@ -2,6 +2,7 @@ import pandas as pd
 
 from loguru import logger
 
+from austrakka.utils.enums.view_type import COMPACT, MORE
 from austrakka.utils.helpers.fieldtype import get_fieldtype_by_name_v2
 from austrakka.utils.helpers.fields import get_field_by_name_v2
 from austrakka.utils.api import api_get
@@ -13,8 +14,18 @@ from austrakka.utils.output import print_dataframe
 from austrakka.utils.paths import TENANT_PATH, METADATACOLUMN_PATH
 
 
+list_compact_fields = ['columnName', 'metaDataColumnTypeName', 'metaDataColumnValidValues']
+list_more_fields = [
+    'columnName', 
+    'metaDataColumnTypeName', 
+    'metaDataColumnValidValues', 
+    'description', 
+    'nndssFieldLabel',
+    'canVisualise',
+    'columnOrder']
+
 @logger_wraps()
-def list_fields(out_format: str):
+def list_fields(view_type: str, out_format: str):
     """
     List all metadata fields (MetaDataColumns) within AusTrakka.
     """
@@ -32,6 +43,11 @@ def list_fields(out_format: str):
         result['metaDataColumnValidValues'] = result['metaDataColumnValidValues'].apply(
             lambda x: ';'.join(x) if x else ''
         )
+        
+    if view_type == COMPACT:
+        result = result[result.columns.intersection(list_compact_fields)]
+    elif view_type == MORE:
+        result = result[result.columns.intersection(list_more_fields)]
 
     print_dataframe(
         result,

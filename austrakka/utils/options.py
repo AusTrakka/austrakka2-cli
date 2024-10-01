@@ -9,6 +9,7 @@ from austrakka.utils.enums.privilege_level import (
     USER_LEVEL)
 
 from austrakka.utils.enums.seq import SeqType
+from austrakka.utils.enums.view_type import MORE, COMPACT, FULL
 from austrakka.utils.option_utils import create_option, MutuallyExclusiveOption
 
 
@@ -631,6 +632,20 @@ def opt_record_type(**attrs: t.Any):
         '-rt',
         '--record-type',
         type=click.Choice(['Tenant', 'Organisation']),
+        **{**defaults, **attrs}
+    )
+
+
+def opt_view_type(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'The amount of data to return. ',
+        'default': COMPACT,
+    }
+    return create_option(
+        '-vt',
+        '--view-type',
+        type=click.Choice([COMPACT, MORE, FULL]),
         **{**defaults, **attrs}
     )
 
