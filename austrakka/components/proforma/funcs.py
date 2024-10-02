@@ -13,12 +13,13 @@ from austrakka.utils.exceptions import FailedResponseException, UnknownResponseE
 from austrakka.utils.helpers.upload import upload_multipart
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe, log_response
-from austrakka.utils.helpers.fields import get_system_field_names
+from austrakka.utils.helpers.fields import get_system_field_names_v2
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
 from austrakka.utils.fs import FileHash, get_hash
 from .proforma_generation_utils import generate_template
 from ...utils.helpers.project import get_project_by_abbrev
+from ...utils.helpers.tenant import get_default_tenant_global_id
 
 ATTACH = 'Attach'
 
@@ -74,7 +75,8 @@ def update_proforma(
     # Include system fields (avoid an error from the endpoint; don't force CLI user to type them in)
     # Note that we are not forcing system fields the user DOES include
     # to set IsRequired
-    system_fields = get_system_field_names()
+    tenant_global_id = get_default_tenant_global_id()
+    system_fields = get_system_field_names_v2(tenant_global_id)
     missing_system_fields = [
         fieldname for fieldname in system_fields if fieldname not in required_columns +
         optional_columns]
@@ -124,7 +126,8 @@ def add_proforma(
     # Include system fields (avoid an error from the endpoint; don't force CLI user to type them in)
     # Note that we are not forcing system fields the user DOES include
     # to set IsRequired
-    system_fields = get_system_field_names()
+    tenant_global_id = get_default_tenant_global_id()
+    system_fields = get_system_field_names_v2(tenant_global_id)
     missing_system_fields = [
         fieldname for fieldname in system_fields if fieldname not in required_columns +
         optional_columns]

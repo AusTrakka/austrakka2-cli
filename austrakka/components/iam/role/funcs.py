@@ -1,9 +1,10 @@
-from austrakka.components.iam.shared_funcs import _get_default_tenant_global_id, _get_role_by_name
+from austrakka.components.iam.shared_funcs import _get_role_by_name
 from austrakka.utils.api import api_get, api_post, api_patch
 from austrakka.utils.enums.privilege_level import (
     AUSTRAKKA_ADMIN_LEVEL,
     FUNCTIONAL_ADMIN_LEVEL,
     USER_LEVEL)
+from austrakka.utils.helpers.tenant import get_default_tenant_global_id
 
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dict
@@ -14,7 +15,7 @@ def get_roles(out_format: str):
     """
     Get the list of roles defined for a tenant.
     """
-    tenant_global_id = _get_default_tenant_global_id()
+    tenant_global_id = get_default_tenant_global_id()
     response = api_get(
         path=f"v2/tenant/{tenant_global_id}/role",
     )
@@ -33,7 +34,7 @@ def add_role(role: str, description: str, privilege_level: str, allowed_record_t
     """
     # switch statement to map string name to integer value
     level = _privilege_name_to_int()
-    tenant_global_id = _get_default_tenant_global_id()
+    tenant_global_id = get_default_tenant_global_id()
     payload = {
         "name": role,
         "description": description,
@@ -67,7 +68,7 @@ def update_role(
         raise ValueError("At least one of new_name, description, privilege_level, "
                          "clear_allowed_record_types, or allowed_record_types must be provided")
 
-    tenant_global_id = _get_default_tenant_global_id()
+    tenant_global_id = get_default_tenant_global_id()
     role_obj = _get_role_by_name(role, tenant_global_id)
 
     payload = {}
