@@ -30,7 +30,7 @@ def privilege_subcommands(roottype: str):
     @privilege.command('list', 
                        help=f"List all privileges held within a given {roottype.lower()}.",
                        hidden=hide_admin_cmds())
-    @click.argument(f'{roottype.lower()}-global-id', type=str)
+    @opt_record_global_id()
     @table_format_option()
     def privilege_list(record_global_id: str, out_format: str):
         record_type_route = convert_record_type_to_route_string(roottype)

@@ -17,12 +17,13 @@ role.add_command(definition)
 
 
 @role.command('list', hidden=hide_admin_cmds())
+@opt_view_type()
 @table_format_option()
-def roles_list(out_format: str):
+def roles_list(view_type: str, out_format: str):
     """
     Get the list of roles defined for a tenant
     """
-    list_roles(out_format)
+    list_roles(view_type, out_format)
 
 
 # pylint: disable=redefined-outer-name

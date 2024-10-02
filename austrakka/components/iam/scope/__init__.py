@@ -12,9 +12,10 @@ def scope(ctx):
 
 
 @scope.command('list', hidden=hide_admin_cmds())
+@opt_view_type()
 @table_format_option()
-def scope_list(out_format: str):
+def scope_list(view_type: str, out_format: str):
     """
     Get the list of scopes defined for a tenant
     """
-    list_scopes(out_format)
+    list_scopes(view_type, out_format)

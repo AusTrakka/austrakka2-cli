@@ -7,11 +7,22 @@ from austrakka.utils.enums.privilege_level import (
 from austrakka.utils.helpers.tenant import get_default_tenant_global_id
 
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dict
+from austrakka.utils.output import print_response
+
+list_compact_fields = ['name', 'description', 'privilegeLevel', 'globalId']
+list_more_fields = [
+    'name', 
+    'description', 
+    'privilegeLevel', 
+    'allowedRootTypes', 
+    'globalId', 
+    'created', 
+    'createdBy']
 
 
+# pylint: disable=duplicate-code
 @logger_wraps()
-def list_roles(out_format: str):
+def list_roles(view_type: str, out_format: str):
     """
     Get the list of roles defined for a tenant.
     """
@@ -20,9 +31,11 @@ def list_roles(out_format: str):
         path=f"v2/tenant/{tenant_global_id}/role",
     )
 
-    data = response['data'] if ('data' in response) else response
-    print_dict(
-        data,
+    print_response(
+        response,
+        view_type,
+        list_compact_fields,
+        list_more_fields,
         out_format,
     )
 
