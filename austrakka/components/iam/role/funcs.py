@@ -109,16 +109,22 @@ def update_role(
 
 def _assign_allowed_role_root_types(allowed_record_types, payload, tenant_global_id):
     root_types = api_get(
-        path=f"v2/tenant/{tenant_global_id}/roottype",
+        path=f"v2/tenant/{tenant_global_id}/resourcetype",
     )
     # Match allowed record types to root types by name.
     # Gather the global ID of the root type into a list.
     allowed_record_types_global_ids = []
     for record_type in allowed_record_types:
-        record_type_obj = next((r for r in root_types['data'] if r['name'] == record_type), None)
+        
+        record_type_obj = next((r for r in root_types['data']
+                                if (r['name'] == record_type and
+                                    r['isAggregateRoot'] == True)), None)
+        
         if record_type_obj is None:
             raise ValueError(f"Record type {record_type} not found in tenant {tenant_global_id}")
+        
         allowed_record_types_global_ids.append(record_type_obj['globalId'])
+        
     if len(allowed_record_types_global_ids) > 0:
         payload["AllowedRootTypeGlobalIds"] = allowed_record_types_global_ids
 
