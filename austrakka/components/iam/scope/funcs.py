@@ -1,19 +1,37 @@
-from austrakka.components.iam.shared_funcs import _get_default_tenant_global_id
 from austrakka.utils.api import api_get
+from austrakka.utils.helpers.tenant import get_default_tenant_global_id
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dict
+from austrakka.utils.output import print_response
+
+list_compact_fields = [
+    'scopePath', 
+    'shortDescription', 
+    'privilegeLevel', 
+    'globalId', 
+    'subjectRootType']
+
+list_more_fields = [
+    'scopePath', 
+    'shortDescription', 
+    'privilegeLevel', 
+    'globalId', 
+    'subjectRootType', 
+    'description']
 
 
+# pylint: disable=duplicate-code
 @logger_wraps()
-def get_scopes(out_format: str):
+def list_scopes(view_type:str, out_format: str):
     """
     Get the list of scopes defined for a tenant.
     """
-    tenant_global_id = _get_default_tenant_global_id()
+    tenant_global_id = get_default_tenant_global_id()
     response = api_get(path=f"v2/tenant/{tenant_global_id}/scope")
-
-    data = response['data'] if ('data' in response) else response
-    print_dict(
-        data,
+    
+    print_response(
+        response,
+        view_type,
+        list_compact_fields,
+        list_more_fields,
         out_format,
     )
