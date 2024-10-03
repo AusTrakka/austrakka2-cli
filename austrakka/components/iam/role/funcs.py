@@ -118,7 +118,7 @@ def _assign_allowed_role_root_types(allowed_record_types, payload, tenant_global
         
         record_type_obj = next((r for r in root_types['data']
                                 if (r['name'] == record_type and
-                                    r['isAggregateRoot'] == True)), None)
+                                    r['isAggregateRoot'] is True)), None)
         
         if record_type_obj is None:
             raise ValueError(f"Record type {record_type} not found in tenant {tenant_global_id}")
