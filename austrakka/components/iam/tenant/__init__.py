@@ -8,7 +8,7 @@ from austrakka.utils.output import table_format_option
 @click.group()
 @click.pass_context
 def tenant(ctx):
-    """Commands related to tenant information."""
+    """Commands related to tenant information"""
     ctx.context = ctx.parent.context
 
 
@@ -16,6 +16,6 @@ def tenant(ctx):
 @table_format_option()
 def tenant_get_default(out_format: str):
     """
-    Get the list of scopes defined for a tenant.
+    Get the list of scopes defined for a tenant
     """
     get_default_tenant(out_format)
