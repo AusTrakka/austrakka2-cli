@@ -97,6 +97,7 @@ def list_projects(out_format: str):
 def get_dashboard(project_abbreviation: str):
     joined_path = '/'.join([PROJECT_PATH, ASSIGNED_DASHBOARD, project_abbreviation])
     response = api_get(joined_path)
+    # pylint: disable=print-function
     print(response['data'])
 
 @logger_wraps()
