@@ -17,12 +17,13 @@ def definition(ctx):
 
 @definition.command('get', hidden=hide_admin_cmds())
 @opt_role()
+@opt_view_type()
 @table_format_option()
-def role_access_get(role: str, out_format: str):
+def role_access_get(role: str, view_type: str, out_format: str):
     """
     Get the list of scope access definition for a role.
     """
-    get_role_definition(role, out_format)
+    get_role_definition(role, view_type, out_format)
 
 
 @definition.command('add', hidden=hide_admin_cmds())

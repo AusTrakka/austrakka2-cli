@@ -1,4 +1,5 @@
 import xlsxwriter
+import pandas as pd
 
 # Colours for field headers and data dictionary metadata class
 MINIMUM_COLOUR = '#7ABBDE'
@@ -151,7 +152,7 @@ def generate_template(
     nndss_offset = 1 if nndss_column else 0
     for row,field in enumerate(fields,1):
         datadict_sheet.write_string(row, 0, field, border_format)
-        if nndss_column:
+        if nndss_column and not pd.isnull(proforma.loc[field, 'nndssFieldLabel']):
             datadict_sheet.write_string(row, 1, 
                 proforma.loc[field, 'nndssFieldLabel'],
                 border_format)

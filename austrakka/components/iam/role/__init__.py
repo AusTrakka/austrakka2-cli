@@ -3,7 +3,7 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import *
 from austrakka.utils.output import table_format_option
 from .definition import definition
-from .funcs import get_roles, add_role, update_role
+from .funcs import list_roles, add_role, update_role
 
 
 @click.group()
@@ -16,13 +16,14 @@ def role(ctx):
 role.add_command(definition)
 
 
-@role.command('get', hidden=hide_admin_cmds())
+@role.command('list', hidden=hide_admin_cmds())
+@opt_view_type()
 @table_format_option()
-def roles_get(out_format: str):
+def roles_list(view_type: str, out_format: str):
     """
-    Get the list of roles defined for a tenant.
+    Get the list of roles defined for a tenant
     """
-    get_roles(out_format)
+    list_roles(view_type, out_format)
 
 
 # pylint: disable=redefined-outer-name
@@ -37,7 +38,7 @@ def role_add(
         privilege_level: str,
         allowed_record_types: list[str]):
     """
-    Add a new role to the tenant.
+    Add a new role to the tenant
     """
     add_role(role, description, privilege_level, allowed_record_types)
 
@@ -72,7 +73,7 @@ def role_update(
         allowed_record_types: list[str],
         clear_allowed_record_types: bool):
     """
-    Update a role.
+    Update a role
     """
     update_role(
         role,
