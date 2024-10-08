@@ -48,11 +48,7 @@ def list_by_user_privileges(user_id: str, record_type: str, record_global_id: st
     List by user the privileges assigned to a record.
     """
     tenant_global_id = get_default_tenant_global_id()
-    response = api_get(
-        path=f"v2/{record_type}/{record_global_id}/privilege/user/{user_id}"
-             f"?owningTenantGlobalId={tenant_global_id}",
-    )
-
+    response = _list_by_user_privileges(user_id, record_type, record_global_id, tenant_global_id)
     _print_response_data(out_format, response)
 
 
@@ -100,4 +96,18 @@ def _print_response_data(out_format, response):
     print_dict(
         data,
         out_format,
+    )
+
+
+def _list_by_user_privileges(
+        user_id: str, 
+        record_type: str, 
+        record_global_id: str,
+        tenant_global_id: str):
+    """
+    List by user the privileges assigned to a record.
+    """
+    return api_get(
+        path=f"v2/{record_type}/{record_global_id}/privilege/user/{user_id}"
+             f"?owningTenantGlobalId={tenant_global_id}",
     )
