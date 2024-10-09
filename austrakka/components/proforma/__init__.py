@@ -113,7 +113,8 @@ def proforma_attach(proforma_abbrev: str,
 
     Usage:
 
-    austrakka proforma attach [PROFORMA_ABBREV] ~~This will pull the file from the last proforma version
+    austrakka proforma attach [PROFORMA_ABBREV] 
+    ~~This will pull the file from the last proforma version
 
     austrakka proforma attach [PROFORMA_ABBREV] -f [FILEPATH] ~~attaches given file
 

@@ -1,9 +1,7 @@
 # pylint: disable=duplicate-code
 
 from loguru import logger
-import json
 
-from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
