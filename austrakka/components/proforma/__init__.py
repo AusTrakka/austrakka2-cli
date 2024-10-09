@@ -70,9 +70,9 @@ def proforma_add(
 @proforma.command('update', hidden=hide_admin_cmds())
 @opt_required
 @opt_optional
-@click.argument('abbrev', type=click.STRING)
+@click.argument('proforma-abbrev', type=click.STRING)
 def proforma_update(
-        abbrev: str,
+        proforma_abbrev: str,
         required_field: List[str],
         optional_field: List[str]):
     """
@@ -81,13 +81,13 @@ def proforma_update(
     Any fields in the current version but not listed in the update will be removed.
     """
     update_proforma(
-        abbrev,
+        proforma_abbrev,
         required_field,
         optional_field)
 
 
 @proforma.command('attach', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=click.STRING)
+@click.argument('proforma-abbrev', type=click.STRING)
 @create_option('-f',
               '--file-path',
               help='File that you may want to link.  '
@@ -105,7 +105,7 @@ def proforma_update(
                    "that as a file attachment, etc..",
               type=click.INT,
               mutually_exclusive=["file_path"])
-def proforma_attach(abbrev: str,
+def proforma_attach(proforma_abbrev: str,
                     file_path: str = None,
                     n_previous: int = None):
     """
@@ -113,22 +113,20 @@ def proforma_attach(abbrev: str,
 
     Usage:
 
-    austrakka proforma attach [ABBREV] ~~This will pull the file from the last proforma version
+    austrakka proforma attach [PROFORMA_ABBREV] ~~This will pull the file from the last proforma version
 
-    austrakka proforma attach [ABBREV] -f [FILEPATH] ~~attaches given file
+    austrakka proforma attach [PROFORMA_ABBREV] -f [FILEPATH] ~~attaches given file
 
-    austrakka proforma attach [ABBREV] -id [PROFORMA-VERSION-ID]
+    austrakka proforma attach [PROFORMA_ABBREV] -id [PROFORMA-VERSION-ID]
     ~~this pulls a file from specified id
-
-    ABBREV should be the abbreviated name of the pro forma.
     """
     if file_path is None:
-        pull_proforma(abbrev, n_previous)
+        pull_proforma(proforma_abbrev, n_previous)
     else:
-        attach_proforma(abbrev, file_path)
+        attach_proforma(proforma_abbrev, file_path)
 
 @proforma.command('generate')
-@click.argument('abbrev', type=click.STRING)
+@click.argument('proforma-abbrev', type=click.STRING)
 @create_option(
     '-r',
     '--restrict',
@@ -156,12 +154,12 @@ def proforma_attach(abbrev: str,
     help='Key-value pair; add a metadata field class and assign it to the specified '+
         'comma-separated subset of fields',
 )
-def proforma_generate(abbrev: str, restrict, nndss, project, metadata_class):
+def proforma_generate(proforma_abbrev: str, restrict, nndss, project, metadata_class):
     """
     Generate a draft XLSX pro forma template from the current specification.
     """
     generate_proforma(
-        abbrev,
+        proforma_abbrev,
         restrict,
         nndss_column=nndss,
         project_abbrev=project,
@@ -176,93 +174,63 @@ def proforma_list(out_format: str):
 
 
 @proforma.command('show')
-@click.argument('abbrev', type=click.STRING)
+@click.argument('proforma-abbrev', type=click.STRING)
 @table_format_option()
-def proforma_show(abbrev: str, out_format: str):
+def proforma_show(proforma_abbrev: str, out_format: str):
     """
     Show pro forma fields.
 
-    USAGE:
-    austrakka proforma show [ABBREV]
-
-    ABBREV should be the abbreviated name of the pro forma.
-    Use `austrakka proforma list` for options.
+    See `austrakka proforma list` for available pro formas.
     """
-    show_proforma(abbrev, out_format)
+    show_proforma(proforma_abbrev, out_format)
 
 
 @proforma.command('disable', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=click.STRING)
+@click.argument('proforma-abbrev', type=click.STRING)
 # Consider option instead: @opt_abbrev("Abbreviated name of the pro forma")
-def proforma_disable(abbrev: str):
+def proforma_disable(proforma_abbrev: str):
     """
     Disable a pro forma.
-
-    USAGE:
-    austrakka proforma disable [ABBREV]
-
-    ABBREV should be the abbreviated name of the pro forma.
     """
-    disable_proforma(abbrev)
+    disable_proforma(proforma_abbrev)
 
 
 @proforma.command('enable', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=click.STRING)
+@click.argument('proforma-abbrev', type=click.STRING)
 # Consider option instead: @opt_abbrev("Abbreviated name of the pro forma")
-def proforma_enable(abbrev: str):
+def proforma_enable(proforma_abbrev: str):
     """
     Enable a pro forma.
-
-    USAGE:
-    austrakka proforma enable [ABBREV]
-
-    ABBREV should be the abbreviated name of the pro forma.
     """
-    enable_proforma(abbrev)
+    enable_proforma(proforma_abbrev)
 
 
 @proforma.command('share', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=click.STRING)
+@click.argument('proforma-abbrev', type=click.STRING)
 @opt_group_name(var_name='group_names', multiple=True)
-def proforma_share(abbrev: str, group_names: List[str]):
+def proforma_share(proforma_abbrev: str, group_names: List[str]):
     """
-    Share a pro forma with one or more groups so can see the proforma
-    in the `list` operation.
-
-    USAGE:
-    austrakka proforma share -g [GROUP NAME] [ABBREV]
-
-    ABBREV should be the abbreviated name of the pro forma.
+    Share a pro forma with one or more groups, which may be project groups. 
+    The pro forma will be visible and useable by Uploaders in these groups.
     """
-    share_proforma(abbrev, group_names)
+    share_proforma(proforma_abbrev, group_names)
 
 
 @proforma.command('unshare', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=click.STRING)
+@click.argument('proforma-abbrev', type=click.STRING)
 @opt_group_name(var_name='group_names', multiple=True)
-def proforma_unshare(abbrev: str, group_names: List[str]):
+def proforma_unshare(proforma_abbrev: str, group_names: List[str]):
     """
-    UnShare a pro forma with one or more groups to prevent the proforma
-    being returned in the `list` operation.
-
-    USAGE:
-    austrakka proforma unshare -g [GROUP NAME] [ABBREV]
-
-    ABBREV should be the abbreviated name of the pro forma.
+    UnShare a pro forma with one or more groups.
     """
-    unshare_proforma(abbrev, group_names)
+    unshare_proforma(proforma_abbrev, group_names)
 
 
 @proforma.command('list-groups')
-@click.argument('abbrev', type=click.STRING)
+@click.argument('proforma-abbrev', type=click.STRING)
 @table_format_option()
-def proforma_list_groups(abbrev: str, out_format: str):
+def proforma_list_groups(proforma_abbrev: str, out_format: str):
     """
     List groups who have access to the given pro forma.
-
-    USAGE:
-    austrakka proforma listgroups [ABBREV]
-
-    ABBREV should be the abbreviated name of the pro forma.
     """
-    list_groups_proforma(abbrev, out_format)
+    list_groups_proforma(proforma_abbrev, out_format)

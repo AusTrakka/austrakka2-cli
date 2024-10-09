@@ -25,34 +25,34 @@ def provision(ctx):
 
 
 @provision.command('add', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @opt_field_name()
-def project_add_provision(abbrev: str, field_names: List[str]):
+def project_add_provision(project_abbrev: str, field_names: List[str]):
     """This will add a project provision"""
-    add_provision_project(abbrev, field_names)
+    add_provision_project(project_abbrev, field_names)
 
 
 @provision.command('remove', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @opt_prov_id()
-def project_remove_provision(abbrev: str, prov_id: str):
+def project_remove_provision(project_abbrev: str, prov_id: str):
     """This will remove a project provision"""
-    remove_project_provision(abbrev, prov_id)
+    remove_project_provision(project_abbrev, prov_id)
 
 
 @provision.command('update', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @opt_field_name()
 @opt_prov_id()
-def project_update_provision(abbrev: str, field_names: List[str], prov_id: str):
+def project_update_provision(project_abbrev: str, field_names: List[str], prov_id: str):
     """This will update a project provision by replacing the current list of fields
     with the new list of fields."""
-    update_project_provision(abbrev, prov_id, field_names)
+    update_project_provision(project_abbrev, prov_id, field_names)
 
 
 @provision.command('list')
 @table_format_option()
-@click.argument('abbrev', type=str)
-def project_list_provisions(abbrev: str, out_format: str):
+@click.argument('project-abbrev', type=str)
+def project_list_provisions(project_abbrev: str, out_format: str):
     """This will list project provisions"""
-    get_dataset_provision_list(abbrev, out_format)
+    get_dataset_provision_list(project_abbrev, out_format)

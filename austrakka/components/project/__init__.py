@@ -53,7 +53,7 @@ def project_add(
 
 
 @project.command('update', hidden=hide_admin_cmds())
-@click.argument('project-abbreviation', type=str)
+@click.argument('project-abbrev', type=str)
 @opt_abbrev(help="New project abbreviation", required=False)
 @opt_name(help="New project name", required=False)
 @opt_description(help="New project description", required=False)
@@ -61,7 +61,7 @@ def project_add(
 @opt_organisation(help="New requesting organisation abbreviation", required=False)
 @opt_dashboard_name(help="New dashboard", required=False)
 def project_update(
-        project_abbreviation: str,
+        project_abbrev: str,
         abbrev: str,
         name: str,
         description: str,
@@ -71,27 +71,27 @@ def project_update(
     '''
     Update an existing project in AusTrakka.
     '''
-    update_project(project_abbreviation, abbrev, name, description, is_active, org, dashboard_name)
+    update_project(project_abbrev, abbrev, name, description, is_active, org, dashboard_name)
 
 
 @project.command('set-dashboard', hidden=hide_admin_cmds())
 @opt_name(help="name of a known dashboard")
-@click.argument('project-abbreviation', type=str)
-def dashboard_set(project_abbreviation: str, name: str):
+@click.argument('project-abbrev', type=str)
+def dashboard_set(project_abbrev: str, name: str):
     '''
     Assign a dashboard to a project.
     '''
-    set_dashboard(project_abbreviation, name)
+    set_dashboard(project_abbrev, name)
 
 
 @project.command('get-dashboard', hidden=hide_admin_cmds())
-@click.argument('project-abbreviation', type=str)
+@click.argument('project-abbrev', type=str)
 @object_format_option()
-def dashboard_get(project_abbreviation: str, out_format: str):
+def dashboard_get(project_abbrev: str, out_format: str):
     '''
     Get the name of the dashboard currently assigned to a project.
     '''
-    get_dashboard(project_abbreviation, out_format)
+    get_dashboard(project_abbrev, out_format)
 
 
 @project.command('list')
@@ -101,8 +101,8 @@ def projects_list(out_format: str):
     list_projects(out_format)
 
 @project.command('settings')
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @object_format_option()
-def project_settings(abbrev: str, out_format: str):
+def project_settings(project_abbrev: str, out_format: str):
     '''Show project settings'''
-    show_project_settings(abbrev, out_format)
+    show_project_settings(project_abbrev, out_format)

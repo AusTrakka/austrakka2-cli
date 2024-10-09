@@ -46,17 +46,17 @@ def org_add(
 
 
 @org.command('update', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=str)
+@click.argument('org-abbrev', type=str)
 @opt_name(help="Organisation Name", required=False)
 @opt_state(required=False)
 @opt_country(required=False)
 @opt_is_active(is_update=True)
 def org_update(
-        abbrev: str,
+        org_abbrev: str,
         name: str,
         country: str,
         state: str,
         is_active: bool,
 ):
     '''Update organisations in AusTrakka'''
-    update_org(abbrev, name, country, state, is_active)
+    update_org(org_abbrev, name, country, state, is_active)
