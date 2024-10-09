@@ -9,23 +9,12 @@ RENAME = 'rename'
 
 
 @logger_wraps()
-def add_dashboard(name: str, widget_details: [str]):
+def add_dashboard(name: str):
     """
     Add a dashboard for use in a project.
     """
-    widgets = []
-
-    for detail in widget_details:
-        triplet = detail.split(",")
-        widgets.append({
-            "name": triplet[0],
-            "order": int(triplet[1]),
-            "width": int(triplet[2])
-        })
-
     payload = {
         "name": name,
-        "widgets": widgets
     }
 
     api_post(
@@ -35,23 +24,12 @@ def add_dashboard(name: str, widget_details: [str]):
 
 
 @logger_wraps()
-def update_dashboard(dashboard_id: int, name: str, widget_details: [str]):
+def update_dashboard(dashboard_id: int, name: str):
     """
     Update a dashboard definition for use in a project.
     """
-    widgets = []
-
-    for detail in widget_details:
-        triplet = detail.split(",")
-        widgets.append({
-            "name": triplet[0],
-            "order": int(triplet[1]),
-            "width": int(triplet[2])
-        })
-
     payload = {
         "name": name,
-        "widgets": widgets
     }
 
     api_put(

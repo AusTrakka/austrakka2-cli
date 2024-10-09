@@ -17,33 +17,33 @@ from .funcs import \
 @click.group()
 @click.pass_context
 def field(ctx):
-    """Commands to manage project fields for analysis metadata"""
+    """Commands to manage project fields"""
     ctx.context = ctx.parent.context
 
 
 @field.command('add', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @opt_field_and_source()
-def project_add_field(abbrev: str, field_source):
+def project_add_field(project_abbrev: str, field_source):
     """
-    add fields for a given project.
+    Add fields to a given project.
     """
-    add_field_project(abbrev, field_source)
+    add_field_project(project_abbrev, field_source)
 
 
 @field.command('remove', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @opt_field_name()
-def project_remove_field(abbrev: str, field_names: List[str]):
+def project_remove_field(project_abbrev: str, field_names: List[str]):
     """
-    disable fields for a given project.
+    Remove fields from a given project; fields will no longer be displayed in project metadata.
     """
-    remove_project_field(abbrev, field_names)
+    remove_project_field(project_abbrev, field_names)
 
 
 @field.command('list')
 @table_format_option()
-@click.argument('abbrev', type=str)
-def project_list_fields(abbrev: str, out_format: str):
-    """This will list project fields"""
-    get_project_field_list(abbrev, out_format)
+@click.argument('project-abbrev', type=str)
+def project_list_fields(project_abbrev: str, out_format: str):
+    """List project fields for a given project"""
+    get_project_field_list(project_abbrev, out_format)

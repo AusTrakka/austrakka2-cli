@@ -59,7 +59,7 @@ def plot_add(
 
 
 @plot.command('update', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=str)
+@click.argument('plot-abbrev', type=str)
 @opt_name(required=False)
 @opt_description(required=False)
 @opt_project(required=False)
@@ -67,7 +67,7 @@ def plot_add(
 @opt_plotspec()
 @opt_is_active(is_update=True)
 def plot_update(
-        abbrev: str,
+        plot_abbrev: str,
         name: str,
         description: str,
         project: str,
@@ -77,7 +77,7 @@ def plot_update(
 ):
     """Update a plot in AusTrakka"""
     update_plot(
-        abbrev,
+        plot_abbrev,
         name,
         description,
         project,
@@ -88,31 +88,21 @@ def plot_update(
 
 
 @plot.command('disable', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=click.STRING)
-def plot_disable(abbrev: str):
+@click.argument('plot-abbrev', type=click.STRING)
+def plot_disable(plot_abbrev: str):
     """
     Disable a plot
-
-    USAGE:
-    austrakka plot disable [ABBREV]
-
-    ABBREV should be the abbreviated name of the pro forma.
     """
-    disable_plot(abbrev)
+    disable_plot(plot_abbrev)
 
 
 @plot.command('enable', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=click.STRING)
-def plot_enable(abbrev: str):
+@click.argument('plot-abbrev', type=click.STRING)
+def plot_enable(plot_abbrev: str):
     """
     Enable a plot
-
-    USAGE:
-    austrakka plot enable [ABBREV]
-
-    ABBREV should be the abbreviated name of the pro forma.
     """
-    enable_plot(abbrev)
+    enable_plot(plot_abbrev)
 
 
 @plot.command('types')

@@ -20,19 +20,17 @@ def project(ctx):
 
 @project.command('add', hidden=hide_admin_cmds())
 @opt_name(help="Dashboard name. Must be unique.")
-@opt_widget()
-def dashboard_add(name: str, widget_details: [str]):
-    """Define a dashboard, including what widgets to show."""
-    add_dashboard(name, widget_details)
+def dashboard_add(name: str):
+    """Define a dashboard"""
+    add_dashboard(name)
 
 
 @project.command('update', hidden=hide_admin_cmds())
 @opt_name(help="Dashboard name. Must be unique.")
-@opt_widget()
 @click.argument('dashboard-id', type=int)
-def dashboard_update(dashboard_id: int, name: str, widget_details: [str]):
-    """Update a dashboard definition, including what widgets to show."""
-    update_dashboard(dashboard_id, name, widget_details)
+def dashboard_update(dashboard_id: int, name: str):
+    """Update a dashboard definition"""
+    update_dashboard(dashboard_id, name)
 
 
 @project.command('list', hidden=hide_admin_cmds())

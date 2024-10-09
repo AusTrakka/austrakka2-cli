@@ -17,62 +17,62 @@ def dataset(ctx):
 
 
 @dataset.command('async-add')
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @click.option('-fp',
               '--file-path',
               help='dataset csv file to upload to the project', )
 @opt_analysis_label()
 def dataset_add(
-        abbrev: str,
+        project_abbrev: str,
         file_path: str,
         analysis_label: str):
     """Upload a dataset file to the given project in AusTrakka."""
-    add_dataset(file_path, analysis_label, abbrev)
+    add_dataset(file_path, analysis_label, project_abbrev)
 
 
 @dataset.command('track-upload')
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @opt_tracking_token()
 @opt_detailed()
 @table_format_option()
 def dataset_track(
-        abbrev: str,
+        project_abbrev: str,
         tracking_token: str,
         detailed: bool,
         out_format: str,
 ):
     """Check for a job states given a project in AusTrakka and a Tracking Token """
-    track_dataset(abbrev, tracking_token, detailed, out_format)
+    track_dataset(project_abbrev, tracking_token, detailed, out_format)
 
 
 @dataset.command('add')
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @click.option('-fp',
               '--file-path',
               help='dataset csv file to upload to the project', )
 @opt_analysis_label()
 @table_format_option()
-def dataset_blocking_add(abbrev: str,
+def dataset_blocking_add(project_abbrev: str,
                          file_path: str,
                          analysis_label: str,
                          out_format: str,):
     """A blocking version of the dataset which uploads and polls the status of the job sent"""
-    add_dataset_blocking(file_path, analysis_label, abbrev, out_format)
+    add_dataset_blocking(file_path, analysis_label, project_abbrev, out_format)
 
 
 @dataset.command('list')
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @table_format_option()
-def get_active_dataset_entry_list(abbrev: str, out_format: str):
+def get_active_dataset_entry_list(project_abbrev: str, out_format: str):
     """Get a list of active datasets for a given project"""
-    active_dataset_entry_list_get(abbrev, out_format)
+    active_dataset_entry_list_get(project_abbrev, out_format)
 
 
 @dataset.command('disable')
 @click.option('-id',
               '--dataset-id',
               help='dataset to disable', )
-@click.argument('abbrev', type=str)
-def project_dataset_disable(abbrev: str, dataset_id: int):
+@click.argument('project-abbrev', type=str)
+def project_dataset_disable(project_abbrev: str, dataset_id: int):
     """Disable a dataset for a given project"""
-    disable_dataset(abbrev, dataset_id)
+    disable_dataset(project_abbrev, dataset_id)
