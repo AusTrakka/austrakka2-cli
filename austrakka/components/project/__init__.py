@@ -86,11 +86,12 @@ def dashboard_set(project_abbreviation: str, name: str):
 
 @project.command('get-dashboard', hidden=hide_admin_cmds())
 @click.argument('project-abbreviation', type=str)
-def dashboard_get(project_abbreviation: str):
+@object_format_option()
+def dashboard_get(project_abbreviation: str, out_format: str):
     '''
     Get the name of the dashboard currently assigned to a project.
     '''
-    get_dashboard(project_abbreviation)
+    get_dashboard(project_abbreviation, out_format)
 
 
 @project.command('list')

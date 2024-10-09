@@ -1,6 +1,7 @@
 # pylint: disable=duplicate-code
 
 from loguru import logger
+import json
 
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
@@ -94,11 +95,9 @@ def list_projects(out_format: str):
 
 
 @logger_wraps()
-def get_dashboard(project_abbreviation: str):
+def get_dashboard(project_abbreviation: str, out_format: str):
     joined_path = '/'.join([PROJECT_PATH, ASSIGNED_DASHBOARD, project_abbreviation])
-    response = api_get(joined_path)
-    # pylint: disable=print-function
-    print(response['data'])
+    call_get_and_print(joined_path, out_format)
 
 @logger_wraps()
 def show_project_settings(abbrev: str, out_format: str):
