@@ -16,8 +16,8 @@ from austrakka.components.iam.privilege.funcs import (
     list_by_role_privileges,
     list_by_user_privileges,
     assign_privilege,
-    unassign_privilege, 
-    _list_by_user_privileges)
+    unassign_privilege,
+    get_privileges_by_user)
 
 
 def privilege_subcommands(roottype: str):
@@ -91,7 +91,7 @@ def privilege_subcommands(roottype: str):
         record_type_route = convert_record_type_to_route_string(roottype)
         tenant_global_id = get_default_tenant_global_id()
         
-        user_privileges = _list_by_user_privileges(
+        user_privileges = get_privileges_by_user(
             user_id, 
             record_type_route, 
             record_global_id,
