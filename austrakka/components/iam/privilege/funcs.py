@@ -1,4 +1,7 @@
-from austrakka.components.iam.shared_funcs import _get_role_by_name
+from austrakka.utils.subcommands.shared_funcs import (
+    get_role_by_name,
+    get_privileges_by_user)
+
 from austrakka.utils.api import api_get, api_delete, api_post
 from austrakka.utils.helpers.tenant import get_default_tenant_global_id
 from austrakka.utils.misc import logger_wraps
@@ -48,11 +51,7 @@ def list_by_user_privileges(user_id: str, record_type: str, record_global_id: st
     List by user the privileges assigned to a record.
     """
     tenant_global_id = get_default_tenant_global_id()
-    response = api_get(
-        path=f"v2/{record_type}/{record_global_id}/privilege/user/{user_id}"
-             f"?owningTenantGlobalId={tenant_global_id}",
-    )
-
+    response = get_privileges_by_user(user_id, record_type, record_global_id, tenant_global_id)
     _print_response_data(out_format, response)
 
 
@@ -64,7 +63,7 @@ def assign_privilege(
         record_type: str):
 
     owning_tenant_global_id = get_default_tenant_global_id()
-    role_obj = _get_role_by_name(role, owning_tenant_global_id)
+    role_obj = get_role_by_name(role, owning_tenant_global_id)
 
     payload = {
         "owningTenantGlobalId": owning_tenant_global_id,
