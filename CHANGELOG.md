@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.64.2] - 2024-10-16
+### Fixed
+- Fixed module import error in `org privilege` command and a discovered bug in `org privilege unassign` command.
+
 # [0.64.1] - 2024-10-03
 ### Fixed
 - Hotfix - disabled breaking code from recent deployment.
