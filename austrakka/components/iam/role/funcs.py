@@ -1,4 +1,4 @@
-from austrakka.components.iam.shared_funcs import _get_role_by_name
+from austrakka.utils.subcommands.shared_funcs import get_role_by_name
 from austrakka.utils.api import api_get, api_post, api_patch
 from austrakka.utils.enums.privilege_level import (
     AUSTRAKKA_ADMIN_LEVEL,
@@ -82,7 +82,7 @@ def update_role(
                          "clear_allowed_record_types, or allowed_record_types must be provided")
 
     tenant_global_id = get_default_tenant_global_id()
-    role_obj = _get_role_by_name(role, tenant_global_id)
+    role_obj = get_role_by_name(role, tenant_global_id)
 
     payload = {}
     if new_name:
