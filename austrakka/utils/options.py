@@ -8,6 +8,7 @@ from austrakka.utils.enums.privilege_level import (
     FUNCTIONAL_ADMIN_LEVEL,
     USER_LEVEL)
 
+from austrakka.utils.enums.root_types import TENANT, ORGANISATION, PROFORMA
 from austrakka.utils.enums.seq import SeqType
 from austrakka.utils.enums.view_type import MORE, COMPACT, FULL
 from austrakka.utils.option_utils import create_option, MutuallyExclusiveOption
@@ -672,7 +673,7 @@ def opt_allowed_record_types(**attrs: t.Any):
     return create_option(
         "-art",
         "--allowed-record-types",
-        type=click.Choice(['Tenant', 'Organisation']),
+        type=click.Choice([TENANT, ORGANISATION, PROFORMA]),
         **{**defaults, **attrs}
     )
 

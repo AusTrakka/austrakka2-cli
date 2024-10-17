@@ -14,7 +14,7 @@ from austrakka.utils.helpers.upload import upload_multipart
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe, log_response
 from austrakka.utils.helpers.fields import get_system_field_names_v2
-from austrakka.utils.paths import PROFORMA_PATH
+from austrakka.utils.paths import PROFORMA_PATH, TENANT_PATH, PROFORMA_V2_PATH
 from austrakka.utils.retry import retry
 from austrakka.utils.fs import FileHash, get_hash
 from .proforma_generation_utils import generate_template
@@ -22,6 +22,7 @@ from ...utils.helpers.project import get_project_by_abbrev
 from ...utils.helpers.tenant import get_default_tenant_global_id
 
 ATTACH = 'Attach'
+PROFORMA = 'ProForma'
 
 
 @logger_wraps()
@@ -128,10 +129,13 @@ def add_proforma(
     # to set IsRequired
     tenant_global_id = get_default_tenant_global_id()
     system_fields = get_system_field_names_v2(tenant_global_id)
+    
     missing_system_fields = [
         fieldname for fieldname in system_fields if fieldname not in required_columns +
         optional_columns]
+    
     required_columns = list(required_columns)
+    
     for field in missing_system_fields:
         logger.warning(
             f"System field {field} must be included: adding to pro forma")
@@ -140,11 +144,12 @@ def add_proforma(
     column_names = (
         [{"name": col, "isRequired": True} for col in required_columns]
         + [{"name": col, "isRequired": False} for col in optional_columns])
+    
     if len(column_names) == 0:
         raise ValueError("A pro forma must contain at least one field")
 
     return api_post(
-        path=PROFORMA_PATH,
+        path=f'{TENANT_PATH}/{tenant_global_id}/{PROFORMA}',
         data={
             "abbreviation": abbrev,
             "name": name,
@@ -289,9 +294,13 @@ def list_proformas(out_format: str):
 
 @logger_wraps()
 def show_proforma(abbrev: str, out_format: str):
+
+    tenant_global_id = get_default_tenant_global_id()
+    
     response = api_get(
-        path=f"{PROFORMA_PATH}/abbrev/{abbrev}"
+        path=f"{PROFORMA_V2_PATH}/abbrev/{abbrev}?owningTenantGlobalId={tenant_global_id}"
     )
+
     data = response['data'] if ('data' in response) else response
 
     for field in ['abbreviation', 'name', 'version', 'description']:
