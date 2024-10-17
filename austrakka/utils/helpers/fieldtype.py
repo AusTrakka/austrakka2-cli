@@ -7,5 +7,5 @@ def get_fieldtype_by_name(name: str):
 
 
 def get_fieldtype_by_name_v2(tenant_global_id: str, name: str):
-    return api_get(path=f"{TENANT_PATH}/{tenant_global_id}/"
-                        f"{METADATACOLUMNTYPE_PATH}/name/{name}")['data']
+    return api_get(
+        path=f"{TENANT_PATH}/{tenant_global_id}/{METADATACOLUMNTYPE_PATH}/name/{name}")['data']

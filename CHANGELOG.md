@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.64.2] - 2024-10-16
+### Fixed
+- Fixed module import error in `org privilege` command and a discovered bug in `org privilege unassign` command.
+
+# [0.64.1] - 2024-10-03
+### Fixed
+- Hotfix - disabled breaking code from recent deployment.
+
+# [0.64.0] - 2024-10-03
+### Changed
+- `field` commands now utilises the new permission endpoints.
+
+### Fixed
+- Fixed generation of proformas when the NNDSS column is included
+
+# [0.63.0] - 2024-09-30
+### Added
+- `sample purge` command to completely remove a sample from the system.
+
 # [0.62.0] - 2024-09-09
 ### Added
 - `field add` and `field update` commands now support the `hidden` property,
