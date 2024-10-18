@@ -17,7 +17,7 @@ def call_get_and_print(path: str, out_format: str, params: Dict = None):
 
     result = response['data'] if ('data' in response) else response
     result = pd.json_normalize(result, max_level=1)
-
+    
     print_dataframe(
         result,
         out_format,
