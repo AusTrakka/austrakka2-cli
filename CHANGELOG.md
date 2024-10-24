@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.65.0]
+### Changed
+- Project dashboard commands now take a project abbreviation as an argument, rather than a project ID. 
+This update corresponds to a change in the AusTrakka API.
+- Removed unused commands and parameters concerning dashboard widgets. The `project get-dashboard` command 
+now shows the currently-assigned dashboard for a project.
+
 # [0.64.2] - 2024-10-16
 ### Fixed
 - Fixed module import error in `org privilege` command and a discovered bug in `org privilege unassign` command.
