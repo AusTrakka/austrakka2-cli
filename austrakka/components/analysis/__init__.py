@@ -66,7 +66,7 @@ def analysis_add(
 
 
 @analysis.command('update')
-@click.argument('abbrev', type=str)
+@click.argument('analysis-abbrev', type=str)
 @opt_name(help='Analysis Name', required=False)
 @opt_description(required=False)
 @opt_project(required=False)
@@ -74,7 +74,7 @@ def analysis_add(
 @opt_filter_string(required=False)
 @opt_is_active(is_update=True)
 def analysis_update(
-        abbrev: str,
+        analysis_abbrev: str,
         name: str,
         description: str,
         project: str,
@@ -84,7 +84,7 @@ def analysis_update(
 ):
     """Update analysis in AusTrakka"""
     update_analysis(
-        abbrev,
+        analysis_abbrev,
         name,
         description,
         project,
@@ -95,14 +95,14 @@ def analysis_update(
 
 
 @analysis.command('disable', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=str)
-def analysis_disable(abbrev: str):
+@click.argument('analysis-abbrev', type=str)
+def analysis_disable(analysis_abbrev: str):
     """Disable analysis in AusTrakka"""
-    disable_analysis(abbrev)
+    disable_analysis(analysis_abbrev)
 
 
 @analysis.command('enable', hidden=hide_admin_cmds())
-@click.argument('abbrev', type=str)
-def analysis_enable(abbrev: str):
+@click.argument('analysis-abbrev', type=str)
+def analysis_enable(analysis_abbrev: str):
     """Enable analysis in AusTrakka"""
-    enable_analysis(abbrev)
+    enable_analysis(analysis_abbrev)

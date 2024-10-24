@@ -28,31 +28,31 @@ def metadata(ctx):
 
 
 @metadata.command('list')
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @table_format_option()
-def get_dataset_view_list(abbrev: str, out_format: str):
+def get_dataset_view_list(project_abbrev: str, out_format: str):
     """Get a list of metadata views for a given project."""
-    list_dataset_views(abbrev, out_format)
+    list_dataset_views(project_abbrev, out_format)
 
 
 @metadata.command('get')
 @opt_view_id()
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @table_format_option(FORMATS.CSV)
 def get_dataset_view(
-        abbrev: str,
+        project_abbrev: str,
         view_id: Optional[str],
         out_format: str,
 ):
     """Get a specific metadata view."""
-    download_dataset_view(view_id, abbrev, out_format)
+    download_dataset_view(view_id, project_abbrev, out_format)
 
 
 @metadata.command('set-merge')
-@click.argument('abbrev', type=str)
+@click.argument('project-abbrev', type=str)
 @opt_merge_algorithm()
-def project_set_merge_algo(abbrev: str, merge_algorithm):
+def project_set_merge_algo(project_abbrev: str, merge_algorithm):
     """
     Set merge algorithm to use when generating metadata views.
     """
-    set_merge_algorithm_project(abbrev, merge_algorithm)
+    set_merge_algorithm_project(project_abbrev, merge_algorithm)
