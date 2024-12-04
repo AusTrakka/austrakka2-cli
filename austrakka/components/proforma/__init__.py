@@ -60,7 +60,8 @@ def proforma_add(
     Add a new proforma to AusTrakka.
     This adds a validation spec which may be selected to upload data. 
     This will add a new proforma with a new abbreviation, not a new version of an existing proforma.
-    This command does not add the Excel proforma template document; that should be added wih the 'attach' command.
+    This command does not add the Excel proforma template document; 
+    that should be added wih the 'attach' command.
     """
     add_proforma(
         abbrev,
@@ -111,7 +112,7 @@ def proforma_attach(proforma_abbrev: str,
                     file_path: str = None,
                     n_previous: int = None):
     """
-    This command will attach a new or existing file to the latest version of the specified proforma.
+    Attach a new or existing file to the latest version of the specified proforma.
 
     Usage:
 
