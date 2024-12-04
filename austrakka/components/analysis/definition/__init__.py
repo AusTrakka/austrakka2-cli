@@ -13,7 +13,7 @@ from austrakka.utils.options import opt_is_active
 @click.group()
 @click.pass_context
 def definition(ctx):
-    """Commands related to analyses"""
+    """Commands related to analysis definitions"""
     ctx.context = ctx.parent.context
 
 

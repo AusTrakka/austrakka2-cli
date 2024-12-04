@@ -116,5 +116,5 @@ def sequence_purge(
         skip: bool = False,
         force: bool = False,
         delete_all: bool = False):
-    """Purge all sequences associated with the specified sample."""
+    """Purge all sequences associated with the specified Seq_ID."""
     purge_sequence(seq_id, seq_type, skip, force, delete_all)
