@@ -57,7 +57,7 @@ def list_by_user_privileges(user_id: str, record_type: str, record_global_id: st
 
 @logger_wraps()
 def assign_privilege(
-        user_id: str,
+        user_global_id: str,
         role: str,
         record_global_id: str,
         record_type: str):
@@ -68,7 +68,7 @@ def assign_privilege(
     payload = {
         "owningTenantGlobalId": owning_tenant_global_id,
         "roleGlobalId": role_obj['globalId'],
-        "assigneeObjectId": user_id
+        "assigneeGlobalId": user_global_id
     }
 
     uri_path = f"v2/{record_type}/{record_global_id}/privilege"

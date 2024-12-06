@@ -70,11 +70,11 @@ def privilege_subcommands(roottype: str):
     @opt_role()
     @opt_record_global_id()
     def privilege_assign(
-            user_id: str,
+            user_global_id: str,
             role: str,
             record_global_id: str):
         record_type_route = convert_record_type_to_route_string(roottype)
-        assign_privilege(user_id, role, record_global_id, record_type_route)
+        assign_privilege(user_global_id, role, record_type_route, record_global_id)
 
 
     @privilege.command('unassign',
