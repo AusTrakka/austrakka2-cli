@@ -13,7 +13,7 @@ from austrakka.utils.options import (
     opt_record_type,
     opt_role,
     opt_user_object_id,
-    opt_record_global_id)
+    opt_record_global_id, opt_user_global_id)
 
 from austrakka.utils.output import table_format_option
 
@@ -64,12 +64,12 @@ def privilege_list_by_user(user_id: str, record_type: str, record_id: str, out_f
 
 
 @privilege.command('assign', hidden=hide_admin_cmds())
-@opt_user_object_id()
+@opt_user_global_id()
 @opt_role()
 @opt_record_global_id()
 @opt_record_type()
 def privilege_assign(
-        user_id: str,
+        user_global_id: str,
         role: str,
         record_global_id: str,
         record_type: str):
@@ -77,7 +77,7 @@ def privilege_assign(
     Assign privileges to access a record by a user
     """
     record_type_route = convert_record_type_to_route_string(record_type)
-    assign_privilege(user_id, role, record_global_id, record_type_route)
+    assign_privilege(user_global_id, role, record_global_id, record_type_route)
 
 
 @privilege.command('unassign', hidden=hide_admin_cmds())

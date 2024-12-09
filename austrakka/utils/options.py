@@ -390,7 +390,18 @@ def opt_user_object_id(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
-
+def opt_user_global_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'User global ID',
+    }
+    return create_option(
+        '-ugi',
+        '--user-global-id',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+    
 def opt_global_ids(**attrs: t.Any):
     defaults = {
         'required': True,
