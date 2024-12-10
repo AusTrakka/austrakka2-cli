@@ -13,7 +13,8 @@ from austrakka.utils.options import (
     opt_record_type,
     opt_role,
     opt_user_object_id,
-    opt_record_global_id, opt_user_global_id)
+    opt_record_global_id,
+    opt_user_global_id)
 
 from austrakka.utils.output import table_format_option
 
