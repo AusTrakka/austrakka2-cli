@@ -4,7 +4,6 @@ from loguru import logger
 
 from austrakka.utils.enums.view_type import COMPACT, MORE
 from austrakka.utils.helpers.fieldtype import get_fieldtype_by_name_v2
-from austrakka.utils.helpers.fields import get_field_by_name_v2
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch

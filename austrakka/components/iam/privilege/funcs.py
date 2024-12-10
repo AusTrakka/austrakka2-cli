@@ -64,7 +64,10 @@ def assign_privilege(
 
     owning_tenant_global_id = get_default_tenant_global_id()
     role_obj = get_role_by_name(role, owning_tenant_global_id)
-
+    
+    if role_obj is None:
+        raise ValueError(f"Role {role} not found in tenant {owning_tenant_global_id}")
+    
     payload = {
         "owningTenantGlobalId": owning_tenant_global_id,
         "roleGlobalId": role_obj['globalId'],

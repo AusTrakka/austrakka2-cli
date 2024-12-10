@@ -53,14 +53,14 @@ def privilege_list_by_role(role: str, record_type: str, record_global_id: str, o
 @privilege.command('list-by-user', hidden=hide_admin_cmds())
 @opt_user_object_id()
 @opt_record_type()
-@click.argument('record-id', type=str)
+@opt_record_global_id()
 @table_format_option()
-def privilege_list_by_user(user_id: str, record_type: str, record_id: str, out_format: str):
+def privilege_list_by_user(user_id: str, record_type: str, record_global_id: str, out_format: str):
     """
     List the privileges assigned to a record for a specific user
     """
     record_type_route = convert_record_type_to_route_string(record_type)
-    list_by_user_privileges(user_id, record_type_route, record_id, out_format)
+    list_by_user_privileges(user_id, record_type_route, record_global_id, out_format)
 
 
 @privilege.command('assign', hidden=hide_admin_cmds())
