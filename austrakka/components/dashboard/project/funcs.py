@@ -49,7 +49,7 @@ def list_dashboards(out_format: str):
 @logger_wraps()
 def rename_dashboard(dashboard_id: int, new_name: str):
     """
-    List dashboards available for use in a project.
+    Rename a dashboard.
     """
     api_patch(
         path=f'{PROJECT_DASHBOARD_PATH}/{RENAME}/{dashboard_id}',
