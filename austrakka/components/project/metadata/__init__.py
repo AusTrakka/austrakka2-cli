@@ -44,7 +44,7 @@ def get_dataset_view(
         view_id: Optional[str],
         out_format: str,
 ):
-    """Get a specific metadata view."""
+    """Get a specific metadata view. By default, the full metadata view is returned."""
     download_dataset_view(view_id, project_abbrev, out_format)
 
 

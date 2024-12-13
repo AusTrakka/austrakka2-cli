@@ -61,7 +61,6 @@ MODE_SKIP = 'skip'
 MODE_OVERWRITE = 'overwrite'
 SEQTYPE_HEADER = 'seq-type'
 
-
 CSV_COLUMNS = {
     SeqType.FASTQ_ILL_PE: [SEQ_ID_CSV, PATH_1_CSV, PATH_2_CSV],
 }
@@ -185,10 +184,10 @@ def add_sequence_submission(
 
 
 @logger_wraps()
-def purge_sequence(sample_id: str, seq_type: str, skip: bool, force: bool, delete_all: bool):
+def purge_sequence(seq_id: str, seq_type: str, skip: bool, force: bool, delete_all: bool):
     custom_headers = {}
     _set_mode_header(custom_headers, force, skip)
-    api_path = "/".join([SEQUENCE_PATH, SEQUENCE_BY_SAMPLE_PATH, sample_id, seq_type])
+    api_path = "/".join([SEQUENCE_PATH, SEQUENCE_BY_SAMPLE_PATH, seq_id, seq_type])
 
     if delete_all:
         api_path = api_path + '?deleteAll=true'
@@ -225,7 +224,6 @@ def _create_single_contig_file(name_prefix, seq_id, record) -> SeqFile:
 
 
 def _get_and_validate_csv(csv: BufferedReader, seq_type: SeqType):
-
     usecols = _csv_columns(seq_type)
     try:
         csv_dataframe = pd.read_csv(
@@ -295,7 +293,7 @@ def _validate_csv_sequence_submission(csv_dataframe: DataFrame, seq_type: SeqTyp
 
     # In the case of paired-end data, check no file pairs are the same
     if seq_type == SeqType.FASTQ_ILL_PE:
-        for _,row in csv_dataframe.iterrows():
+        for _, row in csv_dataframe.iterrows():
             if row[PATH_1_CSV] == row[PATH_2_CSV]:
                 messages.append(create_response_object(
                     f'Read files for {row[SEQ_ID_CSV]} are the same',
@@ -336,12 +334,12 @@ def _download_seq_file(file_path, filename, query_path, params, sample_dir):
 def _get_seq_download_path(
         seq_id: str,
         read: str,
-        seq_type: str,):
+        seq_type: str, ):
     download_path = f'{SEQUENCE_PATH}/{SEQUENCE_DOWNLOAD_PATH}/{seq_id}'
     params = {
         SEQUENCE_TYPE_QUERY: seq_type,
     }
-    if seq_type==SeqType.FASTQ_ILL_PE.value:
+    if seq_type == SeqType.FASTQ_ILL_PE.value:
         params[SEQUENCE_READ_QUERY] = read
 
     return download_path, params
@@ -351,7 +349,7 @@ def _download_sequences(
         output_dir: str,
         samples_seq_info: pd.DataFrame,
 ):
-    for _i,ssi in samples_seq_info.iterrows():
+    for _i, ssi in samples_seq_info.iterrows():
         sample_name = ssi['sampleName']
         dto_read = str(ssi['read'])
         filename = ssi['fileNameOnDisk']
@@ -368,7 +366,7 @@ def _download_sequences(
         query_path, params = _get_seq_download_path(
             sample_name,
             dto_read,
-            seq_type,)
+            seq_type, )
 
         _download_seq_file(file_path, filename, query_path, params, sample_dir)
 
@@ -388,11 +386,11 @@ def _get_seq_api_by_group(group_name: str):
     return api_path
 
 
-def _get_seq_api_by_sample_names(sample_ids: List[str]):
+def _get_seq_api_by_sample_names(seq_ids: List[str]):
     api_path = SEQUENCE_PATH
     paths = []
-    if sample_ids is not None:
-        for sample in sample_ids:
+    if seq_ids is not None:
+        for sample in seq_ids:
             api_path += f'/{SEQUENCE_BY_SAMPLE_PATH}/{sample}'
             paths.append(api_path)
             api_path = SEQUENCE_PATH
@@ -405,9 +403,9 @@ def _get_seq_api_by_sample_names(sample_ids: List[str]):
 def _get_seq_data(
         seq_type: str,
         group_name: str,
-        sample_ids: List[str] = None,
+        seq_ids: List[str] = None,
 ):
-    if group_name is None and (sample_ids is None or len(sample_ids)==0):
+    if group_name is None and (seq_ids is None or len(seq_ids) == 0):
         raise ValueError(
             "Either group name or Seq_IDs must be provided to get sequence information")
     data = []
@@ -416,11 +414,11 @@ def _get_seq_data(
         data = api_get(path=api_path)['data']
         result = _filter_sequences(data, seq_type)
     else:
-        api_paths = _get_seq_api_by_sample_names(sample_ids)
+        api_paths = _get_seq_api_by_sample_names(seq_ids)
         for path in api_paths:
             data.extend(api_get(path=path)['data'])
         result = _filter_sequences(data, seq_type)
-        skipped_samples = [sample for sample in sample_ids if 
+        skipped_samples = [sample for sample in seq_ids if
                            sample not in [item['sampleName'] for item in result]]
         if skipped_samples:
             logger.warning('Skipped samples with no available sequences: '
@@ -436,7 +434,7 @@ def get_sequences(
         output_dir,
         seq_type: str,
         group_name: str = None,
-        sample_ids: List[str] = None,
+        seq_ids: List[str] = None,
 ):
     if not os.path.exists(output_dir):
         create_dir(output_dir)
@@ -444,7 +442,7 @@ def get_sequences(
     data = _get_seq_data(
         seq_type,
         group_name,
-        sample_ids,
+        seq_ids,
     )
     _download_sequences(output_dir, data)
 
@@ -454,12 +452,12 @@ def list_sequences(
         out_format: str,
         seq_type: str,
         group_name: str,
-        sample_ids: List[str] = None,
+        seq_ids: List[str] = None,
 ):
     data = _get_seq_data(
         seq_type,
         group_name,
-        sample_ids,
+        seq_ids,
     )
     print_dataframe(
         data,
@@ -506,7 +504,7 @@ def _set_mode_header(headers, force, skip):
 
 def _check_csv_files(csv_row: pd.Series, messages: List[Dict]):
     for column in csv_row.index:
-        if column==SEQ_ID_CSV:
+        if column == SEQ_ID_CSV:
             continue
         if not os.path.isfile(csv_row[column]):
             messages.append(create_response_object(
@@ -521,9 +519,9 @@ def _get_files_from_csv_paths(csv_row: pd.Series, seq_type: SeqType) -> List[Seq
     seq_id = csv_row[SEQ_ID_CSV]
     for column in columns:
         # We assume everything in the CSV that's not the Seq_ID is a file path
-        if column==SEQ_ID_CSV:
+        if column == SEQ_ID_CSV:
             continue
-        contig_rename_id = seq_id if seq_type==SeqType.FASTA_ASM else None
+        contig_rename_id = seq_id if seq_type == SeqType.FASTA_ASM else None
         read_hint = _col_name_to_read_hint(column)
         file = _get_file(csv_row[column], contig_rename_id, read_hint)
         _ensure_read_hint_and_filename_agrees(file)
@@ -543,7 +541,7 @@ def _col_name_to_read_hint(column):
 def _ensure_read_hint_and_filename_agrees(file):
     file_path = Path(file.filename)
     file_name = file_path.stem.casefold()
-    
+
     if file.read_hint == "r1" and file_name.endswith("_r2"):
         raise ValueError(f"File {file.filename} ends with '_r2' but "
                          f"is assigned to {PATH_1_CSV} which is reserved for read one.")

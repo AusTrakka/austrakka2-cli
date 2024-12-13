@@ -54,14 +54,3 @@ INTERMEDIATE_MANIFEST_FILE = 'intermediate-manifest-SEQTYPE.csv'
 OBSOLETE_OBJECTS_FILE = 'delete-targets-SEQTYPE.csv'
 SYNC_STATE_FILE = 'sync-state-SEQTYPE.json'
 TRASH_DIR = '.trash'
-
-# Used for migration from old sync system
-OLD_SYNC_STATE_FILE = 'sync-state.json'
-OLD_MANIFEST_FILE = 'manifest.csv'
-OLD_OBJS_FILE = 'delete-targets.csv'
-OLD_INTERMEDIATE_MANIFEST_FILE = 'intermediate-manifest.csv'
-OLD_FASTA_AGGREGATE_FILE_NAME = 'all.fasta'
-MIGRATE_SEQ_TYPES = {
-    'fastq': 'fastq-ill-pe',
-    'fasta': 'fasta-cns'
-}

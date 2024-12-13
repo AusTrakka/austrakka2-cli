@@ -28,7 +28,7 @@ def provision(ctx):
 @click.argument('project-abbrev', type=str)
 @opt_field_name()
 def project_add_provision(project_abbrev: str, field_names: List[str]):
-    """This will add a project provision"""
+    """Add a project provision"""
     add_provision_project(project_abbrev, field_names)
 
 
@@ -36,7 +36,7 @@ def project_add_provision(project_abbrev: str, field_names: List[str]):
 @click.argument('project-abbrev', type=str)
 @opt_prov_id()
 def project_remove_provision(project_abbrev: str, prov_id: str):
-    """This will remove a project provision"""
+    """Remove a project provision"""
     remove_project_provision(project_abbrev, prov_id)
 
 
@@ -45,7 +45,7 @@ def project_remove_provision(project_abbrev: str, prov_id: str):
 @opt_field_name()
 @opt_prov_id()
 def project_update_provision(project_abbrev: str, field_names: List[str], prov_id: str):
-    """This will update a project provision by replacing the current list of fields
+    """Update a project provision by replacing the current list of fields
     with the new list of fields."""
     update_project_provision(project_abbrev, prov_id, field_names)
 
@@ -54,5 +54,5 @@ def project_update_provision(project_abbrev: str, field_names: List[str], prov_i
 @table_format_option()
 @click.argument('project-abbrev', type=str)
 def project_list_provisions(project_abbrev: str, out_format: str):
-    """This will list project provisions"""
+    """List project provisions for a given project"""
     get_dataset_provision_list(project_abbrev, out_format)
