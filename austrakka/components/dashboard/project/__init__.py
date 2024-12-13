@@ -13,15 +13,14 @@ from ....utils.options import *
 @click.group()
 @click.pass_context
 def project(ctx):
-    """Commands related to defining a project dashboard, which is a type of dashboard
-    for showing in a project UI."""
+    """Commands related to defining a project dashboard"""
     ctx.context = ctx.parent.context
 
 
 @project.command('add', hidden=hide_admin_cmds())
 @opt_name(help="Dashboard name. Must be unique.")
 def dashboard_add(name: str):
-    """Define a dashboard"""
+    """Define a project dashboard"""
     add_dashboard(name)
 
 
@@ -29,14 +28,14 @@ def dashboard_add(name: str):
 @opt_name(help="Dashboard name. Must be unique.")
 @click.argument('dashboard-id', type=int)
 def dashboard_update(dashboard_id: int, name: str):
-    """Update a dashboard definition"""
+    """Update a project dashboard definition"""
     update_dashboard(dashboard_id, name)
 
 
 @project.command('list', hidden=hide_admin_cmds())
 @table_format_option()
 def dashboards_list(out_format: str):
-    """List dashboards available for use in a given project."""
+    """List project dashboards available for use in a given project"""
     list_dashboards(out_format)
 
 
@@ -44,5 +43,5 @@ def dashboards_list(out_format: str):
 @click.argument('dashboard-id', type=int)
 @opt_new_name(help="New name of dashoard.", )
 def dashboard_rename(dashboard_id: int, new_name: str):
-    """Define a dashboard, including what widgets to show."""
+    """Rename a project dashboard"""
     rename_dashboard(dashboard_id, new_name)

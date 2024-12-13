@@ -24,7 +24,7 @@ from ...utils.options import *
 @click.group()
 @click.pass_context
 def proforma(ctx):
-    """Commands related to metadata pro formas"""
+    """Commands related to metadata proformas"""
     ctx.context = ctx.parent.context
 
 # proforma-specific options used in multiple commands
@@ -57,8 +57,11 @@ def proforma_add(
         required_field: List[str],
         optional_field: List[str]):
     """
-    Add a new pro forma to AusTrakka.
-    This will add a new pro forma with a new abbreviation, not a new version.
+    Add a new proforma to AusTrakka.
+    This adds a validation spec which may be selected to upload data. 
+    This will add a new proforma with a new abbreviation, not a new version of an existing proforma.
+    This command does not add the Excel proforma template document; 
+    that should be added wih the 'attach' command.
     """
     add_proforma(
         abbrev,
@@ -76,7 +79,7 @@ def proforma_update(
         required_field: List[str],
         optional_field: List[str]):
     """
-    Update a pro forma with a new set of fields.
+    Update a proforma with a new set of fields.
     The fields specified by -req and -opt will fully replace the fields in the current version.
     Any fields in the current version but not listed in the update will be removed.
     """
@@ -109,17 +112,17 @@ def proforma_attach(proforma_abbrev: str,
                     file_path: str = None,
                     n_previous: int = None):
     """
-    This command will attach a file or pull a existing file to latest ProForma Version
+    Attach a new or existing file to the latest version of the specified proforma.
 
     Usage:
 
     austrakka proforma attach [PROFORMA_ABBREV] 
-    ~~This will pull the file from the last proforma version
+    ~~This will pull the most recent existing file from a previous proforma version
 
-    austrakka proforma attach [PROFORMA_ABBREV] -f [FILEPATH] ~~attaches given file
+    austrakka proforma attach [PROFORMA_ABBREV] -f [FILEPATH] ~~uploads and attaches a new file
 
     austrakka proforma attach [PROFORMA_ABBREV] -id [PROFORMA-VERSION-ID]
-    ~~this pulls a file from specified id
+    ~~This will pull an existing file from a previous proforma version
     """
     if file_path is None:
         pull_proforma(proforma_abbrev, n_previous)
@@ -170,7 +173,7 @@ def proforma_generate(proforma_abbrev: str, restrict, nndss, project, metadata_c
 @proforma.command('list')
 @table_format_option()
 def proforma_list(out_format: str):
-    """List metadata pro formas in AusTrakka"""
+    """List metadata proformas in AusTrakka"""
     list_proformas(out_format)
 
 
@@ -191,7 +194,7 @@ def proforma_show(proforma_abbrev: str, out_format: str):
 # Consider option instead: @opt_abbrev("Abbreviated name of the pro forma")
 def proforma_disable(proforma_abbrev: str):
     """
-    Disable a pro forma.
+    Disable a proforma.
     """
     disable_proforma(proforma_abbrev)
 
@@ -201,7 +204,7 @@ def proforma_disable(proforma_abbrev: str):
 # Consider option instead: @opt_abbrev("Abbreviated name of the pro forma")
 def proforma_enable(proforma_abbrev: str):
     """
-    Enable a pro forma.
+    Re-enable a proforma.
     """
     enable_proforma(proforma_abbrev)
 
@@ -211,8 +214,8 @@ def proforma_enable(proforma_abbrev: str):
 @opt_group_name(var_name='group_names', multiple=True)
 def proforma_share(proforma_abbrev: str, group_names: List[str]):
     """
-    Share a pro forma with one or more groups, which may be project groups. 
-    The pro forma will be visible and useable by Uploaders in these groups.
+    Share a proforma with one or more groups, which may be project groups. 
+    The proforma will be visible and useable by Uploaders in these groups.
     """
     share_proforma(proforma_abbrev, group_names)
 
@@ -222,7 +225,7 @@ def proforma_share(proforma_abbrev: str, group_names: List[str]):
 @opt_group_name(var_name='group_names', multiple=True)
 def proforma_unshare(proforma_abbrev: str, group_names: List[str]):
     """
-    UnShare a pro forma with one or more groups.
+    Unshare a proforma with one or more groups.
     """
     unshare_proforma(proforma_abbrev, group_names)
 
@@ -232,6 +235,6 @@ def proforma_unshare(proforma_abbrev: str, group_names: List[str]):
 @table_format_option()
 def proforma_list_groups(proforma_abbrev: str, out_format: str):
     """
-    List groups who have access to the given pro forma.
+    List groups which have access to the given proforma.
     """
     list_groups_proforma(proforma_abbrev, out_format)

@@ -9,7 +9,7 @@ from austrakka.utils.option_utils import RequiredMutuallyExclusiveOption
 from austrakka.utils.options import opt_seq_type
 from austrakka.utils.options import opt_group_name
 from austrakka.utils.options import opt_output_dir
-from austrakka.utils.options import opt_sample_id
+from austrakka.utils.options import opt_seq_id
 from austrakka.utils.options import opt_force_mutex_skip
 from austrakka.utils.options import opt_skip_mutex_force
 from austrakka.utils.options import opt_delete_all
@@ -42,8 +42,8 @@ seq.add_command(sync)
     default=None,
     multiple=False,
     cls=RequiredMutuallyExclusiveOption,
-    mutually_exclusive=['sample_id'])
-@opt_sample_id(
+    mutually_exclusive=['seq_id'])
+@opt_seq_id(
     required=False,
     default=None,
     help='The Seq_IDs of specific sequences to download',
@@ -53,7 +53,7 @@ def seq_get(
         output_dir,
         seq_type: str,
         group_name: str,
-        sample_id: List[str],
+        seq_id: List[str],
 ):
     """Download sequence files to the local drive
 
@@ -65,7 +65,7 @@ def seq_get(
         output_dir,
         seq_type,
         group_name,
-        sample_id,
+        seq_id,
     )
 
 
@@ -77,8 +77,8 @@ def seq_get(
     default=None,
     multiple=False,
     cls=RequiredMutuallyExclusiveOption,
-    mutually_exclusive=['sample_id'])
-@opt_sample_id(
+    mutually_exclusive=['seq_id'])
+@opt_seq_id(
     required=False,
     default=None,
     help='The Seq_IDs of specific sequences to download',
@@ -88,20 +88,20 @@ def seq_list(
         out_format: str,
         seq_type: str,
         group_name: str,
-        sample_id: List[str],
+        seq_id: List[str],
 ):
     """List sequences for a group or sample"""
     list_sequences(
         out_format,
         seq_type,
         group_name,
-        sample_id
+        seq_id
     )
 
 
 @seq.command('purge', hidden=hide_admin_cmds())
-@opt_sample_id(
-    help='The id of the sample which needs to have sequences purged.',
+@opt_seq_id(
+    help='The Seq_ID of the sample which needs to have sequences purged.',
     multiple=False
 )
 @opt_seq_type()
@@ -111,10 +111,10 @@ def seq_list(
 @opt_delete_all(help='Delete active and inactive sequences for the specified sample. '
                      'By default, only inactive sequences are deleted.')
 def sequence_purge(
-        sample_id: [str],
+        seq_id: [str],
         seq_type: str,
         skip: bool = False,
         force: bool = False,
         delete_all: bool = False):
-    """Purge all sequences associated with the specified sample."""
-    purge_sequence(sample_id, seq_type, skip, force, delete_all)
+    """Purge all sequences associated with the specified Seq_ID."""
+    purge_sequence(seq_id, seq_type, skip, force, delete_all)

@@ -117,15 +117,15 @@ def opt_group_name(var_name='group_name', **attrs: t.Any):
     )
 
 
-def opt_sample_id(**attrs: t.Any):
+def opt_seq_id(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'name',
+        'help': 'Seq_ID of the record',
         'multiple': True,
     }
     return create_option(
         "-s",
-        "--sample-id",
+        "--seq-id",
         type=click.STRING,
         **{**defaults, **attrs}
     )
