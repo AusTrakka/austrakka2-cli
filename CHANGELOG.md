@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.66.0]
+### Changed
+- The `--sample-id` parameter has been renamed in all relevant commands to `--seq-id`. The short form `-s` remains unchanged.
+
+### Removed
+- The `seq sync migrate` command has been removed. This command was used to migrate synced data from the older format and is no longer needed.
+
 # [0.65.0]
 ### Changed
 - Project dashboard commands now take a project abbreviation as an argument, rather than a project ID. 
