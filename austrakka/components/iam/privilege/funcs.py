@@ -57,18 +57,21 @@ def list_by_user_privileges(user_id: str, record_type: str, record_global_id: st
 
 @logger_wraps()
 def assign_privilege(
-        user_id: str,
+        user_global_id: str,
         role: str,
         record_global_id: str,
         record_type: str):
 
     owning_tenant_global_id = get_default_tenant_global_id()
     role_obj = get_role_by_name(role, owning_tenant_global_id)
-
+    
+    if role_obj is None:
+        raise ValueError(f"Role {role} not found in tenant {owning_tenant_global_id}")
+    
     payload = {
         "owningTenantGlobalId": owning_tenant_global_id,
         "roleGlobalId": role_obj['globalId'],
-        "assigneeObjectId": user_id
+        "assigneeGlobalId": user_global_id
     }
 
     uri_path = f"v2/{record_type}/{record_global_id}/privilege"
