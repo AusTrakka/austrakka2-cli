@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.67.0]
+### Fixed
+- The user's GUID is now used for privilege assignment commands.
+
 # [0.66.0]
 ### Changed
 - The `--sample-id` parameter has been renamed in all relevant commands to `--seq-id`. The short form `-s` remains unchanged.
