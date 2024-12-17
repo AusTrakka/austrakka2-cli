@@ -4,7 +4,6 @@ from loguru import logger
 
 from austrakka.utils.enums.view_type import COMPACT, MORE
 from austrakka.utils.helpers.fieldtype import get_fieldtype_by_name_v2
-from austrakka.utils.helpers.fields import get_field_by_name_v2
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
@@ -120,7 +119,6 @@ def update_field(
     corresponding values will only be updated if they are specified.
     """
     tenant_global_id = get_default_tenant_global_id()
-    field = get_field_by_name_v2(tenant_global_id, name)
 
     patch_fields = {}
 
@@ -154,7 +152,7 @@ def update_field(
         patch_fields["isPrivate"] = is_private
 
     api_patch(
-        path=f"{TENANT_PATH}/{tenant_global_id}/{METADATACOLUMN_PATH}/{field['globalId']}",
+        path=f"{TENANT_PATH}/{tenant_global_id}/{METADATACOLUMN_PATH}/{name}",
         data=patch_fields
     )
 

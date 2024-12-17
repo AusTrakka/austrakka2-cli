@@ -5,7 +5,7 @@ from austrakka.utils.helpers.tenant import get_default_tenant_global_id
 from austrakka.utils.options import (
     opt_role,
     opt_user_object_id,
-    opt_record_global_id)
+    opt_record_global_id, opt_user_global_id)
 
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.output import table_format_option
@@ -66,15 +66,15 @@ def privilege_subcommands(roottype: str):
     @privilege.command('assign',
                         help=f"Assign privileges to access a {roottype.lower()} to a user.",
                         hidden=hide_admin_cmds())
-    @opt_user_object_id()
+    @opt_user_global_id()
     @opt_role()
     @opt_record_global_id()
     def privilege_assign(
-            user_id: str,
+            user_global_id: str,
             role: str,
             record_global_id: str):
         record_type_route = convert_record_type_to_route_string(roottype)
-        assign_privilege(user_id, role, record_global_id, record_type_route)
+        assign_privilege(user_global_id, role, record_global_id, record_type_route)
 
 
     @privilege.command('unassign',
