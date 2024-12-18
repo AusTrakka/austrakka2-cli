@@ -62,6 +62,18 @@ def opt_name(var_name='name', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_tag(var_name='tag', **attrs: t.Any):
+    defaults = {
+        'help': 'Tag',
+    }
+    return create_option(
+        "-t",
+        "--tag",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
 
 def opt_private(is_update=False, **attrs: t.Any):
     defaults = {
