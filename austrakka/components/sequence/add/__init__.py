@@ -36,7 +36,7 @@ def add(ctx):
 
     {METADATA_ADD_HELP_TEXT}
 """)
-@click.argument('csv_file', type=click.File('rb'), required=False)
+@click.argument('csv_file', type=click.File('rb'))
 @opt_skip_mutex_force(
     help="For each sample, skip upload if the sample has existing sequences of the same type.")
 @opt_force_mutex_skip(
