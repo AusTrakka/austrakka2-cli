@@ -11,7 +11,7 @@ from austrakka.utils.options import opt_share
 from ..funcs import add_fasta_cns_submission
 from ..funcs import add_sequence_submission
 
-metadata_add_help_text = """
+METADATA_ADD_HELP_TEXT = """
     If no record exists for these Seq_IDs you can either provide an owner group
     with --owner and a shared group with --share to create the samples if
     you wish to specify no metadata other than sample ownership. Otherwise, 
@@ -34,7 +34,7 @@ def add(ctx):
             filepath1: The local path of the first read file to be uploaded\n
             filepath2: The local path of the second read file to be uploaded
 
-    {metadata_add_help_text}
+    {METADATA_ADD_HELP_TEXT}
 """)
 @click.argument('csv_file', type=click.File('rb'), required=False)
 @opt_skip_mutex_force(
@@ -61,7 +61,7 @@ def seq_add_fastq_ill_PE(
             Seq_ID: The sample name in AusTrakka\n
             filepath: The local path of the file to be uploaded
 
-    {metadata_add_help_text}
+    {METADATA_ADD_HELP_TEXT}
 """)
 @click.argument('csv_file', type=click.File('rb'))
 @opt_skip_mutex_force(
@@ -88,7 +88,7 @@ def seq_add_fastq_ill_SE(
             Seq_ID: The sample name in AusTrakka\n
             filepath: The local path of the file to be uploaded
     
-    {metadata_add_help_text}
+    {METADATA_ADD_HELP_TEXT}
 """)
 @click.argument('csv_file', type=click.File('rb'))
 @opt_skip_mutex_force(
@@ -115,7 +115,7 @@ def seq_add_fastq_ont(
     Multiple samples can be included in the same file.
     Contig names must correspond to known Seq_IDs.
 
-    {metadata_add_help_text}
+    {METADATA_ADD_HELP_TEXT}
 """)
 @click.argument('fasta_file', type=click.File('rb'))
 @opt_skip_mutex_force(
@@ -143,7 +143,7 @@ def seq_add_fasta_cns(
             Seq_ID: The sample name in AusTrakka\n
             filepath: The local path of the file to be uploaded
 
-    {metadata_add_help_text}
+    {METADATA_ADD_HELP_TEXT}
 """)
 @click.argument('csv_file', type=click.File('rb'))
 @opt_skip_mutex_force(
