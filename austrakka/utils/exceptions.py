@@ -45,3 +45,7 @@ class IncorrectHashException(Exception):
 
 class AusTrakkaCliException(Exception):
     pass
+
+
+class CliArgumentException(Exception):
+    pass
