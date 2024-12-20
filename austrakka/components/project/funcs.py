@@ -13,7 +13,7 @@ from austrakka.utils.helpers.project import get_project_by_abbrev
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe
 from austrakka.utils.paths import PROJECT_PATH, \
-    SET_TAG
+    SET_TYPE
 from austrakka.utils.paths import SET_DASHBOARD
 from austrakka.utils.paths import ASSIGNED_DASHBOARD
 from austrakka.utils.paths import PROJECT_SETTINGS
@@ -21,7 +21,7 @@ from austrakka.utils.paths import PROJECT_SETTINGS
 compact_fields = [
     "projectId",        # Project ID
     "abbreviation",     # Abbreviation or short name
-    "tag",              # Tag for the project
+    "type",              # Type for the project
     "isActive",         # Active status
     "name"              # Full name of the project
 ]
@@ -30,7 +30,7 @@ more_fields = [
     'globalId',         # Global ID
     "projectId",        # Project ID
     "abbreviation",     # Abbreviation or short name
-    "tag",              # Tag for the project
+    "type",              # Type for the project
     "isActive",         # Active status
     "name",             # Project name
     "description",      # Description of the project
@@ -147,6 +147,6 @@ def show_project_settings(abbrev: str, out_format: str):
     call_get_and_print(path, out_format)
     
 @logger_wraps() 
-def set_project_tag(abbrev: str, tag: str):
-    path = '/'.join([PROJECT_PATH, abbrev, SET_TAG])
-    api_patch(path, data=tag,)
+def set_project_type(abbrev: str, type: str):
+    path = '/'.join([PROJECT_PATH, abbrev, SET_TYPE])
+    api_patch(path, data=type,)

@@ -5,7 +5,7 @@ from austrakka.utils.output import object_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_abbrev, \
     opt_is_active, \
-    opt_tag, \
+    opt_type, \
     opt_view_type
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_dashboard_name
@@ -17,7 +17,7 @@ from .funcs import list_projects, \
     set_dashboard, \
     get_dashboard, \
     show_project_settings, \
-    set_project_tag
+    set_project_type
 
 from .dataset import dataset
 from .field import field
@@ -112,9 +112,9 @@ def project_settings(project_abbrev: str, out_format: str):
     '''Show project settings'''
     show_project_settings(project_abbrev, out_format)
     
-@project.command('set-tag')
+@project.command('set-type')
 @click.argument('project-abbrev', type=str)
-@opt_tag()
-def project_set_tag(project_abbrev: str, tag: str):
-    '''Set a tag for a project'''
-    set_project_tag(project_abbrev, tag)
+@opt_type()
+def project_set_type(project_abbrev: str, type: str):
+    '''Set a type for a project'''
+    set_project_type(project_abbrev, type)
