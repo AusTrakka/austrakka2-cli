@@ -99,7 +99,7 @@ def add_fasta_cns_submission(
     records = [record for record in SeqIO.parse(TextIOWrapper(fasta_file), 'fasta')]
     seq_ids = [record.id for record in records]
     _create_samples(seq_ids, owner_group, shared_group)
-    for record in SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'):
+    for record in records:
         seq_id = record.id
         logger.info(f"Uploading {seq_id}")
         total_upload_count += 1
