@@ -8,7 +8,9 @@ from io import BufferedReader, StringIO, TextIOWrapper, BytesIO
 import codecs
 import hashlib
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List
+from typing import Dict
+from typing import Union
 
 import httpx
 import pandas as pd
@@ -87,10 +89,11 @@ def add_fasta_cns_submission(
         fasta_file: BufferedReader,
         skip: bool = False,
         force: bool = False,
-        owner_group: str = None,
-        shared_group: str = None,
+        owner_group: Union[str, None] = None,
+        shared_group: Union[str, None] = None,
 ):
     """Iterate through a FASTA file and submit each sequence as a separate sample"""
+    _validate_streamlined_seq_args(owner_group, shared_group)
 
     name_prefix = _calc_name_prefix(fasta_file)
 
@@ -149,8 +152,8 @@ def add_sequence_submission(
         csv_file: BufferedReader,
         skip: bool = False,
         force: bool = False,
-        owner_group: str = None,
-        shared_group: str = None,
+        owner_group: Union[str, None] = None,
+        shared_group: Union[str, None] = None,
 ):
     """
     Generic handling of uploading any sequence type.
@@ -609,9 +612,11 @@ def _csv_columns(seq_type: SeqType):
 
 def _create_samples(
         seq_ids: List[str],
-        owner_group: str,
-        shared_group: str
+        owner_group: Union[str, None],
+        shared_group: Union[str, None],
 ) -> None:
+    if owner_group is None and shared_group is None:
+        return
     with tempfile.NamedTemporaryFile(suffix=".csv") as tmp:
         csv_str = StringIO()
         rows = [[METADATA_FIELD_SEQ_ID, METADATA_FIELD_OWNER_GROUP, METADATA_FIELD_SHARED_GROUPS]]
@@ -628,7 +633,10 @@ def _create_samples(
             add_metadata(file, "Min", blanks_will_delete=False, batch_size=5000)
 
 
-def _validate_streamlined_seq_args(owner_group: str, shared_group: str):
+def _validate_streamlined_seq_args(
+        owner_group: Union[str, None],
+        shared_group: Union[str, None],
+):
     if (shared_group is not None) and (owner_group is None):
         raise CliArgumentException("Owner group has not been provided")
     if (shared_group is None) and (owner_group is not None):
