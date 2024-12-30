@@ -147,6 +147,6 @@ def show_project_settings(abbrev: str, out_format: str):
     call_get_and_print(path, out_format)
     
 @logger_wraps() 
-def set_project_type(abbrev: str, type: str):
+def set_project_type(abbrev: str, project_type: str):
     path = '/'.join([PROJECT_PATH, abbrev, SET_TYPE])
-    api_patch(path, data=type,)
+    api_patch(path, data=project_type,)

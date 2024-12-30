@@ -62,7 +62,7 @@ def opt_name(var_name='name', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
-def opt_type(var_name='type', **attrs: t.Any):
+def opt_type(var_name='project type', **attrs: t.Any):
     defaults = {
         'help': 'Type',
     }

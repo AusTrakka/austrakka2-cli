@@ -115,6 +115,6 @@ def project_settings(project_abbrev: str, out_format: str):
 @project.command('set-type')
 @click.argument('project-abbrev', type=str)
 @opt_type()
-def project_set_type(project_abbrev: str, type: str):
+def project_set_type(project_abbrev: str, project_type: str):
     '''Set a type for a project'''
-    set_project_type(project_abbrev, type)
+    set_project_type(project_abbrev, project_type)
