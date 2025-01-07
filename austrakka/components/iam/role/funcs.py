@@ -1,3 +1,5 @@
+import pandas as pd
+
 from austrakka.utils.subcommands.shared_funcs import get_role_by_name
 from austrakka.utils.api import api_get, api_post, api_patch
 from austrakka.utils.enums.privilege_level import (
@@ -27,12 +29,16 @@ def list_roles(view_type: str, out_format: str):
     Get the list of roles defined for a tenant.
     """
     tenant_global_id = get_default_tenant_global_id()
-    response = api_get(
+    resp = api_get(
         path=f"v2/tenant/{tenant_global_id}/role",
     )
+    
+    resp_data = resp['data'] if ('data' in resp) else resp
+    data = pd.DataFrame.from_dict(resp_data);
+    
 
     print_response(
-        response,
+        data,
         view_type,
         list_compact_fields,
         list_more_fields,

@@ -9,7 +9,7 @@ from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.helpers.tenant import get_default_tenant_global_id
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dataframe
+from austrakka.utils.output import print_dataframe, print_response
 from austrakka.utils.paths import TENANT_PATH, METADATACOLUMN_PATH
 
 
@@ -43,14 +43,12 @@ def list_fields(view_type: str, out_format: str):
             lambda x: ';'.join(x) if x else ''
         )
         
-    if view_type == COMPACT:
-        result = result[result.columns.intersection(list_compact_fields)]
-    elif view_type == MORE:
-        result = result[result.columns.intersection(list_more_fields)]
-
-    print_dataframe(
-        result,
-        out_format,
+    print_response(
+        result, 
+        view_type,
+        list_compact_fields,
+        list_more_fields,
+        out_format
     )
 
 

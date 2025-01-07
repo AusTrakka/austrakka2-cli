@@ -11,7 +11,7 @@ from austrakka.utils.enums.view_type import MORE, COMPACT
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.helpers.project import get_project_by_abbrev
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dataframe
+from austrakka.utils.output import print_dataframe, print_response
 from austrakka.utils.paths import PROJECT_PATH, \
     SET_TYPE
 from austrakka.utils.paths import SET_DASHBOARD
@@ -123,19 +123,16 @@ def list_projects(view_type: str, out_format: str):
 
     data = response['data'] if ('data' in response) else response
     result = pd.json_normalize(data, max_level=1)
-
-    if view_type == COMPACT:
-        result = result[result.columns.intersection(compact_fields)]
-    elif view_type == MORE:
-        result = result[result.columns.intersection(more_fields)]
-
-    print_dataframe(
+    
+    print_response(
         result,
-        out_format,
+        view_type,
+        compact_fields,
+        more_fields,
+        out_format
     )
     
-
-
+    
 @logger_wraps()
 def get_dashboard(project_abbreviation: str, out_format: str):
     joined_path = '/'.join([PROJECT_PATH, ASSIGNED_DASHBOARD, project_abbreviation])
