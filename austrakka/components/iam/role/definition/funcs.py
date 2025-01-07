@@ -35,7 +35,7 @@ def get_role_definition(role: str, view_type: str, out_format: str):
     resp2 = api_get(
         path=f"v2/tenant/{tenant_global_id}/role/{role_global_id}/ScopeAccessDefinition",
     )
-    resp_data = resp['data'] if ('data' in resp) else resp
+    resp_data = resp2['data'] if ('data' in resp2) else resp2
     data = pd.DataFrame.from_dict(resp_data)
 
     print_response(

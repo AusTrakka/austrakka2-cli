@@ -34,7 +34,7 @@ def list_roles(view_type: str, out_format: str):
     )
     
     resp_data = resp['data'] if ('data' in resp) else resp
-    data = pd.DataFrame.from_dict(resp_data);
+    data = pd.DataFrame.from_dict(resp_data)
     
 
     print_response(
