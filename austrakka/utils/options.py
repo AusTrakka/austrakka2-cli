@@ -62,6 +62,18 @@ def opt_name(var_name='name', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_type(var_name='project type', **attrs: t.Any):
+    defaults = {
+        'help': 'Type',
+    }
+    return create_option(
+        "-t",
+        "--type",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
 
 def opt_private(is_update=False, **attrs: t.Any):
     defaults = {
