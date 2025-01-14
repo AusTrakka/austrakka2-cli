@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.67.1]
+### Changed
+- Optional `--owner` and `--share` flags have been added to all `seq add` commands. These flags may be specified 
+to upload sequences where the Seq_ID does not already have a corresponding record in the database. New records will
+be created with the specified owner and sharing settings. If these flags are used, a prior minimal proforma upload 
+is not required.
+- The `project list` command now supports the `-vt` flag to control the verbosity of the output.
+- Better installation instructions, particularly for Windows users.
+
 # [0.67.0]
 ### Fixed
 - The user's GUID is now used for privilege assignment commands.
