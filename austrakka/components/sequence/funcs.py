@@ -1,10 +1,16 @@
+# pylint: disable=too-many-locals
+import csv
 import os
+import shutil
+import tempfile
 from pathlib import Path
 from io import BufferedReader, StringIO, TextIOWrapper, BytesIO
 import codecs
 import hashlib
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List
+from typing import Dict
+from typing import Union
 
 import httpx
 import pandas as pd
@@ -13,7 +19,11 @@ from loguru import logger
 from httpx import HTTPStatusError
 from Bio import SeqIO
 
-from austrakka.utils.exceptions import FailedResponseException
+from austrakka.components.metadata import add_metadata
+from austrakka.utils.enums.metadata import METADATA_FIELD_SEQ_ID
+from austrakka.utils.enums.metadata import METADATA_FIELD_OWNER_GROUP
+from austrakka.utils.enums.metadata import METADATA_FIELD_SHARED_GROUPS
+from austrakka.utils.exceptions import FailedResponseException, CliArgumentException
 from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.exceptions import IncorrectHashException
 from austrakka.utils.misc import logger_wraps
@@ -78,15 +88,22 @@ class SeqFile:
 def add_fasta_cns_submission(
         fasta_file: BufferedReader,
         skip: bool = False,
-        force: bool = False):
+        force: bool = False,
+        owner_group: Union[str, None] = None,
+        shared_group: Union[str, None] = None,
+):
     """Iterate through a FASTA file and submit each sequence as a separate sample"""
+    _validate_streamlined_seq_args(owner_group, shared_group)
 
     name_prefix = _calc_name_prefix(fasta_file)
 
     failed_samples = []
     upload_success_count = 0
     total_upload_count = 0
-    for record in SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'):
+    records = list(SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'))
+    seq_ids = [record.id for record in records]
+    _create_samples(seq_ids, owner_group, shared_group)
+    for record in records:
         seq_id = record.id
         logger.info(f"Uploading {seq_id}")
         total_upload_count += 1
@@ -132,14 +149,21 @@ def add_fasta_cns_submission(
 @logger_wraps()
 def add_sequence_submission(
         seq_type: SeqType,
-        csv: BufferedReader,
+        csv_file: BufferedReader,
         skip: bool = False,
-        force: bool = False):
+        force: bool = False,
+        owner_group: Union[str, None] = None,
+        shared_group: Union[str, None] = None,
+):
     """
     Generic handling of uploading any sequence type.
     Handles the case where the user provides a CSV mapping Seq_IDs to files.
     """
-    csv_dataframe = _get_and_validate_csv(csv, seq_type)
+    _validate_streamlined_seq_args(owner_group, shared_group)
+    csv_dataframe = _get_and_validate_csv(csv_file, seq_type)
+
+    seq_ids = list(csv_dataframe['Seq_ID'])
+    _create_samples(seq_ids, owner_group, shared_group)
 
     messages = _validate_csv_sequence_submission(csv_dataframe, seq_type)
     if messages:
@@ -223,11 +247,11 @@ def _create_single_contig_file(name_prefix, seq_id, record) -> SeqFile:
     )
 
 
-def _get_and_validate_csv(csv: BufferedReader, seq_type: SeqType):
+def _get_and_validate_csv(csv_file: BufferedReader, seq_type: SeqType):
     usecols = _csv_columns(seq_type)
     try:
         csv_dataframe = pd.read_csv(
-            csv,
+            csv_file,
             usecols=usecols,
             dtype=str
         )
@@ -584,3 +608,36 @@ def _csv_columns(seq_type: SeqType):
     if seq_type in CSV_COLUMNS:
         return CSV_COLUMNS[seq_type]
     return [SEQ_ID_CSV, PATH_CSV]
+
+
+def _create_samples(
+        seq_ids: List[str],
+        owner_group: Union[str, None],
+        shared_group: Union[str, None],
+) -> None:
+    if owner_group is None and shared_group is None:
+        return
+    with tempfile.NamedTemporaryFile(suffix=".csv") as tmp:
+        csv_str = StringIO()
+        rows = [[METADATA_FIELD_SEQ_ID, METADATA_FIELD_OWNER_GROUP, METADATA_FIELD_SHARED_GROUPS]]
+        for seq_id in seq_ids:
+            logger.info(f"Creating sample with {METADATA_FIELD_SEQ_ID} {seq_id}")
+            rows.append([seq_id, owner_group, shared_group])
+        csv.writer(csv_str).writerows(rows)
+        csv_str.seek(0)
+        with open(tmp.name, 'w', encoding='utf8') as file:
+            shutil.copyfileobj(csv_str, file)
+
+        with open(tmp.name, 'rb') as file:
+            file.seek(0)
+            add_metadata(file, "Min", blanks_will_delete=False, batch_size=5000)
+
+
+def _validate_streamlined_seq_args(
+        owner_group: Union[str, None],
+        shared_group: Union[str, None],
+):
+    if (shared_group is not None) and (owner_group is None):
+        raise CliArgumentException("Owner group has not been provided")
+    if (shared_group is None) and (owner_group is not None):
+        logger.warning("Shared group has not been provided. New samples will not be shared.")
