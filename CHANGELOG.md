@@ -5,12 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-# Unreleased
+# [0.68.0]
 ### Added
-- Introduced the `set-type` command to the `project` command group. This command allows setting a project type using a string.  
-  **Example:** `austrakka project set-type <project-abbrev> -t "APG"`
+- Introduced the `set-type` command to the `project` command group.
 
 ### Changed
+- Updated the `project update` command to accept the project type parameter `-t`/`--type`.  
 - Updated the `austrakka project list` command to accept the `-vt`/`--view-type` option, which determines the verbosity of the output.  
   Possible values for `-vt` are:
     - `compact`: Displays minimal columns.
