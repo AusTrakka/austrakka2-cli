@@ -180,7 +180,7 @@ def list_field_projects(name: str, out_format: str):
     if len(result['data']) == 0:
         logger.info("Field does not belong to any projects.")
         return
-    display_columns = ['projectFieldId', 'projectAbbrev', 'fieldName', 'analysisLabels']
+    display_columns = ['projectFieldId', 'projectAbbrev', 'fieldName', 'fieldSource', 'analysisLabels']
     print_dataframe(
         pd.DataFrame(result['data'])[display_columns],
         out_format,
