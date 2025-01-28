@@ -44,16 +44,18 @@ project.add_command(dataset)
 @opt_description(required=False)
 @opt_organisation(help="Requesting organisation abbreviation", required=False)
 @opt_dashboard_name(required=False)
+@opt_type(required=False)
 def project_add(
         abbrev: str,
         name: str,
         description: str,
         org: str,
-        dashboard_name: str):
+        dashboard_name: str,
+        project_type: str):
     '''
     Add a new project to AusTrakka.
     '''
-    add_project(abbrev, name, description, org, dashboard_name)
+    add_project(abbrev, name, description, org, dashboard_name, project_type)
 
 
 @project.command('update', hidden=hide_admin_cmds())
@@ -64,6 +66,7 @@ def project_add(
 @opt_is_active(help="Set project active status", is_update=True, required=False)
 @opt_organisation(help="New requesting organisation abbreviation", required=False)
 @opt_dashboard_name(help="New dashboard", required=False)
+@opt_type(help="New project type", required=False)
 def project_update(
         project_abbrev: str,
         abbrev: str,
@@ -71,11 +74,19 @@ def project_update(
         description: str,
         is_active: bool,
         org: str,
-        dashboard_name: str):
+        dashboard_name: str,
+        project_type: str):
     '''
     Update an existing project in AusTrakka.
     '''
-    update_project(project_abbrev, abbrev, name, description, is_active, org, dashboard_name)
+    update_project(project_abbrev,
+                   abbrev,
+                   name,
+                   description,
+                   is_active,
+                   org,
+                   dashboard_name,
+                   project_type)
 
 
 @project.command('set-dashboard', hidden=hide_admin_cmds())
