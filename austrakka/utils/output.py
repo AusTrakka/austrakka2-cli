@@ -6,6 +6,7 @@ from typing import Union
 
 import click
 import pandas as pd
+from pandas import DataFrame
 from tabulate import tabulate
 from loguru import logger
 
@@ -117,13 +118,11 @@ def print_dict(
 
 
 def print_response(
-        resp,
+        data: DataFrame,
         view_type: str,
         compact_fields: list[str],
         more_fields: list[str],
         output_format: str = default_object_format(),):
-    
-    data = resp['data'] if ('data' in resp) else resp
     result_df = _configure_fields(data, view_type, compact_fields, more_fields)
     print_dataframe(result_df, output_format)
 
@@ -138,11 +137,11 @@ def convert_format(
 
 
 def _configure_fields(
-        data, view_type,
+        result: DataFrame,
+        view_type,
         compact_fields: list[str],
         more_fields: list[str]):
 
-    result = pd.DataFrame.from_dict(data)
     if view_type == COMPACT:
         result = result[result.columns.intersection(compact_fields)]
     elif view_type == MORE:

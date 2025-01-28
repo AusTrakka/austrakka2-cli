@@ -62,6 +62,18 @@ def opt_name(var_name='name', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_type(var_name='project_type', help_string='Type string.', **attrs: t.Any):
+    defaults = {
+        'help': help_string,
+    }
+    return create_option(
+        "-t",
+        "--type",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
 
 def opt_private(is_update=False, **attrs: t.Any):
     defaults = {
@@ -111,6 +123,32 @@ def opt_group_name(var_name='group_name', **attrs: t.Any):
     return create_option(
         "-g",
         "--group-name",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_share(var_name='shared_group', **attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Group to share with',
+    }
+    return create_option(
+        "--share",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_owner(var_name='owner_group', **attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Owner Group Name',
+    }
+    return create_option(
+        "--owner",
         var_name,
         type=click.STRING,
         **{**defaults, **attrs}
