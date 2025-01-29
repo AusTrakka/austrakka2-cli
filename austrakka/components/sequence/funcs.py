@@ -27,7 +27,7 @@ from austrakka.utils.exceptions import FailedResponseException, CliArgumentExcep
 from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.exceptions import IncorrectHashException
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import api_post_multipart_raw
+from austrakka.utils.api import api_post_multipart_raw, INTERACTION_WINDOW_HEADER
 from austrakka.utils.api import api_get
 from austrakka.utils.api import get_response
 from austrakka.utils.api import api_get_stream
@@ -40,6 +40,9 @@ from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
 from austrakka.utils.fs import create_dir
+from austrakka.utils.helpers.tenant import (
+    request_interaction_window, 
+    deactivate_interaction_window)
 
 from austrakka.utils.output import print_dataframe
 from austrakka.utils.enums.seq import SeqType
@@ -172,6 +175,16 @@ def add_sequence_submission(
     failed_samples = []
     upload_success_count = 0
     total_upload_count = 0
+    
+    scope_alias = 'sequence-upload-interaction'
+    window_id = request_interaction_window(
+        scope_alias,
+        {
+            'ownerGroup': owner_group,
+            'seqType': seq_type.value,
+        }
+    )
+    
     for _, row in csv_dataframe.iterrows():
         try:
             logger.info(f"Uploading {row[SEQ_ID_CSV]}")
@@ -179,6 +192,7 @@ def add_sequence_submission(
 
             sample_files = _get_files_from_csv_paths(row, seq_type)
             custom_headers = _build_headers(seq_type, row, force, skip, sample_files)
+            custom_headers[INTERACTION_WINDOW_HEADER] = window_id
 
             retry(lambda sf=sample_files, ch=custom_headers: _post_sequence(
                 sf, ch), 1, "/".join([SEQUENCE_PATH]))
@@ -200,6 +214,8 @@ def add_sequence_submission(
             failed_samples.append(row[SEQ_ID_CSV])
         except Exception as ex:
             raise ex from ex
+        
+    deactivate_interaction_window(window_id)
 
     logger.info(f"Uploaded {upload_success_count} of {total_upload_count} samples")
     if failed_samples:
