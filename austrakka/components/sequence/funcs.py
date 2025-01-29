@@ -177,7 +177,7 @@ def add_sequence_submission(
     total_upload_count = 0
     
     scope_alias = 'sequence-upload-interaction'
-    window_id = request_interaction_window(
+    window = request_interaction_window(
         scope_alias,
         {
             'ownerGroup': owner_group,
@@ -192,7 +192,7 @@ def add_sequence_submission(
 
             sample_files = _get_files_from_csv_paths(row, seq_type)
             custom_headers = _build_headers(seq_type, row, force, skip, sample_files)
-            custom_headers[INTERACTION_WINDOW_HEADER] = window_id
+            custom_headers[INTERACTION_WINDOW_HEADER] = window['windowGlobalId']
 
             retry(lambda sf=sample_files, ch=custom_headers: _post_sequence(
                 sf, ch), 1, "/".join([SEQUENCE_PATH]))
@@ -215,7 +215,7 @@ def add_sequence_submission(
         except Exception as ex:
             raise ex from ex
         
-    deactivate_interaction_window(window_id)
+    deactivate_interaction_window(window['windowGlobalId'])
 
     logger.info(f"Uploaded {upload_success_count} of {total_upload_count} samples")
     if failed_samples:
