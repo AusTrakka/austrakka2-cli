@@ -14,7 +14,7 @@ from austrakka.utils.options import opt_user_object_id
 from austrakka.utils.options import opt_organisation
 from austrakka.utils.options import opt_show_disabled
 from austrakka.utils.options import opt_server_username
-from .funcs import list_users
+from .funcs import list_users, get_user_me
 from .funcs import add_user
 from .funcs import update_user
 from .funcs import enable_user
@@ -26,6 +26,12 @@ from .funcs import disable_user
 def user(ctx):
     '''Commands related to users'''
     ctx.context = ctx.parent.context
+    
+@user.command('me')
+@table_format_option()
+def user_me(out_format: str):
+    '''List your information in AusTrakka'''
+    get_user_me(out_format)
 
 
 @user.command('list')
@@ -39,18 +45,16 @@ def user_list(show_disabled: bool, out_format: str):
 @user.command('add', hidden=hide_admin_cmds())
 @opt_user_object_id()
 @opt_organisation()
-@opt_owner_group_roles(required=False)
 @opt_is_austrakka_process(default=False)
 @opt_server_username()
 def user_add(
         user_id: str,
         org: str,
-        owner_group_roles: List[str],
         is_austrakka_process: bool,
         server_username: str,
 ):
     """Add users in AusTrakka"""
-    add_user(user_id, org, owner_group_roles, is_austrakka_process, server_username)
+    add_user(user_id, org, is_austrakka_process, server_username)
 
 
 @user.command('update', hidden=hide_admin_cmds())
