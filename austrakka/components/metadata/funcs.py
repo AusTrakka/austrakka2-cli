@@ -22,9 +22,12 @@ DELETE_ON_BLANK_PARAM = 'deleteOnBlank=True'
 
 METADATA_BY_FIELD_PATH = 'by-field'
 
+OWNER_ORG_HEADER = 'X-Metadata-Owner-Org-Abbrev'
+
 @logger_wraps()
 def add_metadata(
         file: BufferedReader,
+        owner_org: str,
         proforma_abbrev: str,
         blanks_will_delete: bool,
         batch_size: int,
@@ -32,12 +35,13 @@ def add_metadata(
     path = "/".join([SUBMISSION_PATH, SUBMISSION_UPLOAD])
     if blanks_will_delete:
         path = f"{path}?{DELETE_ON_BLANK_PARAM}"
-    _call_batched_submission(path, file, proforma_abbrev, batch_size)
+    _call_batched_submission(path, file, owner_org, proforma_abbrev, batch_size)
 
 
 @logger_wraps()
 def append_metadata(
         file: BufferedReader,
+        owner_org: str,
         proforma_abbrev: str,
         blanks_will_delete: bool,
         batch_size: int,
@@ -45,46 +49,50 @@ def append_metadata(
     path = "/".join([SUBMISSION_PATH, SUBMISSION_UPLOAD_APPEND])
     if blanks_will_delete:
         path = f"{path}&{DELETE_ON_BLANK_PARAM}"
-    _call_batched_submission(path, file, proforma_abbrev, batch_size)
+    _call_batched_submission(path, file, owner_org, proforma_abbrev, batch_size)
 
 
 @logger_wraps()
 def validate_metadata(
         file: BufferedReader,
+        owner_org: str,
         proforma_abbrev: str,
         is_append: bool,
         batch_size: int,
 ):
     path = SUBMISSION_VALIDATE_APPEND if is_append else SUBMISSION_VALIDATE
     path = "/".join([SUBMISSION_PATH, path])
-    _call_batched_submission(path, file, proforma_abbrev, batch_size)
+    _call_batched_submission(path, file, owner_org, proforma_abbrev, batch_size)
+
 
 def _call_batched_submission(
         path: str,
         file: BufferedReader,
+        owner_org: str,
         proforma_abbrev: str,
-        batch_size: int
+        batch_size: int,
 ):
     if batch_size < 1:
-        _call_submission(path, file, proforma_abbrev)
+        _call_submission(path, file, owner_org, proforma_abbrev)
         return
     
     filepath = Path(file.name)
-    if  filepath.suffix == '.csv':
-        # pylint: disable=C0103
-        df = pd.read_csv(file, dtype=str, index_col=False, keep_default_na=False, na_values='')
-    elif filepath.suffix == '.xlsx':
+    # pylint: disable=C0103
+    df = pd.read_csv(file, dtype=str, index_col=False, keep_default_na=False, na_values='')
+
+    if  filepath.suffix == '.xlsx':
         # Batching not currently supported, just upload the original file
-        _call_submission(path, file, proforma_abbrev)
+        _call_submission(path, file, owner_org, proforma_abbrev)
         return
-    else:
+    
+    if filepath.suffix != '.csv':
         raise ValueError('File must be .csv or .xlsx')
     
     num_rows = df.shape[0]
     if num_rows <= batch_size:
         # Just upload the original file
         file.seek(0)
-        _call_submission(path, file, proforma_abbrev)
+        _call_submission(path, file, owner_org, proforma_abbrev)
         return
     
     logger.info(f"Uploading {num_rows} rows in batches of {batch_size}")
@@ -95,22 +103,28 @@ def _call_batched_submission(
         buffer = StringIO()
         buffer.name = f"{filepath.stem}_batch_rows{index}-{index+batch_size-1}.csv"
         chunk.to_csv(buffer, index=False)
-        _call_submission(path, encode(buffer), proforma_abbrev)
-    
+        _call_submission(path, encode(buffer), owner_org, proforma_abbrev)
+        
     logger.info("Batched upload complete")
 
 
 def _call_submission(
         path: str,
         file: BufferedReader,
+        owner_org: str,
         proforma_abbrev: str,
 ):
+    headers = {
+        OWNER_ORG_HEADER: owner_org,
+    }
+
     api_post_multipart(
         path=path,
         data={
             'proforma-abbrev': proforma_abbrev,
         },
-        files={'file': (file.name, file)}
+        files={'file': (file.name, file)},
+        custom_headers=headers
     )
 
 

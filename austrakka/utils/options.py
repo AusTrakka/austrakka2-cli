@@ -142,6 +142,19 @@ def opt_share(var_name='shared_group', **attrs: t.Any):
     )
 
 
+def opt_owner_org(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Owner Organisation Abbreviation'
+    }
+    return create_option(
+        '-oo',
+        "--owner-org",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_owner(var_name='owner_group', **attrs: t.Any):
     defaults = {
         'required': False,

@@ -90,13 +90,13 @@ class SeqFile:
 @logger_wraps()
 def add_fasta_cns_submission(
         fasta_file: BufferedReader,
+        owner_org: str,
         skip: bool = False,
         force: bool = False,
-        owner_group: Union[str, None] = None,
         shared_group: Union[str, None] = None,
 ):
     """Iterate through a FASTA file and submit each sequence as a separate sample"""
-    _validate_streamlined_seq_args(owner_group, shared_group)
+    _validate_streamlined_seq_args(owner_org, shared_group)
 
     name_prefix = _calc_name_prefix(fasta_file)
 
@@ -105,7 +105,7 @@ def add_fasta_cns_submission(
     total_upload_count = 0
     records = list(SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'))
     seq_ids = [record.id for record in records]
-    _create_samples(seq_ids, owner_group, shared_group)
+    _create_samples(seq_ids, owner_org, shared_group)
     for record in records:
         seq_id = record.id
         logger.info(f"Uploading {seq_id}")
@@ -153,20 +153,21 @@ def add_fasta_cns_submission(
 def add_sequence_submission(
         seq_type: SeqType,
         csv_file: BufferedReader,
+        owner_org: str,
         skip: bool = False,
         force: bool = False,
-        owner_group: Union[str, None] = None,
         shared_group: Union[str, None] = None,
 ):
     """
     Generic handling of uploading any sequence type.
     Handles the case where the user provides a CSV mapping Seq_IDs to files.
     """
-    _validate_streamlined_seq_args(owner_group, shared_group)
+    _validate_streamlined_seq_args(owner_org, shared_group)
     csv_dataframe = _get_and_validate_csv(csv_file, seq_type)
+    seq_window = _request_aggregation_window(owner_org, seq_type)
 
     seq_ids = list(csv_dataframe['Seq_ID'])
-    _create_samples(seq_ids, owner_group, shared_group)
+    _create_samples(seq_ids, owner_org, shared_group)
 
     messages = _validate_csv_sequence_submission(csv_dataframe, seq_type)
     if messages:
@@ -175,16 +176,7 @@ def add_sequence_submission(
     failed_samples = []
     upload_success_count = 0
     total_upload_count = 0
-    
-    scope_alias = 'sequence-upload-interaction'
-    window = request_interaction_window(
-        scope_alias,
-        {
-            'ownerGroup': owner_group,
-            'seqType': seq_type.value,
-        }
-    )
-    
+        
     for _, row in csv_dataframe.iterrows():
         try:
             logger.info(f"Uploading {row[SEQ_ID_CSV]}")
@@ -192,7 +184,7 @@ def add_sequence_submission(
 
             sample_files = _get_files_from_csv_paths(row, seq_type)
             custom_headers = _build_headers(seq_type, row, force, skip, sample_files)
-            custom_headers[INTERACTION_WINDOW_HEADER] = window['windowGlobalId']
+            custom_headers[INTERACTION_WINDOW_HEADER] = seq_window['windowGlobalId']
 
             retry(lambda sf=sample_files, ch=custom_headers: _post_sequence(
                 sf, ch), 1, "/".join([SEQUENCE_PATH]))
@@ -215,7 +207,7 @@ def add_sequence_submission(
         except Exception as ex:
             raise ex from ex
         
-    deactivate_interaction_window(window['windowGlobalId'])
+    deactivate_interaction_window(seq_window['windowGlobalId'])
 
     logger.info(f"Uploaded {upload_success_count} of {total_upload_count} samples")
     if failed_samples:
@@ -236,6 +228,18 @@ def purge_sequence(seq_id: str, seq_type: str, skip: bool, force: bool, delete_a
         path=api_path,
         custom_headers=custom_headers
     )
+
+
+def _request_aggregation_window(owner_org, seq_type):
+    seq_upload_scope_alias = 'sequence-upload-interaction'
+    seq_window = request_interaction_window(
+        seq_upload_scope_alias,
+        {
+            'ownerOrgAbbrev': owner_org,
+            'seqType': seq_type.value,
+        }
+    )
+    return seq_window
 
 
 def _calc_name_prefix(fasta_file):
@@ -628,17 +632,19 @@ def _csv_columns(seq_type: SeqType):
 
 def _create_samples(
         seq_ids: List[str],
-        owner_group: Union[str, None],
+        owner_org: str,
         shared_group: Union[str, None],
 ) -> None:
-    if owner_group is None and shared_group is None:
-        return
     with tempfile.NamedTemporaryFile(suffix=".csv") as tmp:
         csv_str = StringIO()
         rows = [[METADATA_FIELD_SEQ_ID, METADATA_FIELD_OWNER_GROUP, METADATA_FIELD_SHARED_GROUPS]]
         for seq_id in seq_ids:
             logger.info(f"Creating sample with {METADATA_FIELD_SEQ_ID} {seq_id}")
-            rows.append([seq_id, owner_group, shared_group])
+            
+            # The owner_group column will be replaced by the server.
+            # it is still maintained for backwards compatibility to
+            # avoid impacting the users' agreed proformas.
+            rows.append([seq_id, 'dummy_owner', shared_group])
         csv.writer(csv_str).writerows(rows)
         csv_str.seek(0)
         with open(tmp.name, 'w', encoding='utf8') as file:
@@ -646,14 +652,14 @@ def _create_samples(
 
         with open(tmp.name, 'rb') as file:
             file.seek(0)
-            add_metadata(file, "Min", blanks_will_delete=False, batch_size=5000)
+            add_metadata(file, owner_org, "Min", blanks_will_delete=False, batch_size=5000)
 
 
 def _validate_streamlined_seq_args(
-        owner_group: Union[str, None],
+        owner_org: str,
         shared_group: Union[str, None],
 ):
-    if (shared_group is not None) and (owner_group is None):
-        raise CliArgumentException("Owner group has not been provided")
-    if (shared_group is None) and (owner_group is not None):
+    if (shared_group is not None) and (owner_org is None):
+        raise CliArgumentException("Owner organisation has not been provided")
+    if (shared_group is None) and (owner_org is not None):
         logger.warning("Shared group has not been provided. New samples will not be shared.")
