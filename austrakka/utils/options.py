@@ -145,7 +145,8 @@ def opt_share(var_name='shared_group', **attrs: t.Any):
 def opt_owner_org(**attrs: t.Any):
     defaults = {
         'required': False,
-        'help': 'Owner Organisation Abbreviation'
+        'help': 'Owner Organisation Abbreviation. Specifies the owner '
+                'who owns all samples in the csv.'
     }
     return create_option(
         '-oo',
