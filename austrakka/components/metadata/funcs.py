@@ -23,11 +23,13 @@ DELETE_ON_BLANK_PARAM = 'deleteOnBlank=True'
 METADATA_BY_FIELD_PATH = 'by-field'
 
 OWNER_ORG_HEADER = 'X-Metadata-Owner-Org-Abbrev'
+SHARED_GROUPS_HEADER = 'X-Metadata-Shared-Groups-Abbrev'
 
 @logger_wraps()
 def add_metadata(
         file: BufferedReader,
         owner_org: str,
+        shared_groups: List[str],
         proforma_abbrev: str,
         blanks_will_delete: bool,
         batch_size: int,
@@ -35,21 +37,36 @@ def add_metadata(
     path = "/".join([SUBMISSION_PATH, SUBMISSION_UPLOAD])
     if blanks_will_delete:
         path = f"{path}?{DELETE_ON_BLANK_PARAM}"
-    _call_batched_submission(path, file, owner_org, proforma_abbrev, batch_size)
+    _call_batched_submission(
+        path, 
+        file, 
+        owner_org, 
+        shared_groups, 
+        proforma_abbrev, 
+        batch_size)
 
 
 @logger_wraps()
 def append_metadata(
         file: BufferedReader,
         owner_org: str,
+        shared_groups: List[str],
         proforma_abbrev: str,
         blanks_will_delete: bool,
         batch_size: int,
 ):
     path = "/".join([SUBMISSION_PATH, SUBMISSION_UPLOAD_APPEND])
+    
     if blanks_will_delete:
         path = f"{path}&{DELETE_ON_BLANK_PARAM}"
-    _call_batched_submission(path, file, owner_org, proforma_abbrev, batch_size)
+        
+    _call_batched_submission(
+        path, 
+        file, 
+        owner_org, 
+        shared_groups, 
+        proforma_abbrev, 
+        batch_size)
 
 
 @logger_wraps()
@@ -69,11 +86,12 @@ def _call_batched_submission(
         path: str,
         file: BufferedReader,
         owner_org: str,
+        shared_groups: List[str],
         proforma_abbrev: str,
         batch_size: int,
 ):
     if batch_size < 1:
-        _call_submission(path, file, owner_org, proforma_abbrev)
+        _call_submission(path, file, owner_org, shared_groups, proforma_abbrev)
         return
     
     filepath = Path(file.name)
@@ -82,7 +100,7 @@ def _call_batched_submission(
 
     if  filepath.suffix == '.xlsx':
         # Batching not currently supported, just upload the original file
-        _call_submission(path, file, owner_org, proforma_abbrev)
+        _call_submission(path, file, owner_org, shared_groups, proforma_abbrev)
         return
     
     if filepath.suffix != '.csv':
@@ -92,7 +110,7 @@ def _call_batched_submission(
     if num_rows <= batch_size:
         # Just upload the original file
         file.seek(0)
-        _call_submission(path, file, owner_org, proforma_abbrev)
+        _call_submission(path, file, owner_org, shared_groups, proforma_abbrev)
         return
     
     logger.info(f"Uploading {num_rows} rows in batches of {batch_size}")
@@ -103,7 +121,7 @@ def _call_batched_submission(
         buffer = StringIO()
         buffer.name = f"{filepath.stem}_batch_rows{index}-{index+batch_size-1}.csv"
         chunk.to_csv(buffer, index=False)
-        _call_submission(path, encode(buffer), owner_org, proforma_abbrev)
+        _call_submission(path, encode(buffer), owner_org, shared_groups, proforma_abbrev)
         
     logger.info("Batched upload complete")
 
@@ -112,11 +130,12 @@ def _call_submission(
         path: str,
         file: BufferedReader,
         owner_org: str,
+        shared_groups: List[str],
         proforma_abbrev: str,
 ):
-    headers = {
-        OWNER_ORG_HEADER: owner_org,
-    }
+    headers = {OWNER_ORG_HEADER: owner_org,}
+    if shared_groups:
+        headers[SHARED_GROUPS_HEADER] = ";".join(shared_groups)
 
     api_post_multipart(
         path=path,

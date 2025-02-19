@@ -1,12 +1,11 @@
 from io import BufferedReader
-from typing import Union
+from typing import List
 
 import click
 
 from austrakka.utils.enums.seq import SeqType
-from austrakka.utils.options import opt_force_mutex_skip, opt_owner_org
+from austrakka.utils.options import opt_force_mutex_skip, opt_owner_org, opt_share
 from austrakka.utils.options import opt_skip_mutex_force
-from austrakka.utils.options import opt_share
 from ..funcs import add_fasta_cns_submission
 from ..funcs import add_sequence_submission
 
@@ -46,11 +45,11 @@ def add(ctx):
 def seq_add_fastq_ill_PE(
         csv_file: BufferedReader,
         owner_org: str,
+        shared_groups: List[str],
         skip: bool = False,
         force: bool = False,
-        shared_group: Union[str, None] = None,
 ):
-    add_sequence_submission(SeqType.FASTQ_ILL_PE, csv_file, owner_org, skip, force, shared_group)
+    add_sequence_submission(SeqType.FASTQ_ILL_PE, csv_file, owner_org, shared_groups, skip, force)
 
 
 @add.command(SeqType.FASTQ_ILL_SE.value, help=f"""
@@ -73,11 +72,11 @@ def seq_add_fastq_ill_PE(
 def seq_add_fastq_ill_SE(
         csv_file: BufferedReader,
         owner_org: str,
+        shared_groups: List[str],
         skip: bool = False,
         force: bool = False,
-        shared_group: Union[str, None] = None,
 ):
-    add_sequence_submission(SeqType.FASTQ_ILL_SE, csv_file, owner_org, skip, force, shared_group)
+    add_sequence_submission(SeqType.FASTQ_ILL_SE, csv_file, owner_org, shared_groups, skip, force)
 
 
 @add.command(SeqType.FASTQ_ONT.value, help=f"""
@@ -99,11 +98,11 @@ def seq_add_fastq_ill_SE(
 def seq_add_fastq_ont(
         csv_file: BufferedReader,
         owner_org: str,
+        shared_groups: List[str],
         skip: bool = False,
         force: bool = False,
-        shared_group: Union[str, None] = None,
 ):
-    add_sequence_submission(SeqType.FASTQ_ONT, csv_file, owner_org, skip, force, shared_group)
+    add_sequence_submission(SeqType.FASTQ_ONT, csv_file, owner_org, shared_groups, skip, force)
 
 
 @add.command(SeqType.FASTA_CNS.value, help=f"""
@@ -126,13 +125,13 @@ def seq_add_fastq_ont(
 def seq_add_fasta_cns(
         fasta_file: BufferedReader,
         owner_org: str,
+        shared_groups: List[str],
         skip: bool = False,
         force: bool = False,
-        shared_group: Union[str, None] = None,
 ):
     # FASTA-CNS is a special case as the CLI does the work of splitting the file,
     # and there is no CSV
-    add_fasta_cns_submission(fasta_file, owner_org, skip, force, shared_group)
+    add_fasta_cns_submission(fasta_file, owner_org, shared_groups, skip, force)
 
 
 @add.command(SeqType.FASTA_ASM.value, help=f"""
@@ -154,8 +153,8 @@ def seq_add_fasta_cns(
 def seq_add_fasta_asm(
         csv_file: BufferedReader,
         owner_org: str,
+        shared_groups: List[str],
         skip: bool = False,
         force: bool = False,
-        shared_group: Union[str, None] = None,
 ):
-    add_sequence_submission(SeqType.FASTA_ASM, csv_file, owner_org, skip, force, shared_group)
+    add_sequence_submission(SeqType.FASTA_ASM, csv_file, owner_org, shared_groups, skip, force)

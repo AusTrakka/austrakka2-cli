@@ -5,7 +5,7 @@ from typing import List
 from io import BufferedReader
 import click
 
-from austrakka.utils.options import opt_proforma, opt_batch_size, opt_owner_org
+from austrakka.utils.options import opt_proforma, opt_batch_size, opt_owner_org, opt_share
 from austrakka.utils.options import opt_is_update
 from austrakka.utils.options import opt_group_name
 from austrakka.utils.options import opt_blanks_delete
@@ -36,6 +36,7 @@ def metadata(ctx):
 @metadata.command('add')
 @click.argument('file', type=click.File('rb'))
 @opt_owner_org(required=True)
+@opt_share()
 @opt_proforma()
 @opt_blanks_delete()
 @opt_batch_size(help=ADD_APPEND_BATCH_SIZE_HELP,
@@ -43,16 +44,24 @@ def metadata(ctx):
 def submission_add(
         file: BufferedReader,
         owner_org: str,
+        shared_groups: List[str],
         proforma: str,
         blanks_will_delete: bool,
         batch_size: int):
     """Upload metadata submission to AusTrakka"""
-    add_metadata(file, owner_org, proforma, blanks_will_delete, batch_size)
+    add_metadata(
+        file, 
+        owner_org, 
+        shared_groups, 
+        proforma, 
+        blanks_will_delete, 
+        batch_size)
 
 
 @metadata.command('update')
 @click.argument('file', type=click.File('rb'))
 @opt_owner_org(required=True)
+@opt_share()
 @opt_proforma()
 @opt_blanks_delete()
 @opt_batch_size(help=ADD_APPEND_BATCH_SIZE_HELP,
@@ -60,6 +69,7 @@ def submission_add(
 def submission_append(
         file: BufferedReader, 
         owner_org: str,
+        shared_groups: List[str],
         proforma: str, 
         blanks_will_delete: bool,
         batch_size: int):   
@@ -69,7 +79,13 @@ def submission_append(
     The specified pro forma must contain Seq_ID and metadata fields
     to be updated. All samples must already exist in AusTrakka.
     """
-    append_metadata(file, owner_org, proforma, blanks_will_delete, batch_size)
+    append_metadata(
+        file, 
+        owner_org, 
+        shared_groups, 
+        proforma, 
+        blanks_will_delete, 
+        batch_size)
 
 
 @metadata.command('validate')
