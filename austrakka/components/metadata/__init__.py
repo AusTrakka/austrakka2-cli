@@ -44,7 +44,7 @@ def metadata(ctx):
 def submission_add(
         file: BufferedReader,
         owner_org: str,
-        shared_groups: List[str],
+        shared_projects: List[str],
         proforma: str,
         blanks_will_delete: bool,
         batch_size: int):
@@ -52,7 +52,7 @@ def submission_add(
     add_metadata(
         file, 
         owner_org, 
-        shared_groups, 
+        shared_projects, 
         proforma, 
         blanks_will_delete, 
         batch_size)
@@ -69,7 +69,7 @@ def submission_add(
 def submission_append(
         file: BufferedReader, 
         owner_org: str,
-        shared_groups: List[str],
+        shared_projects: List[str],
         proforma: str, 
         blanks_will_delete: bool,
         batch_size: int):   
@@ -82,7 +82,7 @@ def submission_append(
     append_metadata(
         file, 
         owner_org, 
-        shared_groups, 
+        shared_projects, 
         proforma, 
         blanks_will_delete, 
         batch_size)

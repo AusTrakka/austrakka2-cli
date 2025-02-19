@@ -132,13 +132,13 @@ def opt_group_name(var_name='group_name', **attrs: t.Any):
 def opt_share(**attrs: t.Any):
     defaults = {
         'required': False,
-        'help': 'List of group names to share samples with. '
+        'help': 'List of project abbreviations to share samples with. '
                 'This applies to all samples in the csv.',
         'multiple': True,
     }
     return create_option(
-        '-sgs',
-        "--shared-groups",
+        '-sps',
+        "--shared-projects",
         type=click.STRING,
         **{**defaults, **attrs}
     )

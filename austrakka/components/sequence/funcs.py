@@ -91,12 +91,12 @@ class SeqFile:
 def add_fasta_cns_submission(
         fasta_file: BufferedReader,
         owner_org: str,
-        shared_groups: List[str],
+        shared_projects: List[str],
         skip: bool = False,
         force: bool = False,
 ):
     """Iterate through a FASTA file and submit each sequence as a separate sample"""
-    _validate_streamlined_seq_args(owner_org, shared_groups)
+    _validate_streamlined_seq_args(owner_org, shared_projects)
 
     name_prefix = _calc_name_prefix(fasta_file)
 
@@ -105,7 +105,7 @@ def add_fasta_cns_submission(
     total_upload_count = 0
     records = list(SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'))
     seq_ids = [record.id for record in records]
-    _create_samples(seq_ids, owner_org, shared_groups)
+    _create_samples(seq_ids, owner_org, shared_projects)
     for record in records:
         seq_id = record.id
         logger.info(f"Uploading {seq_id}")
@@ -154,7 +154,7 @@ def add_sequence_submission(
         seq_type: SeqType,
         csv_file: BufferedReader,
         owner_org: str,
-        shared_groups: List[str],
+        shared_projects: List[str],
         skip: bool = False,
         force: bool = False,
 ):
@@ -162,12 +162,12 @@ def add_sequence_submission(
     Generic handling of uploading any sequence type.
     Handles the case where the user provides a CSV mapping Seq_IDs to files.
     """
-    _validate_streamlined_seq_args(owner_org, shared_groups)
+    _validate_streamlined_seq_args(owner_org, shared_projects)
     csv_dataframe = _get_and_validate_csv(csv_file, seq_type)
     seq_window = _request_aggregation_window(owner_org, seq_type)
 
     seq_ids = list(csv_dataframe['Seq_ID'])
-    _create_samples(seq_ids, owner_org, shared_groups)
+    _create_samples(seq_ids, owner_org, shared_projects)
 
     messages = _validate_csv_sequence_submission(csv_dataframe, seq_type)
     if messages:
