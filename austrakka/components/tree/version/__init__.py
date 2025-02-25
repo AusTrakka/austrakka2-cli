@@ -2,47 +2,47 @@
 from io import BufferedReader
 import click
 
-from .funcs import add_tree
-from .funcs import list_trees
-from .funcs import disable_tree
-from .funcs import enable_tree
-from ...utils.options import opt_analysis
-from ...utils.options import opt_tree_id
-from ...utils.output import table_format_option
+from .funcs import add_tree_version
+from .funcs import list_tree_versions
+from .funcs import disable_tree_version
+from .funcs import enable_tree_version
+from ....utils.options import opt_tree
+from ....utils.options import opt_tree_version_id
+from ....utils.output import table_format_option
 
 
 @click.group()
 @click.pass_context
-def tree(ctx):
-    '''Commands related to trees'''
+def version(ctx):
+    '''Commands related to tree versions'''
     ctx.context = ctx.parent.context
 
 
-@tree.command('add')
+@version.command('add')
 @click.argument('newick', type=click.File('rb'))
-@opt_analysis()
-def tree_add(newick: BufferedReader, analysis: str):
-    '''Upload tree to AusTrakka'''
-    add_tree(newick, analysis)
+@opt_tree()
+def tree_add(newick: BufferedReader, tree: str):
+    '''Upload tree version to AusTrakka'''
+    add_tree_version(newick, tree)
 
 
-@tree.command('list')
-@opt_analysis()
+@version.command('list')
+@opt_tree()
 @table_format_option()
-def tree_list(analysis: str, out_format: str):
-    '''List trees in AusTrakka'''
-    list_trees(out_format, analysis)
+def tree_list(tree: str, out_format: str):
+    '''List tree versions in AusTrakka'''
+    list_tree_versions(out_format, tree)
 
 
-@tree.command('disable')
-@opt_tree_id()
-def tree_disable(tree_id: int):
-    '''Disable a tree'''
-    disable_tree(tree_id)
+@version.command('disable')
+@opt_tree_version_id()
+def tree_disable(tree_version_id: int):
+    '''Disable a tree version'''
+    disable_tree_version(tree_version_id)
 
 
-@tree.command('enable')
-@opt_tree_id()
-def tree_enable(tree_id: int):
-    '''Enable a tree'''
-    enable_tree(tree_id)
+@version.command('enable')
+@opt_tree_version_id()
+def tree_enable(tree_version_id: int):
+    '''Enable a tree version'''
+    enable_tree_version(tree_version_id)

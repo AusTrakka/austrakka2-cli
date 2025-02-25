@@ -334,14 +334,13 @@ def opt_output_dir(**attrs: t.Any):
     )
 
 
-def opt_analysis(**attrs: t.Any):
+def opt_tree(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Analysis Abbreviation',
+        'help': 'Tree Abbreviation',
     }
     return create_option(
-        '-a',
-        '--analysis',
+        '--tree',
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -757,13 +756,13 @@ def opt_merge_algorithm(**attrs: t.Any):
     )
 
 
-def opt_tree_id(**attrs: t.Any):
+def opt_tree_version_id(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Tree ID',
+        'help': 'Tree Version ID',
     }
     return create_option(
-        '--tree-id',
+        '--tree-version-id',
         type=click.INT,
         **{**defaults, **attrs}
     )

@@ -1,41 +1,43 @@
 from os import path
 from io import BufferedReader
 
-from austrakka.utils.api import api_patch
+from austrakka.utils.api import api_patch, api_post_multipart
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.helpers.upload import upload_file
-from austrakka.utils.paths import TREE_PATH
-from austrakka.utils.paths import JOB_INSTANCE_PATH
-from austrakka.utils.helpers.analysis import get_analysis_by_abbrev
+from austrakka.utils.paths import TREE_VERSION_PATH
+from austrakka.utils.helpers.tree import get_tree_by_abbrev
 
 TREE_UPLOAD = 'UploadTree'
 ALL_VERSIONS = 'AllVersions'
 
 
 @logger_wraps()
-def add_tree(file: BufferedReader, analysis_abbrev: str):
-    upload_file(
-        file,
-        analysis_abbrev,
-        path.join(TREE_PATH, TREE_UPLOAD)
+def add_tree_version(file: BufferedReader, tree_abbrev: str):
+    analysis = get_tree_by_abbrev(tree_abbrev)
+
+    api_post_multipart(
+        path=path.join(TREE_VERSION_PATH, TREE_UPLOAD),
+        data={
+            'analysisid': str(analysis['analysisId'])
+        },
+        files={'file': (file.name, file)}
     )
 
 
 @logger_wraps()
-def list_trees(out_format: str, analysis_abbrev: str):
-    analysis = get_analysis_by_abbrev(analysis_abbrev)
+def list_tree_versions(out_format: str, tree_abbrev: str):
+    analysis = get_tree_by_abbrev(tree_abbrev)
     call_get_and_print(
-        f'{JOB_INSTANCE_PATH}/{analysis["analysisId"]}/{ALL_VERSIONS}',
+        f'{TREE_VERSION_PATH}/{analysis["analysisId"]}/{ALL_VERSIONS}',
         out_format
     )
 
 
 @logger_wraps()
-def disable_tree(tree_id: int):
-    api_patch(path=f'{TREE_PATH}/disable/{tree_id}')
+def disable_tree_version(tree_id: int):
+    api_patch(path=f'{TREE_VERSION_PATH}/disable/{tree_id}')
 
 
 @logger_wraps()
-def enable_tree(tree_id: int):
-    api_patch(path=f'{TREE_PATH}/enable/{tree_id}')
+def enable_tree_version(tree_id: int):
+    api_patch(path=f'{TREE_VERSION_PATH}/enable/{tree_id}')

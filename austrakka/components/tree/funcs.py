@@ -1,19 +1,19 @@
 from austrakka.utils.api import api_post, api_patch
 from austrakka.utils.api import api_put
-from austrakka.utils.helpers.analysis import get_analysis_by_abbrev
+from austrakka.utils.helpers.tree import get_tree_by_abbrev
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import ANALYSIS_PATH
 
 
 @logger_wraps()
-def list_analyses(project_abbrev: str, show_disabled: bool, out_format: str):
+def list_trees(project_abbrev: str, show_disabled: bool, out_format: str):
     call_get_and_print(
         f'{ANALYSIS_PATH}/project/{project_abbrev}?includeall={show_disabled}', out_format)
 
 
 @logger_wraps()
-def add_analysis(
+def add_tree(
         abbrev: str,
         name: str,
         description: str,
@@ -35,14 +35,14 @@ def add_analysis(
 
 
 @logger_wraps()
-def update_analysis(
+def update_tree(
         abbrev: str,
         name: str,
         description: str,
         project: str,
         is_active: bool,
 ):
-    analysis = get_analysis_by_abbrev(abbrev)
+    analysis = get_tree_by_abbrev(abbrev)
 
     if name is not None:
         analysis['name'] = name
@@ -60,14 +60,14 @@ def update_analysis(
 
 
 @logger_wraps()
-def disable_analysis(abbrev: str):
+def disable_tree(abbrev: str):
     api_patch(
         path=f'{ANALYSIS_PATH}/disable/{abbrev}',
     )
 
 
 @logger_wraps()
-def enable_analysis(abbrev: str):
+def enable_tree(abbrev: str):
     api_patch(
         path=f'{ANALYSIS_PATH}/enable/{abbrev}',
     )

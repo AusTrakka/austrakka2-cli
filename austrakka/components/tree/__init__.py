@@ -2,10 +2,10 @@
 import click
 
 from austrakka.utils.output import table_format_option
-from austrakka.components.analysis.definition import definition
-from austrakka.components.analysis.funcs import list_analyses, disable_analysis, enable_analysis
-from austrakka.components.analysis.funcs import add_analysis
-from austrakka.components.analysis.funcs import update_analysis
+from austrakka.components.tree.version import version
+from austrakka.components.tree.funcs import list_trees, disable_tree, enable_tree
+from austrakka.components.tree.funcs import add_tree
+from austrakka.components.tree.funcs import update_tree
 from austrakka.utils.cmd_filter import show_admin_cmds
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_abbrev, opt_show_disabled
@@ -17,38 +17,38 @@ from austrakka.utils.options import opt_project
 
 @click.group()
 @click.pass_context
-def analysis(ctx):
-    '''Commands related to analyses'''
+def tree(ctx):
+    '''Commands related to trees'''
     ctx.context = ctx.parent.context
 
 
-analysis.add_command(definition) if show_admin_cmds() else None
+tree.add_command(version) if show_admin_cmds() else None
 
 
-@analysis.command('list')
+@tree.command('list')
 @opt_project(required=True)
 @opt_show_disabled()
 @table_format_option()
-def analysis_list(project: str, show_disabled: bool, out_format: str):
-    '''List analyses in AusTrakka'''
-    list_analyses(project, show_disabled, out_format)
+def tree_list(project: str, show_disabled: bool, out_format: str):
+    '''List trees in AusTrakka'''
+    list_trees(project, show_disabled, out_format)
 
 
-@analysis.command('add')
+@tree.command('add')
 @opt_abbrev()
-@opt_name(help='Analysis Name')
+@opt_name(help='Tree Name')
 @opt_description()
 @opt_project()
 @opt_is_active()
-def analysis_add(
+def tree_add(
         abbrev: str,
         name: str,
         description: str,
         project: str,
         is_active: bool,
 ):
-    """Add analysis in AusTrakka"""
-    add_analysis(
+    """Add tree in AusTrakka"""
+    add_tree(
         abbrev,
         name,
         description,
@@ -57,22 +57,22 @@ def analysis_add(
     )
 
 
-@analysis.command('update')
-@click.argument('analysis-abbrev', type=str)
-@opt_name(help='Analysis Name', required=False)
+@tree.command('update')
+@click.argument('tree-abbrev', type=str)
+@opt_name(help='Tree Name', required=False)
 @opt_description(required=False)
 @opt_project(required=False)
 @opt_is_active(is_update=True)
-def analysis_update(
-        analysis_abbrev: str,
+def tree_update(
+        tree_abbrev: str,
         name: str,
         description: str,
         project: str,
         is_active: bool,
 ):
-    """Update analysis in AusTrakka"""
-    update_analysis(
-        analysis_abbrev,
+    """Update tree in AusTrakka"""
+    update_tree(
+        tree_abbrev,
         name,
         description,
         project,
@@ -80,15 +80,15 @@ def analysis_update(
     )
 
 
-@analysis.command('disable', hidden=hide_admin_cmds())
-@click.argument('analysis-abbrev', type=str)
-def analysis_disable(analysis_abbrev: str):
-    """Disable analysis in AusTrakka"""
-    disable_analysis(analysis_abbrev)
+@tree.command('disable', hidden=hide_admin_cmds())
+@click.argument('tree-abbrev', type=str)
+def tree_disable(tree_abbrev: str):
+    """Disable tree in AusTrakka"""
+    disable_tree(tree_abbrev)
 
 
-@analysis.command('enable', hidden=hide_admin_cmds())
-@click.argument('analysis-abbrev', type=str)
-def analysis_enable(analysis_abbrev: str):
-    """Enable analysis in AusTrakka"""
-    enable_analysis(analysis_abbrev)
+@tree.command('enable', hidden=hide_admin_cmds())
+@click.argument('tree-abbrev', type=str)
+def tree_enable(tree_abbrev: str):
+    """Enable tree in AusTrakka"""
+    enable_tree(tree_abbrev)
