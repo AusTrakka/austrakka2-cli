@@ -48,7 +48,7 @@ setup(
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description="A CLI to interact with AusTrakka",  # Optional
+    description="A CLI to interact with an AusTrakka instance",  # Optional
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
     #
@@ -76,10 +76,10 @@ setup(
     url="https://github.com/AusTrakka/austrakka2-cli",  # Optional
     # This should be your name or the name of the organization which owns the
     # project.
-    author="AusTrakka Dev Team",  # Optional
+    # author="AusTrakka Dev Team",  # Optional
     # This should be a valid email address corresponding to the author listed
     # above.
-    author_email="dev@austrakka.net.au",  # Optional
+    # author_email="dev@austrakka.net.au",  # Optional
     # Classifiers help users find your project by categorizing it.
     #
     # For a list of valid classifiers, see https://pypi.org/classifiers/
