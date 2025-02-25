@@ -13,8 +13,6 @@ from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_is_active
 from austrakka.utils.options import opt_project
-from austrakka.utils.options import opt_definition
-from austrakka.utils.options import opt_filter_string
 
 
 @click.group()
@@ -41,16 +39,12 @@ def analysis_list(project: str, show_disabled: bool, out_format: str):
 @opt_name(help='Analysis Name')
 @opt_description()
 @opt_project()
-@opt_definition(var_name='definition_abbrev')
-@opt_filter_string(required=False)
 @opt_is_active()
 def analysis_add(
         abbrev: str,
         name: str,
         description: str,
         project: str,
-        definition_abbrev: str,
-        filter_str: str,
         is_active: bool,
 ):
     """Add analysis in AusTrakka"""
@@ -59,8 +53,6 @@ def analysis_add(
         name,
         description,
         project,
-        definition_abbrev,
-        filter_str,
         is_active,
     )
 
@@ -70,16 +62,12 @@ def analysis_add(
 @opt_name(help='Analysis Name', required=False)
 @opt_description(required=False)
 @opt_project(required=False)
-@opt_definition(var_name='definition_abbrev', required=False)
-@opt_filter_string(required=False)
 @opt_is_active(is_update=True)
 def analysis_update(
         analysis_abbrev: str,
         name: str,
         description: str,
         project: str,
-        definition_abbrev: str,
-        filter_str: str,
         is_active: bool,
 ):
     """Update analysis in AusTrakka"""
@@ -88,8 +76,6 @@ def analysis_update(
         name,
         description,
         project,
-        definition_abbrev,
-        filter_str,
         is_active,
     )
 

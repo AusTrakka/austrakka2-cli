@@ -18,8 +18,6 @@ def add_analysis(
         name: str,
         description: str,
         project: str,
-        definition_abbrev: str,
-        filter_str: str,
         is_active: bool,
 ):
     api_post(
@@ -27,13 +25,9 @@ def add_analysis(
         data={
             'name': name,
             'description': description,
-            'jobDefinition': {
-                'id': definition_abbrev
-            },
             'project': {
                 'abbreviation': project
             },
-            'filterString': filter_str,
             'isActive': is_active,
             'abbreviation': abbrev
         }
@@ -46,8 +40,6 @@ def update_analysis(
         name: str,
         description: str,
         project: str,
-        definition_abbrev: str,
-        filter_str: str,
         is_active: bool,
 ):
     analysis = get_analysis_by_abbrev(abbrev)
@@ -56,14 +48,10 @@ def update_analysis(
         analysis['name'] = name
     if description is not None:
         analysis['description'] = description
-    if filter_str is not None:
-        analysis['filterString'] = filter_str
     if is_active is not None:
         analysis['isActive'] = is_active
     if project is not None:
         analysis['project']['abbreviation'] = project
-    if definition_abbrev is not None:
-        analysis['jobDefinition']['id'] = definition_abbrev
 
     api_put(
         path=f'{ANALYSIS_PATH}/{abbrev}',

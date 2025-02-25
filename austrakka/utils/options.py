@@ -236,20 +236,6 @@ def opt_project(**attrs: t.Any):
     )
 
 
-def opt_definition(var_name='definition', **attrs: t.Any):
-    defaults = {
-        'multiple': False,
-        'default': 'upload',
-        'help': 'Analysis definition name',
-    }
-    return create_option(
-        '--definition',
-        var_name,
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
 def opt_organisation(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -600,18 +586,6 @@ def opt_state(**attrs: t.Any):
     }
     return create_option(
         "--state",
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
-def opt_filter_string(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'Filter String',
-    }
-    return create_option(
-        "--filter-str",
         type=click.STRING,
         **{**defaults, **attrs}
     )
