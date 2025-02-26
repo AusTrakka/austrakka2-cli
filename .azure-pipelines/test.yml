@@ -1,16 +1,3 @@
-resources:
-  repositories:
-    - repository: CLI
-      type: github
-      name: AusTrakka/austrakka2-cli
-      ref: $(Build.SourceBranch)
-      endpoint: AusTrakka
-    - repository: Pipelines
-      type: github
-      name: AusTrakka/austrakka-pipelines
-      ref: 6809-cli-build-publish # TODO: change this to Development
-      endpoint: AusTrakka
-
 trigger:
   - Development
   - UAT
@@ -21,13 +8,27 @@ pr:
   - UAT
   - master
 
-variables:
-  - template: variables/devops/setup.yml@Pipelines
+pool:
+  vmImage: 'ubuntu-latest'
 
-stages:
-  - stage: RunCliTests
-    jobs:
-      - job: RunCliTests
-        steps:
-          - template: templates/checkout/cli.yml@Pipelines
-          - template: templates/test/unit/cli.yml@Pipelines
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.9'
+      addToPath: true
+      architecture: 'x64'
+
+  - script: python -m pip install --upgrade pip setuptools wheel
+    displayName: 'Install tools'
+
+  - script: python -m pip install pipenv
+    displayName: 'Install pipenv'
+
+  - script: pipenv requirements --dev | tee requirements.txt
+    displayName: 'Create requirements.txt from Pipfile.lock'
+
+  - script: pip install -r requirements.txt
+    displayName: 'Install requirements'
+
+  - script: pytest -m unit
+    displayName: 'pytest'
