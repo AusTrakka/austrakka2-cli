@@ -1,5 +1,6 @@
 import click
 
+from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_name
@@ -11,7 +12,6 @@ from austrakka.utils.subcommands.privilege import privilege_subcommands
 from .funcs import list_orgs
 from .funcs import add_org
 from .funcs import update_org
-from austrakka import __prog_name__ as PROG_NAME
 
 
 @click.group()

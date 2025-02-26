@@ -1,5 +1,7 @@
 # pylint: disable=expression-not-assigned
 import click
+
+from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.output import table_format_option
 from austrakka.utils.output import object_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
@@ -23,7 +25,6 @@ from .dataset import dataset
 from .field import field
 from .provision import provision
 from .metadata import metadata
-from austrakka import __prog_name__ as PROG_NAME
 
 
 @click.group()

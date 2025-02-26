@@ -2,6 +2,7 @@
 from io import BufferedReader
 import click
 
+from austrakka import __prog_name__ as PROG_NAME
 from .funcs import add_tree
 from .funcs import list_trees
 from .funcs import disable_tree
@@ -9,7 +10,6 @@ from .funcs import enable_tree
 from ...utils.options import opt_analysis
 from ...utils.options import opt_tree_id
 from ...utils.output import table_format_option
-from austrakka import __prog_name__ as PROG_NAME
 
 
 @click.group()

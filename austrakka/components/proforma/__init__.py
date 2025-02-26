@@ -2,6 +2,7 @@ from typing import List
 
 import click
 
+from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from .funcs import \
@@ -19,7 +20,6 @@ from .funcs import \
     pull_proforma
 
 from ...utils.options import *
-from austrakka import __prog_name__ as PROG_NAME
 
 
 @click.group()

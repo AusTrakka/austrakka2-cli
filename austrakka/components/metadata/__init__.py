@@ -5,6 +5,7 @@ from typing import List
 from io import BufferedReader
 import click
 
+from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.options import opt_proforma, opt_batch_size
 from austrakka.utils.options import opt_is_update
 from austrakka.utils.options import opt_group_name
@@ -15,7 +16,6 @@ from austrakka.components.metadata.funcs import validate_metadata
 from austrakka.components.metadata.funcs import append_metadata
 from austrakka.components.metadata.funcs import list_metadata, list_metadata_by_field
 from austrakka.utils.output import table_format_option, FORMATS
-from austrakka import __prog_name__ as PROG_NAME
 
 ADD_APPEND_BATCH_SIZE_HELP = (
     'The number of rows to split the metadata upload into before uploading. '
@@ -34,7 +34,7 @@ def metadata(ctx):
     ctx.context = ctx.parent.context
     
 
-@metadata.command('add')
+@metadata.command('add', help=f'Upload metadata submission to {PROG_NAME}')
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
 @opt_blanks_delete()
@@ -45,7 +45,6 @@ def submission_add(
         proforma: str,
         blanks_will_delete: bool,
         batch_size: int):
-    f"""Upload metadata submission to {PROG_NAME}"""
     add_metadata(file, proforma, blanks_will_delete, batch_size)
 
 
