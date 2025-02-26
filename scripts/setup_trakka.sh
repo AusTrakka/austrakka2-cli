@@ -11,5 +11,5 @@ rm setup.py.bak
 sed -i.bak "s/\"austrakka\"/\"$LOWER\"/g" pyproject.toml
 rm pyproject.toml.bak
 
-sed -i.bak "s/\"austrakka\"/\"$LOWER\"/g" austrakka/__init__.py
+sed -i.bak "s/\"AusTrakka\"/\"$NORMAL\"/g" austrakka/__init__.py
 rm austrakka/__init__.py.bak

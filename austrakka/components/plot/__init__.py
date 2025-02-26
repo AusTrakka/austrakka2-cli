@@ -12,6 +12,7 @@ from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_is_active
 from austrakka.utils.options import opt_project
 from austrakka.utils.options import opt_name
+from austrakka import __prog_name__ as PROG_NAME
 
 
 @click.group()
@@ -21,15 +22,14 @@ def plot(ctx):
     ctx.context = ctx.parent.context
 
 
-@plot.command('list')
+@plot.command('list', help=f'List plots in {PROG_NAME}, by project')
 @opt_project(required=True)
 @table_format_option()
 def plot_list(project: str, out_format: str):
-    '''List plots in AusTrakka, by project'''
     list_plots(project, out_format)
 
 
-@plot.command('add', hidden=hide_admin_cmds())
+@plot.command('add', hidden=hide_admin_cmds(), help=f"Add plot to a project in {PROG_NAME}")
 @opt_abbrev()
 @opt_name()
 @opt_description()
@@ -46,7 +46,6 @@ def plot_add(
         spec: BufferedReader,
         is_active: bool,
 ):
-    """Add plot to a project in AusTrakka"""
     add_plot(
         abbrev,
         name,
@@ -58,7 +57,7 @@ def plot_add(
     )
 
 
-@plot.command('update', hidden=hide_admin_cmds())
+@plot.command('update', hidden=hide_admin_cmds(), help=f"Update a plot in {PROG_NAME}")
 @click.argument('plot-abbrev', type=str)
 @opt_name(required=False)
 @opt_description(required=False)
@@ -75,7 +74,6 @@ def plot_update(
         spec: BufferedReader,
         is_active: bool,
 ):
-    """Update a plot in AusTrakka"""
     update_plot(
         plot_abbrev,
         name,
@@ -105,9 +103,6 @@ def plot_enable(plot_abbrev: str):
     enable_plot(plot_abbrev)
 
 
-@plot.command('types')
+@plot.command('types', help=f'List recognised plot types within {PROG_NAME}')
 def plot_types():
-    """
-    List recognised plot types within AusTrakka
-    """
     list_plot_types()

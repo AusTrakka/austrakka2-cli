@@ -264,7 +264,7 @@ In the case of fasta-cns data, the aggregated sequence file, previously named al
 - `sample groups` command.
 
 ### Changed
-- `user add` and `user update` to handle AusTrakka process accounts.
+- `user add` and `user update` to handle Trakka process accounts.
 
 # [0.35.1] - 2023-09-18
 ### Changed
@@ -274,7 +274,7 @@ In the case of fasta-cns data, the aggregated sequence file, previously named al
 ### Changed
 - `seq add` commands will now provide a summary at the end of a bulk upload, including the number of sequences uploaded, and which sequences failed upload.
 - Sequence list and download commands no longer take the deprecated --sub-query-type flag. 
-A CLI update to this version will be required to support download from the updated AusTrakka server.
+A CLI update to this version will be required to support download from the updated Trakka server.
 
 ### Fixed
 - `proforma attach` command options --file-path and --n-previous are now correctly mutually exclusive

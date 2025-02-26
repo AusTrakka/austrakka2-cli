@@ -11,6 +11,7 @@ from austrakka.utils.subcommands.privilege import privilege_subcommands
 from .funcs import list_orgs
 from .funcs import add_org
 from .funcs import update_org
+from austrakka import __prog_name__ as PROG_NAME
 
 
 @click.group()
@@ -21,14 +22,13 @@ def org(ctx):
 
 org.add_command(privilege_subcommands('Organisation'))
 
-@org.command('list')
+@org.command('list', help=f"List organisations in {PROG_NAME}")
 @table_format_option()
 def org_list(out_format: str):
-    '''List organisations in AusTrakka'''
     list_orgs(out_format)
 
 
-@org.command('add', hidden=hide_admin_cmds())
+@org.command('add', hidden=hide_admin_cmds(), help=f"Add organisations in {PROG_NAME}")
 @opt_name(help="Organisation Name")
 @opt_abbrev(help="Organisation Abbreviation")
 @opt_state(required=False)
@@ -41,11 +41,10 @@ def org_add(
     state: str,
     is_active: bool,
 ):
-    '''Add organisations in AusTrakka'''
     add_org(name, abbrev, country, state, is_active)
 
 
-@org.command('update', hidden=hide_admin_cmds())
+@org.command('update', hidden=hide_admin_cmds(), help=f"Update organisations in {PROG_NAME}")
 @click.argument('org-abbrev', type=str)
 @opt_name(help="Organisation Name", required=False)
 @opt_state(required=False)
@@ -58,5 +57,4 @@ def org_update(
         state: str,
         is_active: bool,
 ):
-    '''Update organisations in AusTrakka'''
     update_org(org_abbrev, name, country, state, is_active)

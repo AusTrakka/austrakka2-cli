@@ -5,6 +5,7 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 from .funcs import list_fields, add_field, update_field, disable_field, enable_field, \
     list_field_groups, list_field_projects, list_field_proformas
 from ...utils.options import *
+from austrakka import __prog_name__ as PROG_NAME
 
 
 @click.group()
@@ -14,15 +15,18 @@ def field(ctx):
     ctx.context = ctx.parent.context
 
 
-@field.command('list')
+@field.command('list', help=f'List metadata fields understood by {PROG_NAME}')
 @opt_view_type()
 @table_format_option()
 def field_list(view_type: str, out_format: str):
-    """List metadata fields understood by AusTrakka"""
     list_fields(view_type, out_format)
 
 
-@field.command('add', hidden=hide_admin_cmds())
+@field.command(
+        'add', 
+        hidden=hide_admin_cmds(),
+        help=f'Add a metadata field to {PROG_NAME}',
+)
 @opt_name(help="Field name")
 @opt_fieldtype()
 @opt_description(
@@ -49,11 +53,14 @@ def field_add(
         column_order: int,
         is_private: bool,
 ):
-    """Add a metadata field to AusTrakka"""
     add_field(name, description, nndss, field_type, viz, column_order, is_private)
 
 
-@field.command('update', hidden=hide_admin_cmds())
+@field.command(
+        'update', 
+        hidden=hide_admin_cmds(),
+        help=f"Update a metadata field within {PROG_NAME}"
+)
 @click.argument('fieldname')
 @opt_name(required=False,
           help="New field name - if this argument is provided, the field name will be changed")
@@ -80,7 +87,6 @@ def field_update(
         column_order: int,
         is_private: bool,
 ):
-    """Update a metadata field within AusTrakka"""
     update_field(
         fieldname,
         name,
@@ -117,15 +123,21 @@ def field_list_proformas(fieldname: str, out_format: str):
     list_field_proformas(fieldname, out_format)
 
 
-@field.command('disable', hidden=hide_admin_cmds())
+@field.command(
+        'disable', 
+        hidden=hide_admin_cmds(),
+        help=f"Disable a metadata field within {PROG_NAME}"
+)
 @click.argument('fieldname')
 def field_disable(fieldname: str):
-    """Disable a metadata field within AusTrakka"""
     disable_field(fieldname)
 
 
-@field.command('enable', hidden=hide_admin_cmds())
+@field.command(
+        'enable', 
+        hidden=hide_admin_cmds(),
+        help=f"Enable a metadata field within {PROG_NAME}"
+)
 @click.argument('fieldname')
 def field_enable(fieldname: str):
-    """Enable a metadata field within AusTrakka"""
     enable_field(fieldname)

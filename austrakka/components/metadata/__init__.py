@@ -15,6 +15,7 @@ from austrakka.components.metadata.funcs import validate_metadata
 from austrakka.components.metadata.funcs import append_metadata
 from austrakka.components.metadata.funcs import list_metadata, list_metadata_by_field
 from austrakka.utils.output import table_format_option, FORMATS
+from austrakka import __prog_name__ as PROG_NAME
 
 ADD_APPEND_BATCH_SIZE_HELP = (
     'The number of rows to split the metadata upload into before uploading. '
@@ -44,11 +45,16 @@ def submission_add(
         proforma: str,
         blanks_will_delete: bool,
         batch_size: int):
-    """Upload metadata submission to AusTrakka"""
+    f"""Upload metadata submission to {PROG_NAME}"""
     add_metadata(file, proforma, blanks_will_delete, batch_size)
 
 
-@metadata.command('update')
+@metadata.command('update', help=f"""
+    Upload metadata to existing samples.
+    The update operation does not require (or accept) Owner_group.
+    The specified pro forma must contain Seq_ID and metadata fields
+    to be updated. All samples must already exist in {PROG_NAME}.
+""")
 @click.argument('file', type=click.File('rb'))
 @opt_proforma()
 @opt_blanks_delete()
@@ -58,13 +64,7 @@ def submission_append(
         file: BufferedReader, 
         proforma: str, 
         blanks_will_delete: bool,
-        batch_size: int):   
-    """
-    Upload metadata to existing samples.
-    The update operation does not require (or accept) Owner_group.
-    The specified pro forma must contain Seq_ID and metadata fields
-    to be updated. All samples must already exist in AusTrakka.
-    """
+        batch_size: int):
     append_metadata(file, proforma, blanks_will_delete, batch_size)
 
 
