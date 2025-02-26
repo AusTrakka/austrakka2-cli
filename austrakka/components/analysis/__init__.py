@@ -15,6 +15,7 @@ from austrakka.utils.options import opt_is_active
 from austrakka.utils.options import opt_project
 from austrakka.utils.options import opt_definition
 from austrakka.utils.options import opt_filter_string
+from austrakka import __prog_name__ as PROG_NAME
 
 
 @click.group()
@@ -27,16 +28,21 @@ def analysis(ctx):
 analysis.add_command(definition) if show_admin_cmds() else None
 
 
-@analysis.command('list')
+@analysis.command(
+        'list',
+        help=f'List analyses in {PROG_NAME}',
+)
 @opt_project(required=True)
 @opt_show_disabled()
 @table_format_option()
 def analysis_list(project: str, show_disabled: bool, out_format: str):
-    '''List analyses in AusTrakka'''
     list_analyses(project, show_disabled, out_format)
 
 
-@analysis.command('add')
+@analysis.command(
+        'add',
+        help=f'Add analysis in {PROG_NAME}',
+)
 @opt_abbrev()
 @opt_name(help='Analysis Name')
 @opt_description()
@@ -53,7 +59,6 @@ def analysis_add(
         filter_str: str,
         is_active: bool,
 ):
-    """Add analysis in AusTrakka"""
     add_analysis(
         abbrev,
         name,
@@ -65,7 +70,10 @@ def analysis_add(
     )
 
 
-@analysis.command('update')
+@analysis.command(
+        'update',
+        help=f'Update analysis in {PROG_NAME}',
+)
 @click.argument('analysis-abbrev', type=str)
 @opt_name(help='Analysis Name', required=False)
 @opt_description(required=False)
@@ -82,7 +90,6 @@ def analysis_update(
         filter_str: str,
         is_active: bool,
 ):
-    """Update analysis in AusTrakka"""
     update_analysis(
         analysis_abbrev,
         name,
@@ -94,15 +101,21 @@ def analysis_update(
     )
 
 
-@analysis.command('disable', hidden=hide_admin_cmds())
+@analysis.command(
+        'disable', 
+        hidden=hide_admin_cmds(),
+        help=f'Disable analysis in {PROG_NAME}',
+)
 @click.argument('analysis-abbrev', type=str)
 def analysis_disable(analysis_abbrev: str):
-    """Disable analysis in AusTrakka"""
     disable_analysis(analysis_abbrev)
 
 
-@analysis.command('enable', hidden=hide_admin_cmds())
+@analysis.command(
+        'enable', 
+        hidden=hide_admin_cmds(),
+        help=f'Enable analysis in {PROG_NAME}',
+)
 @click.argument('analysis-abbrev', type=str)
 def analysis_enable(analysis_abbrev: str):
-    """Enable analysis in AusTrakka"""
     enable_analysis(analysis_abbrev)
