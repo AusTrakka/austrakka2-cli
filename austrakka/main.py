@@ -26,6 +26,7 @@ from .components.plot import plot
 from .components.iam import iam
 
 from . import __version__ as VERSION
+from . import __prog_name__ as PROG_NAME
 from .utils.misc import AusTrakkaCliTopLevel
 from .utils.logger import is_debug
 from .utils.misc import HELP_OPTS
@@ -98,7 +99,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     show_envvar=True,
     help='Outputs logs to a temporary file',
 )
-@click.version_option(message="%(prog)s v%(version)s", version=VERSION)
+@click.version_option(message="%(prog)s v%(version)s", version=VERSION, prog_name=PROG_NAME)
 @click.pass_context
 def cli(
         ctx: Context,
