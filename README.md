@@ -1,11 +1,11 @@
-# Trakka CLI
+# AusTrakka CLI
 
-Command line interface for Trakka APIs.
+Command line interface for AusTrakka APIs.
 
 ## Getting started with the CLI
 
-The Trakka CLI is a command-line interface for interacting with the Trakka platform.
-To use it, you will need an Trakka account which grants the relevant roles and permissions in any organisation or 
+The AusTrakka CLI is a command-line interface for interacting with the AusTrakka platform.
+To use it, you will need an AusTrakka account which grants the relevant roles and permissions in any organisation or 
 project you wish to interact with.
 
 The CLI can be used for several purposes, including:
@@ -22,7 +22,7 @@ Note that currently, sequence data can only be submitted using the CLI, and cann
 The CLI requires Python to run. If you would like to use conda to install Python, install the CLI, and save the necessary environment variables,
 you can first install either Miniforge (https://github.com/conda-forge/miniforge) or Miniconda (https://docs.conda.io/en/latest/miniconda.html). We recommend Miniforge for most users.
 
-Note that as a part of installing the CLI, you will need to set the `AT_URI` environment variable. This will be provided by the Trakka team.
+Note that as a part of installing the CLI, you will need to set the `AT_URI` environment variable. This will be provided by the AusTrakka team.
 
 ### Install into a conda environment (optional but recommended)
 
@@ -102,7 +102,7 @@ python -m pip install --upgrade austrakka
 
 ## Logging in
 
-Before you can use the CLI, you must log in as described below, to allow the CLI to use your Trakka credentials. 
+Before you can use the CLI, you must log in as described below, to allow the CLI to use your AusTrakka credentials. 
 Your authorisation will expire after a period and you will need to log in again.
 
 ### User Authentication
@@ -111,7 +111,7 @@ Most users will want to log in to the CLI this way.
 
 For any of these methods, you should be directed to log in via a browser and enter a code to authorise the CLI. 
 This browser-based login uses your institutional credentials, i.e. the same credentials you use to log in 
-to the Trakka web interface, and will authenticate you via your institution's identity provider.
+to the AusTrakka web interface, and will authenticate you via your institution's identity provider.
 
 >#### Mac / Linux
 >If you have configured a login command as described above, you can simply run
@@ -152,7 +152,7 @@ To authenticate a process, you'll need to set the following environment variable
 AT_AUTH_PROCESS_ID
 AT_AUTH_PROCESS_SECRET
 ```
-Values for `AT_AUTH_PROCESS_ID` and `AT_AUTH_PROCESS_SECRET` will be provided to you by the Trakka team. Note that the secret value is sensitive.
+Values for `AT_AUTH_PROCESS_ID` and `AT_AUTH_PROCESS_SECRET` will be provided to you by the AusTrakka team. Note that the secret value is sensitive.
 
 Once these variables are set, run the following to authorise:
 
@@ -202,12 +202,12 @@ to see the usage of the `metadata add` command to upload metadata files.
 
 | Name                    | Description                                                                                                                                     |
 |-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| `AT_TOKEN`              | Trakka auth token                                                                                                                            |
+| `AT_TOKEN`              | AusTrakka auth token                                                                                                                            |
 | `AT_URI`                | URI for API endpoint                                                                                                                            |
 | `AT_LOG_LEVEL`          | Level of logging                                                                                                                                |
 | `AT_LOG`                | Set to `file` to redirecting logging to a temp file                                                                                             |
 | `AT_CMD_SET`            | Set to `austrakka-admin` to display admin commands (these will not actually run successfully unless you have an appropriate role on the server) |
-| `AT_SKIP_CERT_VERIFY`   | Skips verification of the cert used by the Trakka backend                                                                                    |
+| `AT_SKIP_CERT_VERIFY`   | Skips verification of the cert used by the AusTrakka backend                                                                                    |
 | `AT_SKIP_VERSION_CHECK` | Skips checking of new CLI version                                                                                                               |
 | `AT_USE_HTTP2`          | Uses HTTP2 (experimental)                                                                                                                       |
 
