@@ -13,12 +13,11 @@ ALL_VERSIONS = 'AllVersions'
 
 @logger_wraps()
 def add_tree_version(file: BufferedReader, tree_abbrev: str):
-    analysis = get_tree_by_abbrev(tree_abbrev)
-
+    tree = get_tree_by_abbrev(tree_abbrev)
     api_post_multipart(
         path=path.join(TREE_VERSION_PATH, TREE_UPLOAD),
         data={
-            'analysisid': str(analysis['analysisId'])
+            'treeid': str(tree['analysisId'])
         },
         files={'file': (file.name, file)}
     )
