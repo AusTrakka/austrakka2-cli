@@ -1,8 +1,15 @@
 resources:
   repositories:
-    - repository: Cli
+    - repository: CLI
       type: github
-      name: AusTrakka/austrakka-cli
+      name: AusTrakka/austrakka2-cli
+      ref: $(Build.SourceBranch) 
+      endpoint: AusTrakka
+    - repository: CLI
+      type: github
+      name: AusTrakka/austrakka-pipelines
+      ref: 6809-cli-build-publish # TODO: change this to master
+      endpoint: AusTrakka
 
 trigger:
   branches:
@@ -20,13 +27,11 @@ variables:
 stages:
   - stage: CheckoutRepos
     jobs:
-      - template: templates/stages/deploy/cli.yml@Pipelines
-        parameters:
-          pypiConnectionName: pypi_austrakka
-          camelCaseNameReplace: AusTrakka
-          lowerCaseNameReplace: austrakka
+      # - template: templates/stages/deploy/cli.yml@Pipelines
+      #   parameters:
+      #     pypiConnectionName: pypi_austrakka
+      #     cliNameReplace: AusTrakka
       - template: templates/stages/deploy/cli.yml@Pipelines
         parameters:
           pypiConnectionName: pypi_trakka
-          camelCaseNameReplace: Trakka
-          lowerCaseNameReplace: trakka
+          cliNameReplace: Trakka

@@ -1,4 +1,6 @@
 #!/bin/bash
+# $1 Replacement name for AusTrakka
+# Will setup the build environment for publishing to alternative CLI repos.
 
 NORMAL=$1
 LOWER=$(echo $NORMAL | awk '{print tolower($0)}')
