@@ -31,7 +31,7 @@ stages:
       #   parameters:
       #     pypiConnectionName: pypi_austrakka
       #     cliNameReplace: AusTrakka
-      - template: templates/stages/deploy/cli.yml@Pipelines
+      - template: templates/jobs/deployment/cli.yml@Pipelines
         parameters:
           pypiConnectionName: pypi_trakka
           cliNameReplace: Trakka
