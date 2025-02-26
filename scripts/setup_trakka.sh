@@ -15,3 +15,7 @@ rm pyproject.toml.bak
 
 sed -i.bak "s/\"AusTrakka\"/\"$NORMAL\"/g" austrakka/__init__.py
 rm austrakka/__init__.py.bak
+
+sed -i.bak "s/AusTrakka/$NORMAL/g" README.md
+sed -i.bak "s/austrakka/$LOWER/g" README.md
+sed -i.bak "s/$LOWER-admin/austrakka-admin/g" README.md
