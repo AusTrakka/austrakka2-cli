@@ -5,7 +5,7 @@ resources:
       name: AusTrakka/austrakka2-cli
       ref: $(Build.SourceBranch) 
       endpoint: AusTrakka
-    - repository: CLI
+    - repository: Pipelines
       type: github
       name: AusTrakka/austrakka-pipelines
       ref: 6809-cli-build-publish # TODO: change this to master
@@ -25,7 +25,7 @@ variables:
 - template: variables/devops/setup.yml@Pipelines
 
 stages:
-  - stage: CheckoutRepos
+  - stage: DeployCli
     jobs:
       # - template: templates/stages/deploy/cli.yml@Pipelines
       #   parameters:
