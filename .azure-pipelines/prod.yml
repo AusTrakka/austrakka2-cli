@@ -1,0 +1,37 @@
+resources:
+  repositories:
+    - repository: CLI
+      type: github
+      name: AusTrakka/austrakka2-cli
+      ref: $(Build.SourceBranch) 
+      endpoint: AusTrakka
+    - repository: Pipelines
+      type: github
+      name: AusTrakka/austrakka-pipelines
+      ref: master
+      endpoint: AusTrakka
+
+trigger:
+  branches:
+    include:
+      - master
+
+pr: none
+
+pool:
+  name: UAT-New
+
+variables:
+- template: variables/devops/setup.yml@Pipelines
+
+stages:
+  - stage: DeployCli
+    jobs:
+      - template: templates/stages/deploy/cli.yml@Pipelines
+        parameters:
+          pypiConnectionName: pypi_austrakka
+          cliNameReplace: AusTrakka
+      - template: templates/jobs/deployment/cli.yml@Pipelines
+        parameters:
+          pypiConnectionName: pypi_trakka
+          cliNameReplace: Trakka

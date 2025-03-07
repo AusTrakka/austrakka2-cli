@@ -16,7 +16,7 @@ This value can be obtained by running the following command:
 austrakka auth user'''
 MISSING_URI_HELP = '''Error: Environment variable AT_URI is not set.
 
-Please contact an AusTrakka admin if you do not have this value.'''
+Please contact a Trakka admin if you do not have this value.'''
 
 
 class AusTrakkaCliTopLevel(click.Group):

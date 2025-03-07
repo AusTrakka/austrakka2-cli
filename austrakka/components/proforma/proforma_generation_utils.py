@@ -132,7 +132,7 @@ def generate_template(
     # Data dictionary worksheet
     seq_id_length = 1.5*max([24]+[len(f) for f in fields])
     datadict_columns = [
-        'AusTrakka metadata label',
+        'Trakka metadata label',
         'NNDSS metadata label',
         'Metadata class',
         'Definition',
