@@ -1,5 +1,7 @@
 # pylint: disable=expression-not-assigned
 import click
+
+from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.output import table_format_option
 from austrakka.utils.output import object_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
@@ -38,7 +40,11 @@ project.add_command(metadata)
 project.add_command(dataset)
 
 
-@project.command('add', hidden=hide_admin_cmds())
+@project.command(
+        'add', 
+        hidden=hide_admin_cmds(),
+        help=f'Add a new project to {PROG_NAME}.'
+)
 @opt_abbrev(help="Project Abbreviation")
 @opt_name(help="Project name")
 @opt_description(required=False)
@@ -52,13 +58,14 @@ def project_add(
         org: str,
         dashboard_name: str,
         project_type: str):
-    '''
-    Add a new project to AusTrakka.
-    '''
     add_project(abbrev, name, description, org, dashboard_name, project_type)
 
 
-@project.command('update', hidden=hide_admin_cmds())
+@project.command(
+        'update', 
+        hidden=hide_admin_cmds(),
+        help=f'Update an existing project in {PROG_NAME}.',
+)
 @click.argument('project-abbrev', type=str)
 @opt_abbrev(help="New project abbreviation", required=False)
 @opt_name(help="New project name", required=False)
@@ -76,9 +83,6 @@ def project_update(
         org: str,
         dashboard_name: str,
         project_type: str):
-    '''
-    Update an existing project in AusTrakka.
-    '''
     update_project(project_abbrev,
                    abbrev,
                    name,
@@ -109,11 +113,10 @@ def dashboard_get(project_abbrev: str, out_format: str):
     get_dashboard(project_abbrev, out_format)
 
 
-@project.command('list')
+@project.command('list', help=f'List projects in {PROG_NAME}')
 @opt_view_type()
 @table_format_option()
 def projects_list(view_type: str,out_format: str):
-    '''List projects in AusTrakka'''
     list_projects(view_type, out_format)
 
 @project.command('settings')

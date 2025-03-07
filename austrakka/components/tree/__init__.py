@@ -2,6 +2,7 @@
 from io import BufferedReader
 import click
 
+from austrakka import __prog_name__ as PROG_NAME
 from .funcs import add_tree
 from .funcs import list_trees
 from .funcs import disable_tree
@@ -18,19 +19,17 @@ def tree(ctx):
     ctx.context = ctx.parent.context
 
 
-@tree.command('add')
+@tree.command('add', help=f'Upload tree to {PROG_NAME}')
 @click.argument('newick', type=click.File('rb'))
 @opt_analysis()
 def tree_add(newick: BufferedReader, analysis: str):
-    '''Upload tree to AusTrakka'''
     add_tree(newick, analysis)
 
 
-@tree.command('list')
+@tree.command('list', help=f'List trees in {PROG_NAME}')
 @opt_analysis()
 @table_format_option()
 def tree_list(analysis: str, out_format: str):
-    '''List trees in AusTrakka'''
     list_trees(out_format, analysis)
 
 

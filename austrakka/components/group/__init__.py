@@ -10,6 +10,7 @@ from austrakka.utils.cmd_filter import hide_admin_cmds, show_admin_cmds
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_organisation
 from austrakka.utils.output import table_format_option
+from austrakka import __prog_name__ as PROG_NAME
 
 
 @click.group()
@@ -56,8 +57,7 @@ def group_update(
         org)
 
 
-@group.command('list')
+@group.command('list', help=f'List all known groups in {PROG_NAME}')
 @table_format_option()
 def group_list(out_format: str):
-    """List all known groups in AusTrakka"""
     list_group(out_format)

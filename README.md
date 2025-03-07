@@ -1,6 +1,6 @@
 # AusTrakka CLI
 
-Command line interface for AusTrakka V2.
+Command line interface for AusTrakka APIs.
 
 ## Getting started with the CLI
 
