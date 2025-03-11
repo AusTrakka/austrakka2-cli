@@ -8,8 +8,9 @@ PYPI_PACKAGE_URI = f'https://pypi.org/pypi/{PROG_NAME.lower()}/json'
 
 
 def check_version(current):
-    if PROG_NAME.lower() == "austrakka":
-        logger.warning("The 'austrakka' CLI is deprecated. Please install 'trakka'.")
+    # Add this back in once we're ready to start moving users to trakka
+    # if PROG_NAME.lower() == "austrakka":
+    #     logger.warning("The 'austrakka' CLI is deprecated. Please install 'trakka'.")
 
     try:
         resp = requests.get(PYPI_PACKAGE_URI, timeout=10)
