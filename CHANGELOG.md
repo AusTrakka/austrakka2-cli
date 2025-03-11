@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.68.1]
+### Changed 
+- Field Source is now listed as a column in the `project field list` command.
+- `user add` command: `--is-austrakka-process` and `--not-austrakka-process` flags have been renamed to `--is-process` and `--not-process` respectively.
+
 # [0.68.0]
 ### Added
 - Introduced the `set-type` command to the `project` command group.
