@@ -25,12 +25,14 @@ variables:
 - template: variables/devops/setup.yml@Pipelines
 
 stages:
-  - stage: DeployCli
+  - stage: DeployAusTrakkaCli
     jobs:
       - template: templates/jobs/deployment/cli.yml@Pipelines
         parameters:
           pypiConnectionName: pypi_austrakka
           cliNameReplace: AusTrakka
+  - stage: DeployTrakkaCli
+    jobs:
       - template: templates/jobs/deployment/cli.yml@Pipelines
         parameters:
           pypiConnectionName: pypi_trakka
