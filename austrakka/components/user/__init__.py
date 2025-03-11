@@ -46,10 +46,10 @@ def user_add(
         user_id: str,
         org: str,
         owner_group_roles: List[str],
-        is_austrakka_process: bool,
+        is_process: bool,
         server_username: str,
 ):
-    add_user(user_id, org, owner_group_roles, is_austrakka_process, server_username)
+    add_user(user_id, org, owner_group_roles, is_process, server_username)
 
 
 @user.command('update', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
