@@ -1,6 +1,4 @@
 # pylint: disable=duplicate-code
-
-from loguru import logger
 import pandas as pd
 
 from austrakka.utils.api import api_post, \
