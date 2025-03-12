@@ -1,6 +1,4 @@
 # pylint: disable=duplicate-code
-
-from loguru import logger
 import pandas as pd
 
 from austrakka.utils.api import api_post, \
@@ -67,7 +65,6 @@ def add_project(
 @logger_wraps()
 def update_project(
         project_abbreviation: str,
-        abbrev: str,
         name: str,
         description: str,
         is_active: bool,
@@ -78,7 +75,6 @@ def update_project(
 
     # ProjectDTO fields which should go in ProjectPutDTO
     put_project = {k: project[k] for k in [
-        'abbreviation',
         'name',
         'description',
         'isActive',
@@ -89,9 +85,6 @@ def update_project(
     if project['requestingOrg'] is None:
         put_project['requestingOrg'] = {'abbreviation': None}
 
-    if abbrev is not None:
-        logger.warning(f"Updating project abbreviation from {project['abbreviation']} to {abbrev}")
-        put_project['abbreviation'] = abbrev
     if name is not None:
         put_project['name'] = name
     if description is not None:

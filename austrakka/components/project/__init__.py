@@ -67,7 +67,6 @@ def project_add(
         help=f'Update an existing project in {PROG_NAME}.',
 )
 @click.argument('project-abbrev', type=str)
-@opt_abbrev(help="New project abbreviation", required=False)
 @opt_name(help="New project name", required=False)
 @opt_description(help="New project description", required=False)
 @opt_is_active(help="Set project active status", is_update=True, required=False)
@@ -76,7 +75,6 @@ def project_add(
 @opt_type(help="New project type", required=False)
 def project_update(
         project_abbrev: str,
-        abbrev: str,
         name: str,
         description: str,
         is_active: bool,
@@ -84,7 +82,6 @@ def project_update(
         dashboard_name: str,
         project_type: str):
     update_project(project_abbrev,
-                   abbrev,
                    name,
                    description,
                    is_active,
