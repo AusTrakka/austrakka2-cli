@@ -9,9 +9,18 @@ and this project adheres to [Semantic Versioning].
 ### Changed
 - Updated the 'project update' command so that a user cannot update the project abbreviation.
 
+# [0.68.3]
+### Removed
+- Incorrect deprecation notice when checking for new CLI versions.
+
+# [0.68.2]
+### Fixed
+- Issues with deployment pipeline.
+
 # [0.68.1]
 ### Changed 
 - Field Source is now listed as a column in the `project field list` command.
+- `user add` command: `--is-austrakka-process` and `--not-austrakka-process` flags have been renamed to `--is-process` and `--not-process` respectively.
 
 # [0.68.0]
 ### Added
