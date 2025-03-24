@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-# [Unreleased]
-### Changed
-- Updated the 'project update' command so that a user cannot update the project abbreviation.
+# [0.69.0]
+### Removed
+- Removed `--abbrev` flag from `project update` command.
 
 # [0.68.3]
 ### Removed
