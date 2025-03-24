@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [Unreleased]
+### Changed
+- Updated the 'project update' command so that a user cannot update the project abbreviation.
+
+# [0.68.3]
+### Removed
+- Incorrect deprecation notice when checking for new CLI versions.
+
+# [0.68.2]
+### Fixed
+- Issues with deployment pipeline.
+
 # [0.68.1]
 ### Changed 
 - Field Source is now listed as a column in the `project field list` command.
