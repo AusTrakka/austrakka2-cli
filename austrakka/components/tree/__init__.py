@@ -47,7 +47,10 @@ def tree_add(
         project: str,
         is_active: bool,
 ):
-    """Add tree in AusTrakka"""
+    """Add a new named tree to a project. If a newick file is supplied, it
+    will be uploaded to this tree entry, otherwise the tree entry will appear
+    in the project with no tree versions until one is added. To add a newick
+    file to an existing named tree, use the tree version add command."""
     add_tree(
         abbrev,
         name,
@@ -70,7 +73,8 @@ def tree_update(
         project: str,
         is_active: bool,
 ):
-    """Update tree in AusTrakka"""
+    """Update the properties of a named tree. This does not upload a newick
+    file and does not create a new version of the specified tree."""
     update_tree(
         tree_abbrev,
         name,
@@ -83,12 +87,12 @@ def tree_update(
 @tree.command('disable', hidden=hide_admin_cmds())
 @click.argument('tree-abbrev', type=str)
 def tree_disable(tree_abbrev: str):
-    """Disable tree in AusTrakka"""
+    """Disable a named tree and all its versions."""
     disable_tree(tree_abbrev)
 
 
 @tree.command('enable', hidden=hide_admin_cmds())
 @click.argument('tree-abbrev', type=str)
 def tree_enable(tree_abbrev: str):
-    """Enable tree in AusTrakka"""
+    """Re-enable a named tree and all its versions"""
     enable_tree(tree_abbrev)

@@ -22,7 +22,7 @@ def version(ctx):
 @click.argument('newick', type=click.File('rb'))
 @opt_tree()
 def tree_add(newick: BufferedReader, tree: str):
-    '''Upload tree version to AusTrakka'''
+    '''Upload a new version of the specified tree'''
     add_tree_version(newick, tree)
 
 
@@ -30,7 +30,7 @@ def tree_add(newick: BufferedReader, tree: str):
 @opt_tree()
 @table_format_option()
 def tree_list(tree: str, out_format: str):
-    '''List tree versions in AusTrakka'''
+    '''List all uploaded versions of a specified tree'''
     list_tree_versions(out_format, tree)
 
 
