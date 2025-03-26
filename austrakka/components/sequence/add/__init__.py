@@ -8,6 +8,7 @@ from austrakka.utils.options import opt_force_mutex_skip
 from austrakka.utils.options import opt_skip_mutex_force
 from austrakka.utils.options import opt_owner
 from austrakka.utils.options import opt_share
+from austrakka import __prog_name__ as PROG_NAME
 from ..funcs import add_fasta_cns_submission
 from ..funcs import add_sequence_submission
 
@@ -27,10 +28,10 @@ def add(ctx):
 
 
 @add.command(SeqType.FASTQ_ILL_PE.value, help=f"""
-    Upload paired-end Illumina FASTQ data to AusTrakka
+    Upload paired-end Illumina FASTQ data to {PROG_NAME}
 
     The following CSV mapping fields are required:\n
-            Seq_ID: The sample name in AusTrakka\n
+            Seq_ID: The sample name in {PROG_NAME}\n
             filepath1: The local path of the first read file to be uploaded\n
             filepath2: The local path of the second read file to be uploaded
 
@@ -55,10 +56,10 @@ def seq_add_fastq_ill_PE(
 
 
 @add.command(SeqType.FASTQ_ILL_SE.value, help=f"""
-    Upload single-end Illumina FASTQ data to AusTrakka
+    Upload single-end Illumina FASTQ data to {PROG_NAME}
 
     The following CSV mapping fields are required:\n
-            Seq_ID: The sample name in AusTrakka\n
+            Seq_ID: The sample name in {PROG_NAME}\n
             filepath: The local path of the file to be uploaded
 
     {METADATA_ADD_HELP_TEXT}
@@ -82,10 +83,10 @@ def seq_add_fastq_ill_SE(
 
 
 @add.command(SeqType.FASTQ_ONT.value, help=f"""
-    Upload Oxford Nanopore FASTQ data to AusTrakka
+    Upload Oxford Nanopore FASTQ data to {PROG_NAME}
 
     The following CSV mapping fields are required:\n
-            Seq_ID: The sample name in AusTrakka\n
+            Seq_ID: The sample name in {PROG_NAME}\n
             filepath: The local path of the file to be uploaded
     
     {METADATA_ADD_HELP_TEXT}
@@ -109,7 +110,7 @@ def seq_add_fastq_ont(
 
 @add.command(SeqType.FASTA_CNS.value, help=f"""
 
-    Upload consensus FASTA sequences to AusTrakka.
+    Upload consensus FASTA sequences to {PROG_NAME}.
 
     A single FASTA file should be supplied.
     Multiple samples can be included in the same file.
@@ -137,10 +138,10 @@ def seq_add_fasta_cns(
 
 
 @add.command(SeqType.FASTA_ASM.value, help=f"""
-    Upload FASTA assembly sequences to AusTrakka
+    Upload FASTA assembly sequences to {PROG_NAME}
 
     The following CSV mapping fields are required:\n
-            Seq_ID: The sample name in AusTrakka\n
+            Seq_ID: The sample name in {PROG_NAME}\n
             filepath: The local path of the file to be uploaded
 
     {METADATA_ADD_HELP_TEXT}

@@ -11,6 +11,7 @@ from austrakka.utils.enums.privilege_level import (
 from austrakka.utils.enums.seq import SeqType
 from austrakka.utils.enums.view_type import MORE, COMPACT, FULL
 from austrakka.utils.option_utils import create_option, MutuallyExclusiveOption
+from austrakka import __prog_name__ as PROG_NAME
 
 
 def opt_abbrev(**attrs: t.Any):
@@ -240,7 +241,7 @@ def opt_organisation(**attrs: t.Any):
     defaults = {
         'required': True,
         'help': 'Organisation abbreviation. Must match an organisation ' +
-                'known to AusTrakka, use `austrakka org list` to see valid ' +
+                f'known to {PROG_NAME}, use `{PROG_NAME.lower()} org list` to see valid ' +
                 'values',
     }
     return create_option(
@@ -266,7 +267,7 @@ def opt_email(**attrs: t.Any):
 def opt_proforma(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Proforma abbreviation. Use `austrakka proforma list` to see '
+        'help': f'Proforma abbreviation. Use `{PROG_NAME.lower()} proforma list` to see '
                 'options.',
     }
     return create_option(
@@ -349,7 +350,7 @@ def opt_tree(**attrs: t.Any):
 def opt_fieldtype(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Metadata field type. Use `austrakka fieldtype list` to see '
+        'help': f'Metadata field type. Use `{PROG_NAME.lower()} fieldtype list` to see '
                 'options.'
     }
     return create_option(
@@ -363,7 +364,7 @@ def opt_fieldtype(**attrs: t.Any):
 def opt_plottype(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Plot type. Use `austrakka plot types` to see options.'
+        'help': f'Plot type. Use `{PROG_NAME.lower()} plot types` to see options.'
     }
     return create_option(
         '-pt',
@@ -467,10 +468,10 @@ def opt_is_active(is_update=False, **attrs: t.Any):
 
 def opt_is_austrakka_process(**attrs: t.Any):
     defaults = {
-        'help': 'Determines if the user is an AusTrakka process'
+        'help': f'Determines if the user is an {PROG_NAME} process'
     }
     return create_option(
-        '--is-austrakka-process/--not-austrakka-process',
+        '--is-process/--not-process',
         type=bool,
         required=True,
         **{**defaults, **attrs}
