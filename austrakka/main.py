@@ -12,7 +12,6 @@ from .components.auth import auth
 from .components.user import user
 from .components.org import org
 from .components.project import project
-from .components.analysis import analysis
 from .components.tree import tree
 from .components.metadata import metadata
 from .components.sequence import seq
@@ -136,7 +135,6 @@ def get_cli():
     cli.add_command(org) if show_admin_cmds() else None
     cli.add_command(group)
     cli.add_command(project)
-    cli.add_command(analysis)
     cli.add_command(tree)
     cli.add_command(plot) if show_admin_cmds() else None
     cli.add_command(dashboard) if show_admin_cmds() else None
