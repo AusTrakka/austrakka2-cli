@@ -109,7 +109,6 @@ def seq_add_fastq_ont(
 
 
 @add.command(SeqType.FASTA_CNS.value, help=f"""
-
     Upload consensus FASTA sequences to {PROG_NAME}.
 
     A single FASTA file should be supplied.
