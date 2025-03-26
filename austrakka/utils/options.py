@@ -306,6 +306,21 @@ def opt_csv(**attrs: t.Any):
     )
 
 
+def opt_file(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'File',
+    }
+    return create_option(
+            "-f",
+        "--file",
+        "file",
+        type=click.File('rb'),
+        default=None,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_seq_type(**attrs: t.Any):
     defaults = {
         'required': True,

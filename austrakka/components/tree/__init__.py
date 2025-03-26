@@ -1,4 +1,5 @@
 # pylint: disable=expression-not-assigned,duplicate-code
+from io import BufferedReader
 import click
 
 from austrakka.utils.output import table_format_option
@@ -8,7 +9,7 @@ from austrakka.components.tree.funcs import add_tree
 from austrakka.components.tree.funcs import update_tree
 from austrakka.utils.cmd_filter import show_admin_cmds
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import opt_abbrev, opt_show_disabled
+from austrakka.utils.options import opt_abbrev, opt_file, opt_show_disabled
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_is_active
@@ -40,12 +41,14 @@ def tree_list(project: str, show_disabled: bool, out_format: str):
 @opt_description()
 @opt_project()
 @opt_is_active()
+@opt_file(help='Newick File')
 def tree_add(
         abbrev: str,
         name: str,
         description: str,
         project: str,
         is_active: bool,
+        file: BufferedReader,
 ):
     """Add a new named tree to a project. If a newick file is supplied, it
     will be uploaded to this tree entry, otherwise the tree entry will appear
@@ -57,6 +60,7 @@ def tree_add(
         description,
         project,
         is_active,
+        file,
     )
 
 

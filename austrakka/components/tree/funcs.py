@@ -1,3 +1,5 @@
+from io import BufferedReader
+from austrakka.components.tree.version.funcs import add_tree_version
 from austrakka.utils.api import api_post, api_patch
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.tree import get_tree_by_abbrev
@@ -19,6 +21,7 @@ def add_tree(
         description: str,
         project: str,
         is_active: bool,
+        file: BufferedReader,
 ):
     api_post(
         path=ANALYSIS_PATH,
@@ -32,6 +35,8 @@ def add_tree(
             'abbreviation': abbrev
         }
     )
+    if file is not None:
+        add_tree_version(file, abbrev)
 
 
 @logger_wraps()
