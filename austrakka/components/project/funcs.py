@@ -70,9 +70,11 @@ def update_project(
         is_active: bool,
         org: str,
         dashboard_name: str,
-        project_type: str):
+        project_type: str,
+        client_type: str
+):
     project = get_project_by_abbrev(project_abbreviation)
-
+    
     # ProjectDTO fields which should go in ProjectPutDTO
     put_project = {k: project[k] for k in [
         'name',
@@ -80,8 +82,10 @@ def update_project(
         'isActive',
         'requestingOrg',
         'dashboardName',
-        'type'
+        'type',
+        'clientType'
     ]}
+    
     if project['requestingOrg'] is None:
         put_project['requestingOrg'] = {'abbreviation': None}
 
@@ -99,7 +103,9 @@ def update_project(
         put_project['dashboardName'] = dashboard_name
     if project_type is not None:
         put_project['type'] = project_type
-
+    if client_type is not None:
+        put_project['clientType'] = client_type
+        
     return api_put(
         path=f"{PROJECT_PATH}/{project_abbreviation}",
         data=put_project

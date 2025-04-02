@@ -8,7 +8,7 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_abbrev, \
     opt_is_active, \
     opt_type, \
-    opt_view_type
+    opt_view_type, opt_project_client_type
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_dashboard_name
 from austrakka.utils.options import opt_description
@@ -72,6 +72,7 @@ def project_add(
 @opt_is_active(help="Set project active status", is_update=True, required=False)
 @opt_organisation(help="New requesting organisation abbreviation", required=False)
 @opt_dashboard_name(help="New dashboard", required=False)
+@opt_project_client_type(required=False)
 @opt_type(help="New project type", required=False)
 def project_update(
         project_abbrev: str,
@@ -80,14 +81,16 @@ def project_update(
         is_active: bool,
         org: str,
         dashboard_name: str,
-        project_type: str):
+        project_type: str,
+        client_type: str):
     update_project(project_abbrev,
                    name,
                    description,
                    is_active,
                    org,
                    dashboard_name,
-                   project_type)
+                   project_type,
+                   client_type)
 
 
 @project.command('set-dashboard', hidden=hide_admin_cmds())
