@@ -51,14 +51,16 @@ project.add_command(dataset)
 @opt_organisation(help="Requesting organisation abbreviation", required=False)
 @opt_dashboard_name(required=False)
 @opt_type(required=False)
+@opt_project_client_type(required=False)
 def project_add(
         abbrev: str,
         name: str,
         description: str,
         org: str,
         dashboard_name: str,
-        project_type: str):
-    add_project(abbrev, name, description, org, dashboard_name, project_type)
+        project_type: str,
+        client_type: str):
+    add_project(abbrev, name, description, org, dashboard_name, project_type, client_type)
 
 
 @project.command(

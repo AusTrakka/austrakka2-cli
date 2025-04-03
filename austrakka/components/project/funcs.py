@@ -45,7 +45,8 @@ def add_project(
         description: str,
         org: str,
         dashboard_name: str,
-        project_type: str):
+        project_type: str,
+        client_type: str):
     return api_post(
         path=PROJECT_PATH,
         data={
@@ -58,6 +59,7 @@ def add_project(
             },
             "dashboardName": dashboard_name,
             "type": project_type,
+            "clientType": client_type,
         }
     )
 
