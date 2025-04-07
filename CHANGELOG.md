@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.70.0]
+### Added
+- `--client-type` option for `project add` and `project update`.
+
+### Removed
+- Removed `--abbrev` flag from `project update` command.
+- Removed `analysis definition` commands.
+
+### Changed
+- `analysis [add|disable|enable|list|update]` have been moved to `tree [add|disable|enable|list|update]`.
+- `tree [add|disable|enable|list]` have been moved to `tree version [add|disable|enable|list]`.
+
 # [0.69.0]
 ### Removed
 - Removed `--abbrev` flag from `project update` command.
