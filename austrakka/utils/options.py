@@ -115,6 +115,20 @@ def opt_dashboard_name(var_name='dashboard_name', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_project_client_type(var_name='client_type', **attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Project client type tag, to manage in which web' +
+                ' client this project will show up in',
+    }
+    return create_option(
+        "-ct",
+        "--client-type",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
 
 def opt_group_name(var_name='group_name', **attrs: t.Any):
     defaults = {
