@@ -237,20 +237,6 @@ def opt_project(**attrs: t.Any):
     )
 
 
-def opt_definition(var_name='definition', **attrs: t.Any):
-    defaults = {
-        'multiple': False,
-        'default': 'upload',
-        'help': 'Analysis definition name',
-    }
-    return create_option(
-        '--definition',
-        var_name,
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
 def opt_organisation(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -320,6 +306,21 @@ def opt_csv(**attrs: t.Any):
     )
 
 
+def opt_file(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'File',
+    }
+    return create_option(
+            "-f",
+        "--file",
+        "file",
+        type=click.File('rb'),
+        default=None,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_seq_type(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -349,14 +350,13 @@ def opt_output_dir(**attrs: t.Any):
     )
 
 
-def opt_analysis(**attrs: t.Any):
+def opt_tree(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Analysis Abbreviation',
+        'help': 'Tree Abbreviation',
     }
     return create_option(
-        '-a',
-        '--analysis',
+        '--tree',
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -606,18 +606,6 @@ def opt_state(**attrs: t.Any):
     )
 
 
-def opt_filter_string(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'Filter String',
-    }
-    return create_option(
-        "--filter-str",
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
 def opt_fieldtype_value(var_name='values', **attrs: t.Any):
     defaults = {
         'required': True,
@@ -784,13 +772,13 @@ def opt_merge_algorithm(**attrs: t.Any):
     )
 
 
-def opt_tree_id(**attrs: t.Any):
+def opt_tree_version_id(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Tree ID',
+        'help': 'Tree Version ID',
     }
     return create_option(
-        '--tree-id',
+        '--tree-version-id',
         type=click.INT,
         **{**defaults, **attrs}
     )
