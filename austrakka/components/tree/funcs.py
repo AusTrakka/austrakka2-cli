@@ -5,13 +5,13 @@ from austrakka.utils.api import api_put
 from austrakka.utils.helpers.tree import get_tree_by_abbrev
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.paths import ANALYSIS_PATH
+from austrakka.utils.paths import TREE_PATH
 
 
 @logger_wraps()
 def list_trees(project_abbrev: str, show_disabled: bool, out_format: str):
     call_get_and_print(
-        f'{ANALYSIS_PATH}/project/{project_abbrev}?includeall={show_disabled}', out_format)
+        f'{TREE_PATH}/project/{project_abbrev}?includeall={show_disabled}', out_format)
 
 
 @logger_wraps()
@@ -24,7 +24,7 @@ def add_tree(
         file: BufferedReader,
 ):
     api_post(
-        path=ANALYSIS_PATH,
+        path=TREE_PATH,
         data={
             'name': name,
             'description': description,
@@ -47,32 +47,32 @@ def update_tree(
         project: str,
         is_active: bool,
 ):
-    analysis = get_tree_by_abbrev(abbrev)
+    tree = get_tree_by_abbrev(abbrev)
 
     if name is not None:
-        analysis['name'] = name
+        tree['name'] = name
     if description is not None:
-        analysis['description'] = description
+        tree['description'] = description
     if is_active is not None:
-        analysis['isActive'] = is_active
+        tree['isActive'] = is_active
     if project is not None:
-        analysis['project']['abbreviation'] = project
+        tree['project']['abbreviation'] = project
 
     api_put(
-        path=f'{ANALYSIS_PATH}/{abbrev}',
-        data=analysis
+        path=f'{TREE_PATH}/{abbrev}',
+        data=tree
     )
 
 
 @logger_wraps()
 def disable_tree(abbrev: str):
     api_patch(
-        path=f'{ANALYSIS_PATH}/disable/{abbrev}',
+        path=f'{TREE_PATH}/disable/{abbrev}',
     )
 
 
 @logger_wraps()
 def enable_tree(abbrev: str):
     api_patch(
-        path=f'{ANALYSIS_PATH}/enable/{abbrev}',
+        path=f'{TREE_PATH}/enable/{abbrev}',
     )
