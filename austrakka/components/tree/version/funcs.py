@@ -17,7 +17,7 @@ def add_tree_version(file: BufferedReader, tree_abbrev: str):
     api_post_multipart(
         path=path.join(TREE_VERSION_PATH, TREE_UPLOAD),
         data={
-            'treeid': str(tree['analysisId'])
+            'treeid': str(tree['treeId'])
         },
         files={'file': (file.name, file)}
     )
@@ -25,9 +25,9 @@ def add_tree_version(file: BufferedReader, tree_abbrev: str):
 
 @logger_wraps()
 def list_tree_versions(out_format: str, tree_abbrev: str):
-    analysis = get_tree_by_abbrev(tree_abbrev)
+    tree = get_tree_by_abbrev(tree_abbrev)
     call_get_and_print(
-        f'{TREE_VERSION_PATH}/{analysis["analysisId"]}/{ALL_VERSIONS}',
+        f'{TREE_VERSION_PATH}/{tree["treeId"]}/{ALL_VERSIONS}',
         out_format
     )
 
