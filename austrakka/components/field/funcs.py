@@ -125,7 +125,7 @@ def update_field(
 
     if typename is not None:
         field_type = get_fieldtype_by_name_v2(tenant_global_id, typename)
-        patch_fields["metaDataColumnTypeGlobalId"] = field_type["metaDataColumnTypeGlobalId"]
+        patch_fields["metaDataColumnTypeGlobalId"] = field_type["globalId"]
 
     if can_visualise is not None:
         if can_visualise:
