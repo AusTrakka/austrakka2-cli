@@ -87,6 +87,7 @@ def field_update(
         column_order: int,
         is_private: bool,
 ):
+    print("Field update local for prod")
     update_field(
         fieldname,
         name,
