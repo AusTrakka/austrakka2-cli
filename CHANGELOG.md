@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.70.1]
+### Changeed
+- Some internal changes to how the `tree` command works.
+
 # [0.70.0]
 ### Added
 - `--client-type` option for `project add` and `project update`.
