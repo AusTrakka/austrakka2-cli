@@ -1,6 +1,4 @@
 # pylint: disable=duplicate-code
-
-from loguru import logger
 import pandas as pd
 
 from austrakka.utils.api import api_post, \
@@ -47,7 +45,8 @@ def add_project(
         description: str,
         org: str,
         dashboard_name: str,
-        project_type: str):
+        project_type: str,
+        client_type: str):
     return api_post(
         path=PROJECT_PATH,
         data={
@@ -60,6 +59,7 @@ def add_project(
             },
             "dashboardName": dashboard_name,
             "type": project_type,
+            "clientType": client_type,
         }
     )
 
@@ -67,31 +67,30 @@ def add_project(
 @logger_wraps()
 def update_project(
         project_abbreviation: str,
-        abbrev: str,
         name: str,
         description: str,
         is_active: bool,
         org: str,
         dashboard_name: str,
-        project_type: str):
+        project_type: str,
+        client_type: str
+):
     project = get_project_by_abbrev(project_abbreviation)
-
+    
     # ProjectDTO fields which should go in ProjectPutDTO
     put_project = {k: project[k] for k in [
-        'abbreviation',
         'name',
         'description',
         'isActive',
         'requestingOrg',
         'dashboardName',
-        'type'
+        'type',
+        'clientType'
     ]}
+    
     if project['requestingOrg'] is None:
         put_project['requestingOrg'] = {'abbreviation': None}
 
-    if abbrev is not None:
-        logger.warning(f"Updating project abbreviation from {project['abbreviation']} to {abbrev}")
-        put_project['abbreviation'] = abbrev
     if name is not None:
         put_project['name'] = name
     if description is not None:
@@ -106,7 +105,9 @@ def update_project(
         put_project['dashboardName'] = dashboard_name
     if project_type is not None:
         put_project['type'] = project_type
-
+    if client_type is not None:
+        put_project['clientType'] = client_type
+        
     return api_put(
         path=f"{PROJECT_PATH}/{project_abbreviation}",
         data=put_project

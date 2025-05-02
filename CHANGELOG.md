@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+# [0.70.1]
+### Changeed
+- Some internal changes to how the `tree` command works.
+
+# [0.70.0]
+### Added
+- `--client-type` option for `project add` and `project update`.
+
+### Removed
+- Removed `--abbrev` flag from `project update` command.
+- Removed `analysis definition` commands.
+
+### Changed
+- `analysis [add|disable|enable|list|update]` have been moved to `tree [add|disable|enable|list|update]`.
+- `tree [add|disable|enable|list]` have been moved to `tree version [add|disable|enable|list]`.
+
+# [0.69.0]
+### Removed
+- Removed `--abbrev` flag from `project update` command.
+
+# [0.68.3]
+### Removed
+- Incorrect deprecation notice when checking for new CLI versions.
+
+# [0.68.2]
+### Fixed
+- Issues with deployment pipeline.
+
+# [0.68.1]
+### Changed 
+- Field Source is now listed as a column in the `project field list` command.
+- `user add` command: `--is-austrakka-process` and `--not-austrakka-process` flags have been renamed to `--is-process` and `--not-process` respectively.
+
 # [0.68.0]
 ### Added
 - Introduced the `set-type` command to the `project` command group.

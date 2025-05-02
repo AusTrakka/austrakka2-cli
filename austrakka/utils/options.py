@@ -11,6 +11,7 @@ from austrakka.utils.enums.privilege_level import (
 from austrakka.utils.enums.seq import SeqType
 from austrakka.utils.enums.view_type import MORE, COMPACT, FULL
 from austrakka.utils.option_utils import create_option, MutuallyExclusiveOption
+from austrakka import __prog_name__ as PROG_NAME
 
 
 def opt_abbrev(**attrs: t.Any):
@@ -109,6 +110,20 @@ def opt_dashboard_name(var_name='dashboard_name', **attrs: t.Any):
     return create_option(
         "-dn",
         "--dashboard-name",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+def opt_project_client_type(var_name='client_type', **attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Project client type tag, to manage in which web' +
+                ' client this project will show up in',
+    }
+    return create_option(
+        "-ct",
+        "--client-type",
         var_name,
         type=click.STRING,
         **{**defaults, **attrs}
@@ -252,25 +267,11 @@ def opt_project(**attrs: t.Any):
     )
 
 
-def opt_definition(var_name='definition', **attrs: t.Any):
-    defaults = {
-        'multiple': False,
-        'default': 'upload',
-        'help': 'Analysis definition name',
-    }
-    return create_option(
-        '--definition',
-        var_name,
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
 def opt_organisation(**attrs: t.Any):
     defaults = {
         'required': True,
         'help': 'Organisation abbreviation. Must match an organisation ' +
-                'known to AusTrakka, use `austrakka org list` to see valid ' +
+                f'known to {PROG_NAME}, use `{PROG_NAME.lower()} org list` to see valid ' +
                 'values',
     }
     return create_option(
@@ -296,7 +297,7 @@ def opt_email(**attrs: t.Any):
 def opt_proforma(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Proforma abbreviation. Use `austrakka proforma list` to see '
+        'help': f'Proforma abbreviation. Use `{PROG_NAME.lower()} proforma list` to see '
                 'options.',
     }
     return create_option(
@@ -335,6 +336,21 @@ def opt_csv(**attrs: t.Any):
     )
 
 
+def opt_file(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'File',
+    }
+    return create_option(
+            "-f",
+        "--file",
+        "file",
+        type=click.File('rb'),
+        default=None,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_seq_type(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -364,14 +380,13 @@ def opt_output_dir(**attrs: t.Any):
     )
 
 
-def opt_analysis(**attrs: t.Any):
+def opt_tree(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Analysis Abbreviation',
+        'help': 'Tree Abbreviation',
     }
     return create_option(
-        '-a',
-        '--analysis',
+        '--tree',
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -380,7 +395,7 @@ def opt_analysis(**attrs: t.Any):
 def opt_fieldtype(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Metadata field type. Use `austrakka fieldtype list` to see '
+        'help': f'Metadata field type. Use `{PROG_NAME.lower()} fieldtype list` to see '
                 'options.'
     }
     return create_option(
@@ -394,7 +409,7 @@ def opt_fieldtype(**attrs: t.Any):
 def opt_plottype(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Plot type. Use `austrakka plot types` to see options.'
+        'help': f'Plot type. Use `{PROG_NAME.lower()} plot types` to see options.'
     }
     return create_option(
         '-pt',
@@ -498,10 +513,10 @@ def opt_is_active(is_update=False, **attrs: t.Any):
 
 def opt_is_austrakka_process(**attrs: t.Any):
     defaults = {
-        'help': 'Determines if the user is an AusTrakka process'
+        'help': f'Determines if the user is an {PROG_NAME} process'
     }
     return create_option(
-        '--is-austrakka-process/--not-austrakka-process',
+        '--is-process/--not-process',
         type=bool,
         required=True,
         **{**defaults, **attrs}
@@ -616,18 +631,6 @@ def opt_state(**attrs: t.Any):
     }
     return create_option(
         "--state",
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
-def opt_filter_string(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'Filter String',
-    }
-    return create_option(
-        "--filter-str",
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -799,13 +802,13 @@ def opt_merge_algorithm(**attrs: t.Any):
     )
 
 
-def opt_tree_id(**attrs: t.Any):
+def opt_tree_version_id(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Tree ID',
+        'help': 'Tree Version ID',
     }
     return create_option(
-        '--tree-id',
+        '--tree-version-id',
         type=click.INT,
         **{**defaults, **attrs}
     )

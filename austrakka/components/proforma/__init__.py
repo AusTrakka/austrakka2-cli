@@ -2,6 +2,7 @@ from typing import List
 
 import click
 
+from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from .funcs import \
@@ -44,7 +45,17 @@ opt_optional = create_option(
     type=click.STRING,
     multiple=True)
 
-@proforma.command('add', hidden=hide_admin_cmds())
+@proforma.command(
+        'add', 
+        hidden=hide_admin_cmds(),
+        help=f"""
+            Add a new proforma to {PROG_NAME}.
+            This adds a validation spec which may be selected to upload data. 
+            This will add a new proforma with a new abbreviation, not a new version of an existing proforma.
+            This command does not add the Excel proforma template document; 
+            that should be added wih the 'attach' command.
+        """
+)
 @opt_abbrev()
 @opt_name()
 @opt_description(required=False)
@@ -56,13 +67,6 @@ def proforma_add(
         description: str,
         required_field: List[str],
         optional_field: List[str]):
-    """
-    Add a new proforma to AusTrakka.
-    This adds a validation spec which may be selected to upload data. 
-    This will add a new proforma with a new abbreviation, not a new version of an existing proforma.
-    This command does not add the Excel proforma template document; 
-    that should be added wih the 'attach' command.
-    """
     add_proforma(
         abbrev,
         name,
@@ -89,7 +93,23 @@ def proforma_update(
         optional_field)
 
 
-@proforma.command('attach', hidden=hide_admin_cmds())
+@proforma.command(
+        'attach', 
+        hidden=hide_admin_cmds(),
+        help=f"""
+            Attach a new or existing file to the latest version of the specified proforma.
+
+            Usage:
+
+            {PROG_NAME.lower()} proforma attach [PROFORMA_ABBREV] 
+            ~~This will pull the most recent existing file from a previous proforma version
+
+            {PROG_NAME.lower()} proforma attach [PROFORMA_ABBREV] -f [FILEPATH] ~~uploads and attaches a new file
+
+            {PROG_NAME.lower()} proforma attach [PROFORMA_ABBREV] -id [PROFORMA-VERSION-ID]
+            ~~This will pull an existing file from a previous proforma version
+        """
+)
 @click.argument('proforma-abbrev', type=click.STRING)
 @create_option('-f',
               '--file-path',
@@ -111,19 +131,6 @@ def proforma_update(
 def proforma_attach(proforma_abbrev: str,
                     file_path: str = None,
                     n_previous: int = None):
-    """
-    Attach a new or existing file to the latest version of the specified proforma.
-
-    Usage:
-
-    austrakka proforma attach [PROFORMA_ABBREV] 
-    ~~This will pull the most recent existing file from a previous proforma version
-
-    austrakka proforma attach [PROFORMA_ABBREV] -f [FILEPATH] ~~uploads and attaches a new file
-
-    austrakka proforma attach [PROFORMA_ABBREV] -id [PROFORMA-VERSION-ID]
-    ~~This will pull an existing file from a previous proforma version
-    """
     if file_path is None:
         pull_proforma(proforma_abbrev, n_previous)
     else:
@@ -170,10 +177,9 @@ def proforma_generate(proforma_abbrev: str, restrict, nndss, project, metadata_c
         metadata_classes=metadata_class
         )
 
-@proforma.command('list')
+@proforma.command('list', help=f'List metadata proformas in {PROG_NAME}')
 @table_format_option()
 def proforma_list(out_format: str):
-    """List metadata proformas in AusTrakka"""
     list_proformas(out_format)
 
 

@@ -19,7 +19,7 @@ def add_user(
         user_id: str,
         org: str,
         owner_group_roles: List[str],
-        is_austrakka_process: bool,
+        is_process: bool,
         server_username: str,
 ):
     user = {
@@ -28,7 +28,7 @@ def add_user(
             "abbreviation": org
         },
         "ownerGroupRoles": list(owner_group_roles),
-        "isAusTrakkaProcess": is_austrakka_process,
+        "isAusTrakkaProcess": is_process,
         "analysisServerUsername": server_username,
     }
 

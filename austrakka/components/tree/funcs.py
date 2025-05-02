@@ -1,41 +1,78 @@
-from os import path
 from io import BufferedReader
-
-from austrakka.utils.api import api_patch
+from austrakka.components.tree.version.funcs import add_tree_version
+from austrakka.utils.api import api_post, api_patch
+from austrakka.utils.api import api_put
+from austrakka.utils.helpers.tree import get_tree_by_abbrev
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.helpers.upload import upload_file
 from austrakka.utils.paths import TREE_PATH
-from austrakka.utils.paths import JOB_INSTANCE_PATH
-from austrakka.utils.helpers.analysis import get_analysis_by_abbrev
-
-TREE_UPLOAD = 'UploadTree'
-ALL_VERSIONS = 'AllVersions'
 
 
 @logger_wraps()
-def add_tree(file: BufferedReader, analysis_abbrev: str):
-    upload_file(
-        file,
-        analysis_abbrev,
-        path.join(TREE_PATH, TREE_UPLOAD)
-    )
-
-
-@logger_wraps()
-def list_trees(out_format: str, analysis_abbrev: str):
-    analysis = get_analysis_by_abbrev(analysis_abbrev)
+def list_trees(project_abbrev: str, show_disabled: bool, out_format: str):
     call_get_and_print(
-        f'{JOB_INSTANCE_PATH}/{analysis["analysisId"]}/{ALL_VERSIONS}',
-        out_format
+        f'{TREE_PATH}/project/{project_abbrev}?includeall={show_disabled}', out_format)
+
+
+@logger_wraps()
+def add_tree(
+        abbrev: str,
+        name: str,
+        description: str,
+        project: str,
+        is_active: bool,
+        file: BufferedReader,
+):
+    api_post(
+        path=TREE_PATH,
+        data={
+            'name': name,
+            'description': description,
+            'project': {
+                'abbreviation': project
+            },
+            'isActive': is_active,
+            'abbreviation': abbrev
+        }
+    )
+    if file is not None:
+        add_tree_version(file, abbrev)
+
+
+@logger_wraps()
+def update_tree(
+        abbrev: str,
+        name: str,
+        description: str,
+        project: str,
+        is_active: bool,
+):
+    tree = get_tree_by_abbrev(abbrev)
+
+    if name is not None:
+        tree['name'] = name
+    if description is not None:
+        tree['description'] = description
+    if is_active is not None:
+        tree['isActive'] = is_active
+    if project is not None:
+        tree['project']['abbreviation'] = project
+
+    api_put(
+        path=f'{TREE_PATH}/{abbrev}',
+        data=tree
     )
 
 
 @logger_wraps()
-def disable_tree(tree_id: int):
-    api_patch(path=f'{TREE_PATH}/disable/{tree_id}')
+def disable_tree(abbrev: str):
+    api_patch(
+        path=f'{TREE_PATH}/disable/{abbrev}',
+    )
 
 
 @logger_wraps()
-def enable_tree(tree_id: int):
-    api_patch(path=f'{TREE_PATH}/enable/{tree_id}')
+def enable_tree(abbrev: str):
+    api_patch(
+        path=f'{TREE_PATH}/enable/{abbrev}',
+    )

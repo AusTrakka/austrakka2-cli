@@ -13,7 +13,6 @@ from .components.auth import auth
 from .components.user import user
 from .components.org import org
 from .components.project import project
-from .components.analysis import analysis
 from .components.tree import tree
 from .components.metadata import metadata
 from .components.sequence import seq
@@ -27,6 +26,7 @@ from .components.plot import plot
 from .components.iam import iam
 
 from . import __version__ as VERSION
+from . import __prog_name__ as PROG_NAME
 from .utils.misc import AusTrakkaCliTopLevel
 from .utils.logger import is_debug
 from .utils.misc import HELP_OPTS
@@ -42,7 +42,13 @@ from .utils.version import check_version
 CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 
 
-@click.group(cls=AusTrakkaCliTopLevel, context_settings=CONTEXT_SETTINGS)
+@click.group(
+    cls=AusTrakkaCliTopLevel, 
+    context_settings=CONTEXT_SETTINGS,
+    help=f"""
+    A cli for interfacing with {PROG_NAME}.
+    """,
+)
 @click.option(
     AusTrakkaCxt.get_option_name(CxtKey.URI), 
     show_envvar=True,
@@ -92,14 +98,14 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     default=False,
     show_default=True,
     type=bool,
-    help="Skip check for new AusTrakka CLI version"
+    help=f"Skip check for new {PROG_NAME} CLI version"
 )
 @click.option(
     '--log',
     show_envvar=True,
     help='Outputs logs to a temporary file',
 )
-@click.version_option(message="%(prog)s v%(version)s", version=VERSION)
+@click.version_option(message="%(prog)s v%(version)s", version=VERSION, prog_name=PROG_NAME.lower())
 @click.pass_context
 def cli(
         ctx: Context,
@@ -111,9 +117,6 @@ def cli(
         skip_version_check: bool,
         log: str,
 ):
-    """
-    A cli for interfacing with AusTrakka.
-    """
     ctx.context = {
         CxtKey.URI.value: uri,
         CxtKey.TOKEN.value: token,
@@ -133,7 +136,6 @@ def get_cli():
     cli.add_command(org) if show_admin_cmds() else None
     cli.add_command(group)
     cli.add_command(project)
-    cli.add_command(analysis)
     cli.add_command(tree)
     cli.add_command(plot) if show_admin_cmds() else None
     cli.add_command(dashboard) if show_admin_cmds() else None

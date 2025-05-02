@@ -14,6 +14,7 @@ from austrakka.utils.options import opt_user_object_id
 from austrakka.utils.options import opt_organisation
 from austrakka.utils.options import opt_show_disabled
 from austrakka.utils.options import opt_server_username
+from austrakka import __prog_name__ as PROG_NAME
 from .funcs import list_users
 from .funcs import add_user
 from .funcs import update_user
@@ -28,15 +29,14 @@ def user(ctx):
     ctx.context = ctx.parent.context
 
 
-@user.command('list')
+@user.command('list', help=f"List users in {PROG_NAME}")
 @opt_show_disabled()
 @table_format_option()
 def user_list(show_disabled: bool, out_format: str):
-    '''List users in AusTrakka'''
     list_users(show_disabled, out_format)
 
 
-@user.command('add', hidden=hide_admin_cmds())
+@user.command('add', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
 @opt_user_object_id()
 @opt_organisation()
 @opt_owner_group_roles(required=False)
@@ -46,14 +46,13 @@ def user_add(
         user_id: str,
         org: str,
         owner_group_roles: List[str],
-        is_austrakka_process: bool,
+        is_process: bool,
         server_username: str,
 ):
-    """Add users in AusTrakka"""
-    add_user(user_id, org, owner_group_roles, is_austrakka_process, server_username)
+    add_user(user_id, org, owner_group_roles, is_process, server_username)
 
 
-@user.command('update', hidden=hide_admin_cmds())
+@user.command('update', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
 @opt_user_object_id()
 @opt_name(help="Display Name", required=False)
 @opt_email_address(required=False)
@@ -68,19 +67,16 @@ def user_update(
     name: str,
     server_username: str,
 ):
-    """Add users in AusTrakka"""
     update_user(user_id, name, email, org, server_username, is_active)
 
 
-@user.command('enable')
+@user.command('enable', help=f"Re-enable a user in {PROG_NAME}")
 @opt_user_object_id()
 def user_enable(user_id: str):
-    """Re-enable a user in AusTrakka"""
     enable_user(user_id)
 
 
-@user.command('disable')
+@user.command('disable', help=f"Disable a user in {PROG_NAME}")
 @opt_user_object_id()
 def user_disable(user_id: str):
-    """Disable a user in AusTrakka"""
     disable_user(user_id)
