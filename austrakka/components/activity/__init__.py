@@ -15,3 +15,4 @@ def activity(ctx):
 @table_format_option()
 def activity_get(out_format: str):
     get_activity(out_format)
+    

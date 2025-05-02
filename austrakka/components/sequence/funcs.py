@@ -10,7 +10,6 @@ import hashlib
 from dataclasses import dataclass
 from typing import List
 from typing import Dict
-from typing import Union
 
 import httpx
 import pandas as pd
