@@ -13,6 +13,7 @@ from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_dashboard_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_organisation
+from austrakka.utils.subcommands.activity import activity_subcommands
 from .funcs import list_projects, \
     add_project, \
     update_project, \
@@ -25,7 +26,6 @@ from .dataset import dataset
 from .field import field
 from .provision import provision
 from .metadata import metadata
-from austrakka.utils.subcommands.activity import activity_subcommands
 
 
 @click.group()

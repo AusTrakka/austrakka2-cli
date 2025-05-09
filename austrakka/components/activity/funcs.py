@@ -29,7 +29,8 @@ def get_activity_by_record_type(
     """
     tenant_global_id = get_default_tenant_global_id()
     response = api_get(
-        path=f"v2/{record_type}/{record_global_id}/activitylog?owningTenantGlobalId={tenant_global_id}",
+        path=f"v2/{record_type}/{record_global_id}/activitylog?"
+             f"owningTenantGlobalId={tenant_global_id}",
     )
 
     data = response['data'] if ('data' in response) else response
