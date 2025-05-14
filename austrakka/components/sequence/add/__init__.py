@@ -1,10 +1,11 @@
 from io import BufferedReader
-from typing import Union
+from typing import List
 
 import click
 
 from austrakka.utils.enums.seq import SeqType
 from austrakka.utils.options import opt_force_mutex_skip
+from austrakka.utils.options import opt_owner_org
 from austrakka.utils.options import opt_skip_mutex_force
 from austrakka.utils.options import opt_owner
 from austrakka.utils.options import opt_share
@@ -38,21 +39,21 @@ def add(ctx):
     {METADATA_ADD_HELP_TEXT}
 """)
 @click.argument('csv_file', type=click.File('rb'))
+@opt_owner_org(required=True)
 @opt_skip_mutex_force(
     help="For each sample, skip upload if the sample has existing sequences of the same type.")
 @opt_force_mutex_skip(
     help="Upload sequences and supersede any existing sequences of the same type.")
-@opt_owner()
 @opt_share()
 # pylint: disable=invalid-name
 def seq_add_fastq_ill_PE(
         csv_file: BufferedReader,
+        owner_org: str,
+        shared_projects: List[str],
         skip: bool = False,
         force: bool = False,
-        owner_group: Union[str, None] = None,
-        shared_group: Union[str, None] = None,
 ):
-    add_sequence_submission(SeqType.FASTQ_ILL_PE, csv_file, skip, force, owner_group, shared_group)
+    add_sequence_submission(SeqType.FASTQ_ILL_PE, csv_file, owner_org, shared_projects, skip, force)
 
 
 @add.command(SeqType.FASTQ_ILL_SE.value, help=f"""
@@ -65,21 +66,21 @@ def seq_add_fastq_ill_PE(
     {METADATA_ADD_HELP_TEXT}
 """)
 @click.argument('csv_file', type=click.File('rb'))
+@opt_owner_org(required=True)
 @opt_skip_mutex_force(
     help="For each sample, skip upload if the sample has existing sequences of the same type.")
 @opt_force_mutex_skip(
     help="Upload sequences and supersede any existing sequences of the same type.")
-@opt_owner()
 @opt_share()
 # pylint: disable=invalid-name
 def seq_add_fastq_ill_SE(
         csv_file: BufferedReader,
+        owner_org: str,
+        shared_projects: List[str],
         skip: bool = False,
         force: bool = False,
-        owner_group: Union[str, None] = None,
-        shared_group: Union[str, None] = None,
 ):
-    add_sequence_submission(SeqType.FASTQ_ILL_SE, csv_file, skip, force, owner_group, shared_group)
+    add_sequence_submission(SeqType.FASTQ_ILL_SE, csv_file, owner_org, shared_projects, skip, force)
 
 
 @add.command(SeqType.FASTQ_ONT.value, help=f"""
@@ -92,20 +93,20 @@ def seq_add_fastq_ill_SE(
     {METADATA_ADD_HELP_TEXT}
 """)
 @click.argument('csv_file', type=click.File('rb'))
+@opt_owner_org(required=True)
 @opt_skip_mutex_force(
     help="For each sample, skip upload if the sample has existing sequences of the same type.")
 @opt_force_mutex_skip(
     help="Upload sequences and supersede any existing sequences of the same type.")
-@opt_owner()
 @opt_share()
 def seq_add_fastq_ont(
         csv_file: BufferedReader,
+        owner_org: str,
+        shared_projects: List[str],
         skip: bool = False,
         force: bool = False,
-        owner_group: Union[str, None] = None,
-        shared_group: Union[str, None] = None,
 ):
-    add_sequence_submission(SeqType.FASTQ_ONT, csv_file, skip, force, owner_group, shared_group)
+    add_sequence_submission(SeqType.FASTQ_ONT, csv_file, owner_org, shared_projects, skip, force)
 
 
 @add.command(SeqType.FASTA_CNS.value, help=f"""
@@ -118,22 +119,22 @@ def seq_add_fastq_ont(
     {METADATA_ADD_HELP_TEXT}
 """)
 @click.argument('fasta_file', type=click.File('rb'))
+@opt_owner_org(required=True)
 @opt_skip_mutex_force(
     help="For each sample, skip upload if the sample has existing sequences of the same type.")
 @opt_force_mutex_skip(
     help="Upload sequences and supersede any existing sequences of the same type.")
-@opt_owner()
 @opt_share()
 def seq_add_fasta_cns(
         fasta_file: BufferedReader,
+        owner_org: str,
+        shared_projects: List[str],
         skip: bool = False,
         force: bool = False,
-        owner_group: Union[str, None] = None,
-        shared_group: Union[str, None] = None,
 ):
     # FASTA-CNS is a special case as the CLI does the work of splitting the file,
     # and there is no CSV
-    add_fasta_cns_submission(fasta_file, skip, force, owner_group, shared_group)
+    add_fasta_cns_submission(fasta_file, owner_org, shared_projects, skip, force)
 
 
 @add.command(SeqType.FASTA_ASM.value, help=f"""
@@ -146,17 +147,17 @@ def seq_add_fasta_cns(
     {METADATA_ADD_HELP_TEXT}
 """)
 @click.argument('csv_file', type=click.File('rb'))
+@opt_owner_org(required=True)
 @opt_skip_mutex_force(
     help="For each sample, skip upload if the sample has existing sequences of the same type.")
 @opt_force_mutex_skip(
     help="Upload sequences and supersede any existing sequences of the same type.")
-@opt_owner()
 @opt_share()
 def seq_add_fasta_asm(
         csv_file: BufferedReader,
+        owner_org: str,
+        shared_projects: List[str],
         skip: bool = False,
         force: bool = False,
-        owner_group: Union[str, None] = None,
-        shared_group: Union[str, None] = None,
 ):
-    add_sequence_submission(SeqType.FASTA_ASM, csv_file, skip, force, owner_group, shared_group)
+    add_sequence_submission(SeqType.FASTA_ASM, csv_file, owner_org, shared_projects, skip, force)
