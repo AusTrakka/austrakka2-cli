@@ -62,7 +62,14 @@ def project_add(
         project_type: str,
         client_type: str,
         merge_algorithm: str):
-    add_project(abbrev, name, description, org, dashboard_name, project_type, client_type, merge_algorithm)
+    add_project(abbrev,
+                name,
+                description,
+                org,
+                dashboard_name,
+                project_type,
+                client_type,
+                merge_algorithm)
 
 
 @project.command(
