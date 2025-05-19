@@ -46,7 +46,8 @@ def add_project(
         org: str,
         dashboard_name: str,
         project_type: str,
-        client_type: str):
+        client_type: str,
+        merged_algorithm: str):
     return api_post(
         path=PROJECT_PATH,
         data={
@@ -60,6 +61,7 @@ def add_project(
             "dashboardName": dashboard_name,
             "type": project_type,
             "clientType": client_type,
+            "mergeAlgorithm": merged_algorithm
         }
     )
 
@@ -73,7 +75,8 @@ def update_project(
         org: str,
         dashboard_name: str,
         project_type: str,
-        client_type: str
+        client_type: str,
+        merge_algorithm: str
 ):
     project = get_project_by_abbrev(project_abbreviation)
     
@@ -85,7 +88,8 @@ def update_project(
         'requestingOrg',
         'dashboardName',
         'type',
-        'clientType'
+        'clientType',
+        'mergeAlgorithm'
     ]}
     
     if project['requestingOrg'] is None:
@@ -107,6 +111,8 @@ def update_project(
         put_project['type'] = project_type
     if client_type is not None:
         put_project['clientType'] = client_type
+    if merge_algorithm is not None:
+        put_project['mergeAlgorithm'] = merge_algorithm
         
     return api_put(
         path=f"{PROJECT_PATH}/{project_abbreviation}",
