@@ -5,8 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.71.0] - 2025-05-20
+### Changed
+- The admin-facing `project add` and `project update` commands now take a `-ma` option to specify the merge algorithm.
+- The merge algorithm and client type parameters are now mandatory for `project add`.
+    
+### Fixed
+- The admin-facing `field update` command has been fixed; failed due to a server-side change.
+
 # [0.70.1]
-### Changeed
+### Changed
 - Some internal changes to how the `tree` command works.
 
 # [0.70.0]
