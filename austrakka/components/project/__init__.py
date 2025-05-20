@@ -95,7 +95,7 @@ def project_update(
         dashboard_name: str,
         project_type: str,
         client_type: str,
-        merge_algorithm: str):
+        merge_algo: str):
     update_project(project_abbrev,
                    name,
                    description,
@@ -104,7 +104,7 @@ def project_update(
                    dashboard_name,
                    project_type,
                    client_type,
-                   merge_algorithm)
+                   merge_algo)
 
 
 @project.command('set-dashboard', hidden=hide_admin_cmds())
