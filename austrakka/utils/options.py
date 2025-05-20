@@ -517,7 +517,7 @@ def opt_merge_algorithm(**attrs: t.Any):
         'required': True,
     }
     return create_option(
-        '--merge-algo',
+        '--merge-algo', '-ma',
         **{**defaults, **attrs}
     )
 
