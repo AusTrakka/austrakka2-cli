@@ -51,8 +51,8 @@ def get_dataset_view(
 @metadata.command('set-merge')
 @click.argument('project-abbrev', type=str)
 @opt_merge_algorithm()
-def project_set_merge_algo(project_abbrev: str, merge_algorithm):
+def project_set_merge_algo(project_abbrev: str, merge_algo):
     """
     Set merge algorithm to use when generating metadata views.
     """
-    set_merge_algorithm_project(project_abbrev, merge_algorithm)
+    set_merge_algorithm_project(project_abbrev, merge_algo)

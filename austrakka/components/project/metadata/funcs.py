@@ -20,14 +20,10 @@ DATASET_TRACK_DETAILED_PATH = 'dataset-progress-details'
 
 
 @logger_wraps()
-def set_merge_algorithm_project(abbrev: str, merge_algorithm: str):
-    if merge_algorithm == 'show-all':
-        merge_algorithm = 'ShowAll'
-    else:
-        merge_algorithm = 'Override'
+def set_merge_algorithm_project(abbrev: str, merge_algo: str):
 
     return api_patch(
-        path=f'{PROJECT_PATH}/{abbrev}/set-merge-algorithm/{merge_algorithm}'
+        path=f'{PROJECT_PATH}/{abbrev}/set-merge-algorithm/{merge_algo}'
     )
 
 
