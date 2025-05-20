@@ -507,7 +507,7 @@ def opt_is_austrakka_process(**attrs: t.Any):
     )
 
 def opt_merge_algorithm(**attrs: t.Any):
-    def map_merge_algo(ctx, param, value):
+    def map_merge_algo(_ctx, _param, value):
         return {'show-all': 'ShowAll', 'override': 'Override'}[value]
 
     defaults = {
