@@ -47,7 +47,7 @@ def add_project(
         dashboard_name: str,
         project_type: str,
         client_type: str,
-        merged_algorithm: str):
+        merge_algorithm: str):
     return api_post(
         path=PROJECT_PATH,
         data={
@@ -61,8 +61,8 @@ def add_project(
             "dashboardName": dashboard_name,
             "type": project_type,
             "clientType": client_type,
-            "mergeAlgorithm": merged_algorithm
-        }
+            "mergeAlgorithm": merge_algorithm, 
+       }
     )
 
 
