@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+
+## [0.71.1] - 2025-05-20
+### Fixed
+- Fixed issue with `project update` not correctly setting `--merge-algorithm`.
+
 ## [0.71.0] - 2025-05-20
 ### Changed
 - The admin-facing `project add` and `project update` commands now take a `-ma` option to specify the merge algorithm.
