@@ -60,6 +60,7 @@ def add_field(
         can_visualise: bool,
         column_order: int,
         private: bool,
+        examples: str,
 ):
     """
     Add a field (MetaDataColumn) to AusTrakka.
@@ -93,6 +94,7 @@ def add_field(
             "IsActive": True,
             "IsPrivate": private,
             "Description": description,
+            "Examples": examples,
             "NndssFieldLabel": nndss_label,
         }
     )
@@ -103,6 +105,7 @@ def update_field(
         name: str,
         new_name: str,
         description: str,
+        examples: str,
         nndss_label: str,
         typename: str,
         can_visualise: bool,
@@ -147,6 +150,9 @@ def update_field(
 
     if is_private is not None:
         patch_fields["isPrivate"] = is_private
+    
+    if examples is not None:
+        patch_fields["examples"] = examples
 
     api_patch(
         path=f"{TENANT_PATH}/{tenant_global_id}/{METADATACOLUMN_PATH}/{name}",

@@ -43,6 +43,7 @@ def field_list(view_type: str, out_format: str):
                     "columns.")
 @click.option('--viz/--no-viz', default=False,
               help="This field may be used for colour visualisation in trees or plots")
+@opt_examples()
 @opt_private()
 def field_add(
         name: str,
@@ -52,8 +53,9 @@ def field_add(
         viz: bool,
         column_order: int,
         is_private: bool,
+        examples: str,
 ):
-    add_field(name, description, nndss, field_type, viz, column_order, is_private)
+    add_field(name, description, nndss, field_type, viz, column_order, is_private, examples)
 
 
 @field.command(
@@ -67,6 +69,7 @@ def field_add(
 @opt_fieldtype(required=False)
 @opt_description(required=False, help="This field describes the purpose of the metadata field. "
                                       "Its value is also used for generating XLSX pro forma files.")
+@opt_examples()
 @create_option('--nndss', 'nndss',
                help="The corresponding National Notifiable Diseases Surveillance System label, "
                     "where it exists.")
@@ -81,6 +84,7 @@ def field_update(
         fieldname: str,
         name: str,
         description: str,
+        examples: str,
         nndss: str,
         field_type: str,
         viz: bool,
@@ -91,6 +95,7 @@ def field_update(
         fieldname,
         name,
         description,
+        examples,
         nndss,
         field_type,
         viz,
