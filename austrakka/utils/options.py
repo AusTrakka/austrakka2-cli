@@ -87,6 +87,19 @@ def opt_private(is_update=False, **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_examples(var_name='examples', **attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'string of comma delimited examples values for the field',
+    }
+    return create_option(
+        "-e",
+        "--examples",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
 
 def opt_email_address(var_name='email', **attrs: t.Any):
     defaults = {
