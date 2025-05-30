@@ -1,9 +1,26 @@
-from austrakka.utils.api import api_post
+from austrakka.utils.api import api_post, api_patch
 from austrakka.utils.api import api_put
+from austrakka.utils.helpers.tenant import get_default_tenant_global_id
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.paths import ORG_PATH
+from austrakka.utils.paths import ORG_PATH, ORG_V2_PATH
 from austrakka.utils.helpers.orgs import get_org_by_abbrev
 from austrakka.utils.helpers.output import call_get_and_print
+
+
+SAMPLES_OWNER = 'samplesOwner'
+
+
+@logger_wraps()
+def change_owner(curr_owner: str, new_owner: str, seq_ids: [str]):
+    tenant = get_default_tenant_global_id()
+    api_patch(
+        path="/".join(['v2', ORG_V2_PATH, curr_owner, SAMPLES_OWNER]),
+        params={"owningTenantGlobalId": tenant},
+        data={
+            "seqIds": seq_ids,
+            "newOwnerAbbrev": new_owner
+        },
+    )
 
 
 @logger_wraps()

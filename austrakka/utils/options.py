@@ -25,6 +25,28 @@ def opt_abbrev(**attrs: t.Any):
     )
 
 
+def opt_curr_owner(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Abbreviated name of current owning organisation.'}
+    return create_option(
+        "-co",
+        "--curr-owner",
+        **{**defaults, **attrs}
+    )
+
+
+def opt_new_owner(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Abbreviated name of new owning organisation.'}
+    return create_option(
+        "-no",
+        "--new-owner",
+        **{**defaults, **attrs}
+    )
+
+
 def opt_tracking_token(**attrs: t.Any):
     defaults = {
         'required': True,
