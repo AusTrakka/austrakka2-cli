@@ -93,7 +93,6 @@ def opt_examples(var_name='examples', **attrs: t.Any):
         'help': 'string of comma delimited examples values for the field',
     }
     return create_option(
-        "-e",
         "--examples",
         var_name,
         type=click.STRING,
