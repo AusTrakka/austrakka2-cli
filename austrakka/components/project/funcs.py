@@ -18,7 +18,7 @@ from austrakka.utils.paths import PROJECT_SETTINGS
 compact_fields = [
     "projectId",        # Project ID
     "abbreviation",     # Abbreviation or short name
-    "type",              # Type for the project
+    "type",             # Type for the project
     "isActive",         # Active status
     "name"              # Full name of the project
 ]
@@ -27,7 +27,8 @@ more_fields = [
     'globalId',         # Global ID
     "projectId",        # Project ID
     "abbreviation",     # Abbreviation or short name
-    "type",              # Type for the project
+    "clientType"        # the 'secret' client type
+    "type",             # Type for the project
     "isActive",         # Active status
     "name",             # Project name
     "description",      # Description of the project
