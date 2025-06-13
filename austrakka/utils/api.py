@@ -22,6 +22,7 @@ CONTENT_TYPE_JSON = 'application/json'
 CONTENT_TYPE_MULTIPART = 'multipart/form-data; charset=utf-8; boundary=+++'
 WWW_AUTHENTICATE = 'www-authenticate'
 INVALID_TOKEN = 'invalid_token'
+ORIGIN = f'cli://austrakka/{__version__}'
 
 def _get_default_headers(
         content_type: str = CONTENT_TYPE_JSON,
@@ -30,6 +31,7 @@ def _get_default_headers(
         'Content-Type': content_type,
         'Authorization': f'Bearer {AusTrakkaCxt.get_value(CxtKey.TOKEN)}',
         'User-Agent': f'austrakka/{__version__}',
+        'Origin': ORIGIN,
     }
     return default_headers
 
@@ -176,11 +178,13 @@ def api_post(
         data: Union[Dict, List] = None,
         client: httpx.Client = None,
 ):
-    return client.post(
+    test = client.post(
         _get_url(path),
         data=json.dumps(data),
         params=params,
     )
+    print(test)
+    return test
 
 
 @_use_http_client(log_resp=True)
