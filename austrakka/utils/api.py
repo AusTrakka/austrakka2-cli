@@ -178,13 +178,11 @@ def api_post(
         data: Union[Dict, List] = None,
         client: httpx.Client = None,
 ):
-    test = client.post(
+    return client.post(
         _get_url(path),
         data=json.dumps(data),
         params=params,
     )
-    print(test)
-    return test
 
 
 @_use_http_client(log_resp=True)
