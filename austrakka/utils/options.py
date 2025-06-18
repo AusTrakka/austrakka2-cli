@@ -25,6 +25,28 @@ def opt_abbrev(**attrs: t.Any):
     )
 
 
+def opt_curr_owner(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Abbreviated name of current owning organisation.'}
+    return create_option(
+        "-co",
+        "--curr-owner",
+        **{**defaults, **attrs}
+    )
+
+
+def opt_new_owner(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Abbreviated name of new owning organisation.'}
+    return create_option(
+        "-no",
+        "--new-owner",
+        **{**defaults, **attrs}
+    )
+
+
 def opt_tracking_token(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -84,6 +106,18 @@ def opt_private(is_update=False, **attrs: t.Any):
         '--is-private/--not-private',
         type=bool,
         default=None if is_update else False,
+        **{**defaults, **attrs}
+    )
+
+def opt_examples(var_name='examples', **attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'string of comma delimited examples values for the field',
+    }
+    return create_option(
+        "--examples",
+        var_name,
+        type=click.STRING,
         **{**defaults, **attrs}
     )
 
