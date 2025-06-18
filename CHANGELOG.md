@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.71.2] - 2025-06-19
+### Added
+- Command `chown` added to change sample ownership to another organisation
+- The `field add` and `field update` commands can now set the `examples` property on metadata fields
 
 ## [0.71.1] - 2025-05-20
 ### Fixed
