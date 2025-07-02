@@ -10,7 +10,7 @@ from loguru import logger
 
 from austrakka.components.sequence.funcs import _download_seq_file
 from austrakka.components.sequence.funcs import _get_seq_download_path
-from austrakka.utils.exceptions import raise_exception_if_none
+from austrakka.utils.exceptions import raise_sync_exception_if_none
 from austrakka.utils.retry import retry
 from austrakka.utils.enums.seq import SeqType, convert_to_seq_type
 
@@ -172,7 +172,7 @@ def pull_manifest(sync_state: dict):
     group_name = sync_state[GROUP_NAME_KEY]
     
     seq_type_enum = convert_to_seq_type(seq_type)
-    raise_exception_if_none(
+    raise_sync_exception_if_none(
         seq_type_enum, 
         "pull_manifest: seq_type_enum cannot be None."
         "Please check the state file.")

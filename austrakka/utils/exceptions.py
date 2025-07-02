@@ -50,6 +50,15 @@ class AusTrakkaCliException(Exception):
 class CliArgumentException(Exception):
     pass
 
-def raise_exception_if_none(value, message):
+
+class SyncException(Exception):
+    pass
+
+
+class SeqTypeConversionException(Exception):
+    pass
+
+
+def raise_sync_exception_if_none(value, message):
     if value is None:
-        raise Exception(message)
+        raise SyncException(message)
