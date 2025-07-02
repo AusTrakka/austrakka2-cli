@@ -49,3 +49,7 @@ class AusTrakkaCliException(Exception):
 
 class CliArgumentException(Exception):
     pass
+
+def raise_exception_if_none(value, message):
+    if value is None:
+        raise Exception(message)

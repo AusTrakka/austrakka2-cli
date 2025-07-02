@@ -10,8 +10,9 @@ from loguru import logger
 
 from austrakka.components.sequence.funcs import _download_seq_file
 from austrakka.components.sequence.funcs import _get_seq_download_path
+from austrakka.utils.exceptions import raise_exception_if_none
 from austrakka.utils.retry import retry
-from austrakka.utils.enums.seq import SeqType
+from austrakka.utils.enums.seq import SeqType, convert_to_seq_type
 
 from .errors import WorkflowError
 from .sync_io import \
@@ -166,10 +167,17 @@ def set_state_pulling_manifest(sync_state: dict):
 
 def pull_manifest(sync_state: dict):
     logger.success(f'Started: {Action.pull_manifest}')
-    data = _get_seq_data(
-        sync_state[SEQ_TYPE_KEY],
-        sync_state[GROUP_NAME_KEY],
-    )
+
+    seq_type = sync_state[SEQ_TYPE_KEY]
+    group_name = sync_state[GROUP_NAME_KEY]
+    
+    seq_type_enum = convert_to_seq_type(seq_type)
+    raise_exception_if_none(
+        seq_type_enum, 
+        "pull_manifest: seq_type_enum cannot be None."
+        "Please check the state file.")
+    
+    data = _get_seq_data(group_name, seq_type_enum)
 
     logger.success(f'Freshly pulled manifest has {len(data)} entries.')
     path = get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)
