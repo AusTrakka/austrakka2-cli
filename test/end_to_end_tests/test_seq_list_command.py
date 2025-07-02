@@ -1,9 +1,4 @@
 import json
-import os
-import shutil
-import glob
-
-import pandas as pd
 import pytest
 
 from ete_cmd_bricks import (
@@ -11,25 +6,16 @@ from ete_cmd_bricks import (
     _create_min_proforma,
     _create_org,
     _create_group,
-    _upload_fasta_asm_file,
     _upload_min_metadata,
-    _seq_sync_get,
     _upload_fasta_cns_file,
-    _sample_unshare,
-    _upload_fastq_ill_pe_file,
-    _upload_fastq_ill_se_file, _list_seq_by_group)
+    _upload_fastq_ill_pe_file)
 
 from ete_utils import (
     _new_identifier,
     seq_id_field_name,
     owner_group_field_name,
     shared_groups_field_name,
-    _mk_temp_dir,
-    _clone_cns_fasta_file,
-    _read_sync_state,
-    _calc_hash,
-    _undo_fasta_asm_transform,
-    _textwrap, _read_cns_to_set, _get_single_seq_file_path)
+    _clone_cns_fasta_file)
 from test.utils.austrakka_test_cli import AusTrakkaTestCli
 
 
