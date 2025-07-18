@@ -5,7 +5,7 @@ from typing import Optional
 import httpx
 from httpx import HTTPStatusError
 from loguru import logger
-from austrakka.utils.api import api_get, api_get_stream, api_patch
+from austrakka.utils.api import api_get, api_get_stream
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from austrakka.utils.http import get_header_value, HEADERS
 from austrakka.utils.misc import logger_wraps
@@ -17,14 +17,6 @@ DATASET_UPLOAD_PATH = 'dataset'
 DATASET_ACK_PATH = 'acknowledge'
 DATASET_TRACK_PATH = 'dataset-progress'
 DATASET_TRACK_DETAILED_PATH = 'dataset-progress-details'
-
-
-@logger_wraps()
-def set_merge_algorithm_project(abbrev: str, merge_algo: str):
-
-    return api_patch(
-        path=f'{PROJECT_PATH}/{abbrev}/set-merge-algorithm/{merge_algo}'
-    )
 
 
 @logger_wraps()
