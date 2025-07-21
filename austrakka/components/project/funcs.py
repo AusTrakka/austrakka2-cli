@@ -6,7 +6,7 @@ from austrakka.utils.api import api_post, \
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
-from austrakka.utils.helpers.project import get_project_by_abbrev
+from austrakka.utils.helpers.project import get_project_by_abbrev, get_project_settings_by_abbrev
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_response
 from austrakka.utils.paths import PROJECT_PATH, \
@@ -80,18 +80,21 @@ def update_project(
         merge_algorithm: str
 ):
     project = get_project_by_abbrev(project_abbreviation)
+    project_settings = get_project_settings_by_abbrev(project_abbreviation)
     
     # ProjectDTO fields which should go in ProjectPutDTO
-    put_project = {k: project[k] for k in [
-        'name',
-        'description',
-        'isActive',
-        'requestingOrg',
-        'dashboardName',
-        'type',
-        'clientType',
-        'mergeAlgorithm'
-    ]}
+    put_project = {
+        **{k: project[k] for k in [
+            'name',
+            'description',
+            'isActive',
+            'requestingOrg',
+            'dashboardName',
+            'type',
+            'clientType',
+        ]},
+        'mergeAlgorithm': project_settings['mergeAlgorithm'],
+    }
     
     if project['requestingOrg'] is None:
         put_project['requestingOrg'] = {'abbreviation': None}
