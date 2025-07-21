@@ -21,6 +21,7 @@ from .funcs import list_sequences
 from .funcs import purge_sequence
 from .add import add
 from .sync import sync
+from ...utils.enums.seq import convert_to_seq_type
 
 
 @click.group()
@@ -61,9 +62,12 @@ def seq_get(
 
         austrakka seq get -t fasta --group-name Example-Group --outdir ~/Downloads/fasta-files
     """
+    seq_type_enum = convert_to_seq_type(seq_type)
+    
+    # Pass the enum value instead of the string
     get_sequences(
         output_dir,
-        seq_type,
+        seq_type_enum,
         group_name,
         seq_id,
     )
@@ -91,10 +95,12 @@ def seq_list(
         seq_id: List[str],
 ):
     """List sequences for a group or sample"""
+    seq_type_enum = convert_to_seq_type(seq_type)
+    
     list_sequences(
         out_format,
-        seq_type,
         group_name,
+        seq_type_enum,
         seq_id
     )
 
@@ -117,4 +123,5 @@ def sequence_purge(
         force: bool = False,
         delete_all: bool = False):
     """Purge all sequences associated with the specified Seq_ID."""
-    purge_sequence(seq_id, seq_type, skip, force, delete_all)
+    seq_type_enum = convert_to_seq_type(seq_type)
+    purge_sequence(seq_id, seq_type_enum, skip, force, delete_all)
