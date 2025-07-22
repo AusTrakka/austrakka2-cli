@@ -1,2 +1,2 @@
 file_path,file_name,detection_date
-test/unit_tests/components/sequence/sync/purge4/dir1/dir2/a.fastq,a.fastq,
+<replace-with-temp-output-dir>/dir1/dir2/a.fastq,a.fastq,
