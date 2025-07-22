@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.71.3] - 2025-07-21
+### Fixed
+- Fixed issue in changing project merge algorithm
+
 ## [0.71.2] - 2025-06-19
 ### Added
 - Command `chown` added to change sample ownership to another organisation
