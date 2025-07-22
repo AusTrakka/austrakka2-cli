@@ -208,10 +208,10 @@ def add_sequence_submission(
 
 
 @logger_wraps()
-def purge_sequence(seq_id: str, seq_type: str, skip: bool, force: bool, delete_all: bool):
+def purge_sequence(seq_id: str, seq_type: SeqType, skip: bool, force: bool, delete_all: bool):
     custom_headers = {}
     _set_mode_header(custom_headers, force, skip)
-    api_path = "/".join([SEQUENCE_PATH, SEQUENCE_BY_SAMPLE_PATH, seq_id, seq_type])
+    api_path = "/".join([SEQUENCE_PATH, SEQUENCE_BY_SAMPLE_PATH, seq_id, seq_type.value])
 
     if delete_all:
         api_path = api_path + '?deleteAll=true'
@@ -396,7 +396,7 @@ def _download_sequences(
 
 
 def _filter_sequences(data, seq_type: SeqType) -> List[Dict]:
-    data_filtered = list(filter(lambda x: x['type'] == seq_type or seq_type is None, data))
+    data_filtered = list(filter(lambda x: seq_type is None or x['type'] == seq_type.value, data))
     data_filtered = list(filter(lambda x: x['isActive'] is True, data_filtered))
     return data_filtered
 
@@ -425,8 +425,8 @@ def _get_seq_api_by_sample_names(seq_ids: List[str]):
 
 # pylint: disable=duplicate-code,no-else-return
 def _get_seq_data(
-        seq_type: str,
         group_name: str,
+        seq_type: SeqType = None,
         seq_ids: List[str] = None,
 ):
     if group_name is None and (seq_ids is None or len(seq_ids) == 0):
@@ -456,7 +456,7 @@ def _get_seq_data(
 # pylint: disable=duplicate-code
 def get_sequences(
         output_dir,
-        seq_type: str,
+        seq_type: SeqType = None,
         group_name: str = None,
         seq_ids: List[str] = None,
 ):
@@ -464,8 +464,8 @@ def get_sequences(
         create_dir(output_dir)
 
     data = _get_seq_data(
-        seq_type,
         group_name,
+        seq_type,
         seq_ids,
     )
     _download_sequences(output_dir, data)
@@ -474,13 +474,13 @@ def get_sequences(
 # pylint: disable=duplicate-code
 def list_sequences(
         out_format: str,
-        seq_type: str,
         group_name: str,
+        seq_type: SeqType = None,
         seq_ids: List[str] = None,
 ):
     data = _get_seq_data(
-        seq_type,
         group_name,
+        seq_type,
         seq_ids,
     )
     print_dataframe(
