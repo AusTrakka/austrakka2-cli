@@ -90,6 +90,8 @@ def _call_batched_submission(
         proforma_abbrev: str,
         batch_size: int,
 ):
+    # TODO send a client session key if carrying out batched submission
+    
     if batch_size < 1:
         _call_submission(path, file, owner_org, shared_projects, proforma_abbrev)
         return
