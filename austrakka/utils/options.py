@@ -859,3 +859,29 @@ def opt_server_username(**attrs: t.Any):
         type=click.STRING,
         **{**defaults, **attrs}
     )
+
+
+def opt_user_no_dl_quota(**attrs: t.Any):
+    defaults = {
+        'help': 'Used to disable download quotas for a user'
+    }
+    return create_option(
+        '--no-download-quota/--has-download-quota',
+        'no_download_quota',
+        type=bool,
+        required=False,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_user_monthly_dl_quota_bytes(**attrs: t.Any):
+    defaults = {
+        'help': 'Sets the monthly download quota for a user'
+    }
+    return create_option(
+        '--download-quota',
+        type=int,
+        required=False,
+        default=None,
+        **{**defaults, **attrs}
+    )
