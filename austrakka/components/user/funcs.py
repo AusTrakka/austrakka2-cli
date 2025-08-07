@@ -27,7 +27,8 @@ def add_user(
         download_quota: int,
 ):
     if no_download_quota and download_quota is not None:
-        logger.info(f"User configured with no download quota: Quota of {download_quota} will be ignored")
+        logger.info(f"User configured with no download quota: "
+                    f"Quota of {download_quota} will be ignored")
         
     user = {
         "objectId": user_id,
@@ -70,7 +71,8 @@ def update_user(
     }
 
     if no_download_quota and download_quota is not None:
-        logger.info(f"User configured with no download quota: Quota of {download_quota} will be ignored")
+        logger.info(f"User configured with no download quota: "
+                    f"Quota of {download_quota} will be ignored")
 
     if name is not None:
         user['displayName'] = name

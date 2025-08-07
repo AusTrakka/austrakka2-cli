@@ -55,7 +55,15 @@ def user_add(
         no_download_quota: bool,
         download_quota: int,
 ):
-    add_user(user_id, org, owner_group_roles, is_process, server_username, no_download_quota, download_quota)
+    add_user(
+        user_id, 
+        org, 
+        owner_group_roles, 
+        is_process, 
+        server_username, 
+        no_download_quota, 
+        download_quota
+    )
 
 
 @user.command('update', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
@@ -77,7 +85,16 @@ def user_update(
     no_download_quota: bool,
     download_quota: int,
 ):
-    update_user(user_id, name, email, org, server_username, is_active, no_download_quota, download_quota)
+    update_user(
+        user_id, 
+        name, 
+        email, 
+        org, 
+        server_username, 
+        is_active, 
+        no_download_quota, 
+        download_quota
+    )
 
 
 @user.command('enable', help=f"Re-enable a user in {PROG_NAME}")
