@@ -1,5 +1,4 @@
-from austrakka.utils.api import api_get, api_post, api_patch
-
+from austrakka.utils.api import api_get
 
 def get_default_tenant_global_id():
     return _get_default_tenant_global_id()
