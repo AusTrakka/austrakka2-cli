@@ -7,6 +7,7 @@ from pathlib import Path
 from io import BufferedReader, StringIO, TextIOWrapper, BytesIO
 import codecs
 import hashlib
+import uuid
 from dataclasses import dataclass
 from typing import List
 from typing import Dict
@@ -26,7 +27,7 @@ from austrakka.utils.exceptions import FailedResponseException, CliArgumentExcep
 from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.exceptions import IncorrectHashException
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import api_post_multipart_raw, INTERACTION_WINDOW_HEADER
+from austrakka.utils.api import api_post_multipart_raw, CLIENT_SESSION_ID_HEADER
 from austrakka.utils.api import api_get
 from austrakka.utils.api import get_response
 from austrakka.utils.api import api_get_stream
@@ -39,9 +40,6 @@ from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
 from austrakka.utils.fs import create_dir
-from austrakka.utils.helpers.tenant import (
-    request_interaction_window, 
-    deactivate_interaction_window)
 
 from austrakka.utils.output import print_dataframe
 from austrakka.utils.enums.seq import SeqType
@@ -163,10 +161,10 @@ def add_sequence_submission(
     """
     _validate_streamlined_seq_args(owner_org, shared_projects)
     csv_dataframe = _get_and_validate_csv(csv_file, seq_type)
-    seq_window = _request_aggregation_window(owner_org, seq_type)
 
     seq_ids = list(csv_dataframe['Seq_ID'])
     _create_samples(seq_ids, owner_org, shared_projects)
+    client_session_id = uuid.uuid4().hex
 
     messages = _validate_csv_sequence_submission(csv_dataframe, seq_type)
     if messages:
@@ -183,7 +181,7 @@ def add_sequence_submission(
 
             sample_files = _get_files_from_csv_paths(row, seq_type)
             custom_headers = _build_headers(seq_type, row, force, skip, sample_files)
-            custom_headers[INTERACTION_WINDOW_HEADER] = seq_window['windowGlobalId']
+            custom_headers[CLIENT_SESSION_ID_HEADER] = client_session_id
 
             retry(lambda sf=sample_files, ch=custom_headers: _post_sequence(
                 sf, ch), 1, "/".join([SEQUENCE_PATH]))
@@ -206,8 +204,6 @@ def add_sequence_submission(
         except Exception as ex:
             raise ex from ex
         
-    deactivate_interaction_window(seq_window['windowGlobalId'])
-
     logger.info(f"Uploaded {upload_success_count} of {total_upload_count} samples")
     if failed_samples:
         failed_samples_str = ", ".join(failed_samples)
@@ -227,19 +223,6 @@ def purge_sequence(seq_id: str, seq_type: str, skip: bool, force: bool, delete_a
         path=api_path,
         custom_headers=custom_headers
     )
-
-
-def _request_aggregation_window(owner_org, seq_type):
-    seq_upload_scope_alias = 'sequence-upload-interaction'
-    seq_window = request_interaction_window(
-        seq_upload_scope_alias,
-        {
-            'ownerOrgAbbrev': owner_org,
-            'seqType': seq_type.value,
-        }
-    )
-    return seq_window
-
 
 def _calc_name_prefix(fasta_file):
     original_filename = Path(fasta_file.name)

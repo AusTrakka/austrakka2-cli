@@ -22,7 +22,7 @@ CONTENT_TYPE_JSON = 'application/json'
 CONTENT_TYPE_MULTIPART = 'multipart/form-data; charset=utf-8; boundary=+++'
 WWW_AUTHENTICATE = 'www-authenticate'
 INVALID_TOKEN = 'invalid_token'
-INTERACTION_WINDOW_HEADER = 'X-Interaction-Window-Global-Id'
+CLIENT_SESSION_ID_HEADER = 'X-Client-Session-ID'
 
 def _get_default_headers(
         content_type: str = CONTENT_TYPE_JSON,

@@ -89,7 +89,7 @@ def _call_batched_submission(
         shared_projects: List[str],
         proforma_abbrev: str,
         batch_size: int,
-):
+):    
     if batch_size < 1:
         _call_submission(path, file, owner_org, shared_projects, proforma_abbrev)
         return
