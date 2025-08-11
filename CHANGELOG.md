@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.72.0] - 2025-08-12
+### Changed
+- Added download quota options to `user add` and `user update`.
+
 ## [0.71.3] - 2025-07-21
 ### Fixed
 - Fixed issue in changing project merge algorithm
