@@ -8,7 +8,9 @@ from austrakka.utils.options import \
     opt_owner_group_roles, \
     opt_name, \
     opt_email_address, \
-    opt_is_active
+    opt_is_active, \
+    opt_user_no_dl_quota, \
+    opt_user_monthly_dl_quota_bytes
 from austrakka.utils.options import opt_is_austrakka_process
 from austrakka.utils.options import opt_user_object_id
 from austrakka.utils.options import opt_organisation
@@ -42,14 +44,26 @@ def user_list(show_disabled: bool, out_format: str):
 @opt_owner_group_roles(required=False)
 @opt_is_austrakka_process(default=False)
 @opt_server_username()
+@opt_user_no_dl_quota()
+@opt_user_monthly_dl_quota_bytes()
 def user_add(
         user_id: str,
         org: str,
         owner_group_roles: List[str],
         is_process: bool,
         server_username: str,
+        no_download_quota: bool,
+        download_quota: int,
 ):
-    add_user(user_id, org, owner_group_roles, is_process, server_username)
+    add_user(
+        user_id, 
+        org, 
+        owner_group_roles, 
+        is_process, 
+        server_username, 
+        no_download_quota, 
+        download_quota
+    )
 
 
 @user.command('update', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
@@ -59,6 +73,8 @@ def user_add(
 @opt_organisation(required=False)
 @opt_is_active(required=False)
 @opt_server_username(required=False)
+@opt_user_no_dl_quota(default=None)
+@opt_user_monthly_dl_quota_bytes()
 def user_update(
     user_id: str,
     org: str,
@@ -66,8 +82,19 @@ def user_update(
     email: str,
     name: str,
     server_username: str,
+    no_download_quota: bool,
+    download_quota: int,
 ):
-    update_user(user_id, name, email, org, server_username, is_active)
+    update_user(
+        user_id, 
+        name, 
+        email, 
+        org, 
+        server_username, 
+        is_active, 
+        no_download_quota, 
+        download_quota
+    )
 
 
 @user.command('enable', help=f"Re-enable a user in {PROG_NAME}")
