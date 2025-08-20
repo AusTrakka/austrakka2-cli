@@ -22,6 +22,7 @@ from ...utils.helpers.project import get_project_by_abbrev
 from ...utils.helpers.tenant import get_default_tenant_global_id
 
 ATTACH = 'Attach'
+UPDATE = 'update'
 
 
 @logger_wraps()
@@ -67,7 +68,26 @@ def unshare_proforma(abbrev: str, group_names: List[str]):
 
 
 @logger_wraps()
-def update_proforma(
+def update_proforma(abbrev: str, name: str, description: str):
+    # If both Name and Description are null or empty, it is an error
+    if not name and not description:
+        raise ValueError("Name and Description cannot both be empty")
+    
+    data = {}
+    if name:
+        data['name'] = name
+
+    if description:
+        data['description'] = description
+
+    api_patch(
+        path=f'{PROFORMA_PATH}/{abbrev}/{UPDATE}',
+        data=data,
+    )
+
+
+@logger_wraps()
+def add_version_proforma(
         abbrev: str,
         required_columns: List[str],
         optional_columns: List[str]):

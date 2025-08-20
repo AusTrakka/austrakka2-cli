@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.73.0] - 2025-08-20
+### Added
+- Added `proforma add-version` to create new Proforma versions with an updated set of fields.
+
+### Changed
+- `proforma update` can now only update a Proforma name or description.
+
 ## [0.72.0] - 2025-08-12
 ### Changed
 - Added download quota options to `user add` and `user update`.
