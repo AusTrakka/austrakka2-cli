@@ -8,6 +8,7 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 from .funcs import \
     add_proforma, \
     update_proforma, \
+    add_version_proforma, \
     list_proformas, \
     show_proforma, \
     disable_proforma, \
@@ -75,19 +76,36 @@ def proforma_add(
         optional_field)
 
 @proforma.command('update', hidden=hide_admin_cmds())
+@opt_name(required=False)
+@opt_description(required=False)
+@click.argument('proforma-abbrev', type=click.STRING)
+def proforma_update(
+        proforma_abbrev: str,
+        name: str,
+        description: str):
+    """
+    Update a pro forma's Name or Description
+    """
+    update_proforma(
+        proforma_abbrev,
+        name,
+        description)
+
+
+@proforma.command('add-version', hidden=hide_admin_cmds())
 @opt_required
 @opt_optional
 @click.argument('proforma-abbrev', type=click.STRING)
-def proforma_update(
+def proforma_add_version(
         proforma_abbrev: str,
         required_field: List[str],
         optional_field: List[str]):
     """
-    Update a proforma with a new set of fields.
+    Add a proforma version with a new set of fields.
     The fields specified by -req and -opt will fully replace the fields in the current version.
     Any fields in the current version but not listed in the update will be removed.
     """
-    update_proforma(
+    add_version_proforma(
         proforma_abbrev,
         required_field,
         optional_field)
