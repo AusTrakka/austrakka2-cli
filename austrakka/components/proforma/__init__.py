@@ -54,6 +54,17 @@ opt_remove = create_option(
     multiple=True
 )
 
+def opt_inherit(**attrs: t.Any):
+    defaults = {
+        'is_flag': True,
+        'default': False,
+        'help': 'Inherit fields from previous version',
+    }
+    return create_option(
+        '--inherit',
+        **{**defaults, **attrs}
+    )
+
 
 @proforma.command(
         'add', 
@@ -105,7 +116,7 @@ def proforma_update(
 @opt_required
 @opt_optional
 @opt_remove
-@click.option('--inherit', is_flag=True, default=False, help='Inherit fields from previous version')
+@opt_inherit()
 @click.argument('proforma-abbrev', type=click.STRING)
 def proforma_add_version(
         proforma_abbrev: str,
