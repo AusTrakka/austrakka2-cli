@@ -356,10 +356,11 @@ def show_proforma(abbrev: str, out_format: str):
     )
     data = response['data'] if ('data' in response) else response
 
-    for field in ['abbreviation', 'name', 'version', 'description']:
-        logger.info(f'{field}: {data[field]}')
+    if out_format != 'json':
+        for field in ['abbreviation', 'name', 'version', 'description']:
+            logger.info(f'{field}: {data[field]}')
 
-    logger.info('Pro forma fields:')
+        logger.info('Pro forma fields:')
 
     field_df = _get_proforma_fields_df(data)
     
