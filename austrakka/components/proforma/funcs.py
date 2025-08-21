@@ -108,6 +108,14 @@ def add_version_proforma(
             f"{', '.join(conflicting_fields)}"
         )
 
+    system_fields = get_system_field_names_v2(get_default_tenant_global_id())
+    removed_system_fields = set(remove_field) & set(system_fields)
+    if removed_system_fields:
+        raise ValueError(
+            "The following system fields cannot be removed: "
+            f"{', '.join(removed_system_fields)}"
+        )
+
     data = api_get(path=f'{PROFORMA_PATH}/abbrev/{abbrev}')['data']
     pf_id = data['proFormaId']
 
@@ -139,7 +147,6 @@ def add_version_proforma(
             )
 
     # Ensure system fields are present and required
-    system_fields = get_system_field_names_v2(get_default_tenant_global_id())
     for field_name in system_fields:
         if field_name not in field_spec:
             logger.warning(
