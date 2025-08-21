@@ -94,80 +94,31 @@ def add_version_proforma(
         remove_field: List[str],
         inherit: bool):
 
-    conflicting_fields = set(required_columns) & set(optional_columns)
-    if conflicting_fields:
-        raise ValueError(
-            "The following fields have been specified as both required and optional: "
-            f"{', '.join(conflicting_fields)}"
-        )
-
-    conflicting_fields = (set(required_columns) | set(optional_columns)) & set(remove_field)
-    if conflicting_fields:
-        raise ValueError(
-            "The following fields have been specified as both to be added/updated and removed: "
-            f"{', '.join(conflicting_fields)}"
-        )
-
-    system_fields = get_system_field_names_v2(get_default_tenant_global_id())
-    removed_system_fields = set(remove_field) & set(system_fields)
-    if removed_system_fields:
-        raise ValueError(
-            "The following system fields cannot be removed: "
-            f"{', '.join(removed_system_fields)}"
-        )
+    _validate_add_version_args(required_columns, optional_columns, remove_field)
 
     data = api_get(path=f'{PROFORMA_PATH}/abbrev/{abbrev}')['data']
     pf_id = data['proFormaId']
 
-    # Get current field spec
     current_field_spec = {field['metaDataColumnName']: field['isRequired']
                           for field in data['columnMappings']}
 
-    # Start with empty field set
-    field_spec = {}
-    if inherit:
-        logger.info(f"Inheriting fields from previous version of {abbrev}")
-        field_spec = current_field_spec.copy()
-
-
-    # User-specified fields take precedence
-    for field_name in required_columns:
-        field_spec[field_name] = True
-
-    for field_name in optional_columns:
-        field_spec[field_name] = False
-
-    # Remove fields
-    for field_name in remove_field:
-        if field_name in field_spec:
-            del field_spec[field_name]
-        else:
-            logger.warning(
-                f"Field 'f{field_name}' specified for removal was not found in the pro forma."
-            )
-
-    # Ensure system fields are present and required
-    for field_name in system_fields:
-        if field_name not in field_spec:
-            logger.warning(
-                f"System field {field_name} must be included: adding to pro forma")
-        field_spec[field_name] = True
+    field_spec = _build_field_spec(
+        current_field_spec,
+        required_columns,
+        optional_columns,
+        remove_field,
+        inherit
+    )
 
     if field_spec == current_field_spec:
         logger.info("The specified pro forma fields are identical to the "
                     "current version. No update will be performed.")
         return
 
-    column_names = (
-        [
-            {"name": name, "isRequired": True}
-            for name, required in field_spec.items() if required
-        ]
-        + [
-            {"name": name, "isRequired": False}
-            for name, required in field_spec.items() if not required
-        ]
-    )
+    column_names = [
+        {"name": name, "isRequired": is_required}
+        for name, is_required in field_spec.items()
+    ]
 
     if not column_names:
         raise ValueError("A pro forma must contain at least one field")
@@ -410,3 +361,64 @@ def _post_proforma(files, file_hash: FileHash, custom_headers: dict):
                      files=files,
                      file_hash=file_hash,
                      custom_headers=custom_headers)
+
+def _validate_add_version_args(
+        required_columns: List[str],
+        optional_columns: List[str],
+        remove_field: List[str]):
+    conflicting_fields = set(required_columns) & set(optional_columns)
+    if conflicting_fields:
+        raise ValueError(
+            "The following fields have been specified as both required and optional: "
+            f"{', '.join(conflicting_fields)}"
+        )
+
+    conflicting_fields = (set(required_columns) | set(optional_columns)) & set(remove_field)
+    if conflicting_fields:
+        raise ValueError(
+            "The following fields have been specified as both to be added/updated and removed: "
+            f"{', '.join(conflicting_fields)}"
+        )
+
+    system_fields = get_system_field_names_v2(get_default_tenant_global_id())
+    removed_system_fields = set(remove_field) & set(system_fields)
+    if removed_system_fields:
+        raise ValueError(
+            "The following system fields cannot be removed: "
+            f"{', '.join(removed_system_fields)}"
+        )
+
+def _build_field_spec(
+        current_field_spec: Dict[str, bool],
+        required_columns: List[str],
+        optional_columns: List[str],
+        remove_field: List[str],
+        inherit: bool) -> Dict[str, bool]:
+
+    field_spec = {}
+    if inherit:
+        logger.info("Inheriting fields from previous version")
+        field_spec = current_field_spec.copy()
+
+    for field_name in required_columns:
+        field_spec[field_name] = True
+
+    for field_name in optional_columns:
+        field_spec[field_name] = False
+
+    for field_name in remove_field:
+        if field_name in field_spec:
+            del field_spec[field_name]
+        else:
+            logger.warning(
+                f"Field 'f{field_name}' specified for removal was not found in the pro forma."
+            )
+    
+    system_fields = get_system_field_names_v2(get_default_tenant_global_id())
+    for field_name in system_fields:
+        if field_name not in field_spec:
+            logger.warning(
+                f"System field {field_name} must be included: adding to pro forma")
+        field_spec[field_name] = True
+        
+    return field_spec
