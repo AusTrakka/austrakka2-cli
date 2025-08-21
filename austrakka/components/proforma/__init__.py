@@ -95,11 +95,13 @@ def proforma_update(
 @proforma.command('add-version', hidden=hide_admin_cmds())
 @opt_required
 @opt_optional
+@click.option('--inherit', is_flag=True, default=False, help='Inherit fields from previous version')
 @click.argument('proforma-abbrev', type=click.STRING)
 def proforma_add_version(
         proforma_abbrev: str,
         required_field: List[str],
-        optional_field: List[str]):
+        optional_field: List[str],
+        inherit: bool):
     """
     Add a proforma version with a new set of fields.
     The fields specified by -req and -opt will fully replace the fields in the current version.
@@ -108,7 +110,8 @@ def proforma_add_version(
     add_version_proforma(
         proforma_abbrev,
         required_field,
-        optional_field)
+        optional_field,
+        inherit)
 
 
 @proforma.command(

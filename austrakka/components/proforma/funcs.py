@@ -90,33 +90,60 @@ def update_proforma(abbrev: str, name: str, description: str):
 def add_version_proforma(
         abbrev: str,
         required_columns: List[str],
-        optional_columns: List[str]):
+        optional_columns: List[str],
+        inherit: bool):
 
-    # Include system fields (avoid an error from the endpoint; don't force CLI user to type them in)
-    # Note that we are not forcing system fields the user DOES include
-    # to set IsRequired
-    tenant_global_id = get_default_tenant_global_id()
-    system_fields = get_system_field_names_v2(tenant_global_id)
-    missing_system_fields = [
-        fieldname for fieldname in system_fields if fieldname not in required_columns +
-        optional_columns]
+    conflicting_fields = set(required_columns) & set(optional_columns)
+    if conflicting_fields:
+        raise ValueError(
+            "The following fields have been specified as both required and optional: "
+            f"{', '.join(conflicting_fields)}"
+        )
 
     pf_resp = api_get(
         path=f'{PROFORMA_PATH}/abbrev/{abbrev}',
     )
-
     data = pf_resp['data'] if ('data' in pf_resp) else pf_resp
     pf_id = data['proFormaId']
 
-    required_columns = list(required_columns)
-    for field in missing_system_fields:
-        logger.warning(
-            f"System field {field} must be included: adding to pro forma")
-        required_columns.append(field)
+    # Get current field spec
+    current_field_spec = {field['metaDataColumnName']: field['isRequired']
+                          for field in data['columnMappings']}
+
+    # Start with empty field set
+    field_spec = {}
+    if inherit:
+        logger.info(f"Inheriting fields from previous version of {abbrev}")
+        field_spec = current_field_spec.copy()
+
+
+    # User-specified fields take precedence
+    for field_name in required_columns:
+        field_spec[field_name] = True
+
+    for field_name in optional_columns:
+        field_spec[field_name] = False
+
+    # Ensure system fields are present and required
+    tenant_global_id = get_default_tenant_global_id()
+    system_fields = get_system_field_names_v2(tenant_global_id)
+    for field_name in system_fields:
+        if field_name not in field_spec:
+             logger.warning(
+                f"System field {field_name} must be included: adding to pro forma")
+        field_spec[field_name] = True
+
+    if field_spec == current_field_spec:
+        logger.info("The specified pro forma fields are identical to the "
+                    "current version. No update will be performed.")
+        return
+
+    final_required = [name for name, required in field_spec.items() if required]
+    final_optional = [name for name, required in field_spec.items() if not required]
 
     column_names = (
-        [{"name": col, "isRequired": True} for col in required_columns]
-        + [{"name": col, "isRequired": False} for col in optional_columns])
+        [{"name": col, "isRequired": True} for col in final_required]
+        + [{"name": col, "isRequired": False} for col in final_optional])
 
     total_columns = len(column_names)
 
