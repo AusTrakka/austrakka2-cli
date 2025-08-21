@@ -108,10 +108,7 @@ def add_version_proforma(
             f"{', '.join(conflicting_fields)}"
         )
 
-    pf_resp = api_get(
-        path=f'{PROFORMA_PATH}/abbrev/{abbrev}',
-    )
-    data = pf_resp['data'] if ('data' in pf_resp) else pf_resp
+    data = api_get(path=f'{PROFORMA_PATH}/abbrev/{abbrev}')['data']
     pf_id = data['proFormaId']
 
     # Get current field spec
@@ -142,11 +139,10 @@ def add_version_proforma(
             )
 
     # Ensure system fields are present and required
-    tenant_global_id = get_default_tenant_global_id()
-    system_fields = get_system_field_names_v2(tenant_global_id)
+    system_fields = get_system_field_names_v2(get_default_tenant_global_id())
     for field_name in system_fields:
         if field_name not in field_spec:
-             logger.warning(
+            logger.warning(
                 f"System field {field_name} must be included: adding to pro forma")
         field_spec[field_name] = True
 
@@ -155,19 +151,21 @@ def add_version_proforma(
                     "current version. No update will be performed.")
         return
 
-    final_required = [name for name, required in field_spec.items() if required]
-    final_optional = [name for name, required in field_spec.items() if not required]
-
     column_names = (
-        [{"name": col, "isRequired": True} for col in final_required]
-        + [{"name": col, "isRequired": False} for col in final_optional])
+        [
+            {"name": name, "isRequired": True}
+            for name, required in field_spec.items() if required
+        ]
+        + [
+            {"name": name, "isRequired": False}
+            for name, required in field_spec.items() if not required
+        ]
+    )
 
-    total_columns = len(column_names)
-
-    if total_columns == 0:
+    if not column_names:
         raise ValueError("A pro forma must contain at least one field")
 
-    logger.info(f'Updating pro forma: {abbrev} with {total_columns} fields')
+    logger.info(f'Updating pro forma: {abbrev} with {len(column_names)} fields')
 
     api_put(
         path=f'{PROFORMA_PATH}/{pf_id}',
