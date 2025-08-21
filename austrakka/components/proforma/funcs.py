@@ -91,12 +91,20 @@ def add_version_proforma(
         abbrev: str,
         required_columns: List[str],
         optional_columns: List[str],
+        remove_field: List[str],
         inherit: bool):
 
     conflicting_fields = set(required_columns) & set(optional_columns)
     if conflicting_fields:
         raise ValueError(
             "The following fields have been specified as both required and optional: "
+            f"{', '.join(conflicting_fields)}"
+        )
+
+    conflicting_fields = (set(required_columns) | set(optional_columns)) & set(remove_field)
+    if conflicting_fields:
+        raise ValueError(
+            "The following fields have been specified as both to be added/updated and removed: "
             f"{', '.join(conflicting_fields)}"
         )
 
@@ -123,6 +131,15 @@ def add_version_proforma(
 
     for field_name in optional_columns:
         field_spec[field_name] = False
+
+    # Remove fields
+    for field_name in remove_field:
+        if field_name in field_spec:
+            del field_spec[field_name]
+        else:
+            logger.warning(
+                f"Field 'f{field_name}' specified for removal was not found in the pro forma."
+            )
 
     # Ensure system fields are present and required
     tenant_global_id = get_default_tenant_global_id()
