@@ -21,7 +21,7 @@ def call_get_and_print(path: str, out_format: str, params: Dict = None):
     result = response['data'] if ('data' in response) else response
 
     if not result:
-        logger.info("No projects available.")
+        logger.info("No results available.")
         return
     
     result = pd.json_normalize(result, max_level=1)
