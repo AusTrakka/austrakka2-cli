@@ -46,6 +46,26 @@ opt_optional = create_option(
     type=click.STRING,
     multiple=True)
 
+opt_remove = create_option(
+    '-rm',
+    '--remove-field',
+    help='Field to remove from the pro forma. Multiple fields may be specified.',
+    type=click.STRING,
+    multiple=True
+)
+
+def opt_inherit(**attrs: t.Any):
+    defaults = {
+        'is_flag': True,
+        'default': False,
+        'help': 'Inherit fields from previous version',
+    }
+    return create_option(
+        '--inherit',
+        **{**defaults, **attrs}
+    )
+
+
 @proforma.command(
         'add', 
         hidden=hide_admin_cmds(),
@@ -95,11 +115,15 @@ def proforma_update(
 @proforma.command('add-version', hidden=hide_admin_cmds())
 @opt_required
 @opt_optional
+@opt_remove
+@opt_inherit()
 @click.argument('proforma-abbrev', type=click.STRING)
 def proforma_add_version(
         proforma_abbrev: str,
         required_field: List[str],
-        optional_field: List[str]):
+        optional_field: List[str],
+        remove_field: List[str],
+        inherit: bool):
     """
     Add a proforma version with a new set of fields.
     The fields specified by -req and -opt will fully replace the fields in the current version.
@@ -108,7 +132,9 @@ def proforma_add_version(
     add_version_proforma(
         proforma_abbrev,
         required_field,
-        optional_field)
+        optional_field,
+        remove_field,
+        inherit)
 
 
 @proforma.command(
