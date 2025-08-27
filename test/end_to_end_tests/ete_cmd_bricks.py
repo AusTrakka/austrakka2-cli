@@ -210,8 +210,13 @@ def _create_group(cli: AusTrakkaTestCli, name: str):
     assert result.exit_code == 0, f'Failed to create group {name} as part of test setup: {result.output}'
 
 
-def _create_min_proforma(cli: AusTrakkaTestCli, name: str):
-    result = cli.invoke([
+def _create_min_proforma(
+        cli: AusTrakkaTestCli,
+        name: str,
+        required_fields: list[str] = None,
+        optional_fields: list[str] = None):
+
+    args = [
         'proforma',
         'add',
         '-a',
@@ -226,7 +231,19 @@ def _create_min_proforma(cli: AusTrakkaTestCli, name: str):
         owner_group_field_name,
         '-opt',
         shared_groups_field_name,
-    ])
+    ]
+
+    if required_fields:
+        for field in required_fields:
+            _create_field_if_not_exists(cli, field)
+            args.extend(['-req', field])
+
+    if optional_fields:
+        for field in optional_fields:
+            _create_field_if_not_exists(cli, field)
+            args.extend(['-opt', field])
+
+    result = cli.invoke(args)
 
     assert result.exit_code == 0, f'Failed to create min proforma {name} as part of test setup: {result.output}'
 
