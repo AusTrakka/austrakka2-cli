@@ -414,11 +414,4 @@ def _build_field_spec(
                 f"Field 'f{field_name}' specified for removal was not found in the pro forma."
             )
     
-    system_fields = get_system_field_names_v2(get_default_tenant_global_id())
-    for field_name in system_fields:
-        if field_name not in field_spec:
-            logger.warning(
-                f"System field {field_name} must be included: adding to pro forma")
-        field_spec[field_name] = True
-        
     return field_spec
