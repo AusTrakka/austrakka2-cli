@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.73.1] - 2025-08-27
+
+### Added
+- The `proforma add-version` command now supports `--inherit` and `--remove-field` options to inherit fields from the current version, and specify only changed fields.
+
 ## [0.73.0] - 2025-08-20
 ### Added
 - Added `proforma add-version` to create new Proforma versions with an updated set of fields.
