@@ -1,5 +1,7 @@
 from typing import List, Dict, Any
 
+from loguru import logger
+
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
@@ -21,7 +23,13 @@ def add_user(
         owner_group_roles: List[str],
         is_process: bool,
         server_username: str,
+        no_download_quota: bool,
+        download_quota: int,
 ):
+    if no_download_quota and download_quota is not None:
+        logger.info(f"User configured with no download quota: "
+                    f"Quota of {download_quota} will be ignored")
+        
     user = {
         "objectId": user_id,
         "organisation": {
@@ -30,8 +38,10 @@ def add_user(
         "ownerGroupRoles": list(owner_group_roles),
         "isAusTrakkaProcess": is_process,
         "analysisServerUsername": server_username,
+        "monthlyBytesQuota": download_quota,
+        "noDownloadQuota": no_download_quota,
     }
-
+    
     api_post(
         path=USER_PATH,
         data=user
@@ -45,6 +55,8 @@ def update_user(
         org: str = None,
         server_username: str = None,
         is_active: bool = None,
+        no_download_quota: bool = None,
+        download_quota: int = None,
 ):
     user_resp = api_get(f'{USER_PATH}/userId/{object_id}')
     user_full = user_resp['data']
@@ -54,7 +66,13 @@ def update_user(
         "orgAbbrev": user_full['orgAbbrev'],
         "isActive": user_full['isActive'],
         "analysisServerUsername": user_full['analysisServerUsername'],
+        "noDownloadQuota": user_full['noDownloadQuota'],
+        "monthlyBytesQuota": user_full['monthlyBytesQuota'],
     }
+
+    if no_download_quota and download_quota is not None:
+        logger.info(f"User configured with no download quota: "
+                    f"Quota of {download_quota} will be ignored")
 
     if name is not None:
         user['displayName'] = name
@@ -66,6 +84,10 @@ def update_user(
         user['isActive'] = is_active
     if server_username is not None:
         user['analysisServerUsername'] = server_username
+    if no_download_quota is not None:
+        user['noDownloadQuota'] = no_download_quota
+    if download_quota is not None:
+        user['monthlyBytesQuota'] = download_quota
 
     api_put(
         path=f'{USER_PATH}/{object_id}',

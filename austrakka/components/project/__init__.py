@@ -8,7 +8,7 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_abbrev, \
     opt_is_active, \
     opt_type, \
-    opt_view_type, opt_project_client_type
+    opt_view_type, opt_project_client_type, opt_merge_algorithm
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_dashboard_name
 from austrakka.utils.options import opt_description
@@ -53,7 +53,8 @@ project.add_command(activity_subcommands('ProjectV2'))
 @opt_organisation(help="Requesting organisation abbreviation", required=False)
 @opt_dashboard_name(required=False)
 @opt_type(required=False)
-@opt_project_client_type(required=False)
+@opt_project_client_type()
+@opt_merge_algorithm()
 def project_add(
         abbrev: str,
         name: str,
@@ -61,8 +62,16 @@ def project_add(
         org: str,
         dashboard_name: str,
         project_type: str,
-        client_type: str):
-    add_project(abbrev, name, description, org, dashboard_name, project_type, client_type)
+        client_type: str,
+        merge_algo: str):
+    add_project(abbrev,
+                name,
+                description,
+                org,
+                dashboard_name,
+                project_type,
+                client_type,
+                merge_algo)
 
 
 @project.command(
@@ -77,6 +86,7 @@ def project_add(
 @opt_organisation(help="New requesting organisation abbreviation", required=False)
 @opt_dashboard_name(help="New dashboard", required=False)
 @opt_project_client_type(required=False)
+@opt_merge_algorithm(required=False)
 @opt_type(help="New project type", required=False)
 def project_update(
         project_abbrev: str,
@@ -86,7 +96,8 @@ def project_update(
         org: str,
         dashboard_name: str,
         project_type: str,
-        client_type: str):
+        client_type: str,
+        merge_algo: str):
     update_project(project_abbrev,
                    name,
                    description,
@@ -94,7 +105,8 @@ def project_update(
                    org,
                    dashboard_name,
                    project_type,
-                   client_type)
+                   client_type,
+                   merge_algo)
 
 
 @project.command('set-dashboard', hidden=hide_admin_cmds())

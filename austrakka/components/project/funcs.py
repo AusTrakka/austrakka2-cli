@@ -6,7 +6,7 @@ from austrakka.utils.api import api_post, \
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
-from austrakka.utils.helpers.project import get_project_by_abbrev
+from austrakka.utils.helpers.project import get_project_by_abbrev, get_project_settings_by_abbrev
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_response
 from austrakka.utils.paths import PROJECT_PATH, \
@@ -18,7 +18,7 @@ from austrakka.utils.paths import PROJECT_SETTINGS
 compact_fields = [
     "projectId",        # Project ID
     "abbreviation",     # Abbreviation or short name
-    "type",              # Type for the project
+    "type",             # Type for the project
     "isActive",         # Active status
     "name"              # Full name of the project
 ]
@@ -27,7 +27,8 @@ more_fields = [
     'globalId',         # Global ID
     "projectId",        # Project ID
     "abbreviation",     # Abbreviation or short name
-    "type",              # Type for the project
+    "clientType"        # the 'secret' client type
+    "type",             # Type for the project
     "isActive",         # Active status
     "name",             # Project name
     "description",      # Description of the project
@@ -46,7 +47,8 @@ def add_project(
         org: str,
         dashboard_name: str,
         project_type: str,
-        client_type: str):
+        client_type: str,
+        merge_algo: str):
     return api_post(
         path=PROJECT_PATH,
         data={
@@ -60,7 +62,8 @@ def add_project(
             "dashboardName": dashboard_name,
             "type": project_type,
             "clientType": client_type,
-        }
+            "mergeAlgorithm": merge_algo, 
+       }
     )
 
 
@@ -73,20 +76,25 @@ def update_project(
         org: str,
         dashboard_name: str,
         project_type: str,
-        client_type: str
+        client_type: str,
+        merge_algorithm: str
 ):
     project = get_project_by_abbrev(project_abbreviation)
+    project_settings = get_project_settings_by_abbrev(project_abbreviation)
     
     # ProjectDTO fields which should go in ProjectPutDTO
-    put_project = {k: project[k] for k in [
-        'name',
-        'description',
-        'isActive',
-        'requestingOrg',
-        'dashboardName',
-        'type',
-        'clientType'
-    ]}
+    put_project = {
+        **{k: project[k] for k in [
+            'name',
+            'description',
+            'isActive',
+            'requestingOrg',
+            'dashboardName',
+            'type',
+            'clientType',
+        ]},
+        'mergeAlgorithm': project_settings['mergeAlgorithm'],
+    }
     
     if project['requestingOrg'] is None:
         put_project['requestingOrg'] = {'abbreviation': None}
@@ -107,6 +115,8 @@ def update_project(
         put_project['type'] = project_type
     if client_type is not None:
         put_project['clientType'] = client_type
+    if merge_algorithm is not None:
+        put_project['mergeAlgorithm'] = merge_algorithm
         
     return api_put(
         path=f"{PROJECT_PATH}/{project_abbreviation}",

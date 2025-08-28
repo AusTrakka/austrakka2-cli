@@ -179,7 +179,7 @@ def api_post(
 ):
     return client.post(
         _get_url(path),
-        data=json.dumps(data),
+        content=json.dumps(data),
         params=params,
     )
 
@@ -193,7 +193,7 @@ def api_post_list(
 ):
     return client.post(
         _get_url(path),
-        data=json.dumps(data),
+        content=json.dumps(data),
         params=params,
     )
 
@@ -206,7 +206,7 @@ def api_put(
 ):
     return client.put(
         _get_url(path),
-        data=json.dumps(data),
+        content=json.dumps(data),
         params=params,
     )
 
@@ -220,7 +220,7 @@ def api_patch(
 ):
     return client.patch(
         _get_url(path),
-        data=json.dumps(data),
+        content=json.dumps(data),
         params=params,
     )
 

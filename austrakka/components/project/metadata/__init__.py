@@ -8,9 +8,7 @@ from austrakka.utils.options import opt_merge_algorithm
 from austrakka.utils.options import opt_view_id
 
 from .funcs import list_dataset_views, \
-    download_dataset_view, \
-    set_merge_algorithm_project
-
+    download_dataset_view
 
 @click.group()
 @click.pass_context
@@ -34,7 +32,6 @@ def get_dataset_view_list(project_abbrev: str, out_format: str):
     """Get a list of metadata views for a given project."""
     list_dataset_views(project_abbrev, out_format)
 
-
 @metadata.command('get')
 @opt_view_id()
 @click.argument('project-abbrev', type=str)
@@ -46,13 +43,3 @@ def get_dataset_view(
 ):
     """Get a specific metadata view. By default, the full metadata view is returned."""
     download_dataset_view(view_id, project_abbrev, out_format)
-
-
-@metadata.command('set-merge')
-@click.argument('project-abbrev', type=str)
-@opt_merge_algorithm()
-def project_set_merge_algo(project_abbrev: str, merge_algorithm):
-    """
-    Set merge algorithm to use when generating metadata views.
-    """
-    set_merge_algorithm_project(project_abbrev, merge_algorithm)

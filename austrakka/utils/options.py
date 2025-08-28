@@ -25,6 +25,28 @@ def opt_abbrev(**attrs: t.Any):
     )
 
 
+def opt_curr_owner(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Abbreviated name of current owning organisation.'}
+    return create_option(
+        "-co",
+        "--curr-owner",
+        **{**defaults, **attrs}
+    )
+
+
+def opt_new_owner(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Abbreviated name of new owning organisation.'}
+    return create_option(
+        "-no",
+        "--new-owner",
+        **{**defaults, **attrs}
+    )
+
+
 def opt_tracking_token(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -84,6 +106,18 @@ def opt_private(is_update=False, **attrs: t.Any):
         '--is-private/--not-private',
         type=bool,
         default=None if is_update else False,
+        **{**defaults, **attrs}
+    )
+
+def opt_examples(var_name='examples', **attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'string of comma delimited examples values for the field',
+    }
+    return create_option(
+        "--examples",
+        var_name,
+        type=click.STRING,
         **{**defaults, **attrs}
     )
 
@@ -788,16 +822,22 @@ def opt_show_disabled(**attrs: t.Any):
         default=False,
         **{**defaults, **attrs}
     )
-
+ 
 
 def opt_merge_algorithm(**attrs: t.Any):
+    def map_merge_algo(_ctx, _param, value):
+        return {'show-all': 'ShowAll', 'override': 'Override'}[value]
+
     defaults = {
+        'help': 'Merge algorithm used to generate views for the sample table.',
+        'type': click.Choice(['show-all', 'override']),
+        'callback': map_merge_algo,
         'required': True,
-        'help': 'Determines which merge algorithm to use when merging datasets. '
-        'Valid options are: show-all, override'}
+    }
     return create_option(
-        '--merge-algorithm', '-ma',
-        type=click.Choice(['show-all', 'override']),
+        '--merge-algorithm',
+        '-ma',
+        'merge_algo',
         **{**defaults, **attrs}
     )
 
@@ -833,5 +873,31 @@ def opt_server_username(**attrs: t.Any):
     return create_option(
         "--server-username",
         type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_user_no_dl_quota(**attrs: t.Any):
+    defaults = {
+        'help': 'Used to disable download quotas for a user'
+    }
+    return create_option(
+        '--no-download-quota/--has-download-quota',
+        'no_download_quota',
+        type=bool,
+        required=False,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_user_monthly_dl_quota_bytes(**attrs: t.Any):
+    defaults = {
+        'help': 'Sets the monthly download quota for a user'
+    }
+    return create_option(
+        '--download-quota',
+        type=int,
+        required=False,
+        default=None,
         **{**defaults, **attrs}
     )
