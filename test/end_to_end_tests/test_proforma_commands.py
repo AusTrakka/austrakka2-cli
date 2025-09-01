@@ -125,6 +125,8 @@ class TestProformaCommands:
             'add-version',
             proforma_name,
             '--required-field',
+            'Seq_ID',
+            '--required-field',
             new_field,
         ])
 
