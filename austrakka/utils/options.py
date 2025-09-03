@@ -528,6 +528,18 @@ def opt_is_active(is_update=False, **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_is_geo(is_update=False, **attrs: t.Any):
+    defaults = {
+        'help': 'Determines if the field is a geographic identifier'
+    }
+    return create_option(
+        '--is-geo/--not-geo',
+        'geo_field',
+        type=bool,
+        default=None if is_update else False,
+        **{**defaults, **attrs}
+    )
+
 
 def opt_is_austrakka_process(**attrs: t.Any):
     defaults = {
