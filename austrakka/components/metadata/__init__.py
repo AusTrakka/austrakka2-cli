@@ -6,7 +6,7 @@ from io import BufferedReader
 import click
 
 from austrakka import __prog_name__ as PROG_NAME
-from austrakka.utils.options import opt_proforma, opt_batch_size
+from austrakka.utils.options import opt_proforma, opt_batch_size, opt_owner_org, opt_share
 from austrakka.utils.options import opt_is_update
 from austrakka.utils.options import opt_group_name
 from austrakka.utils.options import opt_blanks_delete
@@ -36,16 +36,26 @@ def metadata(ctx):
 
 @metadata.command('add', help=f'Upload metadata submission to {PROG_NAME}')
 @click.argument('file', type=click.File('rb'))
+@opt_owner_org(required=True)
+@opt_share()
 @opt_proforma()
 @opt_blanks_delete()
 @opt_batch_size(help=ADD_APPEND_BATCH_SIZE_HELP,
                 default=5000)
 def submission_add(
         file: BufferedReader,
+        owner_org: str,
+        shared_projects: List[str],
         proforma: str,
         blanks_will_delete: bool,
         batch_size: int):
-    add_metadata(file, proforma, blanks_will_delete, batch_size)
+    add_metadata(
+        file, 
+        owner_org, 
+        shared_projects, 
+        proforma, 
+        blanks_will_delete, 
+        batch_size)
 
 
 @metadata.command('update', help=f"""
@@ -55,20 +65,31 @@ def submission_add(
     to be updated. All samples must already exist in {PROG_NAME}.
 """)
 @click.argument('file', type=click.File('rb'))
+@opt_owner_org(required=True)
+@opt_share()
 @opt_proforma()
 @opt_blanks_delete()
 @opt_batch_size(help=ADD_APPEND_BATCH_SIZE_HELP,
                 default=5000)
 def submission_append(
         file: BufferedReader, 
+        owner_org: str,
+        shared_projects: List[str],
         proforma: str, 
         blanks_will_delete: bool,
-        batch_size: int):
-    append_metadata(file, proforma, blanks_will_delete, batch_size)
+        batch_size: int):   
+    append_metadata(
+        file, 
+        owner_org, 
+        shared_projects, 
+        proforma, 
+        blanks_will_delete, 
+        batch_size)
 
 
 @metadata.command('validate')
 @click.argument('file', type=click.File('rb'))
+@opt_owner_org(required=True)
 @opt_proforma()
 @opt_is_update()
 @opt_batch_size(help='The number of rows to split the metadata upload into before uploading. '
@@ -76,10 +97,17 @@ def submission_append(
                      'Validation messages will be returned per batch.'
                      'A negative or 0 value can be used to indicate no batching.',
                 default=5000)
-def submission_validate(file: BufferedReader, proforma: str, is_update: bool, batch_size: int):
-    """Check uploaded content for errors and warnings. This is a read-only
-    action. No data will modified."""
-    validate_metadata(file, proforma, is_update, batch_size)
+def submission_validate(
+        file: BufferedReader, 
+        owner_org: str, 
+        proforma: str, 
+        is_update: bool, 
+        batch_size: int):
+    """
+    Check uploaded content for errors and warnings. This is a read-only
+    action. No data will modified.
+    """
+    validate_metadata(file, owner_org, proforma, is_update, batch_size)
 
 
 @metadata.command('list')

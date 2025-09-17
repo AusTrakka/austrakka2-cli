@@ -178,14 +178,30 @@ def opt_group_name(var_name='group_name', **attrs: t.Any):
     )
 
 
-def opt_share(var_name='shared_group', **attrs: t.Any):
+def opt_share(**attrs: t.Any):
     defaults = {
         'required': False,
-        'help': 'Group to share with',
+        'help': 'List of project abbreviations to share samples with. '
+                'This applies to all samples in the csv.',
+        'multiple': True,
     }
     return create_option(
-        "--share",
-        var_name,
+        '-sps',
+        "--shared-projects",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
+def opt_owner_org(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Owner Organisation Abbreviation. Specifies the owner '
+                'who owns all samples in the csv.'
+    }
+    return create_option(
+        '-oo',
+        "--owner-org",
         type=click.STRING,
         **{**defaults, **attrs}
     )
