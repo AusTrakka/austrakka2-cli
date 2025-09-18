@@ -6,7 +6,7 @@ from io import BufferedReader
 import click
 
 from austrakka import __prog_name__ as PROG_NAME
-from austrakka.utils.options import opt_proforma, opt_batch_size, opt_owner_org, opt_share
+from austrakka.utils.options import opt_proforma, opt_batch_size, opt_owner_org, opt_shared_projects
 from austrakka.utils.options import opt_is_update
 from austrakka.utils.options import opt_group_name
 from austrakka.utils.options import opt_blanks_delete
@@ -37,7 +37,7 @@ def metadata(ctx):
 @metadata.command('add', help=f'Upload metadata submission to {PROG_NAME}')
 @click.argument('file', type=click.File('rb'))
 @opt_owner_org(required=True)
-@opt_share()
+@opt_shared_projects()
 @opt_proforma()
 @opt_blanks_delete()
 @opt_batch_size(help=ADD_APPEND_BATCH_SIZE_HELP,
@@ -66,7 +66,7 @@ def submission_add(
 """)
 @click.argument('file', type=click.File('rb'))
 @opt_owner_org(required=True)
-@opt_share()
+@opt_shared_projects()
 @opt_proforma()
 @opt_blanks_delete()
 @opt_batch_size(help=ADD_APPEND_BATCH_SIZE_HELP,

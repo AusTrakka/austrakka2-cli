@@ -88,11 +88,12 @@ def add_fasta_cns_submission(
         fasta_file: BufferedReader,
         owner_org: str,
         shared_projects: List[str],
+        should_create: bool,
         skip: bool = False,
         force: bool = False,
 ):
     """Iterate through a FASTA file and submit each sequence as a separate sample"""
-    _validate_streamlined_seq_args(owner_org, shared_projects)
+    _validate_streamlined_seq_args(owner_org, shared_projects, should_create)
 
     name_prefix = _calc_name_prefix(fasta_file)
 
@@ -101,7 +102,8 @@ def add_fasta_cns_submission(
     total_upload_count = 0
     records = list(SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'))
     seq_ids = [record.id for record in records]
-    _create_samples(seq_ids, owner_org, shared_projects)
+    if should_create:
+        _create_samples(seq_ids, owner_org, shared_projects)
     for record in records:
         seq_id = record.id
         logger.info(f"Uploading {seq_id}")
@@ -151,6 +153,7 @@ def add_sequence_submission(
         csv_file: BufferedReader,
         owner_org: str,
         shared_projects: List[str],
+        should_create: bool,
         skip: bool = False,
         force: bool = False,
 ):
@@ -158,11 +161,13 @@ def add_sequence_submission(
     Generic handling of uploading any sequence type.
     Handles the case where the user provides a CSV mapping Seq_IDs to files.
     """
-    _validate_streamlined_seq_args(owner_org, shared_projects)
+    print(owner_org, shared_projects, should_create)
+    _validate_streamlined_seq_args(owner_org, shared_projects, should_create)
     csv_dataframe = _get_and_validate_csv(csv_file, seq_type)
 
     seq_ids = list(csv_dataframe['Seq_ID'])
-    _create_samples(seq_ids, owner_org, shared_projects)
+    if should_create:
+        _create_samples(seq_ids, owner_org, shared_projects)
 
     messages = _validate_csv_sequence_submission(csv_dataframe, seq_type)
     if messages:
@@ -641,10 +646,18 @@ def _create_samples(
 
 def _validate_streamlined_seq_args(
         owner_org: str,
-        shared_groups: list[str],
+        shared_projects: list[str],
+        should_create: bool,
 ):
-    if shared_groups and (owner_org is None):
-        raise CliArgumentException("Owner organisation has not been provided")
+    # This should not trigger since owner_org should now be required
+    if owner_org is None:
+        raise CliArgumentException("Owner organisation has not been specified")
+
+    # This is not allowed, as we will not be submitting a CSV
+    if shared_projects and not should_create:
+        raise CliArgumentException(
+            "Shared projects can only be specified for this command when creating new samples; use --create to enable sample creation and sharing.")
     
-    if (not shared_groups) and (owner_org is not None):
-        logger.warning("Shared group has not been provided. New samples will not be shared.")
+    # This is allowed, but suspect - often indicates user error
+    if should_create and not shared_projects:
+        logger.warning("Shared projects have not been specified. New samples will not be shared.")
