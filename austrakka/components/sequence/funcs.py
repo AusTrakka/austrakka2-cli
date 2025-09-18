@@ -161,7 +161,6 @@ def add_sequence_submission(
     Generic handling of uploading any sequence type.
     Handles the case where the user provides a CSV mapping Seq_IDs to files.
     """
-    print(owner_org, shared_projects, should_create)
     _validate_streamlined_seq_args(owner_org, shared_projects, should_create)
     csv_dataframe = _get_and_validate_csv(csv_file, seq_type)
 
@@ -656,7 +655,8 @@ def _validate_streamlined_seq_args(
     # This is not allowed, as we will not be submitting a CSV
     if shared_projects and not should_create:
         raise CliArgumentException(
-            "Shared projects can only be specified for this command when creating new samples; use --create to enable sample creation and sharing.")
+            "Shared projects can only be specified for this command when creating new samples; "
+            "use --create to enable sample creation and sharing.")
     
     # This is allowed, but suspect - often indicates user error
     if should_create and not shared_projects:

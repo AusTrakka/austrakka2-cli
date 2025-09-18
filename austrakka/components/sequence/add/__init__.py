@@ -56,7 +56,8 @@ def seq_add_fastq_ill_PE(
         skip: bool = False,
         force: bool = False,
 ):
-    add_sequence_submission(SeqType.FASTQ_ILL_PE, csv_file, owner_org, shared_projects, create, skip, force)
+    add_sequence_submission(
+        SeqType.FASTQ_ILL_PE, csv_file, owner_org, shared_projects, create, skip, force)
 
 
 @add.command(SeqType.FASTQ_ILL_SE.value, help=f"""
@@ -85,7 +86,8 @@ def seq_add_fastq_ill_SE(
         skip: bool = False,
         force: bool = False,
 ):
-    add_sequence_submission(SeqType.FASTQ_ILL_SE, csv_file, owner_org, shared_projects, create, skip, force)
+    add_sequence_submission(
+        SeqType.FASTQ_ILL_SE, csv_file, owner_org, shared_projects, create, skip, force)
 
 
 @add.command(SeqType.FASTQ_ONT.value, help=f"""
@@ -113,7 +115,8 @@ def seq_add_fastq_ont(
         skip: bool = False,
         force: bool = False,
 ):
-    add_sequence_submission(SeqType.FASTQ_ONT, csv_file, owner_org, shared_projects, create, skip, force)
+    add_sequence_submission(
+        SeqType.FASTQ_ONT, csv_file, owner_org, shared_projects, create, skip, force)
 
 
 @add.command(SeqType.FASTA_CNS.value, help=f"""
@@ -171,4 +174,5 @@ def seq_add_fasta_asm(
         skip: bool = False,
         force: bool = False,
 ):
-    add_sequence_submission(SeqType.FASTA_ASM, csv_file, owner_org, shared_projects, create, skip, force)
+    add_sequence_submission(
+        SeqType.FASTA_ASM, csv_file, owner_org, shared_projects, create, skip, force)
