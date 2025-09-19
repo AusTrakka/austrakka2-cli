@@ -92,7 +92,7 @@ def add_version_proforma(
         remove_field: List[str],
         inherit: bool):
 
-    _validate_add_version_args(required_columns, optional_columns, remove_field)
+    _validate_add_version_args(inherit, required_columns, optional_columns, remove_field)
 
     data = api_get(path=f'{PROFORMA_PATH}/abbrev/{abbrev}')['data']
     pf_id = data['proFormaId']
@@ -346,6 +346,7 @@ def _post_proforma(files, file_hash: FileHash, custom_headers: dict):
                      custom_headers=custom_headers)
 
 def _validate_add_version_args(
+        inherit: bool,
         required_columns: List[str],
         optional_columns: List[str],
         remove_field: List[str]):
@@ -360,6 +361,10 @@ def _validate_add_version_args(
         raise ValueError(
             "The following fields have been specified as both to be added/updated and removed: "
             f"{', '.join(conflicting_fields)}"
+        )
+    if not inherit and len(remove_field) > 0:
+        raise ValueError(
+            "The 'remove-field' option can only be used when 'inherit' is set."
         )
 
 def _build_field_spec(
