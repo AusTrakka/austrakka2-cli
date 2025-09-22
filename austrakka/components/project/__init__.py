@@ -75,7 +75,7 @@ def project_add(
 @project.command(
         'update', 
         hidden=hide_admin_cmds(),
-        help=f'Update an existing project',
+        help='Update an existing project',
 )
 @click.argument('project-abbrev', type=str)
 @opt_name(help="New project name", required=False)
