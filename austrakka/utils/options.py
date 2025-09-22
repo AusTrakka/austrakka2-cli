@@ -818,11 +818,16 @@ def opt_show_disabled(**attrs: t.Any):
         default=False,
         **{**defaults, **attrs}
     )
- 
+
 
 def opt_merge_algorithm(**attrs: t.Any):
     def map_merge_algo(_ctx, _param, value):
-        return {'show-all': 'ShowAll', 'override': 'Override'}[value]
+        if value is None:
+            return None
+        algos = {'show-all': 'ShowAll', 'override': 'Override'}
+        if value not in algos.keys():
+            raise click.BadParameter(f'Invalid merge algorithm: {value}')
+        return [value]
 
     defaults = {
         'help': 'Merge algorithm used to generate views for the sample table.',
