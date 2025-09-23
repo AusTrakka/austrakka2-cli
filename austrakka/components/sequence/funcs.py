@@ -20,8 +20,6 @@ from Bio import SeqIO
 
 from austrakka.components.metadata import add_metadata
 from austrakka.utils.enums.metadata import METADATA_FIELD_SEQ_ID
-from austrakka.utils.enums.metadata import METADATA_FIELD_OWNER_GROUP
-from austrakka.utils.enums.metadata import METADATA_FIELD_SHARED_GROUPS
 from austrakka.utils.exceptions import FailedResponseException, CliArgumentException
 from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.exceptions import IncorrectHashException
@@ -619,14 +617,10 @@ def _create_samples(
 ) -> None:
     with tempfile.NamedTemporaryFile(suffix=".csv") as tmp:
         csv_str = StringIO()
-        rows = [[METADATA_FIELD_SEQ_ID, METADATA_FIELD_OWNER_GROUP, METADATA_FIELD_SHARED_GROUPS]]
+        rows = [[METADATA_FIELD_SEQ_ID]]
         for seq_id in seq_ids:
-            logger.info(f"Creating sample with {METADATA_FIELD_SEQ_ID} {seq_id}")
-            
-            # The owner_group column will be replaced by the server.
-            # it is still maintained for backwards compatibility to
-            # avoid impacting the users' agreed proformas.
-            rows.append([seq_id, 'dummy_owner', 'dummy_share'])
+            logger.info(f"Creating sample with {METADATA_FIELD_SEQ_ID} {seq_id} if required")
+            rows.append([seq_id])
         csv.writer(csv_str).writerows(rows)
         csv_str.seek(0)
         with open(tmp.name, 'w', encoding='utf8') as file:
@@ -638,7 +632,7 @@ def _create_samples(
                 file, 
                 owner_org, 
                 shared_groups, 
-                "Min", 
+                "min", 
                 blanks_will_delete=False,
                 batch_size=5000)
 
