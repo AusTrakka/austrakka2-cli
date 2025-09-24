@@ -6,22 +6,20 @@ import pytest
 
 from ete_cmd_bricks import (
     _create_field_if_not_exists,
-    _create_min_proforma,
+    _create_min_proforma_if_not_exists,
     _create_org,
     _create_group,
     _upload_fasta_asm_file,
-    _upload_min_metadata,
     _seq_sync_get,
     _upload_fasta_cns_file,
     _sample_unshare,
     _upload_fastq_ill_pe_file,
-    _upload_fastq_ill_se_file)
+    _upload_fastq_ill_se_file,
+    _create_project)
 
 from ete_utils import (
     _new_identifier,
     seq_id_field_name,
-    owner_group_field_name,
-    shared_groups_field_name,
     _mk_temp_dir,
     _clone_cns_fasta_file,
     _read_sync_state,
@@ -41,35 +39,25 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
+        _create_project(self.cli, shared_project)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-cns'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         # The output directory should contain a single fasta file with all sequences
@@ -92,35 +80,25 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
+        _create_project(self.cli, shared_project)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-cns'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         seq1_file = _get_single_seq_file_path(seq_id, seq_type, '.fasta', temp_dir)
@@ -140,34 +118,24 @@ class TestSeqSyncGetCommands:
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
         seq_id3 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2, seq_id3],
-            owner_group,
-            [shared_group])
+        _create_project(self.cli, shared_project)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name, [shared_project])
 
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-cns'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Act
         updated_file = 'test/test-assets/sequences/cns/multi-seq-cns-updated.fasta'
@@ -175,8 +143,8 @@ class TestSeqSyncGetCommands:
             updated_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-003', seq_id3)])
 
-        _upload_fasta_cns_file(self.cli, csn_fasta_path_updated)
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _upload_fasta_cns_file(self.cli, csn_fasta_path_updated, org_name, [shared_project])
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         seq1_file = _get_single_seq_file_path(seq_id, seq_type, '.fasta', temp_dir)
@@ -200,12 +168,13 @@ class TestSeqSyncGetCommands:
     @pytest.mark.parametrize("seq_type", ['fasta-asm', 'fasta-cns', 'fastq-ill-pe', 'fastq-ill-se', 'fastq-ont'])
     def test_sync_get__given_group_has_no_sequences__expect_no_sequence_downloaded(self, seq_type):
         # Arrange
-        shared_group = f'sg-{_new_identifier(10)}'
-        _create_group(self.cli, shared_group)
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        _create_project(self.cli, shared_project)
         temp_dir = _mk_temp_dir()
 
         # Act
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
@@ -215,12 +184,13 @@ class TestSeqSyncGetCommands:
     @pytest.mark.parametrize("seq_type", ['fasta-asm', 'fasta-cns', 'fastq-ill-pe', 'fastq-ill-se'])
     def test_sync_get__given_group_has_no_sequences__expect_current_state_is__up_to_date(self, seq_type):
         # Arrange
-        shared_group = f'sg-{_new_identifier(10)}'
-        _create_group(self.cli, shared_group)
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        _create_project(self.cli, shared_project)
         temp_dir = _mk_temp_dir()
 
         # Act
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
@@ -231,12 +201,13 @@ class TestSeqSyncGetCommands:
     @pytest.mark.parametrize("seq_type", ['fasta-asm', 'fasta-cns', 'fastq-ill-pe', 'fastq-ill-se'])
     def test_sync_get__given_group_has_no_sequences__expect_current_action_is__pulling_manifest(self, seq_type):
         # Arrange
-        shared_group = f'sg-{_new_identifier(10)}'
-        _create_group(self.cli, shared_group)
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        _create_project(self.cli, shared_project)
         temp_dir = _mk_temp_dir()
 
         # Act
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
@@ -248,36 +219,25 @@ class TestSeqSyncGetCommands:
         # Arrange
         original_file_dir = 'test/test-assets/sequences/asm/'
         original_file_name = 'XYZ-asm-004.fasta'
+        original_file = f'{original_file_dir}{original_file_name}'
 
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
-
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+    
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        original_file = f'{original_file_dir}{original_file_name}'
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
-
-        _upload_fasta_asm_file(self.cli, original_file, seq_id)
+        _upload_fasta_asm_file(self.cli, original_file, seq_id, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-asm'
 
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
@@ -301,8 +261,8 @@ class TestSeqSyncGetCommands:
         assert state_dict['seq_type'] == seq_type, \
             f'The sequence type should be {seq_type}: {state_dict}'
 
-        assert state_dict['group_name'] == shared_group, \
-            f'The group name should be {shared_group}: {state_dict}'
+        assert state_dict['group_name'] == project_group, \
+            f'The group name should be {project_group}: {state_dict}'
 
         assert state_dict['recalculate_hash'] == False, \
             f'The recalculate hash should be False: {state_dict}'
@@ -323,29 +283,20 @@ class TestSeqSyncGetCommands:
         # Arrange
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
-
+        seq_id2 = f'seq-{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+    
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        _create_project(self.cli, shared_project)
 
         # Fill the output dir with asm as if it was previously downloaded
-        _upload_fasta_asm_file(self.cli, 'test/test-assets/sequences/asm/XYZ-asm-004.fasta', seq_id)
+        _upload_fasta_asm_file(self.cli, 'test/test-assets/sequences/asm/XYZ-asm-004.fasta', seq_id, org_name, [shared_project])
         temp_dir = _mk_temp_dir()
         fasta_asm_type = 'fasta-asm'
-        _seq_sync_get(self.cli, shared_group, temp_dir, fasta_asm_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, fasta_asm_type)
         self.assert_state_file_exists(fasta_asm_type, temp_dir)
         self.assert_manifest_file_exists(fasta_asm_type, temp_dir)
         self.assert_has_seq_dirs(f'{temp_dir}/{seq_id}/{fasta_asm_type}', 1)
@@ -355,16 +306,16 @@ class TestSeqSyncGetCommands:
             'test/test-assets/sequences/cns/ABC-cns-001.fasta',
             [('SEQ_ABC-cns-001', seq_id)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name, [shared_project])
         fasta_cns_type = 'fasta-cns'
-        _seq_sync_get(self.cli, shared_group, temp_dir, fasta_cns_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, fasta_cns_type)
         self.assert_state_file_exists(fasta_cns_type, temp_dir)
         self.assert_manifest_file_exists(fasta_cns_type, temp_dir)
         self.assert_has_seq_dirs(f'{temp_dir}/{seq_id}/{fasta_cns_type}', 1)
 
         # Act
-        _sample_unshare(self.cli, seq_id, shared_group)
-        _seq_sync_get(self.cli, shared_group, temp_dir, 'fasta-cns')
+        _sample_unshare(self.cli, seq_id, project_group)
+        _seq_sync_get(self.cli, project_group, temp_dir, 'fasta-cns')
 
         # Assert
         # CNS content should be zero
@@ -399,34 +350,26 @@ class TestSeqSyncGetCommands:
             original_file_name):
 
         # Arrange
+        original_file = f'{original_file_dir}{original_file_name}'
+
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        original_file = f'{original_file_dir}{original_file_name}'
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
-
-        _upload_fasta_asm_file(self.cli, original_file, seq_id)
+        _upload_fasta_asm_file(self.cli, original_file, seq_id, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-asm'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         # Undo transform to the downloaded file. It should have the same hash as the original
@@ -457,31 +400,22 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        _create_project(self.cli, shared_project)
 
         original_file1 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r1.fastq'
         original_file2 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r2.fastq'
-        _upload_fastq_ill_pe_file(self.cli, seq_id, original_file1, original_file2)
+        _upload_fastq_ill_pe_file(self.cli, seq_id, original_file1, original_file2, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-pe'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         original_hash1 = _calc_hash(original_file1)
@@ -513,30 +447,24 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
-        _upload_fastq_ill_se_file(self.cli, seq_id, original_file)
+        _upload_fastq_ill_se_file(self.cli, seq_id, original_file, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-se'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         # Undo transform to the downloaded file. It should have the same hash as the original
@@ -565,33 +493,27 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_ABC-cns-001', seq_id)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-cns'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         # During upload, the cli would have line wrapped at 60 char. In order to compare
@@ -618,33 +540,26 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
+
+        
 
         original_file_dir = 'test/test-assets/sequences/asm/'
         original_file_name = 'XYZ-asm-004.fasta'
         original_file = f'{original_file_dir}{original_file_name}'
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
-
-        _upload_fasta_asm_file(self.cli, original_file, seq_id)
+        _upload_fasta_asm_file(self.cli, original_file, seq_id, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-asm'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         # Undo transform to the downloaded file. It should have the same hash as the original
@@ -660,33 +575,25 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
         original_file_dir = 'test/test-assets/sequences/asm/'
         original_file_name = 'XYZ-asm-004.fasta'
         original_file = f'{original_file_dir}{original_file_name}'
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
-
-        _upload_fasta_asm_file(self.cli, original_file, seq_id)
+        _upload_fasta_asm_file(self.cli, original_file, seq_id, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-asm'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         df = pd.read_csv(f'{temp_dir}/manifest-{seq_type}.csv')
@@ -697,33 +604,27 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
         original_file_dir = 'test/test-assets/sequences/asm/'
         original_file_name = 'XYZ-asm-004.fasta'
         original_file = f'{original_file_dir}{original_file_name}'
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
-        _upload_fasta_asm_file(self.cli, original_file, seq_id)
+        _upload_fasta_asm_file(self.cli, original_file, seq_id, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-asm'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
@@ -735,33 +636,27 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
         original_file_dir = 'test/test-assets/sequences/asm/'
         original_file_name = 'XYZ-asm-004.fasta'
         original_file = f'{original_file_dir}{original_file_name}'
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
-        _upload_fasta_asm_file(self.cli, original_file, seq_id)
+        _upload_fasta_asm_file(self.cli, original_file, seq_id, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-asm'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
@@ -774,22 +669,16 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file = 'test/test-assets/sequences/cns/ABC-cns-001.fasta'
 
@@ -797,12 +686,12 @@ class TestSeqSyncGetCommands:
             original_file,
             [('SEQ_ABC-cns-001', seq_id)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-cns'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         df = pd.read_csv(f'{temp_dir}/manifest-{seq_type}.csv')
@@ -814,22 +703,16 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file = 'test/test-assets/sequences/cns/ABC-cns-001.fasta'
 
@@ -837,12 +720,12 @@ class TestSeqSyncGetCommands:
             original_file,
             [('SEQ_ABC-cns-001', seq_id)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-cns'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
@@ -854,22 +737,16 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file = 'test/test-assets/sequences/cns/ABC-cns-001.fasta'
 
@@ -877,12 +754,12 @@ class TestSeqSyncGetCommands:
             original_file,
             [('SEQ_ABC-cns-001', seq_id)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fasta-cns'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
@@ -895,31 +772,25 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file1 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r1.fastq'
         original_file2 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r2.fastq'
-        _upload_fastq_ill_pe_file(self.cli, seq_id, original_file1, original_file2)
+        _upload_fastq_ill_pe_file(self.cli, seq_id, original_file1, original_file2, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-pe'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         df = pd.read_csv(f'{temp_dir}/manifest-{seq_type}.csv')
@@ -930,31 +801,25 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file1 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r1.fastq'
         original_file2 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r2.fastq'
-        _upload_fastq_ill_pe_file(self.cli, seq_id, original_file1, original_file2)
+        _upload_fastq_ill_pe_file(self.cli, seq_id, original_file1, original_file2, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-pe'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
@@ -966,31 +831,25 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file1 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r1.fastq'
         original_file2 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r2.fastq'
-        _upload_fastq_ill_pe_file(self.cli, seq_id, original_file1, original_file2)
+        _upload_fastq_ill_pe_file(self.cli, seq_id, original_file1, original_file2, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-pe'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
@@ -1003,30 +862,24 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
-        _upload_fastq_ill_se_file(self.cli, seq_id, original_file)
+        _upload_fastq_ill_se_file(self.cli, seq_id, original_file, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-se'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         df = pd.read_csv(f'{temp_dir}/manifest-{seq_type}.csv')
@@ -1037,30 +890,24 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
-        _upload_fastq_ill_se_file(self.cli, seq_id, original_file)
+        _upload_fastq_ill_se_file(self.cli, seq_id, original_file, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-se'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
@@ -1072,30 +919,24 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
-        _upload_fastq_ill_se_file(self.cli, seq_id, original_file)
+        _upload_fastq_ill_se_file(self.cli, seq_id, original_file, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-se'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         self.assert_state_file_exists(seq_type, temp_dir)
@@ -1108,39 +949,33 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
         temp_dir = _mk_temp_dir()
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         # Act upload and sync get for two types of sequences
         # FASTQ ILL SE
         original_file1 = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
-        _upload_fastq_ill_se_file(self.cli, seq_id, original_file1)
+        _upload_fastq_ill_se_file(self.cli, seq_id, original_file1, org_name, [shared_project])
 
         seq_type1 = 'fastq-ill-se'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type1)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type1)
 
         # FASTQ ILL PE
         original_file2 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r1.fastq'
         original_file3 = 'test/test-assets/sequences/ill-pe/ill-pe-001_r2.fastq'
-        _upload_fastq_ill_pe_file(self.cli, seq_id, original_file2, original_file3)
+        _upload_fastq_ill_pe_file(self.cli, seq_id, original_file2, original_file3, org_name, [shared_project])
 
         seq_type2 = 'fastq-ill-pe'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type2)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type2)
 
         # Assert
         self.assert_manifest_file_exists(seq_type1, temp_dir)
@@ -1159,32 +994,23 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
         shared_group2 = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
-
+        
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
         _create_group(self.cli, shared_group2)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
-
         original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
-        _upload_fastq_ill_se_file(self.cli, seq_id, original_file)
+        _upload_fastq_ill_se_file(self.cli, seq_id, original_file, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-se'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
         result = _seq_sync_get(self.cli, shared_group2, temp_dir, seq_type)
 
         # Assert
@@ -1195,30 +1021,24 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
-        _upload_fastq_ill_se_file(self.cli, seq_id, original_file)
+        _upload_fastq_ill_se_file(self.cli, seq_id, original_file, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-se'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # check that the downloaded file exists, and then delete it.
         downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fastq', temp_dir)
@@ -1226,7 +1046,7 @@ class TestSeqSyncGetCommands:
         os.remove(downloaded_file_path)
 
         # Re-run the sync get
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should be repaired: {downloaded_file_path}'
@@ -1241,30 +1061,24 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
-        _upload_fastq_ill_se_file(self.cli, seq_id, original_file)
+        _upload_fastq_ill_se_file(self.cli, seq_id, original_file, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-se'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # check that the downloaded file exists, and then alter it.
         downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fastq', temp_dir)
@@ -1274,7 +1088,7 @@ class TestSeqSyncGetCommands:
             file.write('This is a test')
 
         # Re-run the sync get
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type, recalculate_hash=True)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type, recalculate_hash=True)
 
         # Assert
         assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should be repaired: {downloaded_file_path}'
@@ -1289,38 +1103,32 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
-        _upload_fastq_ill_se_file(self.cli, seq_id, original_file)
+        _upload_fastq_ill_se_file(self.cli, seq_id, original_file, org_name, [shared_project])
 
         # Sync the file and that it exists
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-se'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # check that the downloaded file exists, and then alter it.
         downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fastq', temp_dir)
         assert os.path.exists(downloaded_file_path) is True, f'The downloaded file should exist: {downloaded_file_path}'
 
         # Act
-        _sample_unshare(self.cli, seq_id, shared_group)
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _sample_unshare(self.cli, seq_id, project_group)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         assert os.path.exists(downloaded_file_path) is False, \
@@ -1336,30 +1144,24 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
-        _upload_fastq_ill_se_file(self.cli, seq_id, original_file)
+        _upload_fastq_ill_se_file(self.cli, seq_id, original_file, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-se'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # check that the downloaded file exists, and then add stray files.
         downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fastq', temp_dir)
@@ -1371,7 +1173,7 @@ class TestSeqSyncGetCommands:
             file.write('This is a test')
 
         # Re-run the sync get
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         assert os.path.exists(stray_file1) is False, f'The stray file should be moved to trash: {stray_file1}'
@@ -1387,30 +1189,24 @@ class TestSeqSyncGetCommands:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
+        shared_project = f'sg-{_new_identifier(10)}'
+        project_group = f'{shared_project}-Group'
+        
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_project)
 
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id],
-            owner_group,
-            [shared_group])
+        
 
         original_file = 'test/test-assets/sequences/ill-se/ill-se-002.fastq'
-        _upload_fastq_ill_se_file(self.cli, seq_id, original_file)
+        _upload_fastq_ill_se_file(self.cli, seq_id, original_file, org_name, [shared_project])
 
         # Act
         temp_dir = _mk_temp_dir()
         seq_type = 'fastq-ill-se'
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # check that the downloaded file exists, and then add stray files.
         downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fastq', temp_dir)
@@ -1422,7 +1218,7 @@ class TestSeqSyncGetCommands:
             file.write('This is a test')
 
         # Re-run the sync get
-        _seq_sync_get(self.cli, shared_group, temp_dir, seq_type)
+        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
 
         # Assert
         assert os.path.exists(stray_file1) is True, f'The stray file should left untouched: {stray_file1}'
