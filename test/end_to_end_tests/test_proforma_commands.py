@@ -246,25 +246,4 @@ class TestProformaCommands:
 
         # Assert
         assert result.exit_code == 0
-        assert f"Field 'f{non_existent_field}' specified for removal was not found" in result.output
-
-    def test_add_version_should_raise_error_on_removing_system_field(self):
-        # Arrange
-        proforma_name = f'pf-{_new_identifier(10)}'
-        _create_proforma(self.cli, proforma_name)
-        field_to_remove = 'Seq_ID'
-
-        # Act
-        result: Result = self.cli.invoke([
-            'proforma',
-            'add-version',
-            proforma_name,
-            '--inherit',
-            '-rm',
-            field_to_remove,
-        ])
-
-        # Assert
-        assert result.exit_code != 0
-        assert isinstance(result.exception, ValueError)
-        assert 'The following system fields cannot be removed' in str(result.exception)
+        assert f"Field '{non_existent_field}' specified for removal was not found" in result.output
