@@ -827,7 +827,7 @@ def opt_merge_algorithm(**attrs: t.Any):
         algos = {'show-all': 'ShowAll', 'override': 'Override'}
         if value not in algos.keys():
             raise click.BadParameter(f'Invalid merge algorithm: {value}')
-        return [value]
+        return algos[value]
 
     defaults = {
         'help': 'Merge algorithm used to generate views for the sample table.',
