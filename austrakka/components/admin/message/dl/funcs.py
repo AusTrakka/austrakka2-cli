@@ -1,6 +1,5 @@
 
-
-from austrakka.utils.api import api_delete, api_get, api_patch
+from austrakka.utils.api import api_delete, api_patch
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.paths import MESSAGES_PATH
 
@@ -36,4 +35,3 @@ def resend_dl(queue_name: str, msg_id: int):
     api_patch(
         f'{MESSAGES_PATH}/DeadLetter/{queue_name}/{msg_id}/Resend'
     )
-

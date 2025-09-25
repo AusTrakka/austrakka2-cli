@@ -35,4 +35,3 @@ def add_message(file: BufferedReader, queue_name: str):
         f'{MESSAGES_PATH}/{queue_name}',
         data=file_json
     )
-
