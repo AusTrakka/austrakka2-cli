@@ -13,13 +13,11 @@ from austrakka.utils.exceptions import FailedResponseException, UnknownResponseE
 from austrakka.utils.helpers.upload import upload_multipart
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe, log_response
-from austrakka.utils.helpers.fields import get_system_field_names_v2
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
 from austrakka.utils.fs import FileHash, get_hash
 from .proforma_generation_utils import generate_template
 from ...utils.helpers.project import get_project_by_abbrev
-from ...utils.helpers.tenant import get_default_tenant_global_id
 
 ATTACH = 'Attach'
 UPDATE = 'update'
@@ -94,7 +92,7 @@ def add_version_proforma(
         remove_field: List[str],
         inherit: bool):
 
-    _validate_add_version_args(required_columns, optional_columns, remove_field)
+    _validate_add_version_args(inherit, required_columns, optional_columns, remove_field)
 
     data = api_get(path=f'{PROFORMA_PATH}/abbrev/{abbrev}')['data']
     pf_id = data['proFormaId']
@@ -142,21 +140,6 @@ def add_proforma(
         description: str,
         required_columns: List[str],
         optional_columns: List[str]):
-
-    # Include system fields (avoid an error from the endpoint; don't force CLI user to type them in)
-    # Note that we are not forcing system fields the user DOES include
-    # to set IsRequired
-    tenant_global_id = get_default_tenant_global_id()
-    system_fields = get_system_field_names_v2(tenant_global_id)
-    missing_system_fields = [
-        fieldname for fieldname in system_fields if fieldname not in required_columns +
-        optional_columns]
-    required_columns = list(required_columns)
-    for field in missing_system_fields:
-        logger.warning(
-            f"System field {field} must be included: adding to pro forma")
-        required_columns.append(field)
-
     column_names = (
         [{"name": col, "isRequired": True} for col in required_columns]
         + [{"name": col, "isRequired": False} for col in optional_columns])
@@ -363,6 +346,7 @@ def _post_proforma(files, file_hash: FileHash, custom_headers: dict):
                      custom_headers=custom_headers)
 
 def _validate_add_version_args(
+        inherit: bool,
         required_columns: List[str],
         optional_columns: List[str],
         remove_field: List[str]):
@@ -372,20 +356,15 @@ def _validate_add_version_args(
             "The following fields have been specified as both required and optional: "
             f"{', '.join(conflicting_fields)}"
         )
-
     conflicting_fields = (set(required_columns) | set(optional_columns)) & set(remove_field)
     if conflicting_fields:
         raise ValueError(
             "The following fields have been specified as both to be added/updated and removed: "
             f"{', '.join(conflicting_fields)}"
         )
-
-    system_fields = get_system_field_names_v2(get_default_tenant_global_id())
-    removed_system_fields = set(remove_field) & set(system_fields)
-    if removed_system_fields:
+    if not inherit and len(remove_field) > 0:
         raise ValueError(
-            "The following system fields cannot be removed: "
-            f"{', '.join(removed_system_fields)}"
+            "The 'remove-field' option can only be used when 'inherit' is set."
         )
 
 def _build_field_spec(
@@ -411,14 +390,7 @@ def _build_field_spec(
             del field_spec[field_name]
         else:
             logger.warning(
-                f"Field 'f{field_name}' specified for removal was not found in the pro forma."
+                f"Field '{field_name}' specified for removal was not found in the pro forma."
             )
     
-    system_fields = get_system_field_names_v2(get_default_tenant_global_id())
-    for field_name in system_fields:
-        if field_name not in field_spec:
-            logger.warning(
-                f"System field {field_name} must be included: adding to pro forma")
-        field_spec[field_name] = True
-        
     return field_spec
