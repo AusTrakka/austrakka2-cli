@@ -75,7 +75,7 @@ def project_add(
 @project.command(
         'update', 
         hidden=hide_admin_cmds(),
-        help=f'Update an existing project in {PROG_NAME}.',
+        help='Update an existing project',
 )
 @click.argument('project-abbrev', type=str)
 @opt_name(help="New project name", required=False)
@@ -83,9 +83,9 @@ def project_add(
 @opt_is_active(help="Set project active status", is_update=True, required=False)
 @opt_organisation(help="New requesting organisation abbreviation", required=False)
 @opt_dashboard_name(help="New dashboard", required=False)
+@opt_type(help="New project type", required=False)
 @opt_project_client_type(required=False)
 @opt_merge_algorithm(required=False)
-@opt_type(help="New project type", required=False)
 def project_update(
         project_abbrev: str,
         name: str,
