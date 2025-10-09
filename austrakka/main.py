@@ -8,6 +8,7 @@ from loguru import logger
 
 from austrakka.utils.context import CxtKey
 from austrakka.utils.context import AusTrakkaCxt
+from .components.admin import admin
 from .components.auth import auth
 from .components.user import user
 from .components.org import org
@@ -130,6 +131,7 @@ def cli(
 
 
 def get_cli():
+    cli.add_command(admin) if show_admin_cmds() else None
     cli.add_command(auth)
     cli.add_command(user) if show_admin_cmds() else None
     cli.add_command(org) if show_admin_cmds() else None
