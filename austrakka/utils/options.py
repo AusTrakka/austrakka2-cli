@@ -177,19 +177,45 @@ def opt_group_name(var_name='group_name', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
-
-def opt_share(var_name='shared_group', **attrs: t.Any):
+def opt_shared_projects(**attrs: t.Any):
     defaults = {
         'required': False,
-        'help': 'Group to share with',
+        'help': 'List of project abbreviations to share samples with. '
+                'This applies to all samples in the csv.',
+        'multiple': True,
     }
     return create_option(
-        "--share",
-        var_name,
+        '-sp',
+        "--shared-projects",
         type=click.STRING,
         **{**defaults, **attrs}
     )
 
+def opt_owner_org(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Owner Organisation Abbreviation. Specifies the owner '
+                'who owns all samples in the csv.'
+    }
+    return create_option(
+        '-oo',
+        "--owner-org",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+def opt_create_samples(**attrs: t.Any):
+    defaults = {
+        'help': 'Create sample records for each Seq_ID if they do not already exist. '
+                'By default, sequences can only be uploaded to existing sample records.'
+    }
+    return create_option(
+        '--create/--no-create',
+        type=bool,
+        is_flag=True,
+        default=False,
+        **{**defaults, **attrs}
+    )
 
 def opt_owner(var_name='owner_group', **attrs: t.Any):
     defaults = {

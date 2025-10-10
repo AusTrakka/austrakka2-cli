@@ -2,7 +2,7 @@ import pytest
 import json
 from click.testing import Result
 
-from ete_cmd_bricks import _create_min_proforma, _create_field_if_not_exists
+from ete_cmd_bricks import _create_proforma, _create_field_if_not_exists
 from ete_utils import _new_identifier
 from test.utils.austrakka_test_cli import AusTrakkaTestCli
 
@@ -25,7 +25,7 @@ class TestProformaCommands:
     def test_add_version_no_op_when_spec_is_identical(self):
         # Arrange
         proforma_name = f'pf-{_new_identifier(10)}'
-        _create_min_proforma(self.cli, proforma_name)
+        _create_proforma(self.cli, proforma_name)
 
         # Act
         result: Result = self.cli.invoke([
@@ -42,7 +42,7 @@ class TestProformaCommands:
     def test_add_version_with_inherit_and_add_required_field(self):
         # Arrange
         proforma_name = f'pf-{_new_identifier(10)}'
-        _create_min_proforma(self.cli, proforma_name)
+        _create_proforma(self.cli, proforma_name)
         new_field = f'req-{_new_identifier(10)}'
         _create_field_if_not_exists(self.cli, new_field)
 
@@ -67,7 +67,7 @@ class TestProformaCommands:
     def test_add_version_with_inherit_and_add_optional_field(self):
         # Arrange
         proforma_name = f'pf-{_new_identifier(10)}'
-        _create_min_proforma(self.cli, proforma_name)
+        _create_proforma(self.cli, proforma_name)
         new_field = f'opt-{_new_identifier(10)}'
         _create_field_if_not_exists(self.cli, new_field)
 
@@ -93,7 +93,7 @@ class TestProformaCommands:
         # Arrange
         field_to_remove = f'rm-{_new_identifier(10)}'
         proforma_name = f'pf-{_new_identifier(10)}'
-        _create_min_proforma(self.cli, proforma_name, required_fields=[field_to_remove])
+        _create_proforma(self.cli, proforma_name, required_fields=[field_to_remove])
 
         # Act
         result: Result = self.cli.invoke([
@@ -115,7 +115,7 @@ class TestProformaCommands:
         # Arrange
         custom_field = f'custom-{_new_identifier(10)}'
         proforma_name = f'pf-{_new_identifier(10)}'
-        _create_min_proforma(self.cli, proforma_name, required_fields=[custom_field])
+        _create_proforma(self.cli, proforma_name, required_fields=[custom_field])
         new_field = f'only-{_new_identifier(10)}'
         _create_field_if_not_exists(self.cli, new_field)
 
@@ -142,7 +142,7 @@ class TestProformaCommands:
         # Arrange
         field_to_change = f'req-to-opt-{_new_identifier(10)}'
         proforma_name = f'pf-{_new_identifier(10)}'
-        _create_min_proforma(self.cli, proforma_name, required_fields=[field_to_change])
+        _create_proforma(self.cli, proforma_name, required_fields=[field_to_change])
 
         # Act
         result: Result = self.cli.invoke([
@@ -164,7 +164,7 @@ class TestProformaCommands:
         # Arrange
         field_to_change = f'opt-to-req-{_new_identifier(10)}'
         proforma_name = f'pf-{_new_identifier(10)}'
-        _create_min_proforma(self.cli, proforma_name, optional_fields=[field_to_change])
+        _create_proforma(self.cli, proforma_name, optional_fields=[field_to_change])
 
         # Act
         result: Result = self.cli.invoke([
@@ -185,7 +185,7 @@ class TestProformaCommands:
     def test_add_version_should_raise_error_on_conflicting_required_and_optional(self):
         # Arrange
         proforma_name = f'pf-{_new_identifier(10)}'
-        _create_min_proforma(self.cli, proforma_name)
+        _create_proforma(self.cli, proforma_name)
         conflicting_field = f'conflict-{_new_identifier(10)}'
         _create_field_if_not_exists(self.cli, conflicting_field)
 
@@ -208,7 +208,7 @@ class TestProformaCommands:
     def test_add_version_should_raise_error_on_conflicting_remove_and_add(self):
         # Arrange
         proforma_name = f'pf-{_new_identifier(10)}'
-        _create_min_proforma(self.cli, proforma_name)
+        _create_proforma(self.cli, proforma_name)
         conflicting_field = f'conflict-{_new_identifier(10)}'
         _create_field_if_not_exists(self.cli, conflicting_field)
 
@@ -231,7 +231,7 @@ class TestProformaCommands:
     def test_add_version_should_warn_when_removing_non_existent_field(self):
         # Arrange
         proforma_name = f'pf-{_new_identifier(10)}'
-        _create_min_proforma(self.cli, proforma_name)
+        _create_proforma(self.cli, proforma_name)
         non_existent_field = f'non-existent-{_new_identifier(10)}'
 
         # Act
