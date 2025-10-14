@@ -1,7 +1,7 @@
 import pandas as pd
 
 from austrakka.utils.subcommands.shared_funcs import get_role_by_name
-from austrakka.utils.api import api_get, api_post, api_patch
+from austrakka.utils.api import api_get, api_post, api_patch, api_delete
 from austrakka.utils.enums.privilege_level import (
     AUSTRAKKA_ADMIN_LEVEL,
     FUNCTIONAL_ADMIN_LEVEL,
@@ -133,6 +133,19 @@ def _assign_allowed_role_root_types(allowed_record_types, payload, tenant_global
         
     if len(allowed_record_types_global_ids) > 0:
         payload["AllowedRootTypeGlobalIds"] = allowed_record_types_global_ids
+
+
+@logger_wraps()
+def delete_role(role: str):
+    """
+    Delete a role from a tenant.
+    """
+    tenant_global_id = get_default_tenant_global_id()
+    role_obj = get_role_by_name(role, tenant_global_id)
+    
+    api_delete(
+        path=f"v2/tenant/{tenant_global_id}/role/{role_obj['globalId']}",
+    )
 
 
 def _privilege_name_to_int():

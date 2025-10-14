@@ -544,6 +544,18 @@ def opt_is_active(is_update=False, **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_is_geo(is_update=False, **attrs: t.Any):
+    defaults = {
+        'help': 'Determines if the field is a geographic identifier'
+    }
+    return create_option(
+        '--is-geo/--not-geo',
+        'geo_field',
+        type=bool,
+        default=None if is_update else False,
+        **{**defaults, **attrs}
+    )
+
 
 def opt_is_austrakka_process(**attrs: t.Any):
     defaults = {
@@ -822,11 +834,16 @@ def opt_show_disabled(**attrs: t.Any):
         default=False,
         **{**defaults, **attrs}
     )
- 
+
 
 def opt_merge_algorithm(**attrs: t.Any):
     def map_merge_algo(_ctx, _param, value):
-        return {'show-all': 'ShowAll', 'override': 'Override'}[value]
+        if value is None:
+            return None
+        algos = {'show-all': 'ShowAll', 'override': 'Override'}
+        if value not in algos.keys():
+            raise click.BadParameter(f'Invalid merge algorithm: {value}')
+        return algos[value]
 
     defaults = {
         'help': 'Merge algorithm used to generate views for the sample table.',

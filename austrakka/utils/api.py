@@ -232,6 +232,7 @@ def api_delete(
         custom_headers: Dict = None,
         client: httpx.Client = None,
 ):
+    custom_headers = {} if custom_headers is None else custom_headers
     return client.delete(
         _get_url(path),
         params=params,

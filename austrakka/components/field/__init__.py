@@ -43,6 +43,7 @@ def field_list(view_type: str, out_format: str):
                     "columns.")
 @click.option('--viz/--no-viz', default=False,
               help="This field may be used for colour visualisation in trees or plots")
+@opt_is_geo()
 @opt_examples()
 @opt_private()
 def field_add(
@@ -51,11 +52,22 @@ def field_add(
         nndss: str,
         field_type: str,
         viz: bool,
+        geo_field: bool,
         column_order: int,
         is_private: bool,
         examples: str,
 ):
-    add_field(name, description, nndss, field_type, viz, column_order, is_private, examples)
+    add_field(
+        name,
+        description,
+        nndss,
+        field_type,
+        viz,
+        geo_field,
+        column_order,
+        is_private,
+        examples
+    )
 
 
 @field.command(
@@ -70,6 +82,7 @@ def field_add(
 @opt_description(required=False, help="This field describes the purpose of the metadata field. "
                                       "Its value is also used for generating XLSX pro forma files.")
 @opt_examples()
+@opt_is_geo(is_update=True)  
 @create_option('--nndss', 'nndss',
                help="The corresponding National Notifiable Diseases Surveillance System label, "
                     "where it exists.")
@@ -88,6 +101,7 @@ def field_update(
         nndss: str,
         field_type: str,
         viz: bool,
+        geo_field: bool,
         column_order: int,
         is_private: bool,
 ):
@@ -99,6 +113,7 @@ def field_update(
         nndss,
         field_type,
         viz,
+        geo_field,
         column_order,
         is_private
     )

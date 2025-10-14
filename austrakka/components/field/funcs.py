@@ -58,6 +58,7 @@ def add_field(
         nndss_label: str,
         typename: str,
         can_visualise: bool,
+        geo_field: bool,
         column_order: int,
         private: bool,
         examples: str,
@@ -93,6 +94,7 @@ def add_field(
             "MetaDataColumnTypeGlobalId": field_type["globalId"],
             "IsActive": True,
             "IsPrivate": private,
+            'GeoField': geo_field,
             "Description": description,
             "Examples": examples,
             "NndssFieldLabel": nndss_label,
@@ -109,6 +111,7 @@ def update_field(
         nndss_label: str,
         typename: str,
         can_visualise: bool,
+        geo_field: bool,
         column_order: int,
         is_private: bool,
 ):
@@ -138,6 +141,9 @@ def update_field(
                     f"This may work poorly as colour visualisations are configured for a "
                     f"small discrete set of values.")
         patch_fields["canVisualise"] = can_visualise
+        
+    if geo_field is not None:
+        patch_fields["geoField"] = geo_field
 
     if column_order is not None:
         patch_fields["columnOrder"] = column_order

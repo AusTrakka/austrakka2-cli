@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.73.2] - 2025-10-08
+
+### Added
+- Adds admin support for deleting dynamically-created roles
+- Adds admin support for setting the geoField property on metadata fields
+
+### Changed
+- The Seq_ID field will not be automatically added to new proforma versions; users must explicitly add it.
+
+### Fixed
+- When adding a new proforma version, a better error message is shown if `--remove-field` is used without `--inherit`.
+
+## [0.73.1] - 2025-08-27
+
+### Added
+- The `proforma add-version` command now supports `--inherit` and `--remove-field` options to inherit fields from the current version, and specify only changed fields.
+
 ## [0.73.0] - 2025-08-20
 ### Added
 - Added `proforma add-version` to create new Proforma versions with an updated set of fields.

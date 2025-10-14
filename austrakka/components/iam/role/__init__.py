@@ -3,7 +3,7 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import *
 from austrakka.utils.output import table_format_option
 from .definition import definition
-from .funcs import list_roles, add_role, update_role
+from .funcs import list_roles, add_role, update_role, delete_role
 
 
 @click.group()
@@ -82,3 +82,22 @@ def role_update(
         privilege_level,
         allowed_record_types,
         clear_allowed_record_types)
+
+
+# pylint: disable=redefined-outer-name
+@role.command('remove', hidden=hide_admin_cmds())
+@opt_role()
+@create_option('--no-confirm',
+               help='Skip confirmation prompt',
+               is_flag=True,
+               default=False)
+def role_remove(role: str, no_confirm: bool):
+    """
+    Remove a role from the tenant
+    """
+    if not no_confirm:
+        if not click.confirm(f'Are you sure you want to remove role "{role}"?'):
+            click.echo('Operation cancelled.')
+            return
+    
+    delete_role(role)

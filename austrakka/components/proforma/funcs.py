@@ -13,13 +13,11 @@ from austrakka.utils.exceptions import FailedResponseException, UnknownResponseE
 from austrakka.utils.helpers.upload import upload_multipart
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe, log_response
-from austrakka.utils.helpers.fields import get_system_field_names_v2
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
 from austrakka.utils.fs import FileHash, get_hash
 from .proforma_generation_utils import generate_template
 from ...utils.helpers.project import get_project_by_abbrev
-from ...utils.helpers.tenant import get_default_tenant_global_id
 
 ATTACH = 'Attach'
 UPDATE = 'update'
@@ -90,40 +88,40 @@ def update_proforma(abbrev: str, name: str, description: str):
 def add_version_proforma(
         abbrev: str,
         required_columns: List[str],
-        optional_columns: List[str]):
+        optional_columns: List[str],
+        remove_field: List[str],
+        inherit: bool):
 
-    # Include system fields (avoid an error from the endpoint; don't force CLI user to type them in)
-    # Note that we are not forcing system fields the user DOES include
-    # to set IsRequired
-    tenant_global_id = get_default_tenant_global_id()
-    system_fields = get_system_field_names_v2(tenant_global_id)
-    missing_system_fields = [
-        fieldname for fieldname in system_fields if fieldname not in required_columns +
-        optional_columns]
+    _validate_add_version_args(inherit, required_columns, optional_columns, remove_field)
 
-    pf_resp = api_get(
-        path=f'{PROFORMA_PATH}/abbrev/{abbrev}',
-    )
-
-    data = pf_resp['data'] if ('data' in pf_resp) else pf_resp
+    data = api_get(path=f'{PROFORMA_PATH}/abbrev/{abbrev}')['data']
     pf_id = data['proFormaId']
 
-    required_columns = list(required_columns)
-    for field in missing_system_fields:
-        logger.warning(
-            f"System field {field} must be included: adding to pro forma")
-        required_columns.append(field)
+    current_field_spec = {field['metaDataColumnName']: field['isRequired']
+                          for field in data['columnMappings']}
 
-    column_names = (
-        [{"name": col, "isRequired": True} for col in required_columns]
-        + [{"name": col, "isRequired": False} for col in optional_columns])
+    field_spec = _build_field_spec(
+        current_field_spec,
+        required_columns,
+        optional_columns,
+        remove_field,
+        inherit
+    )
 
-    total_columns = len(column_names)
+    if field_spec == current_field_spec:
+        logger.info("The specified pro forma fields are identical to the "
+                    "current version. No update will be performed.")
+        return
 
-    if total_columns == 0:
+    column_names = [
+        {"name": name, "isRequired": is_required}
+        for name, is_required in field_spec.items()
+    ]
+
+    if not column_names:
         raise ValueError("A pro forma must contain at least one field")
 
-    logger.info(f'Updating pro forma: {abbrev} with {total_columns} fields')
+    logger.info(f'Updating pro forma: {abbrev} with {len(column_names)} fields')
 
     api_put(
         path=f'{PROFORMA_PATH}/{pf_id}',
@@ -142,21 +140,6 @@ def add_proforma(
         description: str,
         required_columns: List[str],
         optional_columns: List[str]):
-
-    # Include system fields (avoid an error from the endpoint; don't force CLI user to type them in)
-    # Note that we are not forcing system fields the user DOES include
-    # to set IsRequired
-    tenant_global_id = get_default_tenant_global_id()
-    system_fields = get_system_field_names_v2(tenant_global_id)
-    missing_system_fields = [
-        fieldname for fieldname in system_fields if fieldname not in required_columns +
-        optional_columns]
-    required_columns = list(required_columns)
-    for field in missing_system_fields:
-        logger.warning(
-            f"System field {field} must be included: adding to pro forma")
-        required_columns.append(field)
-
     column_names = (
         [{"name": col, "isRequired": True} for col in required_columns]
         + [{"name": col, "isRequired": False} for col in optional_columns])
@@ -314,10 +297,11 @@ def show_proforma(abbrev: str, out_format: str):
     )
     data = response['data'] if ('data' in response) else response
 
-    for field in ['abbreviation', 'name', 'version', 'description']:
-        logger.info(f'{field}: {data[field]}')
+    if out_format != 'json':
+        for field in ['abbreviation', 'name', 'version', 'description']:
+            logger.info(f'{field}: {data[field]}')
 
-    logger.info('Pro forma fields:')
+        logger.info('Pro forma fields:')
 
     field_df = _get_proforma_fields_df(data)
     
@@ -360,3 +344,53 @@ def _post_proforma(files, file_hash: FileHash, custom_headers: dict):
                      files=files,
                      file_hash=file_hash,
                      custom_headers=custom_headers)
+
+def _validate_add_version_args(
+        inherit: bool,
+        required_columns: List[str],
+        optional_columns: List[str],
+        remove_field: List[str]):
+    conflicting_fields = set(required_columns) & set(optional_columns)
+    if conflicting_fields:
+        raise ValueError(
+            "The following fields have been specified as both required and optional: "
+            f"{', '.join(conflicting_fields)}"
+        )
+    conflicting_fields = (set(required_columns) | set(optional_columns)) & set(remove_field)
+    if conflicting_fields:
+        raise ValueError(
+            "The following fields have been specified as both to be added/updated and removed: "
+            f"{', '.join(conflicting_fields)}"
+        )
+    if not inherit and len(remove_field) > 0:
+        raise ValueError(
+            "The 'remove-field' option can only be used when 'inherit' is set."
+        )
+
+def _build_field_spec(
+        current_field_spec: Dict[str, bool],
+        required_columns: List[str],
+        optional_columns: List[str],
+        remove_field: List[str],
+        inherit: bool) -> Dict[str, bool]:
+
+    field_spec = {}
+    if inherit:
+        logger.info("Inheriting fields from previous version")
+        field_spec = current_field_spec.copy()
+
+    for field_name in required_columns:
+        field_spec[field_name] = True
+
+    for field_name in optional_columns:
+        field_spec[field_name] = False
+
+    for field_name in remove_field:
+        if field_name in field_spec:
+            del field_spec[field_name]
+        else:
+            logger.warning(
+                f"Field '{field_name}' specified for removal was not found in the pro forma."
+            )
+    
+    return field_spec
