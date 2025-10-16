@@ -3,7 +3,7 @@ import tempfile
 
 from click.testing import CliRunner
 from ete_utils import _save_to_test_dir, _create_single_seq_csv, _new_identifier, _create_paired_seq_csv
-from ete_constants import seq_id_field_name, owner_group_field_name, shared_groups_field_name
+from ete_constants import seq_id_field_name
 from test.utils.austrakka_test_cli import AusTrakkaTestCli
 
 
@@ -49,8 +49,17 @@ def _upload_fastq_ill_se_file(
         cli: AusTrakkaTestCli,
         seq_id: str,
         fastq_file_path: str,
+        owner_org: str,
+        shared_projects: list[str] = None,
         skip: bool = False,
         force: bool = False) -> str:
+
+    if shared_projects is None:
+        shared_projects = []
+        
+    shared_project_arguments = []
+    for project in shared_projects:
+        shared_project_arguments.extend(['--project', project])
 
     temp_csv_file_path = _create_single_seq_csv(seq_id, fastq_file_path)
 
@@ -58,7 +67,10 @@ def _upload_fastq_ill_se_file(
         'seq',
         'add',
         'fastq-ill-se',
-        temp_csv_file_path
+        temp_csv_file_path,
+        '--create',
+        '--owner', owner_org,
+        *shared_project_arguments
     ]
 
     if skip:
@@ -79,8 +91,17 @@ def _upload_fastq_ill_pe_file(
         seq_id: str,
         fastq_file_path1: str,
         fastq_file_path2: str,
+        owner_org: str,
+        shared_projects: list[str] = None,
         skip: bool = False,
         force: bool = False) -> str:
+
+    if shared_projects is None:
+        shared_projects = []
+        
+    shared_project_arguments = []
+    for project in shared_projects:
+        shared_project_arguments.extend(['--project', project])
 
     temp_csv_file_path = _create_paired_seq_csv(seq_id, fastq_file_path1, fastq_file_path2)
 
@@ -88,7 +109,10 @@ def _upload_fastq_ill_pe_file(
         'seq',
         'add',
         'fastq-ill-pe',
-        temp_csv_file_path
+        temp_csv_file_path,
+        '--create',
+        '--owner', owner_org,
+        *shared_project_arguments
     ]
 
     if skip:
@@ -106,10 +130,19 @@ def _upload_fastq_ill_pe_file(
 
 def _upload_fasta_asm_file(
         cli: AusTrakkaTestCli,
-        fasta_file_path:
-        str, seq_id: str,
+        fasta_file_path: str,
+        seq_id: str,
+        owner_org: str,
+        shared_projects: list[str] = None,
         skip: bool = False,
         force: bool = False) -> str:
+
+    if shared_projects is None:
+        shared_projects = []
+    
+    shared_project_arguments = []
+    for project in shared_projects:
+        shared_project_arguments.extend(['--project', project])
 
     temp_csv_file_path = _create_single_seq_csv(seq_id, fasta_file_path)
 
@@ -117,7 +150,10 @@ def _upload_fasta_asm_file(
         'seq',
         'add',
         'fasta-asm',
-        temp_csv_file_path
+        temp_csv_file_path,
+        '--create',
+        '--owner', owner_org,
+        *shared_project_arguments
     ]
 
     if skip:
@@ -134,14 +170,26 @@ def _upload_fasta_asm_file(
 def _upload_fasta_cns_file(
         cli: AusTrakkaTestCli,
         fasta_file_path: str,
+        owner_org: str,
+        shared_projects: list[str] = None,
         skip: bool = False,
         force: bool = False):
 
+    if shared_projects is None:
+        shared_projects = []
+    
+    shared_project_arguments = []
+    for project in shared_projects:
+        shared_project_arguments.extend(['--project', project])
+        
     args = [
         'seq',
         'add',
         'fasta-cns',
-        fasta_file_path
+        fasta_file_path,
+        '--create',
+        '--owner', owner_org,
+        *shared_project_arguments
     ]
 
     if skip:
@@ -158,42 +206,41 @@ def _upload_min_metadata(
         cli: AusTrakkaTestCli,
         proforma: str,
         seq_ids: list[str],
-        owner_group: str,
-        shared_groups: list[str]) -> str:
+        owner_org: str,
+        shared_projects: list[str]) -> str:
 
-    metadata = _create_csv_content(owner_group, seq_ids, shared_groups)
+    metadata = _create_csv_content(seq_ids)
     temp_file_path = _save_to_test_dir(metadata)
+    
+    shared_group_arguments = []
+    for project in shared_projects:
+        shared_group_arguments.extend(['--project', project])
 
     result = cli.invoke([
         'metadata',
         'add',
-        '-p',
-        proforma,
+        '-pf', proforma,
+        '--owner', owner_org,
+        *shared_group_arguments,
         temp_file_path
     ])
-
+    
     assert result.exit_code == 0, f'Failed to upload minimal metadata as part of test setup: {result.output}'
     return temp_file_path
 
 
-def _create_csv_content(owner_group, seq_ids, shared_groups) -> str:
-    csv = f'{seq_id_field_name},{owner_group_field_name},{shared_groups_field_name}\n'
-    for seq_id in seq_ids:
-        csv += f'{seq_id},{owner_group},{";".join(shared_groups)}\n'
-
-    return csv
-
+def _create_csv_content(seq_ids) -> str:
+    return f'{seq_id_field_name}\n' + "\n".join(seq_ids) + "\n"
 
 def _create_project(cli: AusTrakkaTestCli, name: str):
     result = cli.invoke([
         'project',
         'add',
-        '-a',
-        name,
-        '-n',
-        name,
-        '-d',
-        'Project for testing'
+        '-a', name,
+        '-n', name,
+        '-d', 'Project for testing',
+        '-ct', 'aardvark',
+        '-ma', 'override',
     ])
 
     assert result.exit_code == 0, f'Failed to create project {name} as part of test setup: {result.output}'
@@ -209,8 +256,38 @@ def _create_group(cli: AusTrakkaTestCli, name: str):
 
     assert result.exit_code == 0, f'Failed to create group {name} as part of test setup: {result.output}'
 
+def _create_min_proforma_if_not_exists(cli: AusTrakkaTestCli):
 
-def _create_min_proforma(
+    # This has to use the standard name (min) as this is expected by upload commands
+    min_proforma_name = 'min'
+
+    result = cli.invoke([
+        'proforma',
+        'show',
+        min_proforma_name,])
+    if result.exit_code == 0:
+        # proforma already exists
+        return
+
+    args = [
+        'proforma',
+        'add',
+        '-a',
+        min_proforma_name,
+        '-n',
+        min_proforma_name,
+        '-d',
+        'Min proforma, created by test suite',
+        '-req',
+        seq_id_field_name,
+    ]
+
+    result = cli.invoke(args)
+
+    assert result.exit_code == 0, f'Failed to create min proforma as part of test setup: {result.output}'
+
+
+def _create_proforma(
         cli: AusTrakkaTestCli,
         name: str,
         required_fields: list[str] = None,
@@ -227,10 +304,6 @@ def _create_min_proforma(
         'Min proforma for testing',
         '-req',
         seq_id_field_name,
-        '-req',
-        owner_group_field_name,
-        '-opt',
-        shared_groups_field_name,
     ]
 
     if required_fields:
@@ -245,7 +318,7 @@ def _create_min_proforma(
 
     result = cli.invoke(args)
 
-    assert result.exit_code == 0, f'Failed to create min proforma {name} as part of test setup: {result.output}'
+    assert result.exit_code == 0, f'Failed to create proforma {name}: {result.output}'
 
 
 def _create_field_if_not_exists(cli: AusTrakkaTestCli, field_name):
@@ -270,7 +343,6 @@ def _create_field_if_not_exists(cli: AusTrakkaTestCli, field_name):
             'string'])
 
         assert result.exit_code == 0, f'Failed to create field {field_name} as part of test setup: {result.output}'
-
 
 def _create_org(cli: AusTrakkaTestCli, name: str):
     result = cli.invoke([

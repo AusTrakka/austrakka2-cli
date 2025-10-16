@@ -177,19 +177,46 @@ def opt_group_name(var_name='group_name', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
-
-def opt_share(var_name='shared_group', **attrs: t.Any):
+def opt_shared_projects(**attrs: t.Any):
     defaults = {
         'required': False,
-        'help': 'Group to share with',
+        'help': 'Project abbreviation to share samples with. '
+                'This applies to all samples or sequences listed.'
+                'Project parameter may be specified multiple times.',
+        'multiple': True,
     }
     return create_option(
-        "--share",
-        var_name,
+        "--project",
+        "shared_projects",
         type=click.STRING,
         **{**defaults, **attrs}
     )
 
+def opt_owner_org(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Owner organisation abbreviation. Specifies the organisation '
+                'owning all samples or sequences in the operation.'
+    }
+    return create_option(
+        "--owner",
+        "owner_org",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+def opt_create_samples(**attrs: t.Any):
+    defaults = {
+        'help': 'Create sample records for each Seq_ID if they do not already exist. '
+                'By default, sequences can only be uploaded to existing sample records.'
+    }
+    return create_option(
+        '--create/--no-create',
+        type=bool,
+        is_flag=True,
+        default=False,
+        **{**defaults, **attrs}
+    )
 
 def opt_owner(var_name='owner_group', **attrs: t.Any):
     defaults = {
@@ -319,7 +346,7 @@ def opt_proforma(**attrs: t.Any):
                 'options.',
     }
     return create_option(
-        '-p',
+        '-pf',
         '--proforma',
         type=click.STRING,
         **{**defaults, **attrs}
