@@ -1,6 +1,8 @@
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_patch, api_get
+from austrakka.utils.helpers.tenant import get_default_tenant_global_id
 from austrakka.utils.paths import SAMPLE_PATH
+from austrakka.utils.paths import ORG_V2_PATH  # TODO this endpoint should move to samples controller
 from austrakka.utils.helpers.groups import format_group_dto_for_output
 from austrakka.utils.helpers.output import call_get_and_print
 
@@ -10,7 +12,19 @@ UNSHARE = 'UnShare'
 SHARE = 'Share'
 GROUPS = 'Groups'
 PURGE = 'Purge'
+SAMPLES_OWNER = 'samplesOwner'
 
+@logger_wraps()
+def change_owner(curr_owner: str, new_owner: str, seq_ids: [str]):
+    tenant = get_default_tenant_global_id()
+    api_patch(
+        path="/".join(['v2', ORG_V2_PATH, curr_owner, SAMPLES_OWNER]),
+        params={"owningTenantGlobalId": tenant},
+        data={
+            "seqIds": seq_ids,
+            "newOwnerAbbrev": new_owner
+        },
+    )
 
 @logger_wraps()
 def show_sample(
