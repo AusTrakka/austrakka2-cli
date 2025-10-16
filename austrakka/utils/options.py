@@ -180,13 +180,13 @@ def opt_group_name(var_name='group_name', **attrs: t.Any):
 def opt_shared_projects(**attrs: t.Any):
     defaults = {
         'required': False,
-        'help': 'List of project abbreviations to share samples with. '
-                'This applies to all samples in the csv.',
+        'help': 'Project abbreviation to share samples with. '
+                'This applies to all samples or sequences listed.'
+                'Project parameter may be specified multiple times.',
         'multiple': True,
     }
     return create_option(
-        '-sp',
-        "--shared-projects",
+        "--project",
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -194,12 +194,11 @@ def opt_shared_projects(**attrs: t.Any):
 def opt_owner_org(**attrs: t.Any):
     defaults = {
         'required': False,
-        'help': 'Owner Organisation Abbreviation. Specifies the owner '
-                'who owns all samples in the csv.'
+        'help': 'Owner organisation abbreviation. Specifies the organisation '
+                'owning all samples or sequences in the operation.'
     }
     return create_option(
-        '-oo',
-        "--owner-org",
+        "--owner",
         type=click.STRING,
         **{**defaults, **attrs}
     )

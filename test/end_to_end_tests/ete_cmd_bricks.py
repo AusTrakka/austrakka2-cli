@@ -59,7 +59,7 @@ def _upload_fastq_ill_se_file(
         
     shared_project_arguments = []
     for project in shared_projects:
-        shared_project_arguments.extend(['-sp', project])
+        shared_project_arguments.extend(['--project', project])
 
     temp_csv_file_path = _create_single_seq_csv(seq_id, fastq_file_path)
 
@@ -69,7 +69,7 @@ def _upload_fastq_ill_se_file(
         'fastq-ill-se',
         temp_csv_file_path,
         '--create',
-        '-oo', owner_org,
+        '--owner', owner_org,
         *shared_project_arguments
     ]
 
@@ -101,7 +101,7 @@ def _upload_fastq_ill_pe_file(
         
     shared_project_arguments = []
     for project in shared_projects:
-        shared_project_arguments.extend(['-sp', project])
+        shared_project_arguments.extend(['--project', project])
 
     temp_csv_file_path = _create_paired_seq_csv(seq_id, fastq_file_path1, fastq_file_path2)
 
@@ -111,7 +111,7 @@ def _upload_fastq_ill_pe_file(
         'fastq-ill-pe',
         temp_csv_file_path,
         '--create',
-        '-oo', owner_org,
+        '--owner', owner_org,
         *shared_project_arguments
     ]
 
@@ -142,7 +142,7 @@ def _upload_fasta_asm_file(
     
     shared_project_arguments = []
     for project in shared_projects:
-        shared_project_arguments.extend(['-sp', project])
+        shared_project_arguments.extend(['--project', project])
 
     temp_csv_file_path = _create_single_seq_csv(seq_id, fasta_file_path)
 
@@ -152,7 +152,7 @@ def _upload_fasta_asm_file(
         'fasta-asm',
         temp_csv_file_path,
         '--create',
-        '-oo', owner_org,
+        '--owner', owner_org,
         *shared_project_arguments
     ]
 
@@ -180,7 +180,7 @@ def _upload_fasta_cns_file(
     
     shared_project_arguments = []
     for project in shared_projects:
-        shared_project_arguments.extend(['-sp', project])
+        shared_project_arguments.extend(['--project', project])
         
     args = [
         'seq',
@@ -188,7 +188,7 @@ def _upload_fasta_cns_file(
         'fasta-cns',
         fasta_file_path,
         '--create',
-        '-oo', owner_org,
+        '--owner', owner_org,
         *shared_project_arguments
     ]
 
@@ -214,13 +214,13 @@ def _upload_min_metadata(
     
     shared_group_arguments = []
     for project in shared_projects:
-        shared_group_arguments.extend(['-sp', project])
+        shared_group_arguments.extend(['--project', project])
 
     result = cli.invoke([
         'metadata',
         'add',
-        '-p', proforma,
-        '-oo', owner_org,
+        '-pf', proforma,
+        '--owner', owner_org,
         *shared_group_arguments,
         temp_file_path
     ])
