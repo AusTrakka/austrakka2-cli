@@ -50,14 +50,14 @@ def add(ctx):
 # pylint: disable=invalid-name
 def seq_add_fastq_ill_PE(
         csv_file: BufferedReader,
-        owner: str,
-        project: List[str],
+        owner_org: str,
+        shared_projects: List[str],
         create: bool,
         skip: bool = False,
         force: bool = False,
 ):
     add_sequence_submission(
-        SeqType.FASTQ_ILL_PE, csv_file, owner, project, create, skip, force)
+        SeqType.FASTQ_ILL_PE, csv_file, owner_org, shared_projects, create, skip, force)
 
 
 @add.command(SeqType.FASTQ_ILL_SE.value, help=f"""
@@ -80,14 +80,14 @@ def seq_add_fastq_ill_PE(
 # pylint: disable=invalid-name
 def seq_add_fastq_ill_SE(
         csv_file: BufferedReader,
-        owner: str,
-        project: List[str],
+        owner_org: str,
+        shared_projects: List[str],
         create: bool,
         skip: bool = False,
         force: bool = False,
 ):
     add_sequence_submission(
-        SeqType.FASTQ_ILL_SE, csv_file, owner, project, create, skip, force)
+        SeqType.FASTQ_ILL_SE, csv_file, owner_org, shared_projects, create, skip, force)
 
 
 @add.command(SeqType.FASTQ_ONT.value, help=f"""
@@ -109,14 +109,14 @@ def seq_add_fastq_ill_SE(
 @opt_shared_projects()
 def seq_add_fastq_ont(
         csv_file: BufferedReader,
-        owner: str,
-        project: List[str],
+        owner_org: str,
+        shared_projects: List[str],
         create: bool,
         skip: bool = False,
         force: bool = False,
 ):
     add_sequence_submission(
-        SeqType.FASTQ_ONT, csv_file, owner, project, create, skip, force)
+        SeqType.FASTQ_ONT, csv_file, owner_org, shared_projects, create, skip, force)
 
 
 @add.command(SeqType.FASTA_CNS.value, help=f"""
@@ -138,15 +138,15 @@ def seq_add_fastq_ont(
 @opt_shared_projects()
 def seq_add_fasta_cns(
         fasta_file: BufferedReader,
-        owner: str,
-        project: List[str],
+        owner_org: str,
+        shared_projects: List[str],
         create: bool,
         skip: bool = False,
         force: bool = False,
 ):
     # FASTA-CNS is a special case as the CLI does the work of splitting the file,
     # and there is no CSV
-    add_fasta_cns_submission(fasta_file, owner, project, create, skip, force)
+    add_fasta_cns_submission(fasta_file, owner_org, shared_projects, create, skip, force)
 
 
 @add.command(SeqType.FASTA_ASM.value, help=f"""
@@ -168,11 +168,11 @@ def seq_add_fasta_cns(
 @opt_shared_projects()
 def seq_add_fasta_asm(
         csv_file: BufferedReader,
-        owner: str,
-        project: List[str],
+        owner_org: str,
+        shared_projects: List[str],
         create: bool,
         skip: bool = False,
         force: bool = False,
 ):
     add_sequence_submission(
-        SeqType.FASTA_ASM, csv_file, owner, project, create, skip, force)
+        SeqType.FASTA_ASM, csv_file, owner_org, shared_projects, create, skip, force)

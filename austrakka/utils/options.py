@@ -187,6 +187,7 @@ def opt_shared_projects(**attrs: t.Any):
     }
     return create_option(
         "--project",
+        "shared_projects",
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -199,6 +200,7 @@ def opt_owner_org(**attrs: t.Any):
     }
     return create_option(
         "--owner",
+        "owner_org",
         type=click.STRING,
         **{**defaults, **attrs}
     )
