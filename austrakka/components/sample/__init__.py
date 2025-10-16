@@ -2,7 +2,8 @@
 from io import BufferedReader
 import click
 
-from austrakka.utils.options import opt_seq_id, opt_group_name
+from austrakka.utils.options import opt_seq_id, opt_group_name, opt_file
+from austrakka.utils.option_utils import RequiredMutuallyExclusiveOption
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from ...utils.output import table_format_option
 from ...utils.output import object_format_option
@@ -34,20 +35,42 @@ def sample_show(seq_id: str, out_format: str):
 @opt_group_name()
 @opt_seq_id(
     help='The Seq_ID of the sample record(s) to be unshared. Multiple Seq_IDs can be specified.'
-         'Eg. -s sample1 -s sample2')
-def sample_unshare(seq_id: [str], group_name: str):
+         'Eg. -s sample1 -s sample2',
+    required=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['file'])
+@opt_file(
+    help='Optional input file containing Seq_ID of the sample record(s) to be unshared, one per line. '
+        'The file must be UTF-8 encoded plain text. '
+        'Blank lines will be ignored.',
+    required=False,
+    multiple=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['seq_id'])
+def sample_unshare(seq_id: [str], group_name: str, file: BufferedReader):
     """Unshare a list of sample records with a group."""
-    unshare_sample(seq_id, group_name)
+    unshare_sample(group_name, seq_id, file)
 
 
 @sample.command('share')
 @opt_group_name()
 @opt_seq_id(
     help='The Seq_ID of the sample record(s) to be shared. Multiple Seq_IDs can be specified.'
-         'Eg. -s sample1 -s sample2')
-def sample_share(seq_id: [str], group_name: str):
+         'Eg. -s sample1 -s sample2. ',
+    required=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['file'])
+@opt_file(
+    help='Optional input file containing Seq_ID of the sample record(s) to be shared, one per line. '
+        'The file must be UTF-8 encoded plain text. '
+        'Blank lines will be ignored.',
+    required=False,
+    multiple=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['seq_id'])
+def sample_share(seq_id: [str], group_name: str, file: BufferedReader):
     """Share a list of sample records with a group."""
-    share_sample(seq_id, group_name)
+    share_sample(group_name, seq_id, file)
 
 
 @sample.command('disable')
