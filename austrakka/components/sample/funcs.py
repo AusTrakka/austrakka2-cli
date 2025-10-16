@@ -1,4 +1,5 @@
 from io import BufferedReader
+import json
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.paths import SAMPLE_PATH
@@ -25,10 +26,9 @@ def show_sample(
 
 
 @logger_wraps()
-def share_sample(
-        group_name: str,
-        seq_ids: [str] = None,
+def get_seq_list(
         file: BufferedReader = None,
+        seq_ids: [str] = None,
 ):
     if file is None and (seq_ids is None or len(seq_ids) == 0):
         raise ValueError(
@@ -40,6 +40,16 @@ def share_sample(
     else:
         seq_id_list = list(seq_ids)
 
+    return seq_id_list
+
+
+@logger_wraps()
+def share_sample(
+        group_name: str,
+        seq_ids: [str] = None,
+        file: BufferedReader = None,
+):
+    seq_id_list = get_seq_list(file, seq_ids)
     api_patch(
         path="/".join([SAMPLE_PATH, SHARE]),
         data={
@@ -55,15 +65,7 @@ def unshare_sample(
         seq_ids: [str],
         file: BufferedReader = None,
 ):
-    if file is None and (seq_ids is None or len(seq_ids) == 0):
-        raise ValueError(
-            "Either Seq_IDs or file must be provided to unshare sequences")
-
-    seq_id_list = []
-    if file:
-        seq_id_list = [line.decode("utf-8").strip() for line in file if line.strip()]
-    else:
-        seq_id_list = list(seq_ids)
+    seq_id_list = get_seq_list(file, seq_ids)
     
     api_patch(
         path="/".join([SAMPLE_PATH, UNSHARE]),
