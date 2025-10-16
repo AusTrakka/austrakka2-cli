@@ -58,4 +58,3 @@ def org_update(
         is_active: bool,
 ):
     update_org(org_abbrev, name, country, state, is_active)
-

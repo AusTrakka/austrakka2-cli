@@ -1,4 +1,4 @@
-from austrakka.utils.api import api_post, api_patch
+from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import ORG_PATH
