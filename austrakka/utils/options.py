@@ -345,7 +345,7 @@ def opt_proforma(**attrs: t.Any):
                 'options.',
     }
     return create_option(
-        '-p',
+        '-pf',
         '--proforma',
         type=click.STRING,
         **{**defaults, **attrs}
