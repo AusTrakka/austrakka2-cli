@@ -1,5 +1,5 @@
 from io import BufferedReader
-import json
+
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.paths import SAMPLE_PATH

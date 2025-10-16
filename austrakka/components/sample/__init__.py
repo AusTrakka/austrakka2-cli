@@ -40,9 +40,9 @@ def sample_show(seq_id: str, out_format: str):
     cls=RequiredMutuallyExclusiveOption,
     mutually_exclusive=['file'])
 @opt_file(
-    help='Optional input file containing Seq_ID of the sample record(s) to be unshared, one per line. '
+    help='Optional input file containing Seq_ID of the sample record(s) to be unshared. '
         'The file must be UTF-8 encoded plain text. '
-        'Blank lines will be ignored.',
+        'There should be one Seq_ID per line. Blank lines will be ignored.',
     required=False,
     multiple=False,
     cls=RequiredMutuallyExclusiveOption,
@@ -61,9 +61,9 @@ def sample_unshare(seq_id: [str], group_name: str, file: BufferedReader):
     cls=RequiredMutuallyExclusiveOption,
     mutually_exclusive=['file'])
 @opt_file(
-    help='Optional input file containing Seq_ID of the sample record(s) to be shared, one per line. '
+    help='Optional input file containing Seq_ID of the sample record(s) to be shared. '
         'The file must be UTF-8 encoded plain text. '
-        'Blank lines will be ignored.',
+        'There should be one Seq_ID per line. Blank lines will be ignored.',
     required=False,
     multiple=False,
     cls=RequiredMutuallyExclusiveOption,
