@@ -1,5 +1,9 @@
 import typing as t
+from io import BufferedReader
+
 import click
+
+from austrakka.utils.misc import logger_wraps
 
 
 def create_option(*param_decls: str, **attrs: t.Any):
@@ -91,3 +95,19 @@ class RequiredMutuallyExclusiveOption(AusTrakkaCliOption):
             opts,
             args
         )
+
+@logger_wraps()
+def get_seq_list(
+        seq_ids: [str] = None,
+        file: BufferedReader = None,
+):
+    if file is None and (seq_ids is None or len(seq_ids) == 0):
+        raise ValueError(
+            "Either Seq_IDs or file must be provided to share sequences")
+
+    if file:
+        seq_id_list = [line.decode("utf-8").strip() for line in file if line.strip()]
+    else:
+        seq_id_list = list(seq_ids)
+
+    return seq_id_list
