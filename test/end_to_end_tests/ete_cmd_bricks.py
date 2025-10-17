@@ -63,6 +63,7 @@ def _upload_fastq_ill_se_file(
 
     temp_csv_file_path = _create_single_seq_csv(seq_id, fastq_file_path)
 
+    _create_min_proforma_if_not_exists(cli)
     args = [
         'seq',
         'add',
@@ -105,6 +106,7 @@ def _upload_fastq_ill_pe_file(
 
     temp_csv_file_path = _create_paired_seq_csv(seq_id, fastq_file_path1, fastq_file_path2)
 
+    _create_min_proforma_if_not_exists(cli)
     args = [
         'seq',
         'add',
@@ -146,6 +148,7 @@ def _upload_fasta_asm_file(
 
     temp_csv_file_path = _create_single_seq_csv(seq_id, fasta_file_path)
 
+    _create_min_proforma_if_not_exists(cli)
     args = [
         'seq',
         'add',
@@ -181,7 +184,8 @@ def _upload_fasta_cns_file(
     shared_project_arguments = []
     for project in shared_projects:
         shared_project_arguments.extend(['--project', project])
-        
+
+    _create_min_proforma_if_not_exists(cli)
     args = [
         'seq',
         'add',
