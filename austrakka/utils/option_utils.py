@@ -79,15 +79,16 @@ class RequiredMutuallyExclusiveOption(AusTrakkaCliOption):
         super().__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
+        mutex_display_names = [fld.replace('_','-') for fld in self.mutually_exclusive]
         if self.mutually_exclusive.intersection(opts) and self.name in opts:
             raise click.UsageError(
                 f" `{self.name.replace('_','-')}` is mutually exclusive "
-                f"with `{', '.join([fld.replace('_','-') for fld in self.mutually_exclusive])}`."
+                f"with `{', '.join(mutex_display_names)}`."
             )
         if not self.mutually_exclusive.intersection(opts) and self.name not in opts:
             raise click.UsageError(
                 f" You must provide at least one of these arguments: "
-                f"`{', '.join([self.name.replace('_','-')] + list(self.mutually_exclusive))}`."
+                f"`{', '.join([self.name.replace('_','-')] + list(mutex_display_names))}`."
             )
 
         return super().handle_parse_result(
