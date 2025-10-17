@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## Unreleased
+
+### Changed
+- The chown command for changing sample ownership is now `sample chown`, not `org chown`.
+
 ## [0.73.2] - 2025-10-08
 
 ### Added
