@@ -296,6 +296,7 @@ def opt_project(**attrs: t.Any):
         'help': 'Project Abbreviation',
     }
     return create_option(
+        '-p',
         '--project',
         type=click.STRING,
         **{**defaults, **attrs}
