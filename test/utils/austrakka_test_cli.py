@@ -40,4 +40,5 @@ class AusTrakkaTestCli:
         :param args: verbatim subcommands, options and arguments for the CLI
         :return: result of invoking the command
         """
+        print("Invoking CLI", args)
         return self._runner.invoke(self._austrakka_cli, args)
