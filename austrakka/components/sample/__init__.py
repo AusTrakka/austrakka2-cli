@@ -38,12 +38,10 @@ def sample(ctx):
     required=True,
     help='Abbreviated name of new owning organisation'
 )
-@opt_seq_id(
-    multiple=True,
-    help='The Seq_ID of the sample record(s) to be re-assigned to another org. '
-         'Multiple Seq_IDs can be specified. Eg. -s sample1 -s sample2')
-def owner_change(old_owner: str, new_owner: str, seq_id: [str]):
-    change_owner(old_owner, new_owner, seq_id)
+@options_seq_id_or_file
+def owner_change(old_owner: str, new_owner: str, seq_id: [str], file: BufferedReader):
+    seq_ids = get_seq_list(seq_id, file)
+    change_owner(old_owner, new_owner, seq_ids)
 
 @sample.command('show', hidden=hide_admin_cmds())
 @opt_seq_id(multiple=False)
@@ -72,16 +70,15 @@ def sample_share(seq_id: [str], group_name: str, file: BufferedReader):
 
 
 @sample.command('disable')
-@opt_seq_id(
-    help='The Seq_ID of the sample record(s) to be removed. Multiple Seq_IDs can be specified.'
-    'Eg. -s sample1 -s sample2')
-def sample_disable(seq_id: [str]):
+@options_seq_id_or_file
+def sample_disable(seq_id: [str], file: BufferedReader):
     """Disable a sample record. This is a soft delete. 
     The sample record's metadata and sequences will not appear in any projects. 
     Once disabled, it will not be possible to upload metadata or sequences
     to the sample until it is enabled again, or until it has been purged
     from the system."""
-    disable_sample(seq_id)
+    seq_ids = get_seq_list(seq_id, file)
+    disable_sample(seq_ids)
 
 
 @sample.command('groups')
@@ -99,12 +96,11 @@ def seq_groups(
 
 
 @sample.command('enable')
-@opt_seq_id(
-    help='The Seq_ID of the sample record(s) to be re-enabled. Multiple Seq_IDs can be specified.'
-    'Eg. -s sample1 -s sample2')
-def sample_enable(seq_id: [str]):
+@options_seq_id_or_file
+def sample_enable(seq_id: [str], file: BufferedReader):
     """Enable a sample record. This re-enables a previously disabled sample."""
-    enable_sample(seq_id)
+    seq_ids = get_seq_list(seq_id, file)
+    enable_sample(seq_ids)
 
 
 @sample.command('purge', hidden=hide_admin_cmds())
