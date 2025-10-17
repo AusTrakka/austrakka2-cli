@@ -135,6 +135,19 @@ def opt_email_address(var_name='email', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_user_position(var_name='position', **attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'User Position',
+    }
+    return create_option(
+        "-po",
+        "--position",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
 
 def opt_dashboard_name(var_name='dashboard_name', **attrs: t.Any):
     defaults = {
