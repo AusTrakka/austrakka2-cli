@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.74.0] - 2025-10-19
+
+### Added
+- The sample share and sample unshare commands can now take a `--file option`, with a file containing a list of Seq_IDs,
+as an alternative to specifying multiple `--seq-id/-s` options.
+- Admins can now set the new user position property via the CLI.
+- Admins can now manage system message queues via the CLI.
+
+### Changed
+- The metadata add, update, and validate commands now take an `--owner` parameter to specify data ownership. 
+The metadata add and update commands additionally take optional `--project` parameters to specify sharing
+settings. The Owner_group and Shared_group columns in the uploaded file are no longer required and will be ignored.
+- The short form for the `--proforma` parameter is now `-pf`, not `-p`, to avoid confusion with `--project`.
+- The seq add commands now take an `--owner` parameter to specify data ownership, and optional `--project` parameters 
+to specify sharing settings for any newly created sample records. The seq add commands will only create sample records 
+if the `--create` flag is set.
+- The chown command for changing sample ownership is now `sample chown`, not `org chown`.
+
+
 ## [0.73.2] - 2025-10-08
 
 ### Added

@@ -20,6 +20,8 @@ def list_users(show_disabled: bool, out_format: str):
 def add_user(
         user_id: str,
         org: str,
+        email: str,
+        position: str,
         owner_group_roles: List[str],
         is_process: bool,
         server_username: str,
@@ -35,6 +37,8 @@ def add_user(
         "organisation": {
             "abbreviation": org
         },
+        "contactEmail": email,
+        "position": position,
         "ownerGroupRoles": list(owner_group_roles),
         "isAusTrakkaProcess": is_process,
         "analysisServerUsername": server_username,
@@ -52,6 +56,7 @@ def update_user(
         object_id: str,
         name: str = None,
         email: str = None,
+        position: str = None,
         org: str = None,
         server_username: str = None,
         is_active: bool = None,
@@ -63,6 +68,7 @@ def update_user(
     user: Dict[str, Any] = {
         "displayName": user_full['displayName'],
         "contactEmail": user_full['contactEmail'],
+        "position": user_full['position'],
         "orgAbbrev": user_full['orgAbbrev'],
         "isActive": user_full['isActive'],
         "analysisServerUsername": user_full['analysisServerUsername'],
@@ -78,6 +84,8 @@ def update_user(
         user['displayName'] = name
     if email is not None:
         user['contactEmail'] = email
+    if position is not None:
+        user['position'] = position
     if org is not None:
         user['orgAbbrev'] = org
     if is_active is not None:

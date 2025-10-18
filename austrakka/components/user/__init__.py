@@ -10,7 +10,7 @@ from austrakka.utils.options import \
     opt_email_address, \
     opt_is_active, \
     opt_user_no_dl_quota, \
-    opt_user_monthly_dl_quota_bytes
+    opt_user_monthly_dl_quota_bytes, opt_user_position
 from austrakka.utils.options import opt_is_austrakka_process
 from austrakka.utils.options import opt_user_object_id
 from austrakka.utils.options import opt_organisation
@@ -45,10 +45,14 @@ def user_list(show_disabled: bool, out_format: str):
 @opt_is_austrakka_process(default=False)
 @opt_server_username()
 @opt_user_no_dl_quota()
+@opt_email_address(required=False)
+@opt_user_position()
 @opt_user_monthly_dl_quota_bytes()
 def user_add(
         user_id: str,
         org: str,
+        email: str,
+        position: str,
         owner_group_roles: List[str],
         is_process: bool,
         server_username: str,
@@ -58,6 +62,8 @@ def user_add(
     add_user(
         user_id, 
         org, 
+        email,
+        position,
         owner_group_roles, 
         is_process, 
         server_username, 
@@ -70,6 +76,7 @@ def user_add(
 @opt_user_object_id()
 @opt_name(help="Display Name", required=False)
 @opt_email_address(required=False)
+@opt_user_position(required=False)
 @opt_organisation(required=False)
 @opt_is_active(required=False)
 @opt_server_username(required=False)
@@ -80,6 +87,7 @@ def user_update(
     org: str,
     is_active: bool,
     email: str,
+    position: str,
     name: str,
     server_username: str,
     no_download_quota: bool,
@@ -89,6 +97,7 @@ def user_update(
         user_id, 
         name, 
         email, 
+        position,
         org, 
         server_username, 
         is_active, 

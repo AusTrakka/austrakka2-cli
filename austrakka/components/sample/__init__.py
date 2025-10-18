@@ -2,8 +2,10 @@
 from io import BufferedReader
 import click
 
-from austrakka.utils.options import opt_seq_id, opt_group_name
+from austrakka.utils.options import opt_seq_id, opt_group_name, opt_file
+from austrakka.utils.option_utils import RequiredMutuallyExclusiveOption
 from austrakka.utils.cmd_filter import hide_admin_cmds
+from ...utils.option_utils import create_option
 from ...utils.output import table_format_option
 from ...utils.output import object_format_option
 from .funcs import \
@@ -13,7 +15,8 @@ from .funcs import \
     share_sample, \
     get_groups, \
     show_sample, \
-    purge_sample
+    purge_sample, \
+    change_owner
 
 
 @click.group()
@@ -21,6 +24,26 @@ from .funcs import \
 def sample(ctx):
     """Commands related to samples"""
     ctx.context = ctx.parent.context
+
+@sample.command('chown',
+    hidden=hide_admin_cmds(),
+    help="Transfer ownership of samples to another organisation")
+@create_option(
+    "--old-owner",
+    required=True,
+    help='Abbreviated name of current owning organisation'
+)
+@create_option(
+    "--new-owner",
+    required=True,
+    help='Abbreviated name of new owning organisation'
+)
+@opt_seq_id(
+    multiple=True,
+    help='The Seq_ID of the sample record(s) to be re-assigned to another org. '
+         'Multiple Seq_IDs can be specified. Eg. -s sample1 -s sample2')
+def owner_change(old_owner: str, new_owner: str, seq_id: [str]):
+    change_owner(old_owner, new_owner, seq_id)
 
 @sample.command('show', hidden=hide_admin_cmds())
 @opt_seq_id(multiple=False)
@@ -34,20 +57,42 @@ def sample_show(seq_id: str, out_format: str):
 @opt_group_name()
 @opt_seq_id(
     help='The Seq_ID of the sample record(s) to be unshared. Multiple Seq_IDs can be specified.'
-         'Eg. -s sample1 -s sample2')
-def sample_unshare(seq_id: [str], group_name: str):
+         'Eg. -s sample1 -s sample2',
+    required=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['file'])
+@opt_file(
+    help='Optional input file containing Seq_ID of the sample record(s) to be unshared. '
+        'The file must be UTF-8 encoded plain text. '
+        'There should be one Seq_ID per line. Blank lines will be ignored.',
+    required=False,
+    multiple=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['seq_id'])
+def sample_unshare(seq_id: [str], group_name: str, file: BufferedReader):
     """Unshare a list of sample records with a group."""
-    unshare_sample(seq_id, group_name)
+    unshare_sample(group_name, seq_id, file)
 
 
 @sample.command('share')
 @opt_group_name()
 @opt_seq_id(
     help='The Seq_ID of the sample record(s) to be shared. Multiple Seq_IDs can be specified.'
-         'Eg. -s sample1 -s sample2')
-def sample_share(seq_id: [str], group_name: str):
+         'Eg. -s sample1 -s sample2. ',
+    required=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['file'])
+@opt_file(
+    help='Optional input file containing Seq_ID of the sample record(s) to be shared. '
+        'The file must be UTF-8 encoded plain text. '
+        'There should be one Seq_ID per line. Blank lines will be ignored.',
+    required=False,
+    multiple=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['seq_id'])
+def sample_share(seq_id: [str], group_name: str, file: BufferedReader):
     """Share a list of sample records with a group."""
-    share_sample(seq_id, group_name)
+    share_sample(group_name, seq_id, file)
 
 
 @sample.command('disable')
