@@ -24,29 +24,6 @@ def opt_abbrev(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
-
-def opt_curr_owner(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'Abbreviated name of current owning organisation.'}
-    return create_option(
-        "-co",
-        "--curr-owner",
-        **{**defaults, **attrs}
-    )
-
-
-def opt_new_owner(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'Abbreviated name of new owning organisation.'}
-    return create_option(
-        "-no",
-        "--new-owner",
-        **{**defaults, **attrs}
-    )
-
-
 def opt_tracking_token(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -135,6 +112,19 @@ def opt_email_address(var_name='email', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_user_position(var_name='position', **attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'User Position',
+    }
+    return create_option(
+        "-po",
+        "--position",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
 
 def opt_dashboard_name(var_name='dashboard_name', **attrs: t.Any):
     defaults = {
@@ -177,19 +167,46 @@ def opt_group_name(var_name='group_name', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
-
-def opt_share(var_name='shared_group', **attrs: t.Any):
+def opt_shared_projects(**attrs: t.Any):
     defaults = {
         'required': False,
-        'help': 'Group to share with',
+        'help': 'Project abbreviation to share samples with. '
+                'This applies to all samples or sequences listed.'
+                'Project parameter may be specified multiple times.',
+        'multiple': True,
     }
     return create_option(
-        "--share",
-        var_name,
+        "--project",
+        "shared_projects",
         type=click.STRING,
         **{**defaults, **attrs}
     )
 
+def opt_owner_org(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Owner organisation abbreviation. Specifies the organisation '
+                'owning all samples or sequences in the operation.'
+    }
+    return create_option(
+        "--owner",
+        "owner_org",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+def opt_create_samples(**attrs: t.Any):
+    defaults = {
+        'help': 'Create sample records for each Seq_ID if they do not already exist. '
+                'By default, sequences can only be uploaded to existing sample records.'
+    }
+    return create_option(
+        '--create/--no-create',
+        type=bool,
+        is_flag=True,
+        default=False,
+        **{**defaults, **attrs}
+    )
 
 def opt_owner(var_name='owner_group', **attrs: t.Any):
     defaults = {
@@ -319,7 +336,7 @@ def opt_proforma(**attrs: t.Any):
                 'options.',
     }
     return create_option(
-        '-p',
+        '-pf',
         '--proforma',
         type=click.STRING,
         **{**defaults, **attrs}
