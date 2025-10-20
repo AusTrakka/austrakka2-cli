@@ -2,8 +2,8 @@
 from io import BufferedReader
 import click
 
-from austrakka.utils.options import opt_seq_id, opt_group_name, opt_file
-from austrakka.utils.option_utils import RequiredMutuallyExclusiveOption
+from austrakka.utils.options import opt_seq_id, opt_group_name, opt_file, opt_project
+from austrakka.utils.option_utils import RequiredMutuallyExclusiveOption, MutuallyExclusiveOption
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from ...utils.option_utils import create_option
 from ...utils.output import table_format_option
@@ -54,7 +54,12 @@ def sample_show(seq_id: str, out_format: str):
 
 
 @sample.command('unshare')
-@opt_group_name()
+@opt_group_name(mutually_exclusive=['project'],
+                cls=RequiredMutuallyExclusiveOption,
+                required=False,)
+@opt_project(mutually_exclusive=['group_name'],
+             cls=RequiredMutuallyExclusiveOption,
+             required=False, )
 @opt_seq_id(
     help='The Seq_ID of the sample record(s) to be unshared. Multiple Seq_IDs can be specified.'
          'Eg. -s sample1 -s sample2',
@@ -69,13 +74,18 @@ def sample_show(seq_id: str, out_format: str):
     multiple=False,
     cls=RequiredMutuallyExclusiveOption,
     mutually_exclusive=['seq_id'])
-def sample_unshare(seq_id: [str], group_name: str, file: BufferedReader):
+def sample_unshare(seq_id: [str], group_name: str, project: str, file: BufferedReader):
     """Unshare a list of sample records with a group."""
-    unshare_sample(group_name, seq_id, file)
+    unshare_sample(group_name, project, seq_id, file)
 
 
 @sample.command('share')
-@opt_group_name()
+@opt_group_name(cls=RequiredMutuallyExclusiveOption,
+                mutually_exclusive=['project'],
+                required=False)
+@opt_project(mutually_exclusive=['group_name'],
+             cls=RequiredMutuallyExclusiveOption,
+             required=False,)
 @opt_seq_id(
     help='The Seq_ID of the sample record(s) to be shared. Multiple Seq_IDs can be specified.'
          'Eg. -s sample1 -s sample2. ',
@@ -90,9 +100,9 @@ def sample_unshare(seq_id: [str], group_name: str, file: BufferedReader):
     multiple=False,
     cls=RequiredMutuallyExclusiveOption,
     mutually_exclusive=['seq_id'])
-def sample_share(seq_id: [str], group_name: str, file: BufferedReader):
+def sample_share(seq_id: [str], group_name: str, project: str, file: BufferedReader):
     """Share a list of sample records with a group."""
-    share_sample(group_name, seq_id, file)
+    share_sample(group_name, project, seq_id, file)
 
 
 @sample.command('disable')

@@ -1,5 +1,6 @@
 from io import BufferedReader
 
+from austrakka.utils.helpers.share import resolve_share_target
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.helpers.tenant import get_default_tenant_global_id
@@ -59,10 +60,12 @@ def get_seq_list(
 
 @logger_wraps()
 def share_sample(
-        group_name: str,
+        group_name: str = None,
+        project: str = None,
         seq_ids: [str] = None,
         file: BufferedReader = None,
 ):
+    group_name = resolve_share_target(group_name, project)
     seq_id_list = get_seq_list(file, seq_ids)
     api_patch(
         path="/".join([SAMPLE_PATH, SHARE]),
@@ -75,12 +78,13 @@ def share_sample(
 
 @logger_wraps()
 def unshare_sample(
-        group_name: str,
-        seq_ids: [str],
+        group_name: str = None,
+        project: str = None,
+        seq_ids: [str] = None,
         file: BufferedReader = None,
 ):
+    group_name = resolve_share_target(group_name, project)
     seq_id_list = get_seq_list(file, seq_ids)
-    
     api_patch(
         path="/".join([SAMPLE_PATH, UNSHARE]),
         data={
