@@ -85,7 +85,7 @@ def seq_get(
 @opt_seq_id(
     required=False,
     default=None,
-    help='The Seq_IDs of specific sequences to download',
+    help='The Seq_IDs of specific sequences to list',
     cls=RequiredMutuallyExclusiveOption,
     mutually_exclusive=['group_name'])
 def seq_list(

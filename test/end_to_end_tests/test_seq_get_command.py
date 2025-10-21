@@ -39,9 +39,7 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_min_proforma_if_not_exists(self.cli)
@@ -69,7 +67,7 @@ class TestSeqGetCommand:
         # Assert
         assert result.exit_code != 0, f'The seq get command should fail: {result.output}'
         assert ("You must provide at least one of these arguments: "
-                "`group_name, seq_id`.") in result.output
+                "`group-name, seq-id`.") in result.output
     
     
     def test_get__given_no_output_dir__expect_cli_error(self):
@@ -77,7 +75,6 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
@@ -112,7 +109,6 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
@@ -148,7 +144,6 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
@@ -180,7 +175,7 @@ class TestSeqGetCommand:
 
         # Assert
         assert result.exit_code != 0, f'The seq get command should fail: {result.output}'
-        assert "`seq_id` is mutually exclusive with `group_name`." in result.output
+        assert "`seq-id` is mutually exclusive with `group-name`." in result.output
     
     
     def test_get__given_seq_type_is_not_supported__expect_cli_error(self):
@@ -188,7 +183,6 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
@@ -226,7 +220,6 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
@@ -265,7 +258,6 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
@@ -303,7 +295,6 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
@@ -341,7 +332,6 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
@@ -416,7 +406,6 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
