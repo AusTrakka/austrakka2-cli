@@ -21,7 +21,7 @@ role.add_command(definition)
 @table_format_option()
 def roles_list(view_type: str, out_format: str):
     """
-    Get the list of roles defined for a tenant
+    Get the list of roles
     """
     list_roles(view_type, out_format)
 
@@ -31,16 +31,20 @@ def roles_list(view_type: str, out_format: str):
 @opt_role()
 @opt_description()
 @opt_privilege_level()
-@opt_allowed_record_types(required=False)
+@opt_record_type(
+    required=False, 
+    multiple=True, 
+    help="Name of each allowed record types where a role can be used to control access."
+)
 def role_add(
         role: str,
         description: str,
         privilege_level: str,
-        allowed_record_types: list[str]):
+        record_type: list[str]):
     """
-    Add a new role to the tenant
+    Add a new role
     """
-    add_role(role, description, privilege_level, allowed_record_types)
+    add_role(role, description, privilege_level, record_type)
 
 
 # pylint: disable=expression-not-assigned,duplicate-code
@@ -93,7 +97,7 @@ def role_update(
                default=False)
 def role_remove(role: str, no_confirm: bool):
     """
-    Remove a role from the tenant
+    Remove a role
     """
     if not no_confirm:
         if not click.confirm(f'Are you sure you want to remove role "{role}"?'):
