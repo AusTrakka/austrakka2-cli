@@ -57,4 +57,3 @@ def remove_role_definition(scope_access_def_global_id: str):
         path=f"{ROLES_V2_PATH}/ScopeAccessDefinition/"
              f"{scope_access_def_global_id}",
     )
-

@@ -65,4 +65,3 @@ def unassign_privilege(
         path=f"{get_priv_path(record_type, record_global_id)}/privilege/{privilege_global_id}",
         custom_headers={}
     )
-

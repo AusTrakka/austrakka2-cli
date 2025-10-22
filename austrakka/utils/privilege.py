@@ -14,5 +14,4 @@ def convert_record_type_to_route_string(record_type):
 def get_priv_path(record_type: str, record_global_id: str):
     if record_type == TENANT_RESOURCE:
         return TENANT_PATH
-    else:
-        return f'{record_type}/{record_global_id}'
+    return f'{record_type}/{record_global_id}'

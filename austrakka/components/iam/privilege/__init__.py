@@ -128,4 +128,3 @@ def validate_global_id(record_type: str, global_id: Union[str, None]):
         raise ValueError("Cannot provide global id with Tenant")
     if record_type != TENANT_RESOURCE and global_id is None:
         raise ValueError("Must provide global id")
-
