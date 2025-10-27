@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning].
 
 ### Changed
 - The chown command for changing sample ownership is now `sample chown`, not `org chown`.
-- project share and unshare can now take the project abbrev instead of group name as shorthand.
+- sample share and unshare can now take the project abbrev instead of group name as shorthand.
 
 ## [0.73.2] - 2025-10-08
 
