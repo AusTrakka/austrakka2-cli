@@ -22,6 +22,7 @@ settings. The Owner_group and Shared_group columns in the uploaded file are no l
 to specify sharing settings for any newly created sample records. The seq add commands will only create sample records 
 if the `--create` flag is set.
 - The chown command for changing sample ownership is now `sample chown`, not `org chown`.
+- sample share and unshare can now take the project abbrev instead of group name as shorthand.
 
 
 ## [0.73.2] - 2025-10-08
