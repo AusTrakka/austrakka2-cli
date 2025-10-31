@@ -5,7 +5,6 @@ import pytest
 
 from ete_cmd_bricks import (
     _create_field_if_not_exists,
-    _create_min_proforma_if_not_exists,
     _create_org,
     _create_group,
     _upload_min_metadata,
@@ -44,7 +43,6 @@ class TestSeqGetCommand:
         proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
 
@@ -81,7 +79,6 @@ class TestSeqGetCommand:
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
 
@@ -116,7 +113,6 @@ class TestSeqGetCommand:
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
 
@@ -152,7 +148,6 @@ class TestSeqGetCommand:
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
 
@@ -192,7 +187,6 @@ class TestSeqGetCommand:
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
 
@@ -230,7 +224,6 @@ class TestSeqGetCommand:
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
 
@@ -269,7 +262,6 @@ class TestSeqGetCommand:
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
 
@@ -307,7 +299,6 @@ class TestSeqGetCommand:
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
 
@@ -345,7 +336,6 @@ class TestSeqGetCommand:
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
 
@@ -383,7 +373,6 @@ class TestSeqGetCommand:
         owner_group = f'{org_name}-Owner'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
@@ -420,7 +409,6 @@ class TestSeqGetCommand:
         shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
 
