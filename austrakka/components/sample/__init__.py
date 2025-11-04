@@ -2,8 +2,9 @@
 from io import BufferedReader
 import click
 
-from austrakka.utils.options import opt_seq_id, opt_group_name, options_seq_id_or_file
+from austrakka.utils.options import opt_seq_id, opt_group_name, opt_project, options_seq_id_or_file
 from austrakka.utils.option_utils import get_seq_list
+from austrakka.utils.option_utils import RequiredMutuallyExclusiveOption
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from ...utils.option_utils import create_option
 from ...utils.output import table_format_option
@@ -52,22 +53,30 @@ def sample_show(seq_id: str, out_format: str):
 
 
 @sample.command('unshare')
-@opt_group_name()
+@opt_group_name(mutually_exclusive=['project'],
+                cls=RequiredMutuallyExclusiveOption,
+                required=False,)
+@opt_project(mutually_exclusive=['group_name'],
+             cls=RequiredMutuallyExclusiveOption,
+             required=False, )
 @options_seq_id_or_file
-def sample_unshare(group_name: str, seq_id: [str], file: BufferedReader):
+def sample_unshare(seq_id: [str], group_name: str, project: str, file: BufferedReader):
     """Unshare a list of sample records with a group."""
     seq_ids = get_seq_list(seq_id, file)
-    unshare_sample(group_name, seq_ids)
-
+    unshare_sample(group_name, project, seq_ids)
 
 @sample.command('share')
-@opt_group_name()
+@opt_group_name(cls=RequiredMutuallyExclusiveOption,
+                mutually_exclusive=['project'],
+                required=False)
+@opt_project(mutually_exclusive=['group_name'],
+             cls=RequiredMutuallyExclusiveOption,
+             required=False,)
 @options_seq_id_or_file
-def sample_share(seq_id: [str], group_name: str, file: BufferedReader):
+def sample_share(seq_id: [str], group_name: str, project: str, file: BufferedReader):
     """Share a list of sample records with a group."""
     seq_ids = get_seq_list(seq_id, file)
-    share_sample(group_name, seq_ids)
-
+    share_sample(group_name, project, seq_ids)
 
 @sample.command('disable')
 @options_seq_id_or_file

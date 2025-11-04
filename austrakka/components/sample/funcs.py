@@ -1,3 +1,4 @@
+from austrakka.utils.helpers.share import resolve_share_target
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.helpers.tenant import get_default_tenant_global_id
@@ -38,9 +39,11 @@ def show_sample(
 
 @logger_wraps()
 def share_sample(
-        group_name: str,
-        seq_ids: [str] = None
+        group_name: str = None,
+        project: str = None,
+        seq_ids: [str] = None,
 ):
+    group_name = resolve_share_target(group_name, project)
     api_patch(
         path="/".join([SAMPLE_PATH, SHARE]),
         data={
@@ -52,9 +55,11 @@ def share_sample(
 
 @logger_wraps()
 def unshare_sample(
-        group_name: str,
-        seq_ids: [str]
-):    
+        group_name: str = None,
+        project: str = None,
+        seq_ids: [str] = None,
+):
+    group_name = resolve_share_target(group_name, project)
     api_patch(
         path="/".join([SAMPLE_PATH, UNSHARE]),
         data={
