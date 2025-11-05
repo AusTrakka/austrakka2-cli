@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning].
 - `sample [share|unshare]` can now take the project abbrev instead of group name as shorthand.
 - `sample [chown|share|unshare|disable|enable]` can now either accept multiple `--seq-id` flags, or `--file` with a file containing a list of samples.
 
-
 ## [0.74.0] - 2025-10-19
 
 ### Added
