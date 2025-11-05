@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.75.0] - 2025-11-05
+
+### Changed
+- `sample [share|unshare]` can now take the project abbrev instead of group name as shorthand.
+- `sample [chown|share|unshare|disable|enable]` can now either accept multiple `--seq-id` flags, or `--file` with a file containing a list of samples.
+
+
 ## [0.74.0] - 2025-10-19
 
 ### Added
@@ -22,7 +29,6 @@ settings. The Owner_group and Shared_group columns in the uploaded file are no l
 to specify sharing settings for any newly created sample records. The seq add commands will only create sample records 
 if the `--create` flag is set.
 - The chown command for changing sample ownership is now `sample chown`, not `org chown`.
-- sample share and unshare can now take the project abbrev instead of group name as shorthand.
 
 
 ## [0.73.2] - 2025-10-08
