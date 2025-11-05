@@ -27,7 +27,6 @@ class TestSeqGetCommand:
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
         shared_project = f'sg-{_new_identifier(10)}'
-        project_group = f'{shared_project}-Group'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_min_proforma_if_not_exists(self.cli)
@@ -52,7 +51,7 @@ class TestSeqGetCommand:
         # Assert
         assert result.exit_code != 0, f'The seq get command should fail: {result.output}'
         assert ("You must provide at least one of these arguments: "
-                "`group_name, seq_id`.") in result.output
+                "`group-name, seq-id`.") in result.output
 
 
 
@@ -62,7 +61,6 @@ class TestSeqGetCommand:
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
         shared_project = f'sg-{_new_identifier(10)}'
-        project_group = f'{shared_project}-Group'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_min_proforma_if_not_exists(self.cli)
@@ -111,7 +109,6 @@ class TestSeqGetCommand:
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
         shared_project = f'sg-{_new_identifier(10)}'
-        project_group = f'{shared_project}-Group'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_min_proforma_if_not_exists(self.cli)
@@ -213,7 +210,6 @@ class TestSeqGetCommand:
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
         shared_project = f'sg-{_new_identifier(10)}'
-        project_group = f'{shared_project}-Group'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_min_proforma_if_not_exists(self.cli)
