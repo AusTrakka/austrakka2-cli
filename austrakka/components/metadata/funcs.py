@@ -135,7 +135,7 @@ def _call_submission(
 ):
     headers = {OWNER_ORG_HEADER: owner_org,}
     if shared_projects:
-        headers[SHARED_PROJECTS_HEADER] = ";".join(shared_projects)
+        headers[SHARED_PROJECTS_HEADER] = ",".join(shared_projects)
 
     api_post_multipart(
         path=path,

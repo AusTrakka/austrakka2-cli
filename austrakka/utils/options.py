@@ -10,7 +10,10 @@ from austrakka.utils.enums.privilege_level import (
 
 from austrakka.utils.enums.seq import SeqType
 from austrakka.utils.enums.view_type import MORE, COMPACT, FULL
-from austrakka.utils.option_utils import create_option, MutuallyExclusiveOption
+from austrakka.utils.option_utils import \
+    create_option, \
+    MutuallyExclusiveOption, \
+    RequiredMutuallyExclusiveOption
 from austrakka import __prog_name__ as PROG_NAME
 
 
@@ -23,29 +26,6 @@ def opt_abbrev(**attrs: t.Any):
         "--abbrev",
         **{**defaults, **attrs}
     )
-
-
-def opt_curr_owner(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'Abbreviated name of current owning organisation.'}
-    return create_option(
-        "-co",
-        "--curr-owner",
-        **{**defaults, **attrs}
-    )
-
-
-def opt_new_owner(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'Abbreviated name of new owning organisation.'}
-    return create_option(
-        "-no",
-        "--new-owner",
-        **{**defaults, **attrs}
-    )
-
 
 def opt_tracking_token(**attrs: t.Any):
     defaults = {
@@ -135,6 +115,19 @@ def opt_email_address(var_name='email', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_user_position(var_name='position', **attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'User Position',
+    }
+    return create_option(
+        "-po",
+        "--position",
+        var_name,
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
 
 def opt_dashboard_name(var_name='dashboard_name', **attrs: t.Any):
     defaults = {
@@ -176,8 +169,6 @@ def opt_group_name(var_name='group_name', **attrs: t.Any):
         type=click.STRING,
         **{**defaults, **attrs}
     )
-
-
 def opt_share(**attrs: t.Any):
     defaults = {
         'required': False,
@@ -202,10 +193,47 @@ def opt_owner_org(**attrs: t.Any):
     return create_option(
         '-oo',
         "--owner-org",
+
+def opt_shared_projects(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Project abbreviation to share samples with. '
+                'This applies to all samples or sequences listed.'
+                'Project parameter may be specified multiple times.',
+        'multiple': True,
+    }
+    return create_option(
+        "--project",
+        "shared_projects",
         type=click.STRING,
         **{**defaults, **attrs}
     )
 
+def opt_owner_org(**attrs: t.Any):
+    defaults = {
+        'required': False,
+        'help': 'Owner organisation abbreviation. Specifies the organisation '
+                'owning all samples or sequences in the operation.'
+    }
+    return create_option(
+        "--owner",
+        "owner_org",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+def opt_create_samples(**attrs: t.Any):
+    defaults = {
+        'help': 'Create sample records for each Seq_ID if they do not already exist. '
+                'By default, sequences can only be uploaded to existing sample records.'
+    }
+    return create_option(
+        '--create/--no-create',
+        type=bool,
+        is_flag=True,
+        default=False,
+        **{**defaults, **attrs}
+    )
 
 def opt_owner(var_name='owner_group', **attrs: t.Any):
     defaults = {
@@ -223,7 +251,8 @@ def opt_owner(var_name='owner_group', **attrs: t.Any):
 def opt_seq_id(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Seq_ID of the record',
+        'help': 'Seq_ID of the sample record(s). '
+                'Multiple can be specified, e.g. -s sample1 -s sample2',
         'multiple': True,
     }
     return create_option(
@@ -233,6 +262,25 @@ def opt_seq_id(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+# This decorator provides both the @opt_seq_id and @opt_file options, mutually exclusive.
+# Common for commands that accept either a list of seq_ids or a file containing seq_ids
+def options_seq_id_or_file(func):
+    _opt_seq_id = opt_seq_id(
+        required=False,
+        multiple=True,
+        cls=RequiredMutuallyExclusiveOption,
+        mutually_exclusive=['file']
+    )
+    _opt_file = opt_file(
+        required=False,
+        multiple=False,
+        help='Optional input file containing Seq_ID of the sample record(s). '
+             'The file must be UTF-8 encoded plain text. '
+             'There should be one Seq_ID per line. Blank lines will be ignored.',
+        cls=RequiredMutuallyExclusiveOption,
+        mutually_exclusive=['seq_id']
+    )
+    return _opt_seq_id(_opt_file(func))
 
 def opt_prov_id(**attrs: t.Any):
     defaults = {
@@ -295,6 +343,7 @@ def opt_project(**attrs: t.Any):
         'help': 'Project Abbreviation',
     }
     return create_option(
+        '-p',
         '--project',
         type=click.STRING,
         **{**defaults, **attrs}
@@ -335,7 +384,7 @@ def opt_proforma(**attrs: t.Any):
                 'options.',
     }
     return create_option(
-        '-p',
+        '-pf',
         '--proforma',
         type=click.STRING,
         **{**defaults, **attrs}

@@ -5,7 +5,7 @@ import pytest
 
 from ete_cmd_bricks import (
     _create_field_if_not_exists,
-    _create_min_proforma,
+    _create_min_proforma_if_not_exists,
     _create_org,
     _create_group,
     _upload_min_metadata,
@@ -14,8 +14,6 @@ from ete_cmd_bricks import (
 from ete_utils import (
     _new_identifier,
     seq_id_field_name,
-    owner_group_field_name,
-    shared_groups_field_name,
     _mk_temp_dir,
     _clone_cns_fasta_file)
 
@@ -41,30 +39,19 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
         temp_dir = _mk_temp_dir()
 
         # Act
@@ -80,7 +67,7 @@ class TestSeqGetCommand:
         # Assert
         assert result.exit_code != 0, f'The seq get command should fail: {result.output}'
         assert ("You must provide at least one of these arguments: "
-                "`group_name, seq_id`.") in result.output
+                "`group-name, seq-id`.") in result.output
     
     
     def test_get__given_no_output_dir__expect_cli_error(self):
@@ -88,30 +75,19 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
 
         # Act
         result = self.cli.invoke([
@@ -133,30 +109,19 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
         temp_dir = _mk_temp_dir()
 
         # Act
@@ -179,30 +144,19 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
         temp_dir = _mk_temp_dir()
 
         # Act
@@ -221,7 +175,7 @@ class TestSeqGetCommand:
 
         # Assert
         assert result.exit_code != 0, f'The seq get command should fail: {result.output}'
-        assert "`seq_id` is mutually exclusive with `group_name`." in result.output
+        assert "`seq-id` is mutually exclusive with `group-name`." in result.output
     
     
     def test_get__given_seq_type_is_not_supported__expect_cli_error(self):
@@ -229,30 +183,19 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
         temp_dir = _mk_temp_dir()
 
         # Act
@@ -277,30 +220,19 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
         temp_dir = _mk_temp_dir()
 
         # Act
@@ -326,30 +258,19 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
         temp_dir = _mk_temp_dir()
 
         # Act
@@ -374,30 +295,19 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
         temp_dir = _mk_temp_dir()
 
         # Act
@@ -422,30 +332,19 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
         temp_dir = _mk_temp_dir()
 
         # Act
@@ -472,29 +371,17 @@ class TestSeqGetCommand:
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
         owner_group = f'{org_name}-Owner'
-        shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
         temp_dir = _mk_temp_dir()
 
         # Act
@@ -504,7 +391,7 @@ class TestSeqGetCommand:
             '-t',
             'fasta-cns',
             '-g',
-            shared_group,
+            owner_group,
             '-o',
             temp_dir,
         ])
@@ -519,30 +406,19 @@ class TestSeqGetCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
         shared_group = f'sg-{_new_identifier(10)}'
-        proforma_name = f'{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_field_if_not_exists(self.cli, owner_group_field_name)
-        _create_field_if_not_exists(self.cli, shared_groups_field_name)
-        _create_min_proforma(self.cli, proforma_name)
+        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_group(self.cli, shared_group)
-
-        _upload_min_metadata(
-            self.cli,
-            proforma_name,
-            [seq_id, seq_id2],
-            owner_group,
-            [shared_group])
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
             original_file,
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
-        _upload_fasta_cns_file(self.cli, cns_fasta_path)
+        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
         temp_dir = _mk_temp_dir()
 
         # Act

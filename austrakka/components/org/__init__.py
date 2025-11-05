@@ -4,9 +4,6 @@ from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_name
-from austrakka.utils.options import opt_curr_owner
-from austrakka.utils.options import opt_new_owner
-from austrakka.utils.options import opt_seq_id
 from austrakka.utils.options import opt_abbrev
 from austrakka.utils.options import opt_is_active
 from austrakka.utils.options import opt_country
@@ -14,7 +11,6 @@ from austrakka.utils.options import opt_state
 from austrakka.utils.subcommands.privilege import privilege_subcommands
 from austrakka.utils.subcommands.activity import activity_subcommands
 from .funcs import list_orgs
-from .funcs import change_owner
 from .funcs import add_org
 from .funcs import update_org
 
@@ -64,15 +60,3 @@ def org_update(
         is_active: bool,
 ):
     update_org(org_abbrev, name, country, state, is_active)
-
-
-@org.command('chown',
-             hidden=hide_admin_cmds(),
-             help="Transfer ownership of samples to another organisation")
-@opt_curr_owner()
-@opt_new_owner()
-@opt_seq_id(
-    help='The Seq_ID of the sample record(s) to be re-assigned to another org. '
-         'Multiple Seq_IDs can be specified. Eg. -s sample1 -s sample2')
-def owner_change(curr_owner: str, new_owner: str, seq_id: [str]):
-    change_owner(curr_owner, new_owner, seq_id)
