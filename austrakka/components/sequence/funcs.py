@@ -25,7 +25,10 @@ from austrakka.utils.api import api_post
 from austrakka.utils.api import get_response
 from austrakka.utils.api import api_get_stream
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
-from austrakka.utils.paths import SAMPLE_PATH, SEQUENCE_PATH, SEQUENCE_TYPE_QUERY, SEQUENCE_READ_QUERY
+from austrakka.utils.paths import SAMPLE_PATH
+from austrakka.utils.paths import SEQUENCE_PATH
+from austrakka.utils.paths import SEQUENCE_TYPE_QUERY
+from austrakka.utils.paths import SEQUENCE_READ_QUERY
 from austrakka.utils.paths import SEQUENCE_DOWNLOAD_PATH
 from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
 from austrakka.utils.paths import SEQUENCE_BY_SAMPLE_PATH
