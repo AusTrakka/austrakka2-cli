@@ -10,7 +10,10 @@ from austrakka.utils.enums.privilege_level import (
 
 from austrakka.utils.enums.seq import SeqType
 from austrakka.utils.enums.view_type import MORE, COMPACT, FULL
-from austrakka.utils.option_utils import create_option, MutuallyExclusiveOption
+from austrakka.utils.option_utils import \
+    create_option, \
+    MutuallyExclusiveOption, \
+    RequiredMutuallyExclusiveOption
 from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.privilege import TENANT_RESOURCE
 from austrakka.utils.privilege import ORG_RESOURCE
@@ -226,7 +229,8 @@ def opt_owner(var_name='owner_group', **attrs: t.Any):
 def opt_seq_id(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Seq_ID of the record',
+        'help': 'Seq_ID of the sample record(s). '
+                'Multiple can be specified, e.g. -s sample1 -s sample2',
         'multiple': True,
     }
     return create_option(
@@ -236,6 +240,25 @@ def opt_seq_id(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+# This decorator provides both the @opt_seq_id and @opt_file options, mutually exclusive.
+# Common for commands that accept either a list of seq_ids or a file containing seq_ids
+def options_seq_id_or_file(func):
+    _opt_seq_id = opt_seq_id(
+        required=False,
+        multiple=True,
+        cls=RequiredMutuallyExclusiveOption,
+        mutually_exclusive=['file']
+    )
+    _opt_file = opt_file(
+        required=False,
+        multiple=False,
+        help='Optional input file containing Seq_ID of the sample record(s). '
+             'The file must be UTF-8 encoded plain text. '
+             'There should be one Seq_ID per line. Blank lines will be ignored.',
+        cls=RequiredMutuallyExclusiveOption,
+        mutually_exclusive=['seq_id']
+    )
+    return _opt_seq_id(_opt_file(func))
 
 def opt_prov_id(**attrs: t.Any):
     defaults = {
@@ -298,6 +321,7 @@ def opt_project(**attrs: t.Any):
         'help': 'Project Abbreviation',
     }
     return create_option(
+        '-p',
         '--project',
         type=click.STRING,
         **{**defaults, **attrs}

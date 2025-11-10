@@ -2,7 +2,8 @@
 from io import BufferedReader
 import click
 
-from austrakka.utils.options import opt_seq_id, opt_group_name, opt_file
+from austrakka.utils.options import opt_seq_id, opt_group_name, opt_project, options_seq_id_or_file
+from austrakka.utils.option_utils import get_seq_list
 from austrakka.utils.option_utils import RequiredMutuallyExclusiveOption
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from ...utils.option_utils import create_option
@@ -38,12 +39,10 @@ def sample(ctx):
     required=True,
     help='Abbreviated name of new owning organisation'
 )
-@opt_seq_id(
-    multiple=True,
-    help='The Seq_ID of the sample record(s) to be re-assigned to another org. '
-         'Multiple Seq_IDs can be specified. Eg. -s sample1 -s sample2')
-def owner_change(old_owner: str, new_owner: str, seq_id: [str]):
-    change_owner(old_owner, new_owner, seq_id)
+@options_seq_id_or_file
+def owner_change(old_owner: str, new_owner: str, seq_id: [str], file: BufferedReader):
+    seq_ids = get_seq_list(seq_id, file)
+    change_owner(old_owner, new_owner, seq_ids)
 
 @sample.command('show', hidden=hide_admin_cmds())
 @opt_seq_id(multiple=False)
@@ -54,58 +53,41 @@ def sample_show(seq_id: str, out_format: str):
 
 
 @sample.command('unshare')
-@opt_group_name()
-@opt_seq_id(
-    help='The Seq_ID of the sample record(s) to be unshared. Multiple Seq_IDs can be specified.'
-         'Eg. -s sample1 -s sample2',
-    required=False,
-    cls=RequiredMutuallyExclusiveOption,
-    mutually_exclusive=['file'])
-@opt_file(
-    help='Optional input file containing Seq_ID of the sample record(s) to be unshared. '
-        'The file must be UTF-8 encoded plain text. '
-        'There should be one Seq_ID per line. Blank lines will be ignored.',
-    required=False,
-    multiple=False,
-    cls=RequiredMutuallyExclusiveOption,
-    mutually_exclusive=['seq_id'])
-def sample_unshare(seq_id: [str], group_name: str, file: BufferedReader):
+@opt_group_name(mutually_exclusive=['project'],
+                cls=RequiredMutuallyExclusiveOption,
+                required=False,)
+@opt_project(mutually_exclusive=['group_name'],
+             cls=RequiredMutuallyExclusiveOption,
+             required=False, )
+@options_seq_id_or_file
+def sample_unshare(seq_id: [str], group_name: str, project: str, file: BufferedReader):
     """Unshare a list of sample records with a group."""
-    unshare_sample(group_name, seq_id, file)
-
+    seq_ids = get_seq_list(seq_id, file)
+    unshare_sample(group_name, project, seq_ids)
 
 @sample.command('share')
-@opt_group_name()
-@opt_seq_id(
-    help='The Seq_ID of the sample record(s) to be shared. Multiple Seq_IDs can be specified.'
-         'Eg. -s sample1 -s sample2. ',
-    required=False,
-    cls=RequiredMutuallyExclusiveOption,
-    mutually_exclusive=['file'])
-@opt_file(
-    help='Optional input file containing Seq_ID of the sample record(s) to be shared. '
-        'The file must be UTF-8 encoded plain text. '
-        'There should be one Seq_ID per line. Blank lines will be ignored.',
-    required=False,
-    multiple=False,
-    cls=RequiredMutuallyExclusiveOption,
-    mutually_exclusive=['seq_id'])
-def sample_share(seq_id: [str], group_name: str, file: BufferedReader):
+@opt_group_name(cls=RequiredMutuallyExclusiveOption,
+                mutually_exclusive=['project'],
+                required=False)
+@opt_project(mutually_exclusive=['group_name'],
+             cls=RequiredMutuallyExclusiveOption,
+             required=False,)
+@options_seq_id_or_file
+def sample_share(seq_id: [str], group_name: str, project: str, file: BufferedReader):
     """Share a list of sample records with a group."""
-    share_sample(group_name, seq_id, file)
-
+    seq_ids = get_seq_list(seq_id, file)
+    share_sample(group_name, project, seq_ids)
 
 @sample.command('disable')
-@opt_seq_id(
-    help='The Seq_ID of the sample record(s) to be removed. Multiple Seq_IDs can be specified.'
-    'Eg. -s sample1 -s sample2')
-def sample_disable(seq_id: [str]):
+@options_seq_id_or_file
+def sample_disable(seq_id: [str], file: BufferedReader):
     """Disable a sample record. This is a soft delete. 
     The sample record's metadata and sequences will not appear in any projects. 
     Once disabled, it will not be possible to upload metadata or sequences
     to the sample until it is enabled again, or until it has been purged
     from the system."""
-    disable_sample(seq_id)
+    seq_ids = get_seq_list(seq_id, file)
+    disable_sample(seq_ids)
 
 
 @sample.command('groups')
@@ -123,12 +105,11 @@ def seq_groups(
 
 
 @sample.command('enable')
-@opt_seq_id(
-    help='The Seq_ID of the sample record(s) to be re-enabled. Multiple Seq_IDs can be specified.'
-    'Eg. -s sample1 -s sample2')
-def sample_enable(seq_id: [str]):
+@options_seq_id_or_file
+def sample_enable(seq_id: [str], file: BufferedReader):
     """Enable a sample record. This re-enables a previously disabled sample."""
-    enable_sample(seq_id)
+    seq_ids = get_seq_list(seq_id, file)
+    enable_sample(seq_ids)
 
 
 @sample.command('purge', hidden=hide_admin_cmds())
