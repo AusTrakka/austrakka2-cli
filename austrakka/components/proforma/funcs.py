@@ -193,7 +193,6 @@ def generate_proforma(
     abbrev: str,
     restrict: Dict[str, List[str]],
     nndss_column: bool,
-    project_abbrev: str,
     metadata_classes: Dict[str, List[str]]
 ):
     "Generate an XLSX template for a pro forma"    
@@ -211,14 +210,11 @@ def generate_proforma(
         mclass:sum([v.split(',') for v in valuestr.split(';')],[])
         for (mclass, valuestr) in metadata_classes
     }
-    project = None
-    if project_abbrev:
-        project = get_project_by_abbrev(project_abbrev)
     # Generate the spreadsheet
     filename = f"AusTrakka_metadata_submission_{abbrev}_DRAFT.xlsx"
     logger.info(f"Generating template draft {filename}")
     generate_template(
-        filename, field_df, restricted_values, metadata_classes, nndss_column, project)
+        filename, field_df, restricted_values, metadata_classes, nndss_column)
     
    
 def _get_proforma_fields_df(data):
