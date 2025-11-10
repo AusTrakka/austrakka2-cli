@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## Unreleased
+
+### Removed
+- `iam tenant` commands have been removed. Use `iam privilege` instead.
+
+### Changed
+- `iam privilege` operates on global privileges by default; `--record-type` and `--global-id` can be specified otherwise.
+- `-rguid, --record-global-id` option for `iam privilege` commands has been changed to `-gid, --global-id`.
+- `iam role definition get` has been moved to `iam role definition list`.
+- `--scope-access-def-global-id` option for `iam role definition remove` command has been changed to `-gid, --global-id`.
+- `-art, --allowed-record-types` option for `iam role add` command has been changed to `-rt, --record-type`.
+- `-rguid, --record-global-id` option for `org privilege` commands has been changed to `-gid, --global-id`.
+- `iam privilege list-by-role` now accepts `-gid, --global-id` rather than a positonal argument.
+- `iam privilege list-by-user` now accepts `-gid, --global-id` rather than a positonal argument.
+- `org privilege list-by-role` now accepts `-gid, --global-id` rather than a positonal argument.
+- `org privilege list-by-user` now accepts `-gid, --global-id` rather than a positonal argument.
 ## [0.75.0] - 2025-11-05
 
 ### Changed
