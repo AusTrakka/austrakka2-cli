@@ -86,7 +86,6 @@ def generate_template(
     green_header_format = workbook.add_format(BASE | BG_GREEN)
     black_header_format = workbook.add_format(BASE | WHITE_ON_BLACK | BOLD)
     border_format = workbook.add_format(BASE | BORDER)
-    bold_border_format = workbook.add_format(BASE | BOLD | BORDER)
     wrapped_border_format = workbook.add_format(BASE | WRAPPED | BORDER)
     green_wrapped_border_format = workbook.add_format(BASE | BG_GREEN | WRAPPED | BORDER)
     iso_date_format = workbook.add_format(BASE | ISO_DATE)

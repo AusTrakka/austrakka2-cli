@@ -17,7 +17,6 @@ from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
 from austrakka.utils.fs import FileHash, get_hash
 from .proforma_generation_utils import generate_template
-from ...utils.helpers.project import get_project_by_abbrev
 
 ATTACH = 'Attach'
 UPDATE = 'update'
