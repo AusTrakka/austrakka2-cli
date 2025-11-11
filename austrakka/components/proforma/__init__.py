@@ -222,9 +222,10 @@ def proforma_generate(proforma_abbrev: str, restrict, nndss, project, metadata_c
         )
 
 @proforma.command('list', help=f'List metadata proformas in {PROG_NAME}')
+@opt_view_type()
 @table_format_option()
-def proforma_list(out_format: str):
-    list_proformas(out_format)
+def proforma_list(view_type: str, out_format: str):
+    list_proformas(view_type, out_format)
 
 
 @proforma.command('show')
