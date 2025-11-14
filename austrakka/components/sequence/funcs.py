@@ -7,6 +7,7 @@ from pathlib import Path
 from io import BufferedReader, StringIO, TextIOWrapper, BytesIO
 import codecs
 import hashlib
+import uuid
 from dataclasses import dataclass
 from typing import List
 from typing import Dict
@@ -24,7 +25,7 @@ from austrakka.utils.exceptions import FailedResponseException, CliArgumentExcep
 from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.exceptions import IncorrectHashException
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import api_post_multipart_raw
+from austrakka.utils.api import api_post_multipart_raw, CLIENT_SESSION_ID_HEADER
 from austrakka.utils.api import api_get
 from austrakka.utils.api import get_response
 from austrakka.utils.api import api_get_stream
@@ -165,6 +166,7 @@ def add_sequence_submission(
     seq_ids = list(csv_dataframe['Seq_ID'])
     if should_create:
         _create_samples(seq_ids, owner_org, shared_projects)
+    client_session_id = uuid.uuid4().hex
 
     messages = _validate_csv_sequence_submission(csv_dataframe, seq_type)
     if messages:
@@ -173,6 +175,7 @@ def add_sequence_submission(
     failed_samples = []
     upload_success_count = 0
     total_upload_count = 0
+        
     for _, row in csv_dataframe.iterrows():
         try:
             logger.info(f"Uploading {row[SEQ_ID_CSV]}")
@@ -180,6 +183,7 @@ def add_sequence_submission(
 
             sample_files = _get_files_from_csv_paths(row, seq_type)
             custom_headers = _build_headers(seq_type, row, force, skip, sample_files)
+            custom_headers[CLIENT_SESSION_ID_HEADER] = client_session_id
 
             retry(lambda sf=sample_files, ch=custom_headers: _post_sequence(
                 sf, ch), 1, "/".join([SEQUENCE_PATH]))
@@ -201,7 +205,7 @@ def add_sequence_submission(
             failed_samples.append(row[SEQ_ID_CSV])
         except Exception as ex:
             raise ex from ex
-
+        
     logger.info(f"Uploaded {upload_success_count} of {total_upload_count} samples")
     if failed_samples:
         failed_samples_str = ", ".join(failed_samples)

@@ -95,10 +95,10 @@ def _call_batched_submission(
         return
     
     filepath = Path(file.name)
-    if  filepath.suffix == '.csv':
-        # pylint: disable=C0103
-        df = pd.read_csv(file, dtype=str, index_col=False, keep_default_na=False, na_values='')
-    elif filepath.suffix == '.xlsx':
+    # pylint: disable=C0103
+    df = pd.read_csv(file, dtype=str, index_col=False, keep_default_na=False, na_values='')
+
+    if  filepath.suffix == '.xlsx':
         # Batching not currently supported, just upload the original file
         _call_submission(path, file, owner_org, shared_projects, proforma_abbrev)
         return
