@@ -15,6 +15,8 @@ from austrakka.utils.option_utils import \
     MutuallyExclusiveOption, \
     RequiredMutuallyExclusiveOption
 from austrakka import __prog_name__ as PROG_NAME
+from austrakka.utils.privilege import TENANT_RESOURCE
+from austrakka.utils.privilege import ORG_RESOURCE
 
 
 def opt_abbrev(**attrs: t.Any):
@@ -505,6 +507,20 @@ def opt_user_object_id(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+
+def opt_global_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'global ID',
+    }
+    return create_option(
+        '-gid',
+        '--global-id',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_user_global_id(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -709,31 +725,6 @@ def opt_fieldtype_value(var_name='values', **attrs: t.Any):
     )
 
 
-def opt_record_global_id(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'The record referenced by a privilege entry. Eg., ProjectId, etc..',
-    }
-    return create_option(
-        '-rguid',
-        '--record-global-id',
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
-def opt_scope_access_def_global_id(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'The global id of the Scope Access Definition',
-    }
-    return create_option(
-        '--scope-access-def-global-id',
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
 def opt_record_type(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -742,7 +733,7 @@ def opt_record_type(**attrs: t.Any):
     return create_option(
         '-rt',
         '--record-type',
-        type=click.Choice(['Tenant', 'Organisation']),
+        type=click.Choice([TENANT_RESOURCE, ORG_RESOURCE]),
         **{**defaults, **attrs}
     )
 
@@ -774,24 +765,10 @@ def opt_privilege_level(**attrs: t.Any):
     )
 
 
-def opt_allowed_record_types(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'Name of each allowed record types where a role can be used to control access. ',
-        'multiple': True,
-    }
-    return create_option(
-        "-art",
-        "--allowed-record-types",
-        type=click.Choice(['Tenant', 'Organisation']),
-        **{**defaults, **attrs}
-    )
-
-
 def opt_role(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'The role name that is unique to the tenant.',
+        'help': 'The role name that is unique.',
     }
     return create_option(
         "-r",
