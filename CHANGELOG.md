@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning].
 - `iam privilege list-by-user` now accepts `-gid, --global-id` rather than a positonal argument.
 - `org privilege list-by-role` now accepts `-gid, --global-id` rather than a positonal argument.
 - `org privilege list-by-user` now accepts `-gid, --global-id` rather than a positonal argument.
+- Updated the `austrakka proforma list` command to accept the `-vt`/`--view-type` option, which determines the verbosity of the output.  
+  Possible values for `-vt` are:
+    - `compact`: Displays minimal columns.
+    - `more`: Displays additional columns.
+    - `full`: Displays all available columns.
+
 ## [0.75.0] - 2025-11-05
 
 ### Changed
