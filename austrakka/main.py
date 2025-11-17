@@ -6,12 +6,15 @@ import click
 from click.core import Context
 from loguru import logger
 
+from .utils.context import CxtKey
+from .utils.context import AusTrakkaCxt
 from austrakka.utils.context import CxtKey
 from austrakka.utils.context import AusTrakkaCxt
 from .components.admin import admin
 from .components.auth import auth
 from .components.user import user
 from .components.org import org
+from .components.activity import activity
 from .components.project import project
 from .components.tree import tree
 from .components.metadata import metadata
@@ -147,6 +150,7 @@ def get_cli():
     cli.add_command(field)
     cli.add_command(fieldtype)
     cli.add_command(iam) if show_admin_cmds() else None
+    cli.add_command(activity) if show_admin_cmds() else None
     return cli
 
 
