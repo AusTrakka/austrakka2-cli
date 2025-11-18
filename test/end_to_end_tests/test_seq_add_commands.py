@@ -1,7 +1,6 @@
 import pytest
 
 from ete_cmd_bricks import (
-    _create_min_proforma_if_not_exists,
     _create_org,
     _create_group,
     _list_seq_by_group,

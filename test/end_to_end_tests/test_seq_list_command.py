@@ -3,7 +3,6 @@ import pytest
 
 from ete_cmd_bricks import (
     _create_field_if_not_exists,
-    _create_min_proforma_if_not_exists,
     _create_org,
     _upload_fasta_cns_file,
     _upload_fastq_ill_pe_file, _create_project)
@@ -29,7 +28,6 @@ class TestSeqGetCommand:
         shared_project = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_project(self.cli, shared_project)
 
@@ -63,7 +61,6 @@ class TestSeqGetCommand:
         shared_project = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_project(self.cli, shared_project)
 
@@ -111,7 +108,6 @@ class TestSeqGetCommand:
         shared_project = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_project(self.cli, shared_project)
 
@@ -162,7 +158,6 @@ class TestSeqGetCommand:
         project_group = f'{shared_project}-Group'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_project(self.cli, shared_project)
 
@@ -212,7 +207,6 @@ class TestSeqGetCommand:
         shared_project = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_min_proforma_if_not_exists(self.cli)
         _create_org(self.cli, org_name)
         _create_project(self.cli, shared_project)
 
