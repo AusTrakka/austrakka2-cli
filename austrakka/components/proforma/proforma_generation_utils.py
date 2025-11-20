@@ -42,7 +42,6 @@ def generate_template(
     restricted_values,
     metadata_classes,
     nndss_column,
-    project,
     num_format_rows=21
 ):
     fields = list(proforma['name'])
@@ -61,7 +60,7 @@ def generate_template(
     for field in fields:
         if proforma.loc[field, 'isRequired']:
             assert field_classes[field] == 'Minimum'
-            field_classes[field] = "Minimum - can't be blank"
+            field_classes[field] = "Required - can't be blank"
     
     fields = _sort_fields_by_class(fields, field_classes, metadata_classes)
     
@@ -87,18 +86,17 @@ def generate_template(
     green_header_format = workbook.add_format(BASE | BG_GREEN)
     black_header_format = workbook.add_format(BASE | WHITE_ON_BLACK | BOLD)
     border_format = workbook.add_format(BASE | BORDER)
-    bold_border_format = workbook.add_format(BASE | BOLD | BORDER)
     wrapped_border_format = workbook.add_format(BASE | WRAPPED | BORDER)
     green_wrapped_border_format = workbook.add_format(BASE | BG_GREEN | WRAPPED | BORDER)
     iso_date_format = workbook.add_format(BASE | ISO_DATE)
     # Formats for coloured field cells/headers
     header_formats = {
         "Minimum": green_header_format,
-        "Minimum - can't be blank": green_header_format
+        "Required - can't be blank": green_header_format
     }
     mclass_formats = {
         "Minimum": green_wrapped_border_format,
-        "Minimum - can't be blank": green_wrapped_border_format
+        "Required - can't be blank": green_wrapped_border_format
     }
     for (i, mclass) in enumerate(metadata_classes):
         header_formats[mclass] = workbook.add_format(BASE | {'bg_color': CLASS_COLOURS[i]})
@@ -109,8 +107,6 @@ def generate_template(
     metadata_sheet = workbook.add_worksheet('Metadata submission')
     datadict_sheet = workbook.add_worksheet('Data dictionary')
     typedict_sheet = workbook.add_worksheet('Type dictionary')
-    ownergroups_sheet = workbook.add_worksheet('Owner_groups')
-    sharinggroups_sheet = workbook.add_worksheet('Groups for sharing')
 
     # Metadata worksheet
     for (col, field) in enumerate(fields):
@@ -185,23 +181,6 @@ def generate_template(
             for (row, value) in enumerate(allowed_values[field],1):
                 typedict_sheet.write_string(row, col, value, normal_format)
     
-    # Owner groups worksheet header only
-    ownergroup_columns = ['Abbreviation', 'Owner_group value', 'Organisation name']
-    ownergroup_widths = [15, 30, 40]
-    for (col,(name,width)) in enumerate(zip(ownergroup_columns,ownergroup_widths)):
-        ownergroups_sheet.write_string(0, col, name, bold_border_format)
-        ownergroups_sheet.set_column(col, col, width)
-    
-    # Shared group recommendation, with a row filled in if project specified
-    sharinggroup_columns = ['Abbreviation', 'Group description']
-    sharinggroup_widths = [15, 40]
-    for (col,(name,width)) in enumerate(zip(sharinggroup_columns,sharinggroup_widths)):
-        sharinggroups_sheet.write_string(0, col, name, bold_border_format)
-        sharinggroups_sheet.set_column(col, col, width)
-    if project:
-        sharinggroups_sheet.write_string(1, 0, f"{project['abbreviation']}-Group", border_format)
-        sharinggroups_sheet.write_string(1, 1, f"{project['name']} project", border_format)
-    
     workbook.close()
 
 def _describe_type(field, proforma):
@@ -220,7 +199,8 @@ def _give_examples(field, allowed_values, field_type):
 def _sort_fields_by_class(fields, field_classes, metadata_classes):
     # Sort fields by class, but otherwise retain original sort order
     # Treat anything starting with "Minimum" as the minimum class
-    sorted_fields = [f for f in fields if field_classes[f].startswith('Minimum')]
+    sorted_fields = [f for f in fields
+                     if field_classes[f].startswith('Required') or field_classes[f] == 'Minimum']
     for mclass in metadata_classes:
         sorted_fields.extend(f for f in fields if field_classes[f] == mclass)
     return sorted_fields
