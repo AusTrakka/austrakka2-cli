@@ -1,23 +1,21 @@
 
 import click
 
-from austrakka.utils.helpers.tenant import get_default_tenant_global_id
-from austrakka.utils.options import (
-    opt_role,
-    opt_user_object_id,
-    opt_record_global_id, opt_user_global_id)
-
-from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.output import table_format_option
-from austrakka.utils.privilege import convert_record_type_to_route_string
-
 from austrakka.components.iam.privilege.funcs import (
     list_privileges,
     list_by_role_privileges,
     list_by_user_privileges,
     assign_privilege,
     unassign_privilege,
-    get_privileges_by_user)
+)
+from austrakka.utils.api import api_get
+from austrakka.utils.cmd_filter import hide_admin_cmds
+from austrakka.utils.options import (
+    opt_role,
+    opt_user_object_id,
+    opt_user_global_id, opt_global_id)
+from austrakka.utils.output import table_format_option
+from austrakka.utils.privilege import convert_record_type_to_route_string, get_priv_path
 
 
 def privilege_subcommands(roottype: str):
@@ -32,11 +30,11 @@ def privilege_subcommands(roottype: str):
     @privilege.command('list', 
                        help=f"List all privileges held within a given {roottype.lower()}.",
                        hidden=hide_admin_cmds())
-    @opt_record_global_id()
+    @opt_global_id()
     @table_format_option()
-    def privilege_list(record_global_id: str, out_format: str):
+    def privilege_list(global_id: str, out_format: str):
         record_type_route = convert_record_type_to_route_string(roottype)
-        list_privileges(record_type_route, record_global_id, out_format)
+        list_privileges(record_type_route, global_id, out_format)
 
 
     @privilege.command('list-by-role',
@@ -44,11 +42,11 @@ def privilege_subcommands(roottype: str):
                             f"role in a given {roottype.lower()}.",
                        hidden=hide_admin_cmds())
     @opt_role()
-    @click.argument('record-global-id', type=str)
+    @opt_global_id()
     @table_format_option()
-    def privilege_list_by_role(role: str, record_global_id: str, out_format: str):
+    def privilege_list_by_role(role: str, global_id: str, out_format: str):
         record_type_route = convert_record_type_to_route_string(roottype)
-        list_by_role_privileges(role, record_type_route, record_global_id, out_format)
+        list_by_role_privileges(role, record_type_route, global_id, out_format)
 
 
     @privilege.command('list-by-user',
@@ -56,11 +54,11 @@ def privilege_subcommands(roottype: str):
                              f"user for a given {roottype.lower()}.",
                         hidden=hide_admin_cmds())
     @opt_user_object_id()
-    @click.argument('record-global-id', type=str)
+    @opt_global_id()
     @table_format_option()
-    def privilege_list_by_user(user_id: str, record_global_id: str, out_format: str):
+    def privilege_list_by_user(user_id: str, global_id: str, out_format: str):
         record_type_route = convert_record_type_to_route_string(roottype)
-        list_by_user_privileges(user_id, record_type_route, record_global_id, out_format)
+        list_by_user_privileges(user_id, record_type_route, global_id, out_format)
 
 
     @privilege.command('assign',
@@ -68,41 +66,37 @@ def privilege_subcommands(roottype: str):
                         hidden=hide_admin_cmds())
     @opt_user_global_id()
     @opt_role()
-    @opt_record_global_id()
+    @opt_global_id()
     def privilege_assign(
             user_global_id: str,
             role: str,
-            record_global_id: str):
+            global_id: str):
         record_type_route = convert_record_type_to_route_string(roottype)
-        assign_privilege(user_global_id, role, record_global_id, record_type_route)
+        assign_privilege(user_global_id, role, global_id, record_type_route)
 
 
     @privilege.command('unassign',
                         help=f"Remove privileges to access a {roottype.lower()} from a user.",
                         hidden=hide_admin_cmds())
-    @opt_record_global_id()
+    @opt_global_id()
     @opt_role()
     @opt_user_object_id()
     def privilege_unassign(
-            record_global_id: str,
+            global_id: str,
             role: str,
             user_id: str):
     
         record_type_route = convert_record_type_to_route_string(roottype)
-        tenant_global_id = get_default_tenant_global_id()
-        
-        user_privileges = get_privileges_by_user(
-            user_id, 
-            record_type_route, 
-            record_global_id,
-            tenant_global_id)
-        
+        user_privileges = api_get(
+            path=f"{get_priv_path(record_type_route, global_id)}/privilege/user/{user_id}"
+        )
+
         # Get the first privilege that matches the role
         privilege_rec = next((p for p in user_privileges['data'] 
                               if p['role']['name'] == role), None)
     
         unassign_privilege(
-            record_global_id, 
+            global_id, 
             record_type_route,
             privilege_rec['privilegeGlobalId'],
         )

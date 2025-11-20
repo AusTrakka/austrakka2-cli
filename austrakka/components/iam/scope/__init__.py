@@ -16,6 +16,6 @@ def scope(ctx):
 @table_format_option()
 def scope_list(view_type: str, out_format: str):
     """
-    Get the list of scopes defined for a tenant
+    Get the list of scopes
     """
     list_scopes(view_type, out_format)
