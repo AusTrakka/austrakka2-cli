@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## Unreleased
+## [0.76.0] - 2025-11-24
 
 ### Removed
 - `iam tenant` commands have been removed. Use `iam privilege` instead.
