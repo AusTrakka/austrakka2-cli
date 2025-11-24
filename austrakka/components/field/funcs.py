@@ -2,14 +2,15 @@ import pandas as pd
 
 from loguru import logger
 
+from austrakka.utils.enums.view_type import COMPACT
 from austrakka.utils.helpers.fieldtype import get_fieldtype_by_name_v2
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
-from austrakka.utils.helpers.tenant import get_default_tenant_global_id
+from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe, print_response
-from austrakka.utils.paths import TENANT_PATH, METADATACOLUMN_PATH
+from austrakka.utils.paths import METADATA_COLUMN_V2_PATH
 
 
 list_compact_fields = ['columnName', 'metaDataColumnTypeName', 'metaDataColumnValidValues']
@@ -27,9 +28,8 @@ def list_fields(view_type: str, out_format: str):
     """
     List all metadata fields (MetaDataColumns) within AusTrakka.
     """
-    tenant_global_id = get_default_tenant_global_id()
     response = api_get(
-        path=f"v2/tenant/{tenant_global_id}/{METADATACOLUMN_PATH}",
+        path=f"{METADATA_COLUMN_V2_PATH}",
     )
 
     data = response['data'] if ('data' in response) else response 
@@ -66,8 +66,7 @@ def add_field(
     """
     Add a field (MetaDataColumn) to AusTrakka.
     """
-    tenant_global_id = get_default_tenant_global_id()
-    field_type = get_fieldtype_by_name_v2(tenant_global_id, typename)
+    field_type = get_fieldtype_by_name_v2(typename)
 
     if can_visualise and typename in ["date", "number", "string"]:
         logger.warning(
@@ -85,7 +84,7 @@ def add_field(
         can_visualise = (typename not in ["date", "number", "string"])
 
     api_post(
-        path=f"{TENANT_PATH}/{tenant_global_id}/{METADATACOLUMN_PATH}",
+        path=METADATA_COLUMN_V2_PATH,
         data={
             "ColumnName": name,
             "CanVisualise": can_visualise,
@@ -121,8 +120,6 @@ def update_field(
     name specifies the name of the field to modify. All other parameters are optional, and their
     corresponding values will only be updated if they are specified.
     """
-    tenant_global_id = get_default_tenant_global_id()
-
     patch_fields = {}
 
     if new_name is not None:
@@ -130,7 +127,7 @@ def update_field(
         patch_fields["columnName"] = new_name
 
     if typename is not None:
-        field_type = get_fieldtype_by_name_v2(tenant_global_id, typename)
+        field_type = get_fieldtype_by_name_v2(typename)
         patch_fields["metaDataColumnTypeGlobalId"] = field_type["globalId"]
 
     if can_visualise is not None:
@@ -161,7 +158,7 @@ def update_field(
         patch_fields["examples"] = examples
 
     api_patch(
-        path=f"{TENANT_PATH}/{tenant_global_id}/{METADATACOLUMN_PATH}/{name}",
+        path=f"{METADATA_COLUMN_V2_PATH}/{name}",
         data=patch_fields
     )
 
@@ -169,43 +166,31 @@ def update_field(
 @logger_wraps()
 def list_field_groups(name: str, out_format: str):
     """List groups that a metadata field belongs to"""
-    tenant_global_id = get_default_tenant_global_id()
-    result = api_get(
-        path=f"{TENANT_PATH}/{tenant_global_id}/{METADATACOLUMN_PATH}/{name}/groups"
-    )
-    if len(result['data']) == 0:
-        logger.info("Field does not belong to any groups.")
-        return
-    print_dataframe(
-        pd.DataFrame(result['data']),
-        out_format,
-    )
+    call_get_and_print(f"{METADATA_COLUMN_V2_PATH}/{name}/groups", out_format)
 
 
 @logger_wraps()
 def list_field_projects(name: str, out_format: str):
     """List projects that a metadata field belongs to"""
-    tenant_global_id = get_default_tenant_global_id()
     result = api_get(
-        path=f"{TENANT_PATH}/{tenant_global_id}/{METADATACOLUMN_PATH}/{name}/projectFields"
-    )
-    if len(result['data']) == 0:
+        path=f"{METADATA_COLUMN_V2_PATH}/{name}/projectFields"
+    )['data']
+    
+    if len(result) == 0:
         logger.info("Field does not belong to any projects.")
         return
+    
     display_columns = ['projectFieldId', 'projectAbbrev', 'fieldName',
                        'fieldSource', 'analysisLabels']
-    print_dataframe(
-        pd.DataFrame(result['data'])[display_columns],
-        out_format,
-    )
+
+    print_response(pd.json_normalize(result), COMPACT, display_columns, [], out_format)
 
 
 @logger_wraps()
 def list_field_proformas(name: str, out_format: str):
     """List proformas that a metadata field belongs to"""
-    tenant_global_id = get_default_tenant_global_id()
     result = api_get(
-        path=f"{TENANT_PATH}/{tenant_global_id}/{METADATACOLUMN_PATH}/{name}/proformas"
+        path=f"{METADATA_COLUMN_V2_PATH}/{name}/proformas"
     )
     if len(result['data']) == 0:
         logger.info("Field does not belong to any active proformas.")
@@ -230,9 +215,8 @@ def disable_field(name: str):
     """
     Disable a field (MetaDataColumn) within AusTrakka.
     """
-    tenant_global_id = get_default_tenant_global_id()
     api_patch(
-        path=f"{TENANT_PATH}/{tenant_global_id}/{METADATACOLUMN_PATH}/{name}/disable"
+        path=f"{METADATA_COLUMN_V2_PATH}/{name}/disable"
     )
 
 
@@ -241,7 +225,6 @@ def enable_field(name: str):
     """
     Enable a field (MetaDataColumn) within AusTrakka.
     """
-    tenant_global_id = get_default_tenant_global_id()
     api_patch(
-        path=f"{TENANT_PATH}/{tenant_global_id}/{METADATACOLUMN_PATH}/{name}/enable"
+        path=f"{METADATA_COLUMN_V2_PATH}/{name}/enable"
     )
