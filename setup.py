@@ -135,7 +135,7 @@ setup(
         "tabulate",
         "cryptography",
         "semver",
-        "httpx",
+        "httpx[http2]",
         "biopython",
         "XlsxWriter",
     ],  # Optional
