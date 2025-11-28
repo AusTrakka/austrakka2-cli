@@ -12,16 +12,23 @@ from austrakka.utils.api import api_put
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from austrakka.utils.helpers.upload import upload_multipart
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dataframe, log_response
+from austrakka.utils.output import print_dataframe, log_response, print_response
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
 from austrakka.utils.fs import FileHash, get_hash
 from .proforma_generation_utils import generate_template
-from ...utils.helpers.project import get_project_by_abbrev
 
 ATTACH = 'Attach'
 UPDATE = 'update'
-
+list_compact_fields = ['proFormaId', 'abbreviation', 'name', 'version', 'isActive']
+list_more_fields = [
+    'proFormaId',
+    'abbreviation',
+    'name',
+    'description',
+    'version',
+    'hasAttached',
+    'isActive']
 
 @logger_wraps()
 def disable_proforma(abbrev: str):
@@ -193,7 +200,6 @@ def generate_proforma(
     abbrev: str,
     restrict: Dict[str, List[str]],
     nndss_column: bool,
-    project_abbrev: str,
     metadata_classes: Dict[str, List[str]]
 ):
     "Generate an XLSX template for a pro forma"    
@@ -211,14 +217,11 @@ def generate_proforma(
         mclass:sum([v.split(',') for v in valuestr.split(';')],[])
         for (mclass, valuestr) in metadata_classes
     }
-    project = None
-    if project_abbrev:
-        project = get_project_by_abbrev(project_abbrev)
     # Generate the spreadsheet
     filename = f"AusTrakka_metadata_submission_{abbrev}_DRAFT.xlsx"
     logger.info(f"Generating template draft {filename}")
     generate_template(
-        filename, field_df, restricted_values, metadata_classes, nndss_column, project)
+        filename, field_df, restricted_values, metadata_classes, nndss_column)
     
    
 def _get_proforma_fields_df(data):
@@ -261,7 +264,7 @@ def pull_proforma(abbrev: str, n_previous: int = None):
 
 
 @logger_wraps()
-def list_proformas(out_format: str):
+def list_proformas(view_type: str, out_format: str):
     response = api_get(
         path=PROFORMA_PATH,
         params={
@@ -284,9 +287,13 @@ def list_proformas(out_format: str):
                 axis='columns',
                 inplace=True)
 
-    print_dataframe(
+    # pylint: disable=duplicate-code
+    print_response(
         result,
-        out_format,
+        view_type,
+        list_compact_fields,
+        list_more_fields,
+        out_format
     )
 
 

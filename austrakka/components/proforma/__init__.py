@@ -196,10 +196,6 @@ def proforma_attach(proforma_abbrev: str,
     default=False,
     help='Include an NNDSS label column in the Data Dictionary',
 )
-@opt_project(
-    required=False,
-    help="Project to fill in on the Groups for Sharing tab",
-)
 @create_option(
     '-c',
     '--metadata-class',
@@ -209,7 +205,7 @@ def proforma_attach(proforma_abbrev: str,
     help='Key-value pair; add a metadata field class and assign it to the specified '+
         'comma-separated subset of fields',
 )
-def proforma_generate(proforma_abbrev: str, restrict, nndss, project, metadata_class):
+def proforma_generate(proforma_abbrev: str, restrict, nndss, metadata_class):
     """
     Generate a draft XLSX pro forma template from the current specification.
     """
@@ -217,14 +213,14 @@ def proforma_generate(proforma_abbrev: str, restrict, nndss, project, metadata_c
         proforma_abbrev,
         restrict,
         nndss_column=nndss,
-        project_abbrev=project,
         metadata_classes=metadata_class
         )
 
 @proforma.command('list', help=f'List metadata proformas in {PROG_NAME}')
+@opt_view_type()
 @table_format_option()
-def proforma_list(out_format: str):
-    list_proformas(out_format)
+def proforma_list(view_type: str, out_format: str):
+    list_proformas(view_type, out_format)
 
 
 @proforma.command('show')
