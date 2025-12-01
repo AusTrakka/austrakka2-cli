@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [Unreleased]
+
+### Removed
+
+- `project settings` command. Settings are now displayed via `project list`. 
+
+
 ## [0.76.0] - 2025-11-24
 
 ### Removed
