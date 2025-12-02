@@ -613,7 +613,7 @@ def _csv_columns(seq_type: SeqType):
 def _create_samples(
         seq_ids: List[str],
         owner_org: str,
-        shared_groups: list[str],
+        shared_projects: list[str],
 ) -> None:
     for seq_id in seq_ids:
         try:
@@ -627,10 +627,10 @@ def _create_samples(
                 logger.warning(sample_exists_msg)
             else:
                 raise ex
-    for group in shared_groups:
+    for project in shared_projects:
         api_patch(f'{SAMPLE_PATH}/Share', data={
             'seqIds': seq_ids,
-            'groupName': f'{group}-Group',
+            'groupName': f'{project}-Group',
         })
 
 
