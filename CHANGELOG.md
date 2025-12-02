@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning].
 
 ### Fixed
 
-- Error messages not be displayed for `seq get`.
+- Error messages were not displayed for failed `seq get` commands.
 
 ## [0.76.0] - 2025-11-24
 
