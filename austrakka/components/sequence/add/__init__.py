@@ -15,10 +15,11 @@ from ..funcs import add_fasta_cns_submission
 from ..funcs import add_sequence_submission
 
 METADATA_ADD_HELP_TEXT = """
-    If no record exists for these Seq_IDs you can either provide an owner group
-    with --owner and a shared group with --share to create the samples if
-    you wish to specify no metadata other than sample ownership. Otherwise, 
-    the `austrakka metadata add` command can be used prior to sequence upload.
+    If you want to create new sample records for the provided Seq_IDs, use the --create flag. This
+    is not required if you are uploading to existing sample records.
+    
+    You must specify --project if you want to share the sequences with any project, unless you 
+    are uploading to sample records that are already shared.
 """
 
 
