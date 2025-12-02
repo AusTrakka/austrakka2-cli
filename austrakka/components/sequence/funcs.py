@@ -32,7 +32,6 @@ from austrakka.utils.paths import SEQUENCE_READ_QUERY
 from austrakka.utils.paths import SEQUENCE_DOWNLOAD_PATH
 from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
 from austrakka.utils.paths import SEQUENCE_BY_SAMPLE_PATH
-from austrakka.utils.paths import SUBMISSION_PATH
 from austrakka.utils.output import create_response_object
 from austrakka.utils.output import log_response
 from austrakka.utils.output import log_response_compact
@@ -621,7 +620,7 @@ def _create_samples(
 ) -> None:
     for seq_id in seq_ids:
         try:
-            api_post(f'{SUBMISSION_PATH}/Sample', data={
+            api_post(SAMPLE_PATH, data={
                 'name': seq_id,
                 'owner': owner_org,
             })
