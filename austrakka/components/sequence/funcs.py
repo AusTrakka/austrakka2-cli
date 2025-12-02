@@ -346,8 +346,12 @@ def _download_seq_file(file_path, filename, query_path, params, sample_dir):
 
     except FailedResponseException as ex:
         log_response_compact(ex.parsed_resp)
+        logger.error(f'Failed downloading {filename} To: {file_path}')
+        os.remove(file_path)
     except UnknownResponseException as ex:
         log_response_compact(ex)
+        logger.error(f'Failed downloading {filename} To: {file_path}')
+        os.remove(file_path)
     except HTTPStatusError as ex:
         logger.error(
             f'Failed downloading {filename} To: {file_path}. Error: {ex}'
