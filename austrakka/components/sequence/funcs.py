@@ -4,7 +4,6 @@ from pathlib import Path
 from io import BufferedReader, StringIO, TextIOWrapper, BytesIO
 import codecs
 import hashlib
-import uuid
 from dataclasses import dataclass
 from typing import List
 from typing import Dict
@@ -26,7 +25,6 @@ from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import get_response
 from austrakka.utils.api import api_get_stream
-from austrakka.utils.api import CLIENT_SESSION_ID_HEADER
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.paths import SAMPLE_PATH
 from austrakka.utils.paths import SEQUENCE_PATH
@@ -167,7 +165,6 @@ def add_sequence_submission(
     seq_ids = list(csv_dataframe['Seq_ID'])
     if should_create:
         _create_samples(seq_ids, owner_org, shared_projects)
-    client_session_id = uuid.uuid4().hex
 
     messages = _validate_csv_sequence_submission(csv_dataframe, seq_type)
     if messages:
@@ -184,7 +181,6 @@ def add_sequence_submission(
 
             sample_files = _get_files_from_csv_paths(row, seq_type)
             custom_headers = _build_headers(seq_type, row, force, skip, sample_files)
-            custom_headers[CLIENT_SESSION_ID_HEADER] = client_session_id
 
             retry(lambda sf=sample_files, ch=custom_headers: _post_sequence(
                 sf, ch), 1, "/".join([SEQUENCE_PATH]))

@@ -8,7 +8,7 @@ from austrakka.components.iam.privilege.funcs import (
     assign_privilege,
     unassign_privilege)
 
-from austrakka.utils.privilege import convert_record_type_to_route_string, TENANT_RESOURCE
+from austrakka.utils.privilege import TENANT_RESOURCE
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import (
     opt_global_id,
@@ -41,8 +41,7 @@ def privilege_list(record_type: str, global_id: str, out_format: str):
     List all privileges assigned to a record
     """
     validate_global_id(record_type, global_id)
-    record_type_route = convert_record_type_to_route_string(record_type)
-    list_privileges(record_type_route, global_id, out_format)
+    list_privileges(record_type, global_id, out_format)
 
 
 @privilege.command('list-by-role', hidden=hide_admin_cmds())
@@ -59,8 +58,7 @@ def privilege_list_by_role(role: str, record_type: str, global_id: str, out_form
     List the privileges assigned to a record for a specific role
     """
     validate_global_id(record_type, global_id)
-    record_type_route = convert_record_type_to_route_string(record_type)
-    list_by_role_privileges(role, record_type_route, global_id, out_format)
+    list_by_role_privileges(role, record_type, global_id, out_format)
 
 
 @privilege.command('list-by-user', hidden=hide_admin_cmds())
@@ -77,8 +75,7 @@ def privilege_list_by_user(user_id: str, record_type: str, global_id: str, out_f
     List the privileges assigned to a record for a specific user
     """
     validate_global_id(record_type, global_id)
-    record_type_route = convert_record_type_to_route_string(record_type)
-    list_by_user_privileges(user_id, record_type_route, global_id, out_format)
+    list_by_user_privileges(user_id, record_type, global_id, out_format)
 
 
 @privilege.command('assign', hidden=hide_admin_cmds())
@@ -99,8 +96,7 @@ def privilege_assign(
     Assign privileges to access a record by a user
     """
     validate_global_id(record_type, global_id)
-    record_type_route = convert_record_type_to_route_string(record_type)
-    assign_privilege(user_global_id, role, global_id, record_type_route)
+    assign_privilege(user_global_id, role, global_id, record_type)
 
 
 @privilege.command('unassign', hidden=hide_admin_cmds())
@@ -119,8 +115,7 @@ def privilege_unassign(
     Remove privileges to access a record from a user
     """
     validate_global_id(record_type, global_id)
-    record_type_route = convert_record_type_to_route_string(record_type)
-    unassign_privilege(global_id, record_type_route, privilege_global_id)
+    unassign_privilege(global_id, record_type, privilege_global_id)
 
 
 def validate_global_id(record_type: str, global_id: Union[str, None]):

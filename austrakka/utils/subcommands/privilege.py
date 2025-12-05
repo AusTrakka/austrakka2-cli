@@ -15,7 +15,7 @@ from austrakka.utils.options import (
     opt_user_object_id,
     opt_user_global_id, opt_global_id)
 from austrakka.utils.output import table_format_option
-from austrakka.utils.privilege import convert_record_type_to_route_string, get_priv_path
+from austrakka.utils.privilege import get_priv_path
 
 
 def privilege_subcommands(roottype: str):
@@ -33,8 +33,7 @@ def privilege_subcommands(roottype: str):
     @opt_global_id()
     @table_format_option()
     def privilege_list(global_id: str, out_format: str):
-        record_type_route = convert_record_type_to_route_string(roottype)
-        list_privileges(record_type_route, global_id, out_format)
+        list_privileges(roottype, global_id, out_format)
 
 
     @privilege.command('list-by-role',
@@ -45,8 +44,7 @@ def privilege_subcommands(roottype: str):
     @opt_global_id()
     @table_format_option()
     def privilege_list_by_role(role: str, global_id: str, out_format: str):
-        record_type_route = convert_record_type_to_route_string(roottype)
-        list_by_role_privileges(role, record_type_route, global_id, out_format)
+        list_by_role_privileges(role, roottype, global_id, out_format)
 
 
     @privilege.command('list-by-user',
@@ -57,8 +55,7 @@ def privilege_subcommands(roottype: str):
     @opt_global_id()
     @table_format_option()
     def privilege_list_by_user(user_id: str, global_id: str, out_format: str):
-        record_type_route = convert_record_type_to_route_string(roottype)
-        list_by_user_privileges(user_id, record_type_route, global_id, out_format)
+        list_by_user_privileges(user_id, roottype, global_id, out_format)
 
 
     @privilege.command('assign',
@@ -71,8 +68,7 @@ def privilege_subcommands(roottype: str):
             user_global_id: str,
             role: str,
             global_id: str):
-        record_type_route = convert_record_type_to_route_string(roottype)
-        assign_privilege(user_global_id, role, global_id, record_type_route)
+        assign_privilege(user_global_id, role, global_id, roottype)
 
 
     @privilege.command('unassign',
@@ -86,9 +82,8 @@ def privilege_subcommands(roottype: str):
             role: str,
             user_id: str):
     
-        record_type_route = convert_record_type_to_route_string(roottype)
         user_privileges = api_get(
-            path=f"{get_priv_path(record_type_route, global_id)}/privilege/user/{user_id}"
+            path=f"{get_priv_path(roottype, global_id)}/privilege/user/{user_id}"
         )
 
         # Get the first privilege that matches the role
@@ -97,7 +92,7 @@ def privilege_subcommands(roottype: str):
     
         unassign_privilege(
             global_id, 
-            record_type_route,
+            roottype,
             privilege_rec['privilegeGlobalId'],
         )
     

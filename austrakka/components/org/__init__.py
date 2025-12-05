@@ -8,8 +8,9 @@ from austrakka.utils.options import opt_abbrev
 from austrakka.utils.options import opt_is_active
 from austrakka.utils.options import opt_country
 from austrakka.utils.options import opt_state
+from austrakka.utils.privilege import ORG_RESOURCE
 from austrakka.utils.subcommands.privilege import privilege_subcommands
-from austrakka.utils.subcommands.activity import activity_subcommands
+from austrakka.utils.subcommands.log import log_subcommands
 from .funcs import list_orgs
 from .funcs import add_org
 from .funcs import update_org
@@ -21,8 +22,8 @@ def org(ctx):
     '''Commands related to organisations'''
     ctx.context = ctx.parent.context
 
-org.add_command(privilege_subcommands('Organisation'))
-org.add_command(activity_subcommands('OrganisationV2'))
+org.add_command(privilege_subcommands(ORG_RESOURCE))
+org.add_command(log_subcommands(ORG_RESOURCE))
 
 @org.command('list', help=f"List organisations in {PROG_NAME}")
 @table_format_option()
