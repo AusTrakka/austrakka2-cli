@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.76.1] - 2025-12-02
+
+### Fixed
+
+- Error messages were not displayed for failed `seq get` commands.
+
 ## [0.76.0] - 2025-11-24
 
 ### Removed

@@ -115,10 +115,12 @@ def api_get(
     )
 
 
+@_use_http_client(parse_resp=False)
 def api_get_stream(
         path: str,
         func: Callable[[httpx.Response], None],
         params: Dict = None,
+        client: httpx.Client = None,
 ):
     """
     Throws httpx.HTTPStatusError if status is not 2xx.
@@ -126,8 +128,12 @@ def api_get_stream(
     if params is None:
         params = {}
     resp: httpx.Response
-    with _get_client().stream("GET", _get_url(path), params=params) as resp:
-        resp.raise_for_status()
+    with client.stream("GET", _get_url(path), params=params) as resp:
+        try:
+            resp.raise_for_status()
+        except HTTPStatusError:
+            resp.read()
+            get_response(resp, log_resp=True)
         func(resp)
 
 

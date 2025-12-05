@@ -63,7 +63,6 @@ def _upload_fastq_ill_se_file(
 
     temp_csv_file_path = _create_single_seq_csv(seq_id, fastq_file_path)
 
-    _create_min_proforma_if_not_exists(cli)
     args = [
         'seq',
         'add',
@@ -106,7 +105,6 @@ def _upload_fastq_ill_pe_file(
 
     temp_csv_file_path = _create_paired_seq_csv(seq_id, fastq_file_path1, fastq_file_path2)
 
-    _create_min_proforma_if_not_exists(cli)
     args = [
         'seq',
         'add',
@@ -148,7 +146,6 @@ def _upload_fasta_asm_file(
 
     temp_csv_file_path = _create_single_seq_csv(seq_id, fasta_file_path)
 
-    _create_min_proforma_if_not_exists(cli)
     args = [
         'seq',
         'add',
@@ -185,7 +182,6 @@ def _upload_fasta_cns_file(
     for project in shared_projects:
         shared_project_arguments.extend(['--project', project])
 
-    _create_min_proforma_if_not_exists(cli)
     args = [
         'seq',
         'add',
@@ -260,35 +256,6 @@ def _create_group(cli: AusTrakkaTestCli, name: str):
 
     assert result.exit_code == 0, f'Failed to create group {name} as part of test setup: {result.output}'
 
-def _create_min_proforma_if_not_exists(cli: AusTrakkaTestCli):
-
-    # This has to use the standard name (min) as this is expected by upload commands
-    min_proforma_name = 'min'
-
-    result = cli.invoke([
-        'proforma',
-        'show',
-        min_proforma_name,])
-    if result.exit_code == 0:
-        # proforma already exists
-        return
-
-    args = [
-        'proforma',
-        'add',
-        '-a',
-        min_proforma_name,
-        '-n',
-        min_proforma_name,
-        '-d',
-        'Min proforma, created by test suite',
-        '-req',
-        seq_id_field_name,
-    ]
-
-    result = cli.invoke(args)
-
-    assert result.exit_code == 0, f'Failed to create min proforma as part of test setup: {result.output}'
 
 
 def _create_proforma(
