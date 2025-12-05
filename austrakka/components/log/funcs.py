@@ -9,4 +9,3 @@ def list_logs(
         record_global_id: str,
         out_format: str):
     call_get_and_print(f"{get_priv_path(record_type, record_global_id)}/ActivityLog", out_format)
-

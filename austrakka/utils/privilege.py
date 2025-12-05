@@ -1,4 +1,8 @@
-from austrakka.utils.paths import ORG_V2_PATH, PROFORMA_V2_PATH, PROJECT_V2_PATH, TENANT_PATH, USER_V2_PATH
+from austrakka.utils.paths import ORG_V2_PATH
+from austrakka.utils.paths import PROFORMA_V2_PATH
+from austrakka.utils.paths import PROJECT_V2_PATH
+from austrakka.utils.paths import TENANT_PATH
+from austrakka.utils.paths import USER_V2_PATH
 
 TENANT_RESOURCE = 'Tenant'
 ORG_RESOURCE = 'Organisation'

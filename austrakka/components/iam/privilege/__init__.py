@@ -28,6 +28,7 @@ def privilege(ctx):
     ctx.context = ctx.parent.context
 
 
+# pylint: disable=duplicate-code
 @privilege.command('list', hidden=hide_admin_cmds())
 @opt_record_type(default=TENANT_RESOURCE)
 @opt_global_id(

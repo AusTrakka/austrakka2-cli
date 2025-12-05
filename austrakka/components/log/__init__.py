@@ -14,6 +14,7 @@ def log(ctx):
     """Commands related to logs"""
     ctx.context = ctx.parent.context
 
+# pylint: disable=duplicate-code
 @log.command('list', hidden=hide_admin_cmds())
 @opt_record_type(default=TENANT_RESOURCE)
 @opt_global_id(

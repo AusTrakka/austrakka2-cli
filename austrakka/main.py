@@ -104,6 +104,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 )
 @click.option(
     '--log',
+    'log_var',
     show_envvar=True,
     help='Outputs logs to a temporary file',
 )
@@ -117,7 +118,7 @@ def cli(
         skip_cert_verify: bool,
         use_http2: bool,
         skip_version_check: bool,
-        log: str,
+        log_var: str,
 ):
     ctx.context = {
         CxtKey.URI.value: uri,
@@ -128,7 +129,7 @@ def cli(
         CxtKey.LOG_LEVEL.value: log_level,
         CxtKey.SESSION_ID.value: str(uuid.uuid4())
     }
-    setup_logger(log_level, log)
+    setup_logger(log_level, log_var)
     if not skip_version_check:
         check_version(VERSION)
 
