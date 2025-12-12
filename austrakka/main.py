@@ -1,6 +1,7 @@
 # pylint: disable=expression-not-assigned
 import os
 import sys
+import uuid
 
 import click
 from click.core import Context
@@ -12,6 +13,7 @@ from .components.admin import admin
 from .components.auth import auth
 from .components.user import user
 from .components.org import org
+from .components.log import log
 from .components.project import project
 from .components.tree import tree
 from .components.metadata import metadata
@@ -102,6 +104,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 )
 @click.option(
     '--log',
+    'log_var',
     show_envvar=True,
     help='Outputs logs to a temporary file',
 )
@@ -115,7 +118,7 @@ def cli(
         skip_cert_verify: bool,
         use_http2: bool,
         skip_version_check: bool,
-        log: str,
+        log_var: str,
 ):
     ctx.context = {
         CxtKey.URI.value: uri,
@@ -124,8 +127,9 @@ def cli(
         CxtKey.SKIP_VERSION_CHECK .value: skip_version_check,
         CxtKey.USE_HTTP2.value: use_http2,
         CxtKey.LOG_LEVEL.value: log_level,
+        CxtKey.SESSION_ID.value: str(uuid.uuid4())
     }
-    setup_logger(log_level, log)
+    setup_logger(log_level, log_var)
     if not skip_version_check:
         check_version(VERSION)
 
@@ -147,6 +151,7 @@ def get_cli():
     cli.add_command(field)
     cli.add_command(fieldtype)
     cli.add_command(iam) if show_admin_cmds() else None
+    cli.add_command(log) if show_admin_cmds() else None
     return cli
 
 

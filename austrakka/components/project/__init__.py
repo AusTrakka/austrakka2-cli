@@ -13,6 +13,8 @@ from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_dashboard_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_organisation
+from austrakka.utils.privilege import PROJECT_RESOURCE
+from austrakka.utils.subcommands.log import log_subcommands
 from .funcs import list_projects, \
     add_project, \
     update_project, \
@@ -38,6 +40,7 @@ project.add_command(field)
 project.add_command(provision)
 project.add_command(metadata)
 project.add_command(dataset)
+project.add_command(log_subcommands(PROJECT_RESOURCE))
 
 
 @project.command(

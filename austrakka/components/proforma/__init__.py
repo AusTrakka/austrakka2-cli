@@ -1,10 +1,10 @@
 from typing import List
 
-import click
 
-from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
+from austrakka.utils.privilege import PROFORMA_RESOURCE
+from austrakka.utils.subcommands.log import log_subcommands
 from .funcs import \
     add_proforma, \
     update_proforma, \
@@ -28,6 +28,8 @@ from ...utils.options import *
 def proforma(ctx):
     """Commands related to metadata proformas"""
     ctx.context = ctx.parent.context
+
+proforma.add_command(log_subcommands(PROFORMA_RESOURCE))
 
 # proforma-specific options used in multiple commands
 opt_required = create_option(
