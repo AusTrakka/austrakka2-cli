@@ -2,7 +2,7 @@ import click
 
 from austrakka.components.log.funcs import list_logs
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import opt_global_id, opt_record_type
+from austrakka.utils.options import opt_global_id, opt_record_type, opt_view_type
 from austrakka.utils.output import table_format_option
 from austrakka.utils.privilege import TENANT_RESOURCE
 
@@ -23,6 +23,7 @@ def log(ctx):
     help=GLOBAL_ID_HELP,
 )
 @table_format_option()
-def activity_list(record_type: str, global_id: str, out_format: str):
-    list_logs(record_type, global_id, out_format)
+@opt_view_type()
+def activity_list(record_type: str, global_id: str, out_format: str, view_type: str):
+    list_logs(record_type, global_id, out_format, view_type)
     
