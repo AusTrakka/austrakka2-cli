@@ -15,7 +15,7 @@ from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_organisation
 from austrakka.utils.privilege import PROJECT_RESOURCE
 from austrakka.utils.subcommands.log import log_subcommands
-from .funcs import list_projects, \
+from .funcs import disable_project, enable_project, list_projects, \
     add_project, \
     update_project, \
     set_dashboard, \
@@ -149,3 +149,16 @@ def project_settings(project_abbrev: str, out_format: str):
 def project_set_type(project_abbrev: str, project_type: str):
     '''Set a type for a project'''
     set_project_type(project_abbrev, project_type)
+
+
+@project.command('enable')
+@click.argument('project-abbrev', type=str)
+def project_enable(project_abbrev: str):
+    '''Enable a project'''
+    enable_project(project_abbrev)
+
+@project.command('disable')
+@click.argument('project-abbrev', type=str)
+def project_disable(project_abbrev: str):
+    '''Disable a project'''
+    disable_project(project_abbrev)

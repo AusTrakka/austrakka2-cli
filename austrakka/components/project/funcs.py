@@ -9,7 +9,7 @@ from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.helpers.project import get_project_by_abbrev, get_project_settings_by_abbrev
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_response
-from austrakka.utils.paths import PROJECT_PATH, \
+from austrakka.utils.paths import PROJECT_PATH, PROJECT_V2_PATH, \
     SET_TYPE
 from austrakka.utils.paths import SET_DASHBOARD
 from austrakka.utils.paths import ASSIGNED_DASHBOARD
@@ -163,3 +163,11 @@ def show_project_settings(abbrev: str, out_format: str):
 def set_project_type(abbrev: str, project_type: str):
     path = '/'.join([PROJECT_PATH, abbrev, SET_TYPE])
     api_patch(path, data=project_type,)
+
+@logger_wraps()
+def enable_project(abbrev: str):
+    api_patch(f'{PROJECT_V2_PATH}/{abbrev}/Enable')
+
+@logger_wraps()
+def disable_project(abbrev: str):
+    api_patch(f'{PROJECT_V2_PATH}/{abbrev}/Disable')
