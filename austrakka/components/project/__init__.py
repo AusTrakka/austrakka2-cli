@@ -25,6 +25,7 @@ from .dataset import dataset
 from .field import field
 from .provision import provision
 from .metadata import metadata
+from .document import document
 
 
 @click.group()
@@ -38,6 +39,7 @@ project.add_command(field)
 project.add_command(provision)
 project.add_command(metadata)
 project.add_command(dataset)
+project.add_command(document)
 
 
 @project.command(

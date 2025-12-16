@@ -920,3 +920,15 @@ def opt_user_monthly_dl_quota_bytes(**attrs: t.Any):
         default=None,
         **{**defaults, **attrs}
     )
+
+def opt_document_id(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'ID of document to download'
+    }
+    return create_option(
+        '--document-id',
+        '-id',
+        type=int,
+        **{**defaults, **attrs}
+    )
