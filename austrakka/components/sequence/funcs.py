@@ -19,7 +19,8 @@ from austrakka.utils.exceptions import FailedResponseException, CliArgumentExcep
 from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.exceptions import IncorrectHashException
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import api_patch, api_post_multipart_raw
+from austrakka.utils.api import api_patch
+from austrakka.utils.api import api_post_multipart_raw
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import get_response
@@ -172,6 +173,7 @@ def add_sequence_submission(
     failed_samples = []
     upload_success_count = 0
     total_upload_count = 0
+        
     for _, row in csv_dataframe.iterrows():
         try:
             logger.info(f"Uploading {row[SEQ_ID_CSV]}")
@@ -200,7 +202,7 @@ def add_sequence_submission(
             failed_samples.append(row[SEQ_ID_CSV])
         except Exception as ex:
             raise ex from ex
-
+        
     logger.info(f"Uploaded {upload_success_count} of {total_upload_count} samples")
     if failed_samples:
         failed_samples_str = ", ".join(failed_samples)

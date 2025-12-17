@@ -30,6 +30,7 @@ def _get_default_headers(
         'Content-Type': content_type,
         'Authorization': f'Bearer {AusTrakkaCxt.get_value(CxtKey.TOKEN)}',
         'User-Agent': f'austrakka/{__version__}',
+        'X-Client-Session-ID': AusTrakkaCxt.get_value(CxtKey.SESSION_ID),
     }
     return default_headers
 
