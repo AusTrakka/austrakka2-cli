@@ -7,7 +7,6 @@ from austrakka.utils.enums.seq import SeqType
 from austrakka.utils.options import opt_force_mutex_skip
 from austrakka.utils.options import opt_owner_org
 from austrakka.utils.options import opt_skip_mutex_force
-from austrakka.utils.options import opt_owner
 from austrakka.utils.options import opt_shared_projects
 from austrakka.utils.options import opt_create_samples
 from austrakka import __prog_name__ as PROG_NAME

@@ -18,6 +18,7 @@ class CxtKey(Enum):
     USE_HTTP2 = 'use_http2'
     SKIP_VERSION_CHECK = 'skip_version_check'
     LOG_LEVEL = 'log_level'
+    SESSION_ID = 'session_id'
 
 
 class AusTrakkaCxt:
