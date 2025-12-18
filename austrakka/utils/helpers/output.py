@@ -53,6 +53,7 @@ def call_get_and_print_view_type(
     
     result = pd.json_normalize(result, max_level=1)
 
+    # pylint: disable-next=duplicate-code
     print_dataframe_viewtype(
         result,
         view_type,
