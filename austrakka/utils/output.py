@@ -124,6 +124,9 @@ def print_dataframe_viewtype(
         more_fields: list[str],
         output_format: str = default_object_format(),):
 
+    if output_format == FORMATS.JSON:
+        view_type = FULL
+
     if view_type == COMPACT:
         allowed_columns = set(compact_fields)
     elif view_type == MORE:
