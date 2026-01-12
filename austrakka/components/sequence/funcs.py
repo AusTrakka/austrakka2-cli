@@ -1,8 +1,5 @@
 # pylint: disable=too-many-locals
-import csv
 import os
-import shutil
-import tempfile
 from pathlib import Path
 from io import BufferedReader, StringIO, TextIOWrapper, BytesIO
 import codecs
@@ -18,18 +15,21 @@ from loguru import logger
 from httpx import HTTPStatusError
 from Bio import SeqIO
 
-from austrakka.components.metadata import add_metadata
-from austrakka.utils.enums.metadata import METADATA_FIELD_SEQ_ID
 from austrakka.utils.exceptions import FailedResponseException, CliArgumentException
 from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.exceptions import IncorrectHashException
 from austrakka.utils.misc import logger_wraps
+from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_post_multipart_raw
 from austrakka.utils.api import api_get
+from austrakka.utils.api import api_post
 from austrakka.utils.api import get_response
 from austrakka.utils.api import api_get_stream
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
-from austrakka.utils.paths import SEQUENCE_PATH, SEQUENCE_TYPE_QUERY, SEQUENCE_READ_QUERY
+from austrakka.utils.paths import SAMPLE_PATH
+from austrakka.utils.paths import SEQUENCE_PATH
+from austrakka.utils.paths import SEQUENCE_TYPE_QUERY
+from austrakka.utils.paths import SEQUENCE_READ_QUERY
 from austrakka.utils.paths import SEQUENCE_DOWNLOAD_PATH
 from austrakka.utils.paths import SEQUENCE_BY_GROUP_PATH
 from austrakka.utils.paths import SEQUENCE_BY_SAMPLE_PATH
@@ -173,6 +173,7 @@ def add_sequence_submission(
     failed_samples = []
     upload_success_count = 0
     total_upload_count = 0
+        
     for _, row in csv_dataframe.iterrows():
         try:
             logger.info(f"Uploading {row[SEQ_ID_CSV]}")
@@ -201,7 +202,7 @@ def add_sequence_submission(
             failed_samples.append(row[SEQ_ID_CSV])
         except Exception as ex:
             raise ex from ex
-
+        
     logger.info(f"Uploaded {upload_success_count} of {total_upload_count} samples")
     if failed_samples:
         failed_samples_str = ", ".join(failed_samples)
@@ -346,8 +347,12 @@ def _download_seq_file(file_path, filename, query_path, params, sample_dir):
 
     except FailedResponseException as ex:
         log_response_compact(ex.parsed_resp)
+        logger.error(f'Failed downloading {filename} To: {file_path}')
+        os.remove(file_path)
     except UnknownResponseException as ex:
         log_response_compact(ex)
+        logger.error(f'Failed downloading {filename} To: {file_path}')
+        os.remove(file_path)
     except HTTPStatusError as ex:
         logger.error(
             f'Failed downloading {filename} To: {file_path}. Error: {ex}'
@@ -613,28 +618,25 @@ def _csv_columns(seq_type: SeqType):
 def _create_samples(
         seq_ids: List[str],
         owner_org: str,
-        shared_groups: list[str],
+        shared_projects: list[str],
 ) -> None:
-    with tempfile.NamedTemporaryFile(suffix=".csv") as tmp:
-        csv_str = StringIO()
-        rows = [[METADATA_FIELD_SEQ_ID]]
-        for seq_id in seq_ids:
-            logger.info(f"Creating sample with {METADATA_FIELD_SEQ_ID} {seq_id} if required")
-            rows.append([seq_id])
-        csv.writer(csv_str).writerows(rows)
-        csv_str.seek(0)
-        with open(tmp.name, 'w', encoding='utf8') as file:
-            shutil.copyfileobj(csv_str, file)
-
-        with open(tmp.name, 'rb') as file:
-            file.seek(0)
-            add_metadata(
-                file, 
-                owner_org, 
-                shared_groups, 
-                "min", 
-                blanks_will_delete=False,
-                batch_size=5000)
+    for seq_id in seq_ids:
+        try:
+            api_post(SAMPLE_PATH, data={
+                'name': seq_id,
+                'owner': owner_org,
+            })
+        except FailedResponseException as ex:
+            sample_exists_msg = f"Sample {seq_id} already exists"
+            if any(sample_exists_msg in m for m in ex.get_error_messages()):
+                logger.warning(sample_exists_msg)
+            else:
+                raise ex
+    for project in shared_projects:
+        api_patch(f'{SAMPLE_PATH}/Share', data={
+            'seqIds': seq_ids,
+            'groupName': f'{project}-Group',
+        })
 
 
 def _validate_streamlined_seq_args(

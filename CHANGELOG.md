@@ -5,7 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## Unreleased
+## [0.77.0] - 2025-12-18
+
+### Added
+
+- `log list` for viewing platform logs.
+- `org log list` for viewing organisation logs.
+- `proforma log list` for viewing proforma logs.
+- `project log list` for viewing project logs.
+- `user log list` for viewing user logs.
+
+## [0.76.1] - 2025-12-02
+
+### Fixed
+
+- Error messages were not displayed for failed `seq get` commands.
+
+## [0.76.0] - 2025-11-24
 
 ### Removed
 - `iam tenant` commands have been removed. Use `iam privilege` instead.
