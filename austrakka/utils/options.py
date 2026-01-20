@@ -213,19 +213,6 @@ def opt_create_samples(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
-def opt_owner(var_name='owner_group', **attrs: t.Any):
-    defaults = {
-        'required': False,
-        'help': 'Owner Group Name',
-    }
-    return create_option(
-        "--owner",
-        var_name,
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
 def opt_seq_id(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -754,7 +741,7 @@ def opt_record_type(**attrs: t.Any):
 def opt_view_type(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'The amount of data to return. ',
+        'help': 'The amount of data to return. Ignored when outputting JSON.',
         'default': COMPACT,
     }
     return create_option(

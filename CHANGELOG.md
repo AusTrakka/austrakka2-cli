@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning].
 
 - `project settings` command. Settings are now displayed via `project list`. 
 
+## [0.77.0] - 2025-12-18
+
+### Added
+
+- `log list` for viewing platform logs.
+- `org log list` for viewing organisation logs.
+- `proforma log list` for viewing proforma logs.
+- `project log list` for viewing project logs.
+- `user log list` for viewing user logs.
+
+## [0.76.1] - 2025-12-02
+
+### Fixed
+
+- Error messages were not displayed for failed `seq get` commands.
 
 ## [0.76.0] - 2025-11-24
 
