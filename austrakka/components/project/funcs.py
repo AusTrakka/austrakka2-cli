@@ -6,14 +6,13 @@ from austrakka.utils.api import api_post, \
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
-from austrakka.utils.helpers.project import get_project_by_abbrev, get_project_settings_by_abbrev
+from austrakka.utils.helpers.project import get_project_by_abbrev
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe_viewtype
 from austrakka.utils.paths import PROJECT_PATH, \
     SET_TYPE
 from austrakka.utils.paths import SET_DASHBOARD
 from austrakka.utils.paths import ASSIGNED_DASHBOARD
-from austrakka.utils.paths import PROJECT_SETTINGS
 
 compact_fields = [
     "projectId",        # Project ID
@@ -80,7 +79,6 @@ def update_project(
         merge_algorithm: str
 ):
     project = get_project_by_abbrev(project_abbreviation)
-    project_settings = get_project_settings_by_abbrev(project_abbreviation)
     
     # ProjectDTO fields which should go in ProjectPutDTO
     put_project = {
@@ -92,8 +90,8 @@ def update_project(
             'dashboardName',
             'type',
             'clientType',
+            'mergeAlgorithm'
         ]},
-        'mergeAlgorithm': project_settings['mergeAlgorithm'],
     }
     
     if project['requestingOrg'] is None:
@@ -154,10 +152,6 @@ def get_dashboard(project_abbreviation: str, out_format: str):
     joined_path = '/'.join([PROJECT_PATH, ASSIGNED_DASHBOARD, project_abbreviation])
     call_get_and_print(joined_path, out_format)
 
-@logger_wraps()
-def show_project_settings(abbrev: str, out_format: str):
-    path = '/'.join([PROJECT_PATH, abbrev, PROJECT_SETTINGS])
-    call_get_and_print(path, out_format)
     
 @logger_wraps() 
 def set_project_type(abbrev: str, project_type: str):
