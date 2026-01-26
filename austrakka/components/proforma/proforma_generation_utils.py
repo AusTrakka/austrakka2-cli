@@ -178,7 +178,8 @@ def generate_template(
         if proforma.loc[field, 'type'] == 'date':
             typedict_sheet.write_string(1, col, 'YYYY-MM-DD')
         elif proforma.loc[field, 'type'] == 'categorical':
-            for (row, value) in enumerate(allowed_values[field],1):
+            vals = sorted(allowed_values[field])
+            for (row, value) in enumerate(vals,1):
                 typedict_sheet.write_string(row, col, value, normal_format)
     
     workbook.close()
