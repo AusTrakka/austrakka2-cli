@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+### Changed
+
+- The `proforma generate` command for admins has been improved: Type Dictionary values will be sorted, and range 
+validation will be used for Excel validation of these values. This allows for Excel-level validation of variables with
+over 256 allowed values.
+
 ### Removed
 
 - `project settings` command. Settings are now displayed via `project list`. 
