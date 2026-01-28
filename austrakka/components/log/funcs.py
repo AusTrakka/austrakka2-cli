@@ -2,7 +2,7 @@ import pandas as pd
 
 from austrakka.utils.api import api_get
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dataframe_viewtype
+from austrakka.utils.output import print_dataframe_viewtype, read_pd
 from austrakka.utils.privilege import get_priv_path
 
 
@@ -23,7 +23,7 @@ def list_logs(
         path=f"{get_priv_path(record_type, record_global_id)}/ActivityLog",
     )
     
-    result = pd.json_normalize(response['data'], max_level=1)
+    result = read_pd(response['data'], out_format)
     result.rename(columns={'resourceUniqueString': 'resourceName'}, inplace=True)
 
     # Unordered fields will be at end. Is it worth a utility function?

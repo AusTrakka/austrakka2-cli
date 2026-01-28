@@ -9,7 +9,7 @@ from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dataframe, print_dataframe_viewtype
+from austrakka.utils.output import print_dataframe, print_dataframe_viewtype, read_pd
 from austrakka.utils.paths import METADATA_COLUMN_V2_PATH
 
 
@@ -183,7 +183,7 @@ def list_field_projects(name: str, out_format: str):
     display_columns = ['projectFieldId', 'projectAbbrev', 'fieldName',
                        'fieldSource', 'analysisLabels']
 
-    print_dataframe_viewtype(pd.json_normalize(result), COMPACT, display_columns, [], out_format)
+    print_dataframe_viewtype(read_pd(result, out_format), COMPACT, display_columns, [], out_format)
 
 
 @logger_wraps()

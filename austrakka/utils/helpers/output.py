@@ -5,7 +5,7 @@ import pandas as pd
 
 from austrakka.utils.api import api_get
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dataframe
+from austrakka.utils.output import print_dataframe, read_pd
 from austrakka.utils.output import print_dataframe_viewtype
 
 
@@ -23,10 +23,8 @@ def call_get_and_print(path: str, out_format: str, params: Dict = None):
         logger.info("Nothing found.")
         return
     
-    result = pd.json_normalize(result, max_level=1)
-
     print_dataframe(
-        result,
+        read_pd(result, out_format),
         out_format,
     )
 
@@ -51,11 +49,9 @@ def call_get_and_print_view_type(
         logger.info("Nothing found.")
         return
     
-    result = pd.json_normalize(result, max_level=1)
-
     # pylint: disable-next=duplicate-code
     print_dataframe_viewtype(
-        result,
+        read_pd(result, out_format),
         view_type,
         compact_fields,
         more_fields,
@@ -73,7 +69,7 @@ def call_get_and_print_dataset_status(path: str,
     )
 
     result = response['data'] if ('data' in response) else response
-    result = pd.json_normalize(result, max_level=1) \
+    result = read_pd(result, out_format) \
         .pipe(lambda x: x.drop('serverSha256', axis=1))
 
     print_dataframe(
@@ -96,7 +92,7 @@ def call_get_and_print_table_on_state_change(path: str,
     result = response['data'] if ('data' in response) else response
     if result['status'] != prev_state:
         new_state = result['status']
-        result = pd.json_normalize(result, max_level=1) \
+        result = read_pd(result, out_format) \
             .pipe(lambda x: x.drop('serverSha256', axis=1))
         print_dataframe(
             result,
