@@ -741,7 +741,7 @@ def opt_record_type(**attrs: t.Any):
 def opt_view_type(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'The amount of data to return. ',
+        'help': 'The amount of data to return. Ignored when outputting JSON.',
         'default': COMPACT,
     }
     return create_option(

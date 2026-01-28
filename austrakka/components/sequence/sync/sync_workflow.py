@@ -173,7 +173,7 @@ def pull_manifest(sync_state: dict):
     
     seq_type_enum = convert_to_seq_type(seq_type)
     raise_sync_exception_if_none(
-        seq_type_enum, 
+        seq_type_enum,
         "pull_manifest: seq_type_enum cannot be None."
         "Please check the state file.")
     

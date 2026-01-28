@@ -20,7 +20,6 @@ from .funcs import list_projects, \
     update_project, \
     set_dashboard, \
     get_dashboard, \
-    show_project_settings, \
     set_project_type
 
 from .dataset import dataset
@@ -136,12 +135,6 @@ def dashboard_get(project_abbrev: str, out_format: str):
 def projects_list(view_type: str,out_format: str):
     list_projects(view_type, out_format)
 
-@project.command('settings')
-@click.argument('project-abbrev', type=str)
-@object_format_option()
-def project_settings(project_abbrev: str, out_format: str):
-    '''Show project settings'''
-    show_project_settings(project_abbrev, out_format)
     
 @project.command('set-type')
 @click.argument('project-abbrev', type=str)

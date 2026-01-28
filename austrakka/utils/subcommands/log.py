@@ -2,7 +2,7 @@ import click
 
 from austrakka.components.log.funcs import list_logs
 from austrakka.utils.output import table_format_option
-from austrakka.utils.options import opt_global_id
+from austrakka.utils.options import opt_global_id, opt_view_type
 
 
 def log_subcommands(root_type: str):
@@ -14,7 +14,8 @@ def log_subcommands(root_type: str):
     @log.command('list')
     @opt_global_id()
     @table_format_option()
-    def activity_get(global_id: str, out_format: str):
-        list_logs(root_type, global_id, out_format)
+    @opt_view_type()
+    def activity_get(global_id: str, out_format: str, view_type: str):
+        list_logs(root_type, global_id, out_format, view_type)
 
     return log
