@@ -21,7 +21,8 @@ def get_header_value(resp: httpx.Response, header_name: str, value_name: str) ->
     except KeyError as ex:
         raise ValueError(f"Value {value_name} not found for header {header_name}") from ex
 
-# Taken from Python sourcecode after cgi removal: https://github.com/python/cpython/blob/3.11/Lib/cgi.py#L238
+# Taken from Python sourcecode after cgi removal: 
+# https://github.com/python/cpython/blob/3.11/Lib/cgi.py#L238
 def _parseparam(s):
     while s[:1] == ';':
         s = s[1:]

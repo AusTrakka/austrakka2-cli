@@ -45,7 +45,8 @@ limit-inference-results=100
 
 # List of plugins (as comma separated values of python module names) to load,
 # usually to register additional checkers.
-load-plugins=pylint_print
+load-plugins=pylint.extensions.bad_builtin
+bad-functions=print
 
 # Pickle collected data for later comparisons.
 persistent=yes
@@ -53,10 +54,6 @@ persistent=yes
 # Min Python version to use for version dependend checks. Will default to the
 # version used to run pylint.
 py-version=3.9
-
-# When enabled, pylint would attempt to guess common misconfiguration and emit
-# user-friendly hints instead of false-positive error messages.
-suggestion-mode=yes
 
 # Allow loading of arbitrary C extensions. Extensions are imported into the
 # active Python interpreter and may run arbitrary code.
@@ -89,7 +86,10 @@ disable=raw-checker-failed,
         missing-module-docstring,
         missing-function-docstring,
         missing-class-docstring,
-        trailing-whitespace
+        trailing-whitespace,
+        too-many-positional-arguments,
+        import-error,
+        too-few-public-methods
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

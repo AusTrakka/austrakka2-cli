@@ -7,7 +7,6 @@ verify_ssl = true
 pylint = "*"
 autopep8 = "*"
 pycodestyle = "*"
-pylint-print = "*"
 pytest = "*"
 vistir = "*"
 pytest-azurepipelines = "*"
