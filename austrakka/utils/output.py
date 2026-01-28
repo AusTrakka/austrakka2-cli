@@ -294,7 +294,5 @@ def create_response_object(message: str, message_type: str):
     }
 
 def read_pd(data, out_format: str) -> DataFrame:
-    max_level = 1
-    if out_format in object_format_types():
-        max_level = -1
+    max_level = -1 if out_format in object_format_types() else 9999
     return pd.json_normalize(data, max_level=max_level)
