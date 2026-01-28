@@ -4,26 +4,26 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pylint = "~=2.17.5"
-autopep8 = "~=2.0.2"
-pycodestyle = "~=2.11.0"
-pylint-print = "~=1.0.1"
-pytest = "~=7.4.0"
-vistir = "~=0.6.1"
-pytest-azurepipelines = "~=1.0.4"
+pylint = "*"
+autopep8 = "*"
+pycodestyle = "*"
+pylint-print = "*"
+pytest = "*"
+vistir = "*"
+pytest-azurepipelines = "*"
 
 [packages]
 austrakka = {editable = true, path = "."}
-azure-identity = "==1.13.0"
-click = "==8.1.7"
-loguru = "==0.7.0"
-pandas = "==2.0.3"
-tabulate = "==0.9.0"
-cryptography = "==41.0.6"
-semver = "==3.0.1"
-httpx = {extras = ["http2"], version = "==0.24.1"}
-biopython = "==1.81"
-XlsxWriter = "==3.2.0"
+azure-identity = "*"
+click = "*"
+loguru = "*"
+pandas = "<3"
+tabulate = "*"
+cryptography = "*"
+semver = "*"
+biopython = "*"
+httpx = {extras = ["http2"], version = "*"}
+xlsxwriter = "*"
 
 [requires]
 python_version = "3"
