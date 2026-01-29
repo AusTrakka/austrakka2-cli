@@ -6,7 +6,7 @@ import pandas as pd
 from austrakka.utils.api import api_get
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe
-from austrakka.utils.output import print_response
+from austrakka.utils.output import print_dataframe_viewtype
 
 
 @logger_wraps()
@@ -53,7 +53,8 @@ def call_get_and_print_view_type(
     
     result = pd.json_normalize(result, max_level=1)
 
-    print_response(
+    # pylint: disable-next=duplicate-code
+    print_dataframe_viewtype(
         result,
         view_type,
         compact_fields,

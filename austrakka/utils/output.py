@@ -17,7 +17,7 @@ from austrakka.utils.enums.api import RESPONSE_TYPE_WARNING
 from austrakka.utils.enums.api import RESPONSE_DATA
 from austrakka.utils.enums.api import RESPONSE_MESSAGES
 from austrakka.utils.enums.api import RESPONSE_MESSAGE
-from austrakka.utils.enums.view_type import COMPACT, MORE
+from austrakka.utils.enums.view_type import COMPACT, MORE, FULL
 
 _FORMAT_PREFIX = '_format_'
 _EXTENSION_PREFIX = '_extension_'
@@ -105,7 +105,7 @@ def print_dataframe(
 ):
     output = convert_format(dataframe, output_format, headers)
 
-    # pylint: disable=print-function
+    # pylint: disable=bad-builtin
     print(output, end='')
 
 
@@ -117,14 +117,27 @@ def print_dict(
     print_dataframe(_create_dataframe(data), output_format, headers)
 
 
-def print_response(
+def print_dataframe_viewtype(
         data: DataFrame,
         view_type: str,
         compact_fields: list[str],
         more_fields: list[str],
         output_format: str = default_object_format(),):
-    result_df = _configure_fields(data, view_type, compact_fields, more_fields)
-    print_dataframe(result_df, output_format)
+
+    if output_format == FORMATS.JSON:
+        view_type = FULL
+
+    if view_type == COMPACT:
+        allowed_columns = set(compact_fields)
+    elif view_type == MORE:
+        allowed_columns = set(compact_fields + more_fields)
+    else:
+        assert view_type == FULL
+        allowed_columns = set(data.columns)
+
+    # Preserve column order
+    column_list = [c for c in data.columns if c in allowed_columns]    
+    print_dataframe(data[column_list], output_format)
 
 
 def convert_format(
@@ -134,19 +147,6 @@ def convert_format(
 ):
     format_func = f'{_FORMAT_PREFIX}{output_format}'
     return globals()[format_func](dataframe, headers)
-
-
-def _configure_fields(
-        result: DataFrame,
-        view_type,
-        compact_fields: list[str],
-        more_fields: list[str]):
-
-    if view_type == COMPACT:
-        result = result[result.columns.intersection(compact_fields)]
-    elif view_type == MORE:
-        result = result[result.columns.intersection(more_fields)]
-    return result
 
 
 def _get_output_extension(output_format: str):
