@@ -10,6 +10,7 @@ pycodestyle = "==2.14.0"
 pytest = "==9.0.2"
 vistir = "==0.8.0"
 pytest-azurepipelines = "==1.0.5"
+cx-freeze = "==8.5.3"
 
 [packages]
 austrakka = {editable = true, path = "."}

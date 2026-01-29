@@ -1,5 +1,9 @@
+import os
+
 from cx_Freeze import setup
 from austrakka import __version__ as VERSION
+
+build_dir = os.environ.get("TRAKKA_CLI_BUILD_DIR")
 
 build_exe_options = {
     "excludes": [],
@@ -16,6 +20,9 @@ build_exe_options = {
         "XlsxWriter",
     ],
 }
+if build_dir is not None:
+    print("Building trakka in " + build_dir)
+    build_exe_options["build_exe"] = build_dir
 
 setup(
     name="trakka",

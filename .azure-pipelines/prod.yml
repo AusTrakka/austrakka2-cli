@@ -19,7 +19,7 @@ trigger:
 pr: none
 
 pool:
-  name: UAT-New
+  name: Test
 
 variables:
 - template: variables/devops/setup.yml@Pipelines
@@ -27,13 +27,47 @@ variables:
 stages:
   - stage: DeployAusTrakkaCli
     jobs:
-      - template: templates/jobs/deployment/cli.yml@Pipelines
-        parameters:
-          pypiConnectionName: pypi_austrakka
-          cliNameReplace: AusTrakka
-  - stage: DeployTrakkaCli
-    jobs:
-      - template: templates/jobs/deployment/cli.yml@Pipelines
-        parameters:
-          pypiConnectionName: pypi_trakka
-          cliNameReplace: Trakka
+      # - template: templates/jobs/deployment/cli.yml@Pipelines
+      #   parameters:
+      #     pypiConnectionName: pypi_austrakka
+      #     cliNameReplace: AusTrakka
+      # - template: templates/jobs/deployment/cli.yml@Pipelines
+      #   parameters:
+      #     pypiConnectionName: pypi_trakka
+      #     cliNameReplace: Trakka
+      - job: StandaloneCLI
+        steps:
+        - template: templates/checkout/cli.yml@Pipelines
+        - task: Bash@3
+          displayName: Set envvars
+          inputs:
+            targetType: 'inline'
+            workingDirectory: $(sourceDir)/cli
+            script: |
+              export CLI_VERSION=$(cat austrakka/__init__.py | grep __version__ | awk '{print $3}' | sed s/\"//g)
+              awk "/\[$CLI_VERSION\]/{flag=1; next} /\[/{flag=0} flag" CHANGELOG.md > release_changelog
+              echo "##vso[task.setvariable variable=cliVersion;]$CLI_VERSION"
+        - task: Bash@3
+          displayName: Create build
+          inputs:
+            targetType: 'inline'
+            workingDirectory: $(sourceDir)/cli
+            script: |
+              mkdir -p "$(buildDir)/build"
+              pip install pipenv
+              pipenv install --python=3.14 --dev
+              pipenv run ./scripts/release "$(buildDir)/build"
+        - task: GithubRelease@1 
+          displayName: 'Create GitHub Release'      
+          inputs:
+            gitHubConnection: AusTrakka
+            repositoryName: austrakka/austrakka2-cli
+            tagSource: userSpecifiedTag
+            tag: $(cliVersion)
+            title: $(cliVersion) 
+            isDraft: true
+            releaseNotesSource: filePath
+            releaseNotesFilePath: $(sourceDir)/cli/release_changelog
+            assets: |
+              $(buildDir)/build/*
+

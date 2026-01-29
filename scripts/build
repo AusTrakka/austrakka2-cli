@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e
+
+# This script assumes a python environment is active with required dependencies
+
+if [ -n "$1" ]; then
+    if [[ -d $1 ]]; then
+        WORK_DIR=$1
+    else
+        echo >&2 path passed is not a directory
+        exit 1
+    fi
+else
+    echo "build path not passed. Defaulting to tmp directory"
+    WORK_DIR=$(mktemp -d)
+fi
+
+TRAKKA_CLI_BUILD_DIR=$WORK_DIR python cxfreeze.py build_exe 
+
+rm "$WORK_DIR"/frozen_application_license.txt
+
+echo "Build created at $WORK_DIR"
