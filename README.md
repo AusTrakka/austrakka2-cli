@@ -226,3 +226,12 @@ Each component package contains the following files:
 | `funcs.py`    | Any functions associated with the component.                                                                                                                                                                                                 |
 | `opts.py`     | Click command line options associated with the component. Defined here so they can be reused across the CLI. Eg. `--species` is used for multiple commands. The species CLI option is defined here and imported to all commands that use it. |
 | `enums.py`    | Any enumerations associated with the component.                                                                                                                                                                                              |
+
+
+## Build
+
+```bash
+pipenv shell --python=3.9
+pipenv install -dev
+python cxfreeze.py build
+```
