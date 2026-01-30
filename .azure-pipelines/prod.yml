@@ -44,8 +44,13 @@ stages:
             targetType: 'inline'
             workingDirectory: $(sourceDir)/cli
             script: |
+              rm -rf /home/AzDevOps/.pyenv
               mkdir -p "$(buildDir)/build"
               curl -fsSL https://pyenv.run | bash
+              echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+              echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+              echo 'eval "$(pyenv init - bash)"' >> ~/.bashrc
+              source ~/.bashrc
               pyenv install 3.14
               pyenv global 3.14
               echo "$(buildDir)/build"
