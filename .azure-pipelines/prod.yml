@@ -54,34 +54,17 @@ stages:
             workingDirectory: $(sourceDir)/cli
             script: |
               mkdir -p "$(buildDir)/build"
-              # python3.14 -m venv .venv
-              # source .venv/bin/activate  # On Windows: .venv\Scripts\activate
               pip install pipenv
               pipenv install --python=3.14 --dev
               pipenv run ./scripts/release "$(buildDir)/build"
-
-              # rm -rf /home/AzDevOps/.pyenv
-              # mkdir -p "$(buildDir)/build"
-              # curl -fsSL https://pyenv.run | bash
-              # echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
-              # echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-              # echo 'eval "$(pyenv init - bash)"' >> ~/.bashrc
-              # source ~/.bashrc
-              # pyenv install 3.14
-              # pyenv global 3.14
-              # echo "$(buildDir)/build"
-              # pipenv install --python=3.14 --dev
-              # pipenv install patchelf
-              # pipenv run ./scripts/release "$(buildDir)/build"
         - task: GithubRelease@1 
           displayName: 'Create GitHub Release'      
           inputs:
             gitHubConnection: AusTrakka
             repositoryName: austrakka/austrakka2-cli
-            # tagSource: gitTag
-              # TODO: remove these before merge
             tagSource: userSpecifiedTag
             tag: $(cliVersion)
+            title: $(cliVersion) 
             isDraft: true
             releaseNotesSource: filePath
             releaseNotesFilePath: $(sourceDir)/cli/release_changelog
