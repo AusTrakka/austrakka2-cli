@@ -39,6 +39,15 @@ stages:
         steps:
         - template: templates/checkout/cli.yml@Pipelines
         - task: Bash@3
+          displayName: Set envvars
+          inputs:
+            targetType: 'inline'
+            workingDirectory: $(sourceDir)/cli
+            script: |
+              export CLI_VERSION=$(cat austrakka/__init__.py | grep __version__ | awk '{print $3}' | sed s/\"//g)
+              awk "/\[$CLI_VERSION\]/{flag=1; next} /\[/{flag=0} flag" CHANGELOG.md > release_changelog
+              echo "##vso[task.setvariable variable=cliVersion;]$CLI_VERSION"
+        - task: Bash@3
           displayName: Create build
           inputs:
             targetType: 'inline'
@@ -72,7 +81,10 @@ stages:
             # tagSource: gitTag
               # TODO: remove these before merge
             tagSource: userSpecifiedTag
-            tag: 0.77.0
+            tag: $(cliVersion)
+            isDraft: true
+            releaseNotesSource: filePath
+            releaseNotesFilePath: $(sourceDir)/release_changelog
             assets: |
               $(buildDir)/build/*
 
