@@ -44,7 +44,8 @@ stages:
             targetType: 'inline'
             workingDirectory: $(sourceDir)/cli
             script: |
-              mkdir -p $(buildDir)/build
+              mkdir -p "$(buildDir)/build"
+              curl -fsSL https://pyenv.run | bash
               echo "$(buildDir)/build"
               pipenv install --python=3.14 --dev
               pipenv install patchelf
