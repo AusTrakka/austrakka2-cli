@@ -46,6 +46,8 @@ stages:
             script: |
               mkdir -p "$(buildDir)/build"
               curl -fsSL https://pyenv.run | bash
+              pyenv install 3.14
+              pyenv global 3.14
               echo "$(buildDir)/build"
               pipenv install --python=3.14 --dev
               pipenv install patchelf
