@@ -37,6 +37,7 @@ stages:
       #     cliNameReplace: Trakka
       - job: StandaloneCLI
         steps:
+        - template: templates/checkout/cli.yml@Pipelines
         - task: Bash@3
           displayName: Create build
           inputs:
