@@ -46,12 +46,12 @@ stages:
               mkdir $(buildDir)/build
               pipenv install --dev
               ./scripts/release $(buildDir)/build
-      - task: GithubRelease@1 
-        displayName: 'Create GitHub Release'      
-        inputs:
-          gitHubConnection: AusTrakka
-          repositoryName: austrakka/austrakka2-cli
-          tagSource: gitTag
-          assets: |
-            $(buildDir)/build/*
+        - task: GithubRelease@1 
+          displayName: 'Create GitHub Release'      
+          inputs:
+            gitHubConnection: AusTrakka
+            repositoryName: austrakka/austrakka2-cli
+            tagSource: gitTag
+            assets: |
+              $(buildDir)/build/*
 
