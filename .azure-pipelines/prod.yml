@@ -45,8 +45,8 @@ stages:
             workingDirectory: $(sourceDir)/cli
             script: |
               mkdir -p "$(buildDir)/build"
-              python3.14 -m venv .venv
-              source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+              # python3.14 -m venv .venv
+              # source .venv/bin/activate  # On Windows: .venv\Scripts\activate
               pip install pipenv
               pipenv install --python=3.14 --dev
               pipenv run ./scripts/release "$(buildDir)/build"
@@ -69,7 +69,10 @@ stages:
           inputs:
             gitHubConnection: AusTrakka
             repositoryName: austrakka/austrakka2-cli
-            tagSource: gitTag
+            # tagSource: gitTag
+              # TODO: remove these before merge
+            tagSource: userSpecifiedTag
+            tag: 0.77.0
             assets: |
               $(buildDir)/build/*
 
