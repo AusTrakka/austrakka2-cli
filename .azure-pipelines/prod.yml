@@ -27,13 +27,31 @@ variables:
 stages:
   - stage: DeployAusTrakkaCli
     jobs:
-      - template: templates/jobs/deployment/cli.yml@Pipelines
-        parameters:
-          pypiConnectionName: pypi_austrakka
-          cliNameReplace: AusTrakka
-  - stage: DeployTrakkaCli
-    jobs:
-      - template: templates/jobs/deployment/cli.yml@Pipelines
-        parameters:
-          pypiConnectionName: pypi_trakka
-          cliNameReplace: Trakka
+      # - template: templates/jobs/deployment/cli.yml@Pipelines
+      #   parameters:
+      #     pypiConnectionName: pypi_austrakka
+      #     cliNameReplace: AusTrakka
+      # - template: templates/jobs/deployment/cli.yml@Pipelines
+      #   parameters:
+      #     pypiConnectionName: pypi_trakka
+      #     cliNameReplace: Trakka
+      - job: StandaloneCLI
+        steps:
+        - task: Bash@3
+          displayName: Create build
+          inputs:
+            targetType: 'inline'
+            workingDirectory: $(sourceDir)/cli
+            script: |
+              mkdir $(buildDir)/build
+              pipenv install --dev
+              ./scripts/release $(buildDir)/build
+      - task: GithubRelease@1 
+        displayName: 'Create GitHub Release'      
+        inputs:
+          gitHubConnection: AusTrakka
+          repositoryName: austrakka/austrakka2-cli
+          tagSource: gitTag
+          assets: |
+            $(buildDir)/build/*
+
