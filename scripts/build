@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # This script assumes a python environment is active with required dependencies
 
