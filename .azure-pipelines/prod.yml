@@ -45,7 +45,7 @@ stages:
             script: |
               mkdir $(buildDir)/build
               pipenv install --dev
-              ./scripts/release $(buildDir)/build
+              pipenv run ./scripts/release $(buildDir)/build
         - task: GithubRelease@1 
           displayName: 'Create GitHub Release'      
           inputs:
