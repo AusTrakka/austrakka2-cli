@@ -48,7 +48,7 @@ stages:
               python3.14 -m venv .venv
               source .venv/bin/activate  # On Windows: .venv\Scripts\activate
               pip install pipenv
-              pipenv install --dev
+              pipenv install --python=3.14 --dev
               pipenv run ./scripts/release "$(buildDir)/build"
 
               # rm -rf /home/AzDevOps/.pyenv
