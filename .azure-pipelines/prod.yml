@@ -44,7 +44,7 @@ stages:
             targetType: 'inline'
             workingDirectory: $(sourceDir)/cli
             script: |
-              mkdir $(buildDir)/build
+              mkdir -p $(buildDir)/build
               pipenv install --dev
               pipenv run ./scripts/release $(buildDir)/build
         - task: GithubRelease@1 
