@@ -84,7 +84,7 @@ stages:
             tag: $(cliVersion)
             isDraft: true
             releaseNotesSource: filePath
-            releaseNotesFilePath: $(sourceDir)/release_changelog
+            releaseNotesFilePath: $(sourceDir)/cli/release_changelog
             assets: |
               $(buildDir)/build/*
 
