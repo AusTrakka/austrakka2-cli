@@ -19,7 +19,7 @@ trigger:
 pr: none
 
 pool:
-  name: Test
+  name: UAT-New
 
 variables:
 - template: variables/devops/setup.yml@Pipelines
@@ -27,14 +27,14 @@ variables:
 stages:
   - stage: DeployAusTrakkaCli
     jobs:
-      # - template: templates/jobs/deployment/cli.yml@Pipelines
-      #   parameters:
-      #     pypiConnectionName: pypi_austrakka
-      #     cliNameReplace: AusTrakka
-      # - template: templates/jobs/deployment/cli.yml@Pipelines
-      #   parameters:
-      #     pypiConnectionName: pypi_trakka
-      #     cliNameReplace: Trakka
+      - template: templates/jobs/deployment/cli.yml@Pipelines
+        parameters:
+          pypiConnectionName: pypi_austrakka
+          cliNameReplace: AusTrakka
+      - template: templates/jobs/deployment/cli.yml@Pipelines
+        parameters:
+          pypiConnectionName: pypi_trakka
+          cliNameReplace: Trakka
       - job: StandaloneCLI
         steps:
         - template: templates/checkout/cli.yml@Pipelines
@@ -65,7 +65,7 @@ stages:
             tagSource: userSpecifiedTag
             tag: $(cliVersion)
             title: $(cliVersion) 
-            isDraft: true
+            isDraft: false
             releaseNotesSource: filePath
             releaseNotesFilePath: $(sourceDir)/cli/release_changelog
             assets: |
