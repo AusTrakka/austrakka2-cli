@@ -44,8 +44,11 @@ stages:
             targetType: 'inline'
             workingDirectory: $(sourceDir)/cli
             script: |
+              # TODO: this is temporary. Move this to austrakka-images if we really need it
+              sudo apt-get update
+              sudo apt-get install patchelf
               mkdir -p $(buildDir)/build
-              pipenv install --dev
+              pipenv install --python=3.14 --dev
               pipenv run ./scripts/release $(buildDir)/build
         - task: GithubRelease@1 
           displayName: 'Create GitHub Release'      
