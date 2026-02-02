@@ -231,7 +231,6 @@ Each component package contains the following files:
 ## Build
 
 ```bash
-pipenv shell --python=3.9
-pipenv install -dev
-python cxfreeze.py build
+pipenv install --python=3.14 --dev
+pipenv run ./scripts/build [OUTPUT_DIR]
 ```

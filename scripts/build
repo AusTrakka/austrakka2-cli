@@ -17,6 +17,4 @@ fi
 
 TRAKKA_CLI_BUILD_DIR=$WORK_DIR python cxfreeze.py build_exe 
 
-rm "$WORK_DIR"/frozen_application_license.txt
-
 echo "Build created at $WORK_DIR"
