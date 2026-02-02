@@ -12,7 +12,7 @@ from austrakka.utils.api import api_put
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from austrakka.utils.helpers.upload import upload_multipart
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dataframe, log_response, print_response
+from austrakka.utils.output import print_dataframe, log_response, print_dataframe_viewtype
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
 from austrakka.utils.fs import FileHash, get_hash
@@ -288,7 +288,7 @@ def list_proformas(view_type: str, out_format: str):
                 inplace=True)
 
     # pylint: disable=duplicate-code
-    print_response(
+    print_dataframe_viewtype(
         result,
         view_type,
         list_compact_fields,
