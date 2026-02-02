@@ -3,6 +3,7 @@ from contextlib import redirect_stdout
 
 from azure.identity import ClientSecretCredential
 from azure.identity import DeviceCodeCredential
+from azure.identity._internal.client_credential_base import ClientCredentialBase
 from loguru import logger
 
 
@@ -46,7 +47,16 @@ def process_login(
         client_id=process_id,
         client_secret=client_secret,
     )
+    log_token_info(credential, app_uri)
     token = credential.get_token(_get_api_scope(app_uri))
 
     # pylint: disable=bad-builtin
     print(token.token)
+
+
+def log_token_info(credential: ClientCredentialBase, app_uri: str):
+    token_info = credential.get_token_info(_get_api_scope(app_uri))
+    token_info_dict = token_info.__dict__
+    if 'token' in token_info_dict: del token_info_dict['token']
+    logger.info(token_info_dict)
+
