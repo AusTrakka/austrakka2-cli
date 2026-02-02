@@ -105,7 +105,7 @@ def print_dataframe(
 ):
     output = convert_format(dataframe, output_format, headers)
 
-    # pylint: disable=print-function
+    # pylint: disable=bad-builtin
     print(output, end='')
 
 
