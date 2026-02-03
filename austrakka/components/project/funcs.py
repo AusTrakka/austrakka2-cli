@@ -8,7 +8,7 @@ from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.helpers.project import get_project_by_abbrev
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dataframe_viewtype, read_pd
+from austrakka.utils.output import print_dataframe, read_pd, get_viewtype_columns
 from austrakka.utils.paths import PROJECT_PATH, \
     SET_TYPE
 from austrakka.utils.paths import SET_DASHBOARD
@@ -131,19 +131,11 @@ def set_dashboard(project_abbreviation: str, dashboard_name: str):
 
 @logger_wraps()
 def list_projects(view_type: str, out_format: str):
-    response = api_get(
-        path=PROJECT_PATH,
-    )
-
-    data = response['data'] if ('data' in response) else response
-    result = read_pd(data, out_format)
-    
-    print_dataframe_viewtype(
-        result,
-        view_type,
-        compact_fields,
-        more_fields,
-        out_format
+    columns = get_viewtype_columns(view_type, compact_fields, more_fields)
+    call_get_and_print(
+        PROJECT_PATH,
+        out_format,
+        restricted_cols=columns
     )
     
     
