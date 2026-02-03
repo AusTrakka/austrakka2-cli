@@ -104,7 +104,7 @@ def print_dataframe(
         restricted_cols: List[str] = None,
         headers: Union[str, List[Any]] = 'keys',
 ):
-    if output_format == FORMATS.JSON:
+    if output_format in object_format_types():
         restricted_cols = None
     
     if restricted_cols:
