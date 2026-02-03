@@ -7,7 +7,6 @@ from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.helpers.project import get_project_by_abbrev
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import get_viewtype_columns
-from austrakka.utils.output import print_dataframe_viewtype
 from austrakka.utils.paths import PROJECT_PATH
 from austrakka.utils.paths import PROJECT_V2_PATH
 from austrakka.utils.paths import SET_TYPE
