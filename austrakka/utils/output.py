@@ -101,8 +101,16 @@ def default_object_format():
 def print_dataframe(
         dataframe: pd.DataFrame,
         output_format: str = default_object_format(),
+        restricted_cols: List[str] = None,
         headers: Union[str, List[Any]] = 'keys',
 ):
+    if output_format == FORMATS.JSON:
+        restricted_cols = None
+    
+    if restricted_cols:
+        # Preserve column order
+        dataframe = dataframe[[c for c in dataframe.columns if c in restricted_cols]]
+
     output = convert_format(dataframe, output_format, headers)
 
     # pylint: disable=bad-builtin
@@ -115,30 +123,6 @@ def print_dict(
         headers: Union[str, List[Any]] = 'keys',
 ):
     print_dataframe(_create_dataframe(data), output_format, headers)
-
-
-def print_dataframe_viewtype(
-        data: DataFrame,
-        view_type: str,
-        compact_fields: list[str],
-        more_fields: list[str],
-        output_format: str = default_object_format(),):
-
-    if output_format == FORMATS.JSON:
-        view_type = FULL
-
-    if view_type == COMPACT:
-        allowed_columns = set(compact_fields)
-    elif view_type == MORE:
-        allowed_columns = set(compact_fields + more_fields)
-    else:
-        assert view_type == FULL
-        allowed_columns = set(data.columns)
-
-    # Preserve column order
-    column_list = [c for c in data.columns if c in allowed_columns]    
-    print_dataframe(data[column_list], output_format)
-
 
 def convert_format(
         dataframe: pd.DataFrame,
@@ -293,6 +277,23 @@ def create_response_object(message: str, message_type: str):
         RESPONSE_TYPE: message_type
     }
 
-def read_pd(data, out_format: str) -> DataFrame:
+def get_viewtype_columns(
+        view_type: str,
+        compact_fields: list[str],
+        more_fields: list[str]
+) -> List[str] | None:
+    if view_type == COMPACT:
+        return compact_fields
+    elif view_type == MORE:
+        return list(set(compact_fields + more_fields))
+    
+    assert view_type == FULL
+    return None
+
+
+def read_pd(data, out_format: str, restricted_cols : List[str] = None) -> DataFrame:
     max_level = -1 if out_format in object_format_types() else 9999
-    return pd.json_normalize(data, max_level=max_level)
+    df = pd.json_normalize(data, max_level=max_level)
+    if restricted_cols is not None:
+        df = df[restricted_cols]
+    return df
