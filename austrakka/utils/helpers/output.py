@@ -6,7 +6,12 @@ from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe, read_pd
 
 @logger_wraps()
-def call_get_and_print(path: str, out_format: str, params: Dict = None, restricted_cols: list[str] = None):
+def call_get_and_print(
+        path: str,
+        out_format: str,
+        params: Dict = None,
+        restricted_cols: list[str] = None
+):
     params = {} if params is None else params
     response = api_get(
         path=path,

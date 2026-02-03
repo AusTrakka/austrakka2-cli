@@ -1,16 +1,13 @@
 # pylint: disable=duplicate-code
-import pandas as pd
 
-from austrakka.utils.api import api_post, \
-    api_get
+from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.helpers.project import get_project_by_abbrev
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dataframe, read_pd, get_viewtype_columns
-from austrakka.utils.paths import PROJECT_PATH, \
-    SET_TYPE
+from austrakka.utils.output import get_viewtype_columns
+from austrakka.utils.paths import PROJECT_PATH, SET_TYPE
 from austrakka.utils.paths import SET_DASHBOARD
 from austrakka.utils.paths import ASSIGNED_DASHBOARD
 

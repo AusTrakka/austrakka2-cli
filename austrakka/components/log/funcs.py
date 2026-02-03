@@ -1,4 +1,3 @@
-import pandas as pd
 
 from austrakka.utils.api import api_get
 from austrakka.utils.misc import logger_wraps
@@ -24,7 +23,6 @@ def list_logs(
     )
     
     result = read_pd(response['data'], out_format)
-    # TODO check if this is applied to some logs funcs and not others. Also rationalise this function
     result.rename(columns={'resourceUniqueString': 'resourceName'}, inplace=True)
 
     # Unordered fields will be at end. Is it worth a utility function?

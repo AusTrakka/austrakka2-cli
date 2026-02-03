@@ -281,10 +281,10 @@ def get_viewtype_columns(
         view_type: str,
         compact_fields: list[str],
         more_fields: list[str]
-) -> List[str] | None:
+) -> Union[List[str], None]:
     if view_type == COMPACT:
         return compact_fields
-    elif view_type == MORE:
+    if view_type == MORE:
         return list(set(compact_fields + more_fields))
     
     assert view_type == FULL
