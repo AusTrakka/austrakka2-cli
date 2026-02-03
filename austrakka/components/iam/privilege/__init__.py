@@ -11,7 +11,7 @@ from austrakka.components.iam.privilege.funcs import (
 from austrakka.utils.privilege import TENANT_RESOURCE
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import (
-    opt_global_id,
+    opt_identifier,
     opt_record_type,
     opt_role,
     opt_user_object_id,
@@ -31,7 +31,7 @@ def privilege(ctx):
 # pylint: disable=duplicate-code
 @privilege.command('list', hidden=hide_admin_cmds())
 @opt_record_type(default=TENANT_RESOURCE)
-@opt_global_id(
+@opt_identifier(
     required=False,
     default=None,
     help=GLOBAL_ID_HELP,
@@ -48,7 +48,7 @@ def privilege_list(record_type: str, global_id: str, out_format: str):
 @privilege.command('list-by-role', hidden=hide_admin_cmds())
 @opt_role()
 @opt_record_type(default=TENANT_RESOURCE)
-@opt_global_id(
+@opt_identifier(
     required=False,
     default=None,
     help=GLOBAL_ID_HELP,
@@ -65,7 +65,7 @@ def privilege_list_by_role(role: str, record_type: str, global_id: str, out_form
 @privilege.command('list-by-user', hidden=hide_admin_cmds())
 @opt_user_object_id()
 @opt_record_type(default=TENANT_RESOURCE)
-@opt_global_id(
+@opt_identifier(
     required=False,
     default=None,
     help=GLOBAL_ID_HELP,
@@ -82,7 +82,7 @@ def privilege_list_by_user(user_id: str, record_type: str, global_id: str, out_f
 @privilege.command('assign', hidden=hide_admin_cmds())
 @opt_user_global_id()
 @opt_role()
-@opt_global_id(
+@opt_identifier(
     required=False,
     default=None,
     help=GLOBAL_ID_HELP,
@@ -101,7 +101,7 @@ def privilege_assign(
 
 
 @privilege.command('unassign', hidden=hide_admin_cmds())
-@opt_global_id(
+@opt_identifier(
     required=False,
     default=None,
     help=GLOBAL_ID_HELP,

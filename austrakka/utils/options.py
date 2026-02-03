@@ -508,14 +508,13 @@ def opt_user_object_id(**attrs: t.Any):
     )
 
 
-def opt_global_id(**attrs: t.Any):
+def opt_identifier(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'global ID',
+        'help': 'Accepts an ID; global ID or an abbreviation',
     }
     return create_option(
-        '-gid',
-        '--global-id',
+        '-id',
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -529,20 +528,6 @@ def opt_user_global_id(**attrs: t.Any):
     return create_option(
         '-ugi',
         '--user-global-id',
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-    
-def opt_global_ids(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'multiple': True,
-        'help': 'The IDs of the entities. Use a comma (,) to separate '
-                'multiple IDs.',
-    }
-    return create_option(
-        '-gis',
-        '--global-ids',
         type=click.STRING,
         **{**defaults, **attrs}
     )

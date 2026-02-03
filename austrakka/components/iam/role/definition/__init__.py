@@ -28,7 +28,7 @@ def role_access_list(role: str, view_type: str, out_format: str):
 
 @definition.command('add', hidden=hide_admin_cmds())
 @opt_role()
-@opt_global_ids(help="Comma separated list of scope global ids to assign to the role")
+@opt_identifier(help="The id of the scope access definition enry to remove", multiple=True)
 def role_definition_add(role: str, global_ids: list[str]):
     """
     Add scope access definition to a role.
@@ -37,7 +37,7 @@ def role_definition_add(role: str, global_ids: list[str]):
 
 
 @definition.command('remove', hidden=hide_admin_cmds())
-@opt_global_id(help="The id of the scope access definition enry to remove")
+@opt_identifier(help="The id of the scope access definition enry to remove")
 def role_definition_remove(global_id: str):
     """
     Remove scope access definition from a role.
