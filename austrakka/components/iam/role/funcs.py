@@ -1,4 +1,5 @@
-from austrakka.utils.helpers.output import call_get_and_print_view_type
+from austrakka.utils.helpers.output import call_get_and_print
+from austrakka.utils.output import get_viewtype_columns
 from austrakka.utils.paths import ROLES_V2_PATH, ROOT_TYPES_PATH
 from austrakka.utils.subcommands.shared_funcs import get_role_by_name, get_role_global_id_by_name
 from austrakka.utils.api import api_get, api_post, api_patch, api_delete
@@ -26,12 +27,11 @@ def list_roles(view_type: str, out_format: str):
     """
     Get the list of roles
     """
-    call_get_and_print_view_type(
+    columns = get_viewtype_columns(view_type, list_compact_fields, list_more_fields)
+    call_get_and_print(
         ROLES_V2_PATH, 
-        view_type, 
-        list_compact_fields, 
-        list_more_fields,
         out_format, 
+        restricted_cols=columns
     )
 
 
