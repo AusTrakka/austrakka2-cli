@@ -1,7 +1,5 @@
 from typing import List
 
-import pandas as pd
-
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_patch
 from austrakka.utils.misc import logger_wraps

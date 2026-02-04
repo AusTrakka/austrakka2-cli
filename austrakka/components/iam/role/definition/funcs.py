@@ -1,6 +1,7 @@
 from austrakka.utils.api import api_post, api_delete
-from austrakka.utils.helpers.output import call_get_and_print_view_type
+from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
+from austrakka.utils.output import get_viewtype_columns
 from austrakka.utils.paths import ROLES_V2_PATH
 from austrakka.utils.subcommands.shared_funcs import get_role_global_id_by_name
 
@@ -27,13 +28,11 @@ def list_role_definitions(role: str, view_type: str, out_format: str):
     """
     List scope access definitions defined for a role.
     """
-
-    call_get_and_print_view_type(
+    columns = get_viewtype_columns(view_type, list_compact_fields, list_more_fields)
+    call_get_and_print(
         f"{ROLES_V2_PATH}/{get_role_global_id_by_name(role)}/ScopeAccessDefinition",
-        view_type,
-        list_compact_fields,
-        list_more_fields,
         out_format,
+        restricted_cols=columns,
     )
 
 
