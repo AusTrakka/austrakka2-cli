@@ -29,11 +29,11 @@ def role_access_list(role: str, view_type: str, out_format: str):
 @definition.command('add', hidden=hide_admin_cmds())
 @opt_role()
 @opt_identifier(help="The id of the scope access definition enry to remove", multiple=True)
-def role_definition_add(role: str, global_ids: list[str]):
+def role_definition_add(role: str, global_id: list[str]):
     """
     Add scope access definition to a role.
     """
-    add_role_definition(role, global_ids)
+    add_role_definition(role, global_id)
 
 
 @definition.command('remove', hidden=hide_admin_cmds())

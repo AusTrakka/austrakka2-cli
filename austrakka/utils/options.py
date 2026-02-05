@@ -515,6 +515,7 @@ def opt_identifier(**attrs: t.Any):
     }
     return create_option(
         '-id',
+        'global_id', # id is reserved, so just keeping this as global_id
         type=click.STRING,
         **{**defaults, **attrs}
     )
