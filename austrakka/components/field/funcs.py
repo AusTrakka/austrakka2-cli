@@ -2,13 +2,13 @@ import pandas as pd
 
 from loguru import logger
 
-from austrakka.utils.enums.view_type import COMPACT
+from austrakka.utils.helpers.fieldtype import get_fieldtype_by_name_v2
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dataframe, print_dataframe_viewtype
+from austrakka.utils.output import print_dataframe, get_viewtype_columns
 from austrakka.utils.paths import METADATA_COLUMN_V2_PATH
 
 
@@ -40,13 +40,12 @@ def list_fields(view_type: str, out_format: str):
         result['metaDataColumnValidValues'] = result['metaDataColumnValidValues'].apply(
             lambda x: ';'.join(x) if x else ''
         )
-        
-    print_dataframe_viewtype(
-        result, 
-        view_type,
-        list_compact_fields,
-        list_more_fields,
-        out_format
+    
+    columns = get_viewtype_columns(view_type, list_compact_fields, list_more_fields)
+    print_dataframe(
+        result,
+        out_format,
+        restricted_cols=columns
     )
 
 
@@ -178,7 +177,7 @@ def list_field_projects(name: str, out_format: str):
     display_columns = ['projectFieldId', 'projectAbbrev', 'fieldName',
                        'fieldSource', 'analysisLabels']
 
-    print_dataframe_viewtype(pd.json_normalize(result), COMPACT, display_columns, [], out_format)
+    print_dataframe(result[display_columns], out_format)
 
 
 @logger_wraps()
