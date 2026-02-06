@@ -101,22 +101,24 @@ def privilege_assign(
 
 
 @privilege.command('unassign', hidden=hide_admin_cmds())
+@opt_user_global_id()
+@opt_role()
 @opt_identifier(
     required=False,
     default=None,
     help=GLOBAL_ID_HELP,
 )
 @opt_record_type(default=TENANT_RESOURCE)
-@click.argument('privilege-global-id', type=str)
 def privilege_unassign(
+        user_global_id: str,
+        role: str,
         global_id: str,
-        record_type: str,
-        privilege_global_id: str):
+        record_type: str):
     """
     Remove privileges to access a record from a user
     """
     validate_global_id(record_type, global_id)
-    unassign_privilege(global_id, record_type, privilege_global_id)
+    unassign_privilege(user_global_id, role, global_id, record_type)
 
 
 def validate_global_id(record_type: str, global_id: Union[str, None]):
