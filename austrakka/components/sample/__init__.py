@@ -2,7 +2,8 @@
 from io import BufferedReader
 import click
 
-from austrakka.utils.options import opt_seq_id, opt_group_name, opt_project, options_seq_id_or_file
+from austrakka.utils.options import opt_seq_id, opt_group_name, opt_project, options_seq_id_or_file, \
+    opt_timezone
 from austrakka.utils.option_utils import get_seq_list
 from austrakka.utils.option_utils import RequiredMutuallyExclusiveOption
 from austrakka.utils.cmd_filter import hide_admin_cmds
@@ -47,9 +48,10 @@ def owner_change(old_owner: str, new_owner: str, seq_id: [str], file: BufferedRe
 @sample.command('show', hidden=hide_admin_cmds())
 @opt_seq_id(multiple=False)
 @object_format_option()
-def sample_show(seq_id: str, out_format: str):
+@opt_timezone()
+def sample_show(seq_id: str, out_format: str, timezone: str):
     """Show all available information about a sample record."""
-    show_sample(seq_id, out_format)
+    show_sample(seq_id, out_format, timezone)
 
 
 @sample.command('unshare')

@@ -8,7 +8,7 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_abbrev, \
     opt_is_active, \
     opt_type, \
-    opt_view_type, opt_project_client_type, opt_merge_algorithm
+    opt_view_type, opt_project_client_type, opt_merge_algorithm, opt_timezone
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_dashboard_name
 from austrakka.utils.options import opt_description
@@ -132,8 +132,9 @@ def dashboard_get(project_abbrev: str, out_format: str):
 @project.command('list', help=f'List projects in {PROG_NAME}')
 @opt_view_type()
 @table_format_option()
-def projects_list(view_type: str,out_format: str):
-    list_projects(view_type, out_format)
+@opt_timezone()
+def projects_list(view_type: str, out_format: str, timezone: str):
+    list_projects(view_type, out_format, timezone)
 
     
 @project.command('set-type')

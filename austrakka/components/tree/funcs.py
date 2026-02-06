@@ -9,9 +9,12 @@ from austrakka.utils.paths import TREE_PATH
 
 
 @logger_wraps()
-def list_trees(project_abbrev: str, show_disabled: bool, out_format: str):
+def list_trees(project_abbrev: str, show_disabled: bool, out_format: str, timezone: str):
     call_get_and_print(
-        f'{TREE_PATH}/project/{project_abbrev}?includeall={show_disabled}', out_format)
+        f'{TREE_PATH}/project/{project_abbrev}?includeall={show_disabled}',
+        out_format=out_format,
+        timezone=timezone,
+    )
 
 
 @logger_wraps()
