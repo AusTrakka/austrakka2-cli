@@ -3,18 +3,18 @@ from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.output import get_viewtype_columns
 from austrakka.utils.paths import TENANT_PATH
 
-def show_raw_log(global_id: str, out_format: str):
+def show_raw_log(global_id: str, out_format: str, timezone: str):
     '''
     Get a single raw log by global ID.
     '''
     call_get_and_print(
         f"{TENANT_PATH}/RawLog/{global_id}",
         out_format,
+        timezone=timezone,
     )
-    
 
-def list_raw_logs(spec: str, start: str, end: str, submitter: str,
-                  allow_no_filters: bool, out_format: str, view_type: str):
+def list_raw_logs(spec: str, start: str, end: str, submitter: str, allow_no_filters: bool,
+                  out_format: str, view_type: str, timezone: str):
     '''
     Get a list of raw log entries.
     '''
@@ -39,5 +39,6 @@ def list_raw_logs(spec: str, start: str, end: str, submitter: str,
         f"{TENANT_PATH}/RawLogs",
         out_format,
         params=params,
-        restricted_cols=columns
+        restricted_cols=columns,
+        timezone=timezone,
     )
