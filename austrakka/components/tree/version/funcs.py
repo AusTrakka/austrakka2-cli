@@ -24,11 +24,12 @@ def add_tree_version(file: BufferedReader, tree_abbrev: str):
 
 
 @logger_wraps()
-def list_tree_versions(out_format: str, tree_abbrev: str):
+def list_tree_versions(out_format: str, tree_abbrev: str, timezone: str):
     tree = get_tree_by_abbrev(tree_abbrev)
     call_get_and_print(
         f'{TREE_VERSION_PATH}/{tree["treeId"]}/{ALL_VERSIONS}',
-        out_format
+        out_format=out_format,
+        timezone=timezone,
     )
 
 

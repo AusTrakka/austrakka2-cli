@@ -13,13 +13,16 @@ from austrakka.utils.paths import PLOT_PATH
 @logger_wraps()
 def list_plots(
         project_abbrev: str,
-        out_format: str
+        out_format: str,
+        timezone: str,
 ):
     # get project ID
     project = get_project_by_abbrev(project_abbrev)
     call_get_and_print(
         f'{PLOT_PATH}/project/{project["projectId"]}',
-        out_format)
+        out_format,
+        timezone=timezone,
+    )
 
 
 @logger_wraps()

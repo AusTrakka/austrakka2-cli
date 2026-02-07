@@ -3,7 +3,7 @@ import click
 from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import opt_name
+from austrakka.utils.options import opt_name, opt_timezone
 from austrakka.utils.options import opt_abbrev
 from austrakka.utils.options import opt_is_active
 from austrakka.utils.options import opt_country
@@ -27,8 +27,9 @@ org.add_command(log_subcommands(ORG_RESOURCE))
 
 @org.command('list', help=f"List organisations in {PROG_NAME}")
 @table_format_option()
-def org_list(out_format: str):
-    list_orgs(out_format)
+@opt_timezone()
+def org_list(out_format: str, timezone: str):
+    list_orgs(out_format, timezone)
 
 
 @org.command('add', hidden=hide_admin_cmds(), help=f"Add organisations in {PROG_NAME}")

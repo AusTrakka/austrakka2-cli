@@ -7,7 +7,7 @@ from austrakka.components.plot.funcs import add_plot, update_plot, disable_plot,
     list_plot_types, list_plots
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import opt_abbrev, opt_plottype, opt_plotspec
+from austrakka.utils.options import opt_abbrev, opt_plottype, opt_plotspec, opt_timezone
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_is_active
 from austrakka.utils.options import opt_project
@@ -25,8 +25,9 @@ def plot(ctx):
 @plot.command('list', help=f'List plots in {PROG_NAME}, by project')
 @opt_project(required=True)
 @table_format_option()
-def plot_list(project: str, out_format: str):
-    list_plots(project, out_format)
+@opt_timezone()
+def plot_list(project: str, out_format: str, timezone: str):
+    list_plots(project, out_format, timezone)
 
 
 @plot.command('add', hidden=hide_admin_cmds(), help=f"Add plot to a project in {PROG_NAME}")

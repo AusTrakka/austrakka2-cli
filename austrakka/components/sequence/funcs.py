@@ -482,6 +482,7 @@ def list_sequences(
         group_name: str,
         seq_type: SeqType = None,
         seq_ids: List[str] = None,
+        timezone: str = None,
 ):
     data = _get_seq_data(
         group_name,
@@ -491,6 +492,7 @@ def list_sequences(
     print_dataframe(
         data,
         out_format,
+        timezone=timezone,
     )
 
 

@@ -102,7 +102,6 @@ def add_version_proforma(
     _validate_add_version_args(inherit, required_columns, optional_columns, remove_field)
 
     data = api_get(path=f'{PROFORMA_PATH}/abbrev/{abbrev}')['data']
-    pf_id = data['proFormaId']
 
     current_field_spec = {field['metaDataColumnName']: field['isRequired']
                           for field in data['columnMappings']}
@@ -131,7 +130,7 @@ def add_version_proforma(
     logger.info(f'Updating pro forma: {abbrev} with {len(column_names)} fields')
 
     api_put(
-        path=f'{PROFORMA_PATH}/{pf_id}',
+        path=f'{PROFORMA_PATH}/{abbrev}',
         data={
             "abbreviation": abbrev,
             "columnNames": column_names
@@ -264,7 +263,7 @@ def pull_proforma(abbrev: str, n_previous: int = None):
 
 
 @logger_wraps()
-def list_proformas(view_type: str, out_format: str):
+def list_proformas(view_type: str, out_format: str, timezone: str):
     response = api_get(
         path=PROFORMA_PATH,
         params={
@@ -292,7 +291,8 @@ def list_proformas(view_type: str, out_format: str):
     print_dataframe(
         result,
         out_format,
-        columns
+        restricted_cols=columns,
+        timezone=timezone,
     )
 
 

@@ -9,7 +9,7 @@ from austrakka.components.tree.funcs import add_tree
 from austrakka.components.tree.funcs import update_tree
 from austrakka.utils.cmd_filter import show_admin_cmds
 from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import opt_abbrev, opt_file, opt_show_disabled
+from austrakka.utils.options import opt_abbrev, opt_file, opt_show_disabled, opt_timezone
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_is_active
@@ -30,9 +30,10 @@ tree.add_command(version) if show_admin_cmds() else None
 @opt_project(required=True)
 @opt_show_disabled()
 @table_format_option()
-def tree_list(project: str, show_disabled: bool, out_format: str):
+@opt_timezone()
+def tree_list(project: str, show_disabled: bool, out_format: str, timezone: str):
     '''List trees in AusTrakka'''
-    list_trees(project, show_disabled, out_format)
+    list_trees(project, show_disabled, out_format, timezone)
 
 
 @tree.command('add')
