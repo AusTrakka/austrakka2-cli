@@ -2,7 +2,6 @@ import pandas as pd
 
 from loguru import logger
 
-from austrakka.utils.helpers.fieldtype import get_fieldtype_by_name_v2
 from austrakka.utils.api import api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
@@ -64,8 +63,6 @@ def add_field(
     """
     Add a field (MetaDataColumn) to AusTrakka.
     """
-    field_type = get_fieldtype_by_name_v2(typename)
-
     if can_visualise and typename in ["date", "number", "string"]:
         logger.warning(
             f"Setting viz flag on field {name} of type {typename}. "
@@ -87,8 +84,7 @@ def add_field(
             "ColumnName": name,
             "CanVisualise": can_visualise,
             "ColumnOrder": column_order,
-            "MetaDataColumnTypeId": field_type["metaDataColumnTypeId"],
-            "MetaDataColumnTypeGlobalId": field_type["globalId"],
+            "ColumnType": typename,
             "IsActive": True,
             "IsPrivate": private,
             'GeoField': geo_field,
@@ -125,8 +121,7 @@ def update_field(
         patch_fields["columnName"] = new_name
 
     if typename is not None:
-        field_type = get_fieldtype_by_name_v2(typename)
-        patch_fields["metaDataColumnTypeGlobalId"] = field_type["globalId"]
+        patch_fields["columnType"] = typename
 
     if can_visualise is not None:
         if can_visualise:
