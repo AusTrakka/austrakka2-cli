@@ -150,7 +150,8 @@ def proforma_add_version(
             {PROG_NAME.lower()} proforma attach [PROFORMA_ABBREV] 
             ~~This will pull the most recent existing file from a previous proforma version
 
-            {PROG_NAME.lower()} proforma attach [PROFORMA_ABBREV] -f [FILEPATH] ~~uploads and attaches a new file
+            {PROG_NAME.lower()} proforma attach [PROFORMA_ABBREV] -f [FILEPATH]
+            ~~uploads and attaches a new file
 
             {PROG_NAME.lower()} proforma attach [PROFORMA_ABBREV] -id [PROFORMA-VERSION-ID]
             ~~This will pull an existing file from a previous proforma version

@@ -107,6 +107,7 @@ def _call_batched_submission(
     if filepath.suffix != '.csv':
         raise ValueError('File must be .csv or .xlsx')
     
+    # pylint: disable=possibly-used-before-assignment
     num_rows = df.shape[0]
     if num_rows <= batch_size:
         # Just upload the original file

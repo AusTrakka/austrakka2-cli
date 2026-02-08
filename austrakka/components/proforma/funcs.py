@@ -12,7 +12,7 @@ from austrakka.utils.api import api_put
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from austrakka.utils.helpers.upload import upload_multipart
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import print_dataframe, log_response, print_dataframe_viewtype
+from austrakka.utils.output import print_dataframe, log_response, get_viewtype_columns
 from austrakka.utils.paths import PROFORMA_PATH
 from austrakka.utils.retry import retry
 from austrakka.utils.fs import FileHash, get_hash
@@ -102,7 +102,6 @@ def add_version_proforma(
     _validate_add_version_args(inherit, required_columns, optional_columns, remove_field)
 
     data = api_get(path=f'{PROFORMA_PATH}/abbrev/{abbrev}')['data']
-    pf_id = data['proFormaId']
 
     current_field_spec = {field['metaDataColumnName']: field['isRequired']
                           for field in data['columnMappings']}
@@ -131,7 +130,7 @@ def add_version_proforma(
     logger.info(f'Updating pro forma: {abbrev} with {len(column_names)} fields')
 
     api_put(
-        path=f'{PROFORMA_PATH}/{pf_id}',
+        path=f'{PROFORMA_PATH}/{abbrev}',
         data={
             "abbreviation": abbrev,
             "columnNames": column_names
@@ -288,12 +287,11 @@ def list_proformas(view_type: str, out_format: str):
                 inplace=True)
 
     # pylint: disable=duplicate-code
-    print_dataframe_viewtype(
+    columns = get_viewtype_columns(view_type, list_compact_fields, list_more_fields)
+    print_dataframe(
         result,
-        view_type,
-        list_compact_fields,
-        list_more_fields,
-        out_format
+        out_format,
+        columns
     )
 
 
