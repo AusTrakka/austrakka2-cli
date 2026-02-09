@@ -5,7 +5,7 @@ import click
 
 from austrakka.utils.enums.privilege_level import (
     TRAKKA_ADMIN_LEVEL,
-    FUNCTIONAL_ADMIN_LEVEL,
+    ADMIN_LEVEL,
     USER_LEVEL)
 
 from austrakka.utils.enums.seq import SeqType
@@ -746,7 +746,7 @@ def opt_privilege_level(**attrs: t.Any):
     return create_option(
         '-pv',
         '--privilege-level',
-        type=click.Choice([TRAKKA_ADMIN_LEVEL, FUNCTIONAL_ADMIN_LEVEL, USER_LEVEL]),
+        type=click.Choice([TRAKKA_ADMIN_LEVEL, ADMIN_LEVEL, USER_LEVEL]),
         **{**defaults, **attrs}
     )
 

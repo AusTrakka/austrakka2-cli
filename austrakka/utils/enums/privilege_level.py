@@ -1,3 +1,3 @@
 TRAKKA_ADMIN_LEVEL = 'TrakkaAdmin'
-FUNCTIONAL_ADMIN_LEVEL = 'Admin'
+ADMIN_LEVEL = 'Admin'
 USER_LEVEL = 'User'
