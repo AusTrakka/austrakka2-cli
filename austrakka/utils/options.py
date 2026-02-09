@@ -4,7 +4,7 @@ import typing as t
 import click
 
 from austrakka.utils.enums.privilege_level import (
-    AUSTRAKKA_ADMIN_LEVEL,
+    TRAKKA_ADMIN_LEVEL,
     FUNCTIONAL_ADMIN_LEVEL,
     USER_LEVEL)
 
@@ -746,7 +746,7 @@ def opt_privilege_level(**attrs: t.Any):
     return create_option(
         '-pv',
         '--privilege-level',
-        type=click.Choice([AUSTRAKKA_ADMIN_LEVEL, FUNCTIONAL_ADMIN_LEVEL, USER_LEVEL]),
+        type=click.Choice([TRAKKA_ADMIN_LEVEL, FUNCTIONAL_ADMIN_LEVEL, USER_LEVEL]),
         **{**defaults, **attrs}
     )
 
