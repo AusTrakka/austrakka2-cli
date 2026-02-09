@@ -1,4 +1,3 @@
-from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -292,4 +291,4 @@ def get_viewtype_columns(
 
 def read_pd(data, out_format: str) -> DataFrame:
     max_level = -1 if out_format in object_format_types() else 9999
-    return(pd.json_normalize(data, max_level=max_level))
+    return pd.json_normalize(data, max_level=max_level)

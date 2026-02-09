@@ -898,7 +898,8 @@ def opt_timezone(**attrs: t.Any):
     defaults = {
         'required': False,
         'default': 'local',
-        'help': 'Timezone to use for any date/time output. Can be "local" to use your local timezone, '
+        'help': 'Timezone to use for any date/time output. '
+            'Can be "local" to use your local timezone, '
             '"original" to use the timezone provided by the server, '
             'or a recognised timezone string such as "UTC", "Australia/Perth" or "Europe/Madrid".'
     }
