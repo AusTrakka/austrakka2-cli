@@ -7,4 +7,4 @@ def resolve_share_target(group_name: str = None, project: str = None,):
         group_name = project+'-Group' 
         
     return group_name
-    
+   
