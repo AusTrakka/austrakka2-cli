@@ -131,7 +131,7 @@ def set_dashboard(project_abbreviation: str, dashboard_name: str):
 @logger_wraps()
 def list_projects(view_type: str, out_format: str, timezone: str):
     columns = get_viewtype_columns(view_type, compact_fields, more_fields)
-    result = call_get_and_print(
+    call_get_and_print(
         PROJECT_PATH,
         out_format,
         restricted_cols=columns,

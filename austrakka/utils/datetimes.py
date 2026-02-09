@@ -1,6 +1,7 @@
-import pandas as pd
 from datetime import datetime
 from loguru import logger
+
+import pandas as pd
 
 ORIGINAL_TIMEZONE = 'original'
 LOCAL_TIMEZONE = 'local'
@@ -21,7 +22,7 @@ def dt_format_and_convert(dt_series: pd.Series, timezone: str = None) -> pd.Seri
         # we have a wrong column/format. Re-throw an exception if we could not parse anything.
         if result.isna().all() and not dt_series.isna().all():
             raise ValueError("Could not parse any datetimes in the column.")
-    except Exception:
+    except ValueError:
         logger.warning("Could not parse datetime column; will not format or convert timezone.")
         return dt_series
     
