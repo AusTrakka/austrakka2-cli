@@ -1,6 +1,6 @@
 import click
 
-from austrakka.utils.options import opt_global_id, opt_view_type, opt_timezone
+from austrakka.utils.options import opt_identifier, opt_view_type, opt_timezone
 from austrakka.utils.output import object_format_option, table_format_option
 from austrakka.components.admin.rawlog.funcs import show_raw_log, list_raw_logs
 
@@ -11,7 +11,7 @@ def rawlog(ctx):
     ctx.context = ctx.parent.context
 
 @rawlog.command('show')
-@opt_global_id(help="Raw log global ID")
+@opt_identifier(help="Raw log global ID")
 @object_format_option()
 @opt_timezone()
 def rawlog_show(global_id: str, out_format: str, opt_timezone: str):
