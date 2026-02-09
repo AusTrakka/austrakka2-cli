@@ -2,8 +2,8 @@
 from io import BufferedReader
 import click
 
-from austrakka.utils.options import opt_seq_id, opt_group_name, opt_project, options_seq_id_or_file, \
-    opt_timezone
+from austrakka.utils.options import (opt_seq_id, opt_group_name, opt_project, 
+                                     options_seq_id_or_file, opt_timezone)
 from austrakka.utils.option_utils import get_seq_list
 from austrakka.utils.option_utils import RequiredMutuallyExclusiveOption
 from austrakka.utils.cmd_filter import hide_admin_cmds
