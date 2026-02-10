@@ -57,11 +57,16 @@ def assign_privilege(
 
 @logger_wraps()
 def unassign_privilege(
+        user_global_id: str,
+        role: str,
         record_global_id: str,
-        record_type: str,
-        privilege_global_id: str
+        record_type: str
 ):
     api_delete(
-        path=f"{get_priv_path(record_type, record_global_id)}/privilege/{privilege_global_id}",
-        custom_headers={}
+        path=f"{get_priv_path(record_type, record_global_id)}/privilege",
+        custom_headers={},
+        params = {
+            'roleIdentifier': role,
+            'userIdentifier': user_global_id,
+        },
     )
