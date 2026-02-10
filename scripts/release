@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+
+if [ -n "$1" ]; then
+    if [[ -d $1 ]]; then
+        RELEASE_DIR=$1
+    else
+        echo >&2 path passed is not a directory
+        exit 1
+    fi
+else
+    echo >&2 Must pass a directory to place release in
+    exit 1
+fi
+
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+VERSION=$(grep __version__ "$SCRIPT_DIR/../austrakka/__init__.py" | awk '{print $3}' | sed s/\"//g)
+OS=$(uname | awk '{print tolower($0)}')
+ZIP_NAME=trakka-"$VERSION"-"$OS".zip
+
+BUILD_DIR=$(mktemp -d)
+mkdir -p "$BUILD_DIR"
+
+. "$SCRIPT_DIR"/build "$BUILD_DIR"
+
+cd "$BUILD_DIR" || exit 1
+zip -r "$RELEASE_DIR/$ZIP_NAME" ./*
+
+echo "Release zip created at $RELEASE_DIR/$ZIP_NAME"

@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning].
 - Commands which display datetimes now have better default datetime formatting and support a --timezone option
 to specify the timezone for displayed datetimes. This defaults to the local timezone.
 
+## [0.79.0] - 2026-02-09
+
+### Added
+
+- `project [disable|enable]` commands.
+
+### Changed
+- `proforma add-version` accepts abbreviation.
+- `-gid` options are now `-id` and accept either a GUID or abbreviation for an entity.
+- `[-vt|--view-type]` is ignored for `[-f|--format] [json|html]`.
+
+### Fixed
+- Issue where `[-f|--format] [json|html]` would flatten one level of the returned entity.
+
 ## [0.78.0] - 2026-01-28
 
 ### Added
