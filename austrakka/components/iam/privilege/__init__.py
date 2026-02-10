@@ -19,7 +19,7 @@ from austrakka.utils.options import (
 
 from austrakka.utils.output import table_format_option
 
-GLOBAL_ID_HELP="Global ID. Required for non-tenant"
+GLOBAL_ID_HELP="ID; either a global ID or abbreviation. Required for non-tenant"
 
 @click.group()
 @click.pass_context
