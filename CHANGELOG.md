@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.79.0] - 2026-02-09
+
+### Added
+
+- `project [disable|enable]` commands.
+
+### Changed
+- `proforma add-version` accepts abbreviation.
+- `-gid` options are now `-id` and accept either a GUID or abbreviation for an entity.
+- `[-vt|--view-type]` is ignored for `[-f|--format] [json|html]`.
+
+### Fixed
+- Issue where `[-f|--format] [json|html]` would flatten one level of the returned entity.
+
 ## [0.78.0] - 2026-01-28
 
 ### Added
