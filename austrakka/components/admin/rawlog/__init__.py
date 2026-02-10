@@ -14,7 +14,7 @@ def rawlog(ctx):
 @opt_identifier(help="Raw log global ID")
 @object_format_option()
 @opt_timezone()
-def rawlog_show(global_id: str, out_format: str, opt_timezone: str):
+def rawlog_show(global_id: str, out_format: str, timezone: str):
     '''
     Get a single raw log by global ID.
     '''
@@ -22,8 +22,8 @@ def rawlog_show(global_id: str, out_format: str, opt_timezone: str):
 
 @rawlog.command('list')
 @click.option('--spec', help='Type class of raw event to filter on', required=False)
-@click.option('--start', help='Start datetime to filter from (ISO 8601)', required=False)
-@click.option('--end', help='End datetime to filter to (ISO 8601)', required=False)
+@click.option('--start', help='Start datetime to filter from', required=False)
+@click.option('--end', help='End datetime to filter to', required=False)
 @click.option('--submitter', help='Submitter global ID to filter on', required=False)
 @click.option('--allow-no-filters', is_flag=True, default=False,
               help="Allow listing without any filters, which will return ALL raw logs")
