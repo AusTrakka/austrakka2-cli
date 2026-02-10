@@ -2,7 +2,8 @@ import click
 
 from austrakka.utils.options import opt_identifier, opt_view_type, opt_timezone
 from austrakka.utils.output import object_format_option, table_format_option
-from austrakka.components.admin.rawlog.funcs import show_raw_log, list_raw_logs
+from austrakka.components.admin.rawlog.funcs import show_raw_log, list_raw_logs, regenerate_raw_log
+
 
 @click.group('rlog')
 @click.pass_context
@@ -36,3 +37,8 @@ def rawlog_list(spec: str, start: str, end: str, submitter: str, allow_no_filter
     Get a list of raw logs entries.
     '''
     list_raw_logs(spec, start, end, submitter, allow_no_filters, out_format, view_type, timezone)
+
+@rawlog.command('regenerate')
+@opt_identifier(help="Raw log global ID")
+def rawlog_regenerate(global_id: str):
+    regenerate_raw_log(global_id)
