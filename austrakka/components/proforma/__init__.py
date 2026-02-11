@@ -222,9 +222,8 @@ def proforma_generate(proforma_abbrev: str, restrict, nndss, metadata_class):
 @proforma.command('list', help=f'List metadata proformas in {PROG_NAME}')
 @opt_view_type()
 @table_format_option()
-@opt_timezone()
-def proforma_list(view_type: str, out_format: str, timezone: str):
-    list_proformas(view_type, out_format, timezone)
+def proforma_list(view_type: str, out_format: str):
+    list_proformas(view_type, out_format)
 
 
 @proforma.command('show')

@@ -263,7 +263,7 @@ def pull_proforma(abbrev: str, n_previous: int = None):
 
 
 @logger_wraps()
-def list_proformas(view_type: str, out_format: str, timezone: str):
+def list_proformas(view_type: str, out_format: str):
     response = api_get(
         path=PROFORMA_PATH,
         params={
@@ -291,8 +291,7 @@ def list_proformas(view_type: str, out_format: str, timezone: str):
     print_dataframe(
         result,
         out_format,
-        restricted_cols=columns,
-        timezone=timezone,
+        columns
     )
 
 

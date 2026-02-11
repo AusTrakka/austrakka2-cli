@@ -10,7 +10,7 @@ from austrakka.utils.options import \
     opt_email_address, \
     opt_is_active, \
     opt_user_no_dl_quota, \
-    opt_user_monthly_dl_quota_bytes, opt_user_position, opt_timezone
+    opt_user_monthly_dl_quota_bytes, opt_user_position
 from austrakka.utils.options import opt_is_austrakka_process
 from austrakka.utils.options import opt_user_object_id
 from austrakka.utils.options import opt_organisation
@@ -37,9 +37,8 @@ user.add_command(log_subcommands(USER_RESOURCE))
 @user.command('list', help=f"List users in {PROG_NAME}")
 @opt_show_disabled()
 @table_format_option()
-@opt_timezone()
-def user_list(show_disabled: bool, out_format: str, timezone: str):
-    list_users(show_disabled, out_format, timezone)
+def user_list(show_disabled: bool, out_format: str):
+    list_users(show_disabled, out_format)
 
 
 @user.command('add', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')

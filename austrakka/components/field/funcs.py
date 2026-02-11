@@ -157,13 +157,9 @@ def update_field(
 
 
 @logger_wraps()
-def list_field_groups(name: str, out_format: str, timezone: str):
+def list_field_groups(name: str, out_format: str):
     """List groups that a metadata field belongs to"""
-    call_get_and_print(
-        f"{METADATA_COLUMN_V2_PATH}/{name}/groups",
-        out_format,
-        timezone=timezone,
-    )
+    call_get_and_print(f"{METADATA_COLUMN_V2_PATH}/{name}/groups", out_format)
 
 
 @logger_wraps()

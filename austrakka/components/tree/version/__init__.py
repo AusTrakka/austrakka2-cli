@@ -6,7 +6,7 @@ from .funcs import add_tree_version
 from .funcs import list_tree_versions
 from .funcs import disable_tree_version
 from .funcs import enable_tree_version
-from ....utils.options import opt_tree, opt_timezone
+from ....utils.options import opt_tree
 from ....utils.options import opt_tree_version_id
 from ....utils.output import table_format_option
 
@@ -29,10 +29,9 @@ def tree_add(newick: BufferedReader, tree: str):
 @version.command('list')
 @opt_tree()
 @table_format_option()
-@opt_timezone()
-def tree_list(tree: str, out_format: str, timezone: str):
+def tree_list(tree: str, out_format: str):
     '''List all uploaded versions of a specified tree'''
-    list_tree_versions(out_format, tree, timezone)
+    list_tree_versions(out_format, tree)
 
 
 @version.command('disable')
