@@ -8,8 +8,9 @@ and this project adheres to [Semantic Versioning].
 ## [Unreleased]
 
 ### Added
-- Commands which display datetimes now have better default datetime formatting and support a --timezone option
-to specify the timezone for displayed datetimes. This defaults to the local timezone.
+- Added a top-level --timezone option, which can be used to set the default timezone for datetime
+display and parsing. This defaults to the local timezone if not set.
+- Better formatting for displayed datetimes, incluing default timezone conversion.
 - Admin-only commands added to interact with raw log entries.
 
 ## [0.79.0] - 2026-02-09
