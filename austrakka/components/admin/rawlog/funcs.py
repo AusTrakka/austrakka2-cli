@@ -54,6 +54,6 @@ def regenerate_raw_log(global_id: str):
     # pylint: disable=fixme
     # TODO this path should really be RawLog/{id}/Regenerate, but the API needs updating
     api_post(
-        f"{TENANT_PATH}/RawLog/Regenerate/{global_id}",
+        f"{TENANT_PATH}/RawLog/{global_id}/Regenerate",
         data={'rawLogGlobalId': global_id}
     )
