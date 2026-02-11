@@ -10,9 +10,7 @@ def list_logs(
         record_type: str,
         record_global_id: str,
         out_format: str,
-        view_type: str,
-        timezone: str,
-):
+        view_type: str):
     
     compact_fields = ['eventTime','resourceType','resourceName','eventType',
                       'eventStatus','submitterDisplayName']
@@ -35,7 +33,6 @@ def list_logs(
     print_dataframe(
         result,
         out_format,
-        restricted_cols=display_cols,
-        timezone=timezone,
+        restricted_cols=display_cols
     )
     
