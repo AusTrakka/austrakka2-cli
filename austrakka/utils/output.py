@@ -100,7 +100,9 @@ def print_dataframe(
         restricted_cols: List[str] = None,
         datetime_cols: List[str] = None,
 ):
-    datetime_cols = DEFAULT_DATETIME_COLUMNS if datetime_cols is None else datetime_cols
+    datetime_cols = DEFAULT_DATETIME_COLUMNS \
+        if datetime_cols is None \
+        else datetime_cols + DEFAULT_DATETIME_COLUMNS
     
     if output_format in object_format_types():
         restricted_cols = None
