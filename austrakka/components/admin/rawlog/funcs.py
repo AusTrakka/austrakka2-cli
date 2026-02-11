@@ -1,9 +1,11 @@
-
+from austrakka.utils.datetimes import dt_parse
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.api import api_post
+from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import get_viewtype_columns
 from austrakka.utils.paths import TENANT_PATH
 
+@logger_wraps()
 def show_raw_log(global_id: str, out_format: str, timezone: str):
     '''
     Get a single raw log by global ID.
@@ -30,9 +32,9 @@ def list_raw_logs(spec: str, start: str, end: str, submitter: str, allow_no_filt
     if spec is not None:
         params["spec"] = spec
     if start is not None:
-        params["startDateTime"] = start
+        params["startDateTime"] = dt_parse(start)
     if end is not None:
-        params["endDateTime"] = end
+        params["endDateTime"] = dt_parse(end)
     if submitter is not None:
         params["submitterGlobalId"] = submitter
     
@@ -44,6 +46,7 @@ def list_raw_logs(spec: str, start: str, end: str, submitter: str, allow_no_filt
         restricted_cols=columns,
     )
 
+@logger_wraps()
 def regenerate_raw_log(global_id: str):
     '''
     Regenerate a raw log entry by global ID.
