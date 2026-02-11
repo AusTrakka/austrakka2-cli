@@ -6,14 +6,13 @@ from austrakka.utils.output import get_viewtype_columns
 from austrakka.utils.paths import TENANT_PATH
 
 @logger_wraps()
-def show_raw_log(global_id: str, out_format: str, timezone: str):
+def show_raw_log(global_id: str, out_format: str):
     '''
     Get a single raw log by global ID.
     '''
     call_get_and_print(
         f"{TENANT_PATH}/RawLog/{global_id}",
         out_format,
-        timezone=timezone,
     )
 
 @logger_wraps()
@@ -51,8 +50,6 @@ def regenerate_raw_log(global_id: str):
     '''
     Regenerate a raw log entry by global ID.
     '''
-    # pylint: disable=fixme
-    # TODO this path should really be RawLog/{id}/Regenerate, but the API needs updating
     api_post(
         f"{TENANT_PATH}/RawLog/{global_id}/Regenerate",
         data={'rawLogGlobalId': global_id}
