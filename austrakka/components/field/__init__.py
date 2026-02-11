@@ -122,10 +122,9 @@ def field_update(
 @field.command('list-groups', hidden=hide_admin_cmds())
 @click.argument('fieldname')
 @table_format_option()
-@opt_timezone()
-def field_list_groups(fieldname: str, out_format: str, timezone: str):
+def field_list_groups(fieldname: str, out_format: str):
     """List groups that a metadata field belongs to"""
-    list_field_groups(fieldname, out_format, timezone)
+    list_field_groups(fieldname, out_format)
 
 
 @field.command('list-projects', hidden=hide_admin_cmds())

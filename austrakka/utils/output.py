@@ -98,7 +98,6 @@ def print_dataframe(
         dataframe: pd.DataFrame,
         output_format: str = default_object_format(),
         restricted_cols: List[str] = None,
-        timezone: str = None,
         datetime_cols: List[str] = None,
 ):
     datetime_cols = DEFAULT_DATETIME_COLUMNS if datetime_cols is None else datetime_cols
@@ -110,10 +109,9 @@ def print_dataframe(
         # Preserve column order
         dataframe = dataframe[[c for c in dataframe.columns if c in restricted_cols]]
 
-    if timezone:
-        for col in datetime_cols:
-            if col in dataframe.columns:
-                dataframe[col] = dt_format_and_convert(dataframe[col], timezone)
+    for col in datetime_cols:
+        if col in dataframe.columns:
+            dataframe[col] = dt_format_and_convert(dataframe[col], timezone)
 
     output = convert_format(dataframe, output_format)
 

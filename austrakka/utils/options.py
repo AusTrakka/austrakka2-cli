@@ -893,19 +893,3 @@ def opt_user_monthly_dl_quota_bytes(**attrs: t.Any):
         default=None,
         **{**defaults, **attrs}
     )
-
-def opt_timezone(**attrs: t.Any):
-    defaults = {
-        'required': False,
-        'default': 'local',
-        'help': 'Timezone to use for any date/time output. '
-            'Can be "local" to use your local timezone, '
-            '"original" to use the timezone provided by the server, '
-            'or a recognised timezone string such as "UTC", "Australia/Perth" or "Europe/Madrid".'
-    }
-    return create_option(
-        '-tz',
-        '--timezone',
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )

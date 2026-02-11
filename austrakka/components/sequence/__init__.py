@@ -6,7 +6,7 @@ import click
 from austrakka.utils.output import table_format_option
 
 from austrakka.utils.option_utils import RequiredMutuallyExclusiveOption
-from austrakka.utils.options import opt_seq_type, opt_timezone
+from austrakka.utils.options import opt_seq_type
 from austrakka.utils.options import opt_group_name
 from austrakka.utils.options import opt_output_dir
 from austrakka.utils.options import opt_seq_id
@@ -88,13 +88,11 @@ def seq_get(
     help='The Seq_IDs of specific sequences to list',
     cls=RequiredMutuallyExclusiveOption,
     mutually_exclusive=['group_name'])
-@opt_timezone()
 def seq_list(
         out_format: str,
         seq_type: str,
         group_name: str,
         seq_id: List[str],
-        timezone: str,
 ):
     """List sequences for a group or sample"""
     seq_type_enum = convert_to_seq_type(seq_type)
@@ -103,8 +101,7 @@ def seq_list(
         out_format,
         group_name,
         seq_type_enum,
-        seq_id,
-        timezone,
+        seq_id
     )
 
 

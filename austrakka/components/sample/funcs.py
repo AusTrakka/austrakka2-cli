@@ -28,12 +28,10 @@ def change_owner(curr_owner: str, new_owner: str, seq_ids: [str]):
 def show_sample(
         seq_id: str,
         out_format: str,
-        timezone: str,
 ):
     call_get_and_print(
         path="/".join([SAMPLE_PATH, seq_id]),
-        out_format=out_format,
-        timezone=timezone,
+        out_format=out_format
     )
 
 @logger_wraps()

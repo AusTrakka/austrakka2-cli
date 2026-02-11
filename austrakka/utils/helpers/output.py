@@ -11,7 +11,6 @@ def call_get_and_print(
         out_format: str,
         params: Dict = None,
         restricted_cols: list[str] = None,
-        timezone: str = None,
         datetime_cols: list[str] = None
 ):
     params = {} if params is None else params
@@ -30,7 +29,6 @@ def call_get_and_print(
         read_pd(result, out_format),
         out_format,
         restricted_cols=restricted_cols,
-        timezone=timezone,
         datetime_cols=datetime_cols,
     )
     

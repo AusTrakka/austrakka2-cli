@@ -11,11 +11,10 @@ from austrakka.utils.paths import USER_PATH
 
 
 @logger_wraps()
-def list_users(show_disabled: bool, out_format: str, timezone: str):
+def list_users(show_disabled: bool, out_format: str):
     call_get_and_print(
         f'{USER_PATH}/?includeall={show_disabled}',
         out_format=out_format,
-        timezone=timezone,
         datetime_cols=['created','lastUpdated','lastLogIn','lastActive'],
     )
 
