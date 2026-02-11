@@ -14,8 +14,9 @@ def show_raw_log(global_id: str, out_format: str, timezone: str):
         timezone=timezone,
     )
 
+@logger_wraps()
 def list_raw_logs(spec: str, start: str, end: str, submitter: str, allow_no_filters: bool,
-                  out_format: str, view_type: str, timezone: str):
+                  out_format: str, view_type: str):
     '''
     Get a list of raw log entries.
     '''
@@ -41,7 +42,6 @@ def list_raw_logs(spec: str, start: str, end: str, submitter: str, allow_no_filt
         out_format,
         params=params,
         restricted_cols=columns,
-        timezone=timezone,
     )
 
 def regenerate_raw_log(global_id: str):

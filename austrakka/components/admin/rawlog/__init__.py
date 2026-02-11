@@ -1,6 +1,6 @@
 import click
 
-from austrakka.utils.options import opt_identifier, opt_view_type, opt_timezone
+from austrakka.utils.options import opt_identifier, opt_view_type
 from austrakka.utils.output import object_format_option, table_format_option
 from austrakka.components.admin.rawlog.funcs import show_raw_log, list_raw_logs, regenerate_raw_log
 
@@ -14,12 +14,11 @@ def rawlog(ctx):
 @rawlog.command('show')
 @opt_identifier(help="Raw log global ID")
 @object_format_option()
-@opt_timezone()
-def rawlog_show(global_id: str, out_format: str, timezone: str):
+def rawlog_show(global_id: str, out_format: str):
     '''
     Get a single raw log by global ID.
     '''
-    show_raw_log(global_id, out_format, timezone)
+    show_raw_log(global_id, out_format)
 
 @rawlog.command('list')
 @click.option('--spec', help='Type class of raw event to filter on', required=False)
@@ -30,13 +29,12 @@ def rawlog_show(global_id: str, out_format: str, timezone: str):
               help="Allow listing without any filters, which will return ALL raw logs")
 @table_format_option(default='json')
 @opt_view_type()
-@opt_timezone()
 def rawlog_list(spec: str, start: str, end: str, submitter: str, allow_no_filters: bool,
-                out_format: str, view_type: str, timezone: str):
+                out_format: str, view_type: str):
     '''
     Get a list of raw logs entries.
     '''
-    list_raw_logs(spec, start, end, submitter, allow_no_filters, out_format, view_type, timezone)
+    list_raw_logs(spec, start, end, submitter, allow_no_filters, out_format, view_type)
 
 @rawlog.command('regenerate')
 @opt_identifier(help="Raw log global ID")
