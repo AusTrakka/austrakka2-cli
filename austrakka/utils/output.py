@@ -9,6 +9,8 @@ from pandas import DataFrame
 from tabulate import tabulate
 from loguru import logger
 
+from austrakka.utils.misc import logger_wraps
+from austrakka.utils.context import AusTrakkaCxt, CxtKey
 from austrakka.utils.datetimes import dt_format_and_convert
 from austrakka.utils.enums.api import RESPONSE_TYPE
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
@@ -93,7 +95,7 @@ def default_table_format():
 def default_object_format():
     return FORMATS.JSON
 
-
+@logger_wraps()
 def print_dataframe(
         dataframe: pd.DataFrame,
         output_format: str = default_object_format(),
@@ -103,6 +105,8 @@ def print_dataframe(
     datetime_cols = DEFAULT_DATETIME_COLUMNS \
         if datetime_cols is None \
         else datetime_cols + DEFAULT_DATETIME_COLUMNS
+
+    timezone = AusTrakkaCxt.get_value(CxtKey.TIMEZONE)
     
     if output_format in object_format_types():
         restricted_cols = None
