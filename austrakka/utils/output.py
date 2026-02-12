@@ -73,7 +73,7 @@ def _format_json(
 def _format_pretty(
         dataframe: pd.DataFrame,
 ) -> str:
-    return tabulate(dataframe, showindex=False) + "\n"
+    return tabulate(dataframe, headers=dataframe.columns, showindex=False) + "\n"
 
 
 def _format_html(
