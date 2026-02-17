@@ -40,7 +40,7 @@ def add_role(role: str, description: str, privilege_level: str, allowed_record_t
         "name": role,
         "description": description,
         "privilegeLevel": privilege_level,
-        "allowedRootResourceTypes": [rt for rt in allowed_record_types]
+        "allowedRootResourceTypes": list(allowed_record_types)
     }
 
     api_post(
@@ -79,7 +79,7 @@ def update_role(
         payload["privilegeLevel"] = privilege_level
 
     if not clear_allowed_record_types and allowed_record_types:
-        payload["allowedRootResourceTypes"] = [rt for rt in allowed_record_types]
+        payload["allowedRootResourceTypes"] = list(allowed_record_types)
 
     if clear_allowed_record_types:
         payload["allowedRootResourceTypes"] = []
