@@ -294,6 +294,6 @@ def get_viewtype_columns(
 def read_pd(data, out_format: str, restricted_cols : List[str] = None) -> DataFrame:
     max_level = -1 if out_format in object_format_types() else 9999
     df = pd.json_normalize(data, max_level=max_level)
-    if restricted_cols is not None:
+    if restricted_cols is not None and out_format not in object_format_types():
         df = df[restricted_cols]
     return df
