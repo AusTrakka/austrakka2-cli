@@ -31,7 +31,13 @@ def list_roles(view_type: str, out_format: str):
 
 
 @logger_wraps()
-def add_role(role: str, description: str, privilege_level: str, allowed_record_types: list[str]):
+def add_role(
+        role: str, 
+        description: str, 
+        privilege_level: str, 
+        allowed_record_types: list[str],
+        scopes: list[str],
+):
     """
     Add a new role
     """
@@ -40,7 +46,8 @@ def add_role(role: str, description: str, privilege_level: str, allowed_record_t
         "name": role,
         "description": description,
         "privilegeLevel": privilege_level,
-        "allowedRootResourceTypes": list(allowed_record_types)
+        "allowedRootResourceTypes": list(allowed_record_types),
+        "scopes": list(scopes)
     }
 
     api_post(

@@ -2,7 +2,7 @@ import click
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import *
 from austrakka.utils.output import table_format_option
-from .definition import definition
+from .scope import scope
 from .funcs import list_roles, add_role, update_role, delete_role
 
 
@@ -13,7 +13,7 @@ def role(ctx):
     ctx.context = ctx.parent.context
 
 
-role.add_command(definition)
+role.add_command(scope)
 
 
 @role.command('list', hidden=hide_admin_cmds())
@@ -32,19 +32,22 @@ def roles_list(view_type: str, out_format: str):
 @opt_description()
 @opt_privilege_level()
 @opt_record_type(
-    required=False, 
+    required=True, 
     multiple=True, 
     help="Name of each allowed record types where a role can be used to control access."
 )
+@opt_identifier('--scope', 'scopes', multiple=True, help="Scope ID")
 def role_add(
         role: str,
         description: str,
         privilege_level: str,
-        record_type: list[str]):
+        record_type: list[str],
+        scopes: list[str],
+):
     """
     Add a new role
     """
-    add_role(role, description, privilege_level, record_type)
+    add_role(role, description, privilege_level, record_type, scopes)
 
 
 # pylint: disable=expression-not-assigned,duplicate-code

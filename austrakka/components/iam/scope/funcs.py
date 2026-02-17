@@ -4,18 +4,14 @@ from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import SCOPES_PATH
 
 list_compact_fields = [
-    'scopePath', 
-    'shortDescription', 
+    'name', 
     'privilegeLevel', 
-    'globalId', 
-    'subjectRootType']
+    'resourceType']
 
 list_more_fields = [
-    'scopePath', 
-    'shortDescription', 
+    'name', 
     'privilegeLevel', 
-    'globalId', 
-    'subjectRootType', 
+    'resourceType', 
     'description']
 
 
