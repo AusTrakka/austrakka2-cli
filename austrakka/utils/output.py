@@ -72,7 +72,7 @@ def _format_json(
 def _format_pretty(
         dataframe: pd.DataFrame,
 ) -> str:
-    return tabulate(dataframe, showindex=False) + "\n"
+    return tabulate(dataframe, headers=dataframe.columns, showindex=False) + "\n"
 
 
 def _format_html(
@@ -101,9 +101,9 @@ def print_dataframe(
         restricted_cols: List[str] = None,
         datetime_cols: List[str] = None,
 ):
-    datetime_cols = DEFAULT_DATETIME_COLUMNS \
-        if datetime_cols is None \
-        else datetime_cols + DEFAULT_DATETIME_COLUMNS
+    if datetime_cols is None:
+        datetime_cols = []
+    datetime_cols = list(set(datetime_cols + DEFAULT_DATETIME_COLUMNS))
     
     if output_format in object_format_types():
         restricted_cols = None

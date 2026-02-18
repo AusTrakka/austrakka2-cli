@@ -9,6 +9,7 @@ from austrakka.utils.context import AusTrakkaCxt, CxtKey
 ORIGINAL_TIMEZONE = 'original'
 LOCAL_TIMEZONE = 'local'
 
+API_DATETIME_FORMAT = 'ISO8601'
 DT_FORMAT_WITH_TZ = '%Y-%m-%d %H:%M:%S %Z'
 DT_FORMAT_NO_TZ = '%Y-%m-%d %H:%M:%S'
 
@@ -40,14 +41,11 @@ def parse_timezone(timezone_str: str = None):
 def dt_format_and_convert(dt_series: pd.Series) -> pd.Series:
     """Convert a string datetime column to requested timezone if possible."""
     try:
-        result = pd.to_datetime(dt_series, errors="coerce")
-        # errors=coerce will convert unparseable datetimes to NaT and show values as missing.
-        # This is appropriate for missing values which may be rendered as 0001-01-01, but bad if
-        # we have a wrong column/format. Re-throw an exception if we could not parse anything.
-        if result.isna().all() and not dt_series.isna().all():
-            raise ValueError("Could not parse any datetimes in the column.")
+        result = pd.to_datetime(dt_series, errors="coerce", format=API_DATETIME_FORMAT)
     except ValueError:
-        logger.warning("Could not parse datetime column; will not format or convert timezone.")
+        logger.warning(
+            f"Could not parse datetime column {dt_series.name}; "
+            "will not format or convert timezone.")
         return dt_series
     
     timezone_str = AusTrakkaCxt.get_value(CxtKey.TIMEZONE)
@@ -57,14 +55,15 @@ def dt_format_and_convert(dt_series: pd.Series) -> pd.Series:
     
     timezone = parse_timezone(timezone_str)
 
-    # For efficiency assume that all rows are the same in terms of tzinfo
-    if result[0].tzinfo is None:
+    if result.dt.tz is None:
         # Timezone info was not in the original string; just format it and don't state tz
         return result.dt.strftime(DT_FORMAT_NO_TZ)
 
     result = result.dt.tz_convert(timezone)
     return result.dt.strftime(DT_FORMAT_WITH_TZ)
 
+# This is generally used for parsing user input where the format can vary.
+# Datetimes supplied by the server are in ISO8601 format and can be parsed as above
 def dt_parse(input: str):
     """
     Parse a single datetime string. 
@@ -78,4 +77,3 @@ def dt_parse(input: str):
         timezone = parse_timezone()
         dt = dt.replace(tzinfo=timezone)
     return dt
-    
