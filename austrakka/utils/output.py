@@ -102,9 +102,9 @@ def print_dataframe(
         restricted_cols: List[str] = None,
         datetime_cols: List[str] = None,
 ):
-    datetime_cols = DEFAULT_DATETIME_COLUMNS \
-        if datetime_cols is None \
-        else datetime_cols + DEFAULT_DATETIME_COLUMNS
+    if datetime_cols is None:
+        datetime_cols = []
+    datetime_cols = list(set(datetime_cols + DEFAULT_DATETIME_COLUMNS))
 
     timezone = AusTrakkaCxt.get_value(CxtKey.TIMEZONE)
     
