@@ -1,3 +1,4 @@
+import sys
 import os.path
 
 from loguru import logger
@@ -72,5 +73,13 @@ def seq_sync_get(
     logger.info(f'{RECALCULATE_HASH_KEY}: {sync_state[RECALCULATE_HASH_KEY]}')
 
     state_machine = configure_state_machine()
-    state_machine.run(sync_state)
-    logger.success("Sync completed")
+    final_state = state_machine.run(sync_state)
+    # Should not be necessary to check final_state.is_end_state since this must happen unless
+    #  an exception was thrown, in which case we don't get here.
+    # However check final_state.is_error_state
+    if final_state.is_error_state:
+        logger.error(
+            f'Sync ended in error state.')
+        sys.exit(1)
+    else:
+        logger.success("Sync completed.")
