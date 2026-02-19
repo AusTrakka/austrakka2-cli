@@ -64,15 +64,15 @@ def dt_format_and_convert(dt_series: pd.Series) -> pd.Series:
 
 # This is generally used for parsing user input where the format can vary.
 # Datetimes supplied by the server are in ISO8601 format and can be parsed as above
-def dt_parse(input: str):
+def dt_parse(datestr: str):
     """
     Parse a single datetime string. 
     If the string does not contain timezone info, it will be treated as the specified timezone.
     If the string contains timezone info, this overrides the specified timezone.
     """
-    dt = dateparser.parse(input)
+    dt = dateparser.parse(datestr)
     if dt is None:
-        raise ValueError(f"Could not parse datetime string: {input}")
+        raise ValueError(f"Could not parse datetime string: {datestr}")
     if not dt.tzinfo:
         timezone = parse_timezone()
         dt = dt.replace(tzinfo=timezone)
