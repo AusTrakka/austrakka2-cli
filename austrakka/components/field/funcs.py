@@ -165,18 +165,12 @@ def list_field_groups(name: str, out_format: str):
 @logger_wraps()
 def list_field_projects(name: str, out_format: str):
     """List projects that a metadata field belongs to"""
-    result = api_get(
-        path=f"{METADATA_COLUMN_V2_PATH}/{name}/projectFields"
-    )['data']
-    
-    if len(result) == 0:
-        logger.info("Field does not belong to any projects.")
-        return
-    
-    display_columns = ['projectFieldId', 'projectAbbrev', 'fieldName',
-                       'fieldSource', 'analysisLabels']
-
-    print_dataframe(result[display_columns], out_format)
+    call_get_and_print(
+        path=f"{METADATA_COLUMN_V2_PATH}/{name}/projectFields",
+        out_format=out_format,
+        restricted_cols=['projectFieldId', 'projectAbbrev', 'fieldName',
+                            'fieldSource', 'analysisLabels'],
+    )
 
 
 @logger_wraps()

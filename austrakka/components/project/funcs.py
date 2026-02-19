@@ -25,7 +25,7 @@ more_fields = [
     'globalId',         # Global ID
     "projectId",        # Project ID
     "abbreviation",     # Abbreviation or short name
-    "clientType"        # the 'secret' client type
+    "clientType",       # the 'secret' client type
     "type",             # Type for the project
     "isActive",         # Active status
     "name",             # Project name
