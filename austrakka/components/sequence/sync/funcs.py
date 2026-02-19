@@ -78,8 +78,7 @@ def seq_sync_get(
     #  an exception was thrown, in which case we don't get here.
     # However check final_state.is_error_state
     if final_state.is_error_state:
-        logger.error(
-            f'Sync ended in error state.')
+        logger.error("Sync ended in error state.")
         sys.exit(1)
     else:
         logger.success("Sync completed.")
