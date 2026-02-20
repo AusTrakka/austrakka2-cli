@@ -22,8 +22,13 @@ def log(ctx):
     default=None,
     help=GLOBAL_ID_HELP,
 )
+@click.option('--start', help='Start datetime to filter from', required=False)
+@click.option('--end', help='End datetime to filter to', required=False)
+@click.option('--submitter', help='Submitter global ID to filter on', required=False)
+@click.option('--resource', help='Resource name to filter on', required=False)
+@click.option('--resource-type', help='Resource type to filter on', required=False)
 @table_format_option()
 @opt_view_type()
-def activity_list(record_type: str, global_id: str, out_format: str, view_type: str):
-    list_logs(record_type, global_id, out_format, view_type)
+def activity_list(record_type: str, global_id: str, out_format: str, view_type: str, start: str, end: str, submitter: str, resource: str, resource_type: str):
+    list_logs(record_type, global_id, start, end, submitter, resource, resource_type, out_format, view_type)
     
