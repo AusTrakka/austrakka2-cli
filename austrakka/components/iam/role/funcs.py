@@ -10,7 +10,7 @@ list_more_fields = [
     'name', 
     'description', 
     'privilegeLevel', 
-    'allowedRootResourceTypes', 
+    'resourceTypes', 
     'globalId', 
     'created', 
     'createdBy']
@@ -46,8 +46,8 @@ def add_role(
         "name": role,
         "description": description,
         "privilegeLevel": privilege_level,
-        "allowedRootResourceTypes": list(allowed_record_types),
-        "scopes": list(scopes)
+        "resourceTypes": list(allowed_record_types),
+        "scopes": list(scopes),
     }
 
     api_post(
@@ -86,10 +86,10 @@ def update_role(
         payload["privilegeLevel"] = privilege_level
 
     if not clear_allowed_record_types and allowed_record_types:
-        payload["allowedRootResourceTypes"] = list(allowed_record_types)
+        payload["resourceTypes"] = list(allowed_record_types)
 
     if clear_allowed_record_types:
-        payload["allowedRootResourceTypes"] = []
+        payload["resourceTypes"] = []
 
     api_patch(
         path=f"{ROLES_V2_PATH}/{role}",
