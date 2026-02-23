@@ -19,6 +19,7 @@ class CxtKey(Enum):
     SKIP_VERSION_CHECK = 'skip_version_check'
     LOG_LEVEL = 'log_level'
     SESSION_ID = 'session_id'
+    TIMEZONE = 'timezone'
 
 
 class AusTrakkaCxt:
