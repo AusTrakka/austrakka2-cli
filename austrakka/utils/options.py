@@ -4,8 +4,8 @@ import typing as t
 import click
 
 from austrakka.utils.enums.privilege_level import (
-    AUSTRAKKA_ADMIN_LEVEL,
-    FUNCTIONAL_ADMIN_LEVEL,
+    TRAKKA_ADMIN_LEVEL,
+    ADMIN_LEVEL,
     USER_LEVEL)
 
 from austrakka.utils.enums.seq import SeqType
@@ -508,14 +508,14 @@ def opt_user_object_id(**attrs: t.Any):
     )
 
 
-def opt_global_id(**attrs: t.Any):
+def opt_identifier(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'global ID',
+        'help': 'Accepts an ID; global ID or an abbreviation',
     }
     return create_option(
-        '-gid',
-        '--global-id',
+        '-id',
+        'global_id', # id is reserved, so just keeping this as global_id
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -529,20 +529,6 @@ def opt_user_global_id(**attrs: t.Any):
     return create_option(
         '-ugi',
         '--user-global-id',
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-    
-def opt_global_ids(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'multiple': True,
-        'help': 'The IDs of the entities. Use a comma (,) to separate '
-                'multiple IDs.',
-    }
-    return create_option(
-        '-gis',
-        '--global-ids',
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -760,7 +746,7 @@ def opt_privilege_level(**attrs: t.Any):
     return create_option(
         '-pv',
         '--privilege-level',
-        type=click.Choice([AUSTRAKKA_ADMIN_LEVEL, FUNCTIONAL_ADMIN_LEVEL, USER_LEVEL]),
+        type=click.Choice([TRAKKA_ADMIN_LEVEL, ADMIN_LEVEL, USER_LEVEL]),
         **{**defaults, **attrs}
     )
 

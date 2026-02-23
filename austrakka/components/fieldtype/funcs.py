@@ -59,6 +59,6 @@ def update_fieldtype(
     field_type['validValues'] = None
 
     api_put(
-        path=f'{METADATA_COLUMN_TYPE_V2_PATH}/{field_type["globalId"]}',
+        path=f'{METADATA_COLUMN_TYPE_V2_PATH}/{name}',
         data=field_type
     )

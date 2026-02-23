@@ -9,36 +9,37 @@ from loguru import logger
 
 from austrakka.utils.context import CxtKey
 from austrakka.utils.context import AusTrakkaCxt
-from .components.admin import admin
-from .components.auth import auth
-from .components.user import user
-from .components.org import org
-from .components.log import log
-from .components.project import project
-from .components.tree import tree
-from .components.metadata import metadata
-from .components.sequence import seq
-from .components.proforma import proforma
-from .components.field import field
-from .components.fieldtype import fieldtype
-from .components.group import group
-from .components.sample import sample
-from .components.dashboard import dashboard
-from .components.plot import plot
-from .components.iam import iam
+from austrakka.components.admin import admin
+from austrakka.components.auth import auth
+from austrakka.components.user import user
+from austrakka.components.org import org
+from austrakka.components.log import log
+from austrakka.components.project import project
+from austrakka.components.tree import tree
+from austrakka.components.metadata import metadata
+from austrakka.components.sequence import seq
+from austrakka.components.proforma import proforma
+from austrakka.components.field import field
+from austrakka.components.fieldtype import fieldtype
+from austrakka.components.group import group
+from austrakka.components.sample import sample
+from austrakka.components.dashboard import dashboard
+from austrakka.components.plot import plot
+from austrakka.components.iam import iam
 
-from . import __version__ as VERSION
-from . import __prog_name__ as PROG_NAME
-from .utils.misc import AusTrakkaCliTopLevel
-from .utils.logger import is_debug
-from .utils.misc import HELP_OPTS
-from .utils.exceptions import FailedResponseException
-from .utils.output import log_response
-from .utils.logger import setup_logger
-from .utils.logger import LOG_LEVEL_INFO
-from .utils.logger import LOG_LEVELS
-from .utils.cmd_filter import show_admin_cmds
-from .utils.version import check_version
+from austrakka import __version__ as VERSION
+from austrakka import __prog_name__ as PROG_NAME
+from austrakka.utils.datetimes import LOCAL_TIMEZONE
+from austrakka.utils.misc import AusTrakkaCliTopLevel
+from austrakka.utils.logger import is_debug
+from austrakka.utils.misc import HELP_OPTS
+from austrakka.utils.exceptions import FailedResponseException
+from austrakka.utils.output import log_response
+from austrakka.utils.logger import setup_logger
+from austrakka.utils.logger import LOG_LEVEL_INFO
+from austrakka.utils.logger import LOG_LEVELS
+from austrakka.utils.cmd_filter import show_admin_cmds
+from austrakka.utils.version import check_version
 
 
 CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
@@ -67,10 +68,20 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     AusTrakkaCxt.get_option_name(CxtKey.LOG_LEVEL), 
     show_envvar=True,
     envvar=AusTrakkaCxt.get_env_var_name(CxtKey.LOG_LEVEL),
-    required=True,
     default=LOG_LEVEL_INFO,
     type=click.Choice(LOG_LEVELS),
     show_default=True
+)
+@click.option(
+    AusTrakkaCxt.get_option_name(CxtKey.TIMEZONE),
+    '-tz',
+    show_envvar=True,
+    envvar=AusTrakkaCxt.get_env_var_name(CxtKey.TIMEZONE),
+    default=LOCAL_TIMEZONE,
+    show_default=True,
+    help='Timezone to use for any datetime output or parsing. '
+         'Can be "local" to use your local timezone, '
+         'or a recognised timezone string such as "UTC", "Australia/Perth" or "Europe/Madrid".'
 )
 @click.option(
     AusTrakkaCxt.get_option_name(CxtKey.SKIP_CERT_VERIFY),
@@ -115,6 +126,7 @@ def cli(
         uri: str,
         token: str,
         log_level: str,
+        timezone: str,
         skip_cert_verify: bool,
         use_http2: bool,
         skip_version_check: bool,
@@ -127,7 +139,8 @@ def cli(
         CxtKey.SKIP_VERSION_CHECK .value: skip_version_check,
         CxtKey.USE_HTTP2.value: use_http2,
         CxtKey.LOG_LEVEL.value: log_level,
-        CxtKey.SESSION_ID.value: str(uuid.uuid4())
+        CxtKey.SESSION_ID.value: str(uuid.uuid4()),
+        CxtKey.TIMEZONE.value: timezone,
     }
     setup_logger(log_level, log_var)
     if not skip_version_check:

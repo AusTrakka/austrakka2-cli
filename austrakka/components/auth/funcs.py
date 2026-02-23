@@ -31,7 +31,7 @@ def user_login(
         credential.authenticate(scopes=[app_scope])
         token = credential.get_token(app_scope)
 
-    # pylint: disable=print-function
+    # pylint: disable=bad-builtin
     print(token.token)
 
 
@@ -46,7 +46,16 @@ def process_login(
         client_id=process_id,
         client_secret=client_secret,
     )
+    log_token_info(credential, app_uri)
     token = credential.get_token(_get_api_scope(app_uri))
 
-    # pylint: disable=print-function
+    # pylint: disable=bad-builtin
     print(token.token)
+
+
+def log_token_info(credential: ClientSecretCredential, app_uri: str):
+    token_info = credential.get_token_info(_get_api_scope(app_uri))
+    token_info_dict = token_info.__dict__
+    if 'token' in token_info_dict: 
+        del token_info_dict['token']
+    logger.info(token_info_dict)

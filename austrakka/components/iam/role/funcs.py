@@ -1,11 +1,8 @@
-from austrakka.utils.helpers.output import call_get_and_print_view_type
+from austrakka.utils.helpers.output import call_get_and_print
+from austrakka.utils.output import get_viewtype_columns
 from austrakka.utils.paths import ROLES_V2_PATH, ROOT_TYPES_PATH
 from austrakka.utils.subcommands.shared_funcs import get_role_by_name, get_role_global_id_by_name
 from austrakka.utils.api import api_get, api_post, api_patch, api_delete
-from austrakka.utils.enums.privilege_level import (
-    AUSTRAKKA_ADMIN_LEVEL,
-    FUNCTIONAL_ADMIN_LEVEL,
-    USER_LEVEL)
 
 from austrakka.utils.misc import logger_wraps
 
@@ -26,12 +23,11 @@ def list_roles(view_type: str, out_format: str):
     """
     Get the list of roles
     """
-    call_get_and_print_view_type(
+    columns = get_viewtype_columns(view_type, list_compact_fields, list_more_fields)
+    call_get_and_print(
         ROLES_V2_PATH, 
-        view_type, 
-        list_compact_fields, 
-        list_more_fields,
         out_format, 
+        restricted_cols=columns
     )
 
 
@@ -41,11 +37,10 @@ def add_role(role: str, description: str, privilege_level: str, allowed_record_t
     Add a new role
     """
     # switch statement to map string name to integer value
-    level = _privilege_name_to_int()
     payload = {
         "name": role,
         "description": description,
-        "privilegeLevel": level[privilege_level],
+        "privilegeLevel": privilege_level,
     }
 
     _assign_allowed_role_root_types(allowed_record_types, payload)
@@ -83,8 +78,7 @@ def update_role(
         payload["description"] = description
 
     if privilege_level:
-        level = _privilege_name_to_int()
-        payload["privilegeLevel"] = level[privilege_level]
+        payload["privilegeLevel"] = privilege_level
 
     if not clear_allowed_record_types and allowed_record_types:
         _assign_allowed_role_root_types(allowed_record_types, payload)
@@ -130,12 +124,3 @@ def delete_role(role: str):
     api_delete(
         path=f"{ROLES_V2_PATH}/{role_obj['globalId']}",
     )
-
-
-def _privilege_name_to_int():
-    level = {
-        AUSTRAKKA_ADMIN_LEVEL: 10000,
-        FUNCTIONAL_ADMIN_LEVEL: 20000,
-        USER_LEVEL: 30000,
-    }
-    return level
