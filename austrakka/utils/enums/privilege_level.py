@@ -1,3 +1,3 @@
-AUSTRAKKA_ADMIN_LEVEL = 'AusTrakka Admin'
-FUNCTIONAL_ADMIN_LEVEL = 'Functional Admin'
+TRAKKA_ADMIN_LEVEL = 'TrakkaAdmin'
+ADMIN_LEVEL = 'Admin'
 USER_LEVEL = 'User'

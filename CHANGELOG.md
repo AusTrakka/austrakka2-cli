@@ -13,6 +13,12 @@ display and parsing. This defaults to the local timezone if not set.
 - Better formatting for displayed datetimes, incluing default timezone conversion.
 - Admin-only commands added to interact with raw log entries.
 
+## Unreleased
+
+### Fixed
+
+- Fixed issue where the `seq sync get` command would not always return a non-zero exit code on failure.
+
 ## [0.79.0] - 2026-02-09
 
 ### Added
