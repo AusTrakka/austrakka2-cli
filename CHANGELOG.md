@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [Unreleased]
+
+### Added
+- Added a top-level --timezone option, which can be used to set the default timezone for datetime
+display and parsing. This defaults to the local timezone if not set.
+- Better formatting for displayed datetimes, incluing default timezone conversion.
+- Admin-only commands added to interact with raw log entries.
+
+## Unreleased
+
+### Fixed
+
+- Fixed issue where the `seq sync get` command would not always return a non-zero exit code on failure.
+
 ## [0.79.0] - 2026-02-09
 
 ### Added
