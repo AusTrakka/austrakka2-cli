@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## Unreleased
+
+### Fixed
+
+- Fixed issue where the `seq sync get` command would not always return a non-zero exit code on failure.
+
 ## [0.79.0] - 2026-02-09
 
 ### Added
