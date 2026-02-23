@@ -18,6 +18,21 @@ build_exe_options = {
         "httpx[http2]",
         "biopython",
         "XlsxWriter",
+        "dateparser",
+        "dateparser.data",
+        "dateparser.data.date_translation_data",
+        "dateparser.data.date_translation_data.en",
+    ],
+    "includes": [
+        "dateparser.languages.loader",
+        "dateparser.conf",
+        "dateparser.date",
+    ],
+    "packages": [
+        "dateparser",
+        "dateparser.data",
+        "dateparser.data.date_translation_data",
+        "dateparser.data.date_translation_data.en",
     ],
 }
 if build_dir is not None:
