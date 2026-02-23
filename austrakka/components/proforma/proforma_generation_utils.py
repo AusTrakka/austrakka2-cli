@@ -104,9 +104,10 @@ def generate_template(
             BASE | WRAPPED | BORDER | {'bg_color': CLASS_COLOURS[i]})
     
     # Worksheets
+    typedict_sheet_name = 'Type dictionary'  # This name is referenced elsewhere for data validation
     metadata_sheet = workbook.add_worksheet('Metadata submission')
     datadict_sheet = workbook.add_worksheet('Data dictionary')
-    typedict_sheet = workbook.add_worksheet('Type dictionary')
+    typedict_sheet = workbook.add_worksheet(typedict_sheet_name)
 
     # Metadata worksheet
     for (col, field) in enumerate(fields):
@@ -114,12 +115,15 @@ def generate_template(
         metadata_sheet.write_string(0, col, field, header_formats[field_classes[field]])
         metadata_sheet.set_column(col, col, max(10, len(field)*1.5//1))
         # Add categorical field validation
+        col_name = xlsxwriter.utility.xl_col_to_name(col)  # e.g. 'A', 'B', ...
+        num_allowed_values = len(allowed_values[field])
         if proforma.loc[field, 'type'] == 'categorical':
             metadata_sheet.data_validation(1, col, num_format_rows, col, 
                 {
                     'validate':'list',
                     'input_title': 'See Type Dictionary tab',
-                    'source': allowed_values[field]
+                    'source': f"='{typedict_sheet_name}'!"
+                              f"${col_name}$2:${col_name}${num_allowed_values + 1}",
                 })
         # Set date field formats
         if proforma.loc[field, 'type'] == 'date':
@@ -178,7 +182,8 @@ def generate_template(
         if proforma.loc[field, 'type'] == 'date':
             typedict_sheet.write_string(1, col, 'YYYY-MM-DD')
         elif proforma.loc[field, 'type'] == 'categorical':
-            for (row, value) in enumerate(allowed_values[field],1):
+            vals = sorted(allowed_values[field])
+            for (row, value) in enumerate(vals,1):
                 typedict_sheet.write_string(row, col, value, normal_format)
     
     workbook.close()

@@ -47,11 +47,13 @@ class State:
             self,
             name: str,
             is_end_state: bool = False,
-            is_start_state: bool = False):
+            is_start_state: bool = False,
+            is_error_state: bool = False):
 
         self.name = name
         self.is_start_state = is_start_state
         self.is_end_state = is_end_state
+        self.is_error_state = is_error_state
 
     def is_valid(self):
         return self and self.name and not self.name.isspace()
@@ -90,6 +92,8 @@ class StateMachine:
                 file.close()
 
             current_state = self.states[active_sync_state[CURRENT_STATE_KEY]]
+        
+        return current_state
 
     def ensure_valid_next_state(self, next_state):
         if next_state not in self.states:
