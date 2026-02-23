@@ -4,6 +4,7 @@ from austrakka.utils.api import api_get
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe, read_pd, get_viewtype_columns
 from austrakka.utils.privilege import get_priv_path
+from austrakka.utils.datetimes import dt_parse
 
 COMPACT_FIELDS = ['eventTime','resourceType','resourceName','eventType',
                   'eventStatus','submitterDisplayName']
@@ -25,10 +26,10 @@ def list_logs(
         ):
     params = {}
     filters = {}
-    # if start is not None:
-        # params["startDateTime"] = dt_parse(start)
-    # if end is not None:
-        # params["endDateTime"] = dt_parse(end)
+    if start is not None:
+        params["startDateTime"] = dt_parse(start)
+    if end is not None:
+        params["endDateTime"] = dt_parse(end)
     add_equals_filter(filters, "submitterDisplayName", submitter)
     add_equals_filter(filters, "resourceUniqueString", resource)
     add_equals_filter(filters, "resourceType", resource_type)
