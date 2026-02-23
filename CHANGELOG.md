@@ -7,13 +7,17 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+### Changed
+
+- The `proforma generate` command for admins has been improved: Type Dictionary values will be sorted, and range 
+validation will be used for Excel validation of these values. This allows for Excel-level validation of variables with
+over 256 allowed values.
+
 ### Added
 - Added a top-level --timezone option, which can be used to set the default timezone for datetime
 display and parsing. This defaults to the local timezone if not set.
 - Better formatting for displayed datetimes, incluing default timezone conversion.
 - Admin-only commands added to interact with raw log entries.
-
-## Unreleased
 
 ### Fixed
 
@@ -38,6 +42,7 @@ display and parsing. This defaults to the local timezone if not set.
 ### Added
 
 - `--view-type` option to `log list`.
+>>>>>>> Development
 
 ### Removed
 
