@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.80.1] - 2026-02-24
+
+### Changed
+- `seq sync get` now has `--reset` enabled by default.
+
 ## [0.80.0] - 2026-02-23
 
 ### Added

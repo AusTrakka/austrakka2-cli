@@ -28,8 +28,14 @@ def sync(ctx):
                      'recommended size is 1 to 10. For large numbers of small '
                      'fasta files, the recommended size is 1000 or more.',
                 default=1)
-@option('--reset', help="Reset sync state; do not try to resume an "
-                        "interrupted sync", is_flag=True)
+@option(
+    '--reset/--skip-reset',
+    'reset',
+    help="Reset sync state; do not try to resume an interrupted sync."
+         "Disabled by default", 
+    type=bool,
+    default=True,
+)
 def get_seq(
         output_dir: str,
         group_name: str,
