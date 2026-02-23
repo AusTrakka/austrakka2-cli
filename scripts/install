@@ -13,6 +13,19 @@ else
     BIN_DIR=~/.local/bin
 fi
 
+export OS_NAME=$(uname | awk '{print tolower($0)}')
+export ARCH=$(uname -m)
+
+if [ "$OS_NAME" != "linux" ]; then
+    echo "OS $OS_NAME not supported. trakka must be built from source"
+    exit 1
+fi
+
+if [ "$ARCH" != "x86_64" ]; then
+    echo "Architecture $ARCH not supported. trakka must be built from source"
+    exit 1
+fi
+
 mkdir -p "$BIN_DIR"
 
 export DL_URL=$(curl -s https://api.github.com/repos/austrakka/austrakka2-cli/releases/latest \
