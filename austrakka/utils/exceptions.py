@@ -1,10 +1,9 @@
-from austrakka.utils.output import RESPONSE_MESSAGE
-from austrakka.utils.output import RESPONSE_MESSAGES
-from austrakka.utils.output import RESPONSE_TYPE
-from austrakka.utils.output import RESPONSE_TYPE_ERROR
-from austrakka.utils.output import RESPONSE_TYPE_WARNING
-from austrakka.utils.output import RESPONSE_TYPE_SUCCESS
-
+from austrakka.utils.enums.api import RESPONSE_TYPE
+from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
+from austrakka.utils.enums.api import RESPONSE_TYPE_SUCCESS
+from austrakka.utils.enums.api import RESPONSE_TYPE_WARNING
+from austrakka.utils.enums.api import RESPONSE_MESSAGES
+from austrakka.utils.enums.api import RESPONSE_MESSAGE
 
 class UnknownResponseException(Exception):
     pass
