@@ -1,5 +1,4 @@
 import json
-from austrakka.utils.add_filters import add_equals_filter
 from austrakka.utils.api import api_get
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe, read_pd, get_viewtype_columns
@@ -30,9 +29,12 @@ def list_logs(
         params["startDateTime"] = dt_parse(start)
     if end is not None:
         params["endDateTime"] = dt_parse(end)
-    add_equals_filter(filters, "submitterDisplayName", submitter)
-    add_equals_filter(filters, "resourceUniqueString", resource)
-    add_equals_filter(filters, "resourceType", resource_type)
+    if submitter is not None:
+        params["submitterDisplayName"] = submitter
+    if resource is not None:
+        params["resourceUniqueString"] = resource
+    if resource_type is not None:
+        params["resourceType"] = resource_type
 
     params["filters"] = json.dumps(filters)
 

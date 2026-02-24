@@ -29,7 +29,7 @@ def log_subcommands(root_type: str):
         ),
         required=False
     )
-    @click.option('--submitter', help='Submitter global ID to filter on', required=False)
+    @click.option('--submitter', help='Submitter display name to filter on', required=False)
     @click.option('--resource', help='Resource name to filter on', required=False)
     @click.option('--resource-type', help='Resource type to filter on', required=False)
     @table_format_option()
