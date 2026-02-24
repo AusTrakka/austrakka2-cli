@@ -13,8 +13,22 @@ def log_subcommands(root_type: str):
 
     @log.command('list')
     @opt_identifier()
-    @click.option('--start', help='Start datetime to filter from', required=False)
-    @click.option('--end', help='End datetime to filter to', required=False)
+    @click.option(
+        '--start',
+        help=(
+            'Start datetime to filter from, e.g., 2026-01-01T00:00:00. '
+            'If no timezone is provided, the default timezone will be used.'
+        ),
+        required=False
+    )
+    @click.option(
+        '--end',
+        help=(
+            'End datetime to filter to, e.g., 2026-01-01T23:59:59. '
+            'If no timezone is provided, the default timezone will be used.'
+        ),
+        required=False
+    )
     @click.option('--submitter', help='Submitter global ID to filter on', required=False)
     @click.option('--resource', help='Resource name to filter on', required=False)
     @click.option('--resource-type', help='Resource type to filter on', required=False)
