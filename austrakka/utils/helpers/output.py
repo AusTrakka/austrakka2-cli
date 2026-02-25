@@ -10,7 +10,8 @@ def call_get_and_print(
         path: str,
         out_format: str,
         params: Dict = None,
-        restricted_cols: list[str] = None
+        restricted_cols: list[str] = None,
+        datetime_cols: list[str] = None
 ):
     params = {} if params is None else params
     response = api_get(
@@ -25,8 +26,10 @@ def call_get_and_print(
         return
     
     print_dataframe(
-        read_pd(result, out_format, restricted_cols=restricted_cols),
+        read_pd(result, out_format),
         out_format,
+        restricted_cols=restricted_cols,
+        datetime_cols=datetime_cols,
     )
     
 
