@@ -5,13 +5,12 @@ from austrakka.utils.api import api_post, api_patch, api_delete
 
 from austrakka.utils.misc import logger_wraps
 
-list_compact_fields = ['name', 'description', 'privilegeLevel', 'globalId']
+list_compact_fields = ['name', 'description', 'privilegeLevel']
 list_more_fields = [
     'name', 
     'description', 
     'privilegeLevel', 
     'resourceTypes', 
-    'globalId', 
     'created', 
     'createdBy']
 

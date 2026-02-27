@@ -2,20 +2,6 @@ from austrakka.utils.api import api_patch
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.paths import ROLES_V2_PATH
 
-list_compact_fields = [
-    'roleName', 
-    'scope', 
-    'scopeRootType', 
-    'roleGlobalId']
-
-list_more_fields = [
-    'roleName', 
-    'scope', 
-    'scopeRootType', 
-    'roleGlobalId', 
-    'globalId']
-
-
 @logger_wraps()
 def add_role_scope(role: str, global_ids: list[str]):
     """
