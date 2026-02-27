@@ -7,19 +7,16 @@ from austrakka.utils.subcommands.shared_funcs import get_role_global_id_by_name
 
 list_compact_fields = [
     'roleName', 
-    'scopePath', 
-    'scopeRootType', 
-    'scopeShortDescription', 
-    'roleGlobalId']
+    'scope', 
+    'scopeRootType',
+]
 
 list_more_fields = [
     'roleName', 
-    'scopePath', 
-    'scopeRootType', 
-    'scopeShortDescription', 
-    'roleGlobalId', 
-    'globalId', 
-    'scopeDescription']
+    'scope',
+    'description',
+    'scopeRootType',
+]
 
 
 # pylint: disable=duplicate-code
