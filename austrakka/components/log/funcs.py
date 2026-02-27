@@ -17,6 +17,7 @@ def list_logs(
         record_global_id: str,
         start: str,
         end: str,
+        event_type: str,
         submitter: str,
         resource: str,
         resource_type: str,
@@ -29,6 +30,8 @@ def list_logs(
         params["startDateTime"] = dt_parse(start)
     if end is not None:
         params["endDateTime"] = dt_parse(end)
+    if event_type is not None:
+        params["eventType"] = event_type
     if submitter is not None:
         params["submitterDisplayName"] = submitter
     if resource is not None:

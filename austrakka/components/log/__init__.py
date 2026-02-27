@@ -38,6 +38,7 @@ def log(ctx):
     ),
     required=False
 )
+@click.option('--event-type', help='Event type to filter on', required=False)
 @click.option('--submitter', help='Submitter display name to filter on', required=False)
 @click.option('--resource', help='Resource name to filter on', required=False)
 @click.option('--resource-type', help='Resource type to filter on', required=False)
@@ -50,6 +51,7 @@ def activity_list(
     view_type: str,
     start: str,
     end: str,
+    event_type: str,
     submitter: str,
     resource: str,
     resource_type: str,
@@ -59,6 +61,7 @@ def activity_list(
         global_id,
         start,
         end,
+        event_type,
         submitter,
         resource,
         resource_type,
