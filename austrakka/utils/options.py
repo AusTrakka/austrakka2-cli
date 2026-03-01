@@ -508,14 +508,14 @@ def opt_user_object_id(**attrs: t.Any):
     )
 
 
-def opt_identifier(**attrs: t.Any):
+def opt_identifier(option_name='-id', var_name='global_id', **attrs: t.Any):
     defaults = {
         'required': True,
         'help': 'Accepts an ID; global ID or an abbreviation',
     }
     return create_option(
-        '-id',
-        'global_id', # id is reserved, so just keeping this as global_id
+        option_name,
+        var_name, # id is reserved, so just keeping this as global_id
         type=click.STRING,
         **{**defaults, **attrs}
     )

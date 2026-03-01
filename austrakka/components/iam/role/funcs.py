@@ -5,13 +5,12 @@ from austrakka.utils.api import api_post, api_patch, api_delete
 
 from austrakka.utils.misc import logger_wraps
 
-list_compact_fields = ['name', 'description', 'privilegeLevel', 'globalId']
+list_compact_fields = ['name', 'description', 'privilegeLevel']
 list_more_fields = [
     'name', 
     'description', 
     'privilegeLevel', 
     'resourceTypes', 
-    'globalId', 
     'created', 
     'createdBy']
 
@@ -31,7 +30,13 @@ def list_roles(view_type: str, out_format: str):
 
 
 @logger_wraps()
-def add_role(role: str, description: str, privilege_level: str, allowed_record_types: list[str]):
+def add_role(
+        role: str, 
+        description: str, 
+        privilege_level: str, 
+        allowed_record_types: list[str],
+        scopes: list[str],
+):
     """
     Add a new role
     """
@@ -40,7 +45,8 @@ def add_role(role: str, description: str, privilege_level: str, allowed_record_t
         "name": role,
         "description": description,
         "privilegeLevel": privilege_level,
-        "resourceTypes": list(allowed_record_types)
+        "resourceTypes": list(allowed_record_types),
+        "scopes": list(scopes),
     }
 
     api_post(
