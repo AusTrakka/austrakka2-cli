@@ -3,7 +3,7 @@ import os
 import time
 
 from loguru import logger
-from austrakka.utils.api import api_post, api_get, api_patch
+from austrakka.utils.api import api_get, api_patch
 from austrakka.utils.fs import get_hash
 from austrakka.utils.helpers.output import call_get_and_print_table_on_state_change
 from austrakka.utils.helpers.output import call_get_and_print_dataset_status
