@@ -16,16 +16,16 @@ def log_subcommands(root_type: str):
     @click.option(
         '--start',
         help=(
-            'Start datetime to filter from, e.g., 2026-01-01T00:00:00. '
-            'If no timezone is provided, the default timezone will be used.'
+            'Start datetime to filter from '
+            '(e.g. "12pm", "3 days ago", "2026-03-03T15:00", "2026-03-03T15:00:00+12:00")'
         ),
         required=False
     )
     @click.option(
         '--end',
         help=(
-            'End datetime to filter to, e.g., 2026-01-01T23:59:59. '
-            'If no timezone is provided, the default timezone will be used.'
+            'End datetime to filter to '
+            '(e.g. "12pm", "3 days ago", "2026-03-03T15:00", "2026-03-03T15:00:00+12:00")'
         ),
         required=False
     )
