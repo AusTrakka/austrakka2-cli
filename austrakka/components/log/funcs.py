@@ -1,3 +1,4 @@
+from loguru import logger
 from austrakka.utils.api import api_get
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe, read_pd, get_viewtype_columns
@@ -44,6 +45,11 @@ def list_logs(
     
     result = read_pd(response['data'], out_format)
     result.rename(columns={'resourceUniqueString': 'resourceName'}, inplace=True)
+
+    if result.empty:
+        logger.info("Nothing found.")
+        print(dt_parse(start))
+        return
 
     # Unordered fields will be at end.
     result = result[FIELD_ORDERING + [col for col in result.columns if col not in FIELD_ORDERING]]
