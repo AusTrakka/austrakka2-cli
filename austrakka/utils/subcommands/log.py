@@ -31,7 +31,11 @@ def log_subcommands(root_type: str):
     )
     @click.option('--event-type', help='Event type to filter on', required=False)
     @click.option('--submitter', help='Submitter display name to filter on', required=False)
-    @click.option('--resource-identifier', help='Resource name or identifier to filter on (strict match only)', required=False)
+    @click.option(
+        '--resource-identifier',
+        help='Resource name or identifier to filter on (strict match only)',
+        required=False
+    )
     @click.option('--resource-type', help='Resource type to filter on', required=False)
     @table_format_option()
     @opt_view_type()
