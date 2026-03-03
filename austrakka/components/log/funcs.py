@@ -48,7 +48,6 @@ def list_logs(
 
     if result.empty:
         logger.info("Nothing found.")
-        print(dt_parse(start))
         return
 
     # Unordered fields will be at end.
