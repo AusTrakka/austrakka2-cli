@@ -31,7 +31,7 @@ def log_subcommands(root_type: str):
     )
     @click.option('--event-type', help='Event type to filter on', required=False)
     @click.option('--submitter', help='Submitter display name to filter on', required=False)
-    @click.option('--resource', help='Resource name to filter on', required=False)
+    @click.option('--resource-identifier', help='Resource name or identifier to filter on (strict match only)', required=False)
     @click.option('--resource-type', help='Resource type to filter on', required=False)
     @table_format_option()
     @opt_view_type()
@@ -41,7 +41,7 @@ def log_subcommands(root_type: str):
         end: str,
         event_type: str,
         submitter: str,
-        resource: str,
+        resource_identifier: str,
         resource_type: str,
         out_format: str,
         view_type: str
@@ -53,7 +53,7 @@ def log_subcommands(root_type: str):
             end,
             event_type,
             submitter,
-            resource,
+            resource_identifier,
             resource_type,
             out_format,
             view_type

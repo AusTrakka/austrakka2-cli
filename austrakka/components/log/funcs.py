@@ -1,4 +1,3 @@
-import json
 from austrakka.utils.api import api_get
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe, read_pd, get_viewtype_columns
@@ -19,13 +18,12 @@ def list_logs(
         end: str,
         event_type: str,
         submitter: str,
-        resource: str,
+        resource_identifier: str,
         resource_type: str,
         out_format: str,
         view_type: str,
         ):
     params = {}
-    filters = {}
     if start is not None:
         params["startDateTime"] = dt_parse(start)
     if end is not None:
@@ -34,12 +32,10 @@ def list_logs(
         params["eventType"] = event_type
     if submitter is not None:
         params["submitterDisplayName"] = submitter
-    if resource is not None:
-        params["resourceUniqueString"] = resource
+    if resource_identifier is not None:
+        params["resourceIdentifier"] = resource_identifier
     if resource_type is not None:
         params["resourceType"] = resource_type
-
-    params["filters"] = json.dumps(filters)
 
     response = api_get(
         path=f"{get_priv_path(record_type, record_global_id)}/ActivityLog",
