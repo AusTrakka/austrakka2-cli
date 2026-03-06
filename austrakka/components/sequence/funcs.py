@@ -1,7 +1,7 @@
 # pylint: disable=too-many-locals
 import os
 from pathlib import Path
-from io import BufferedReader, StringIO, TextIOWrapper, BytesIO
+from io import BufferedReader, StringIO, TextIOWrapper
 import codecs
 import hashlib
 from dataclasses import dataclass
