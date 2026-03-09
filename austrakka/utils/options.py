@@ -15,7 +15,10 @@ from austrakka.utils.option_utils import \
     MutuallyExclusiveOption, \
     RequiredMutuallyExclusiveOption
 from austrakka import __prog_name__ as PROG_NAME
+from austrakka.utils.privilege import PROFORMA_RESOURCE
+from austrakka.utils.privilege import PROJECT_RESOURCE
 from austrakka.utils.privilege import TENANT_RESOURCE
+from austrakka.utils.privilege import USER_RESOURCE
 from austrakka.utils.privilege import ORG_RESOURCE
 
 
@@ -719,7 +722,13 @@ def opt_record_type(**attrs: t.Any):
     return create_option(
         '-rt',
         '--record-type',
-        type=click.Choice([TENANT_RESOURCE, ORG_RESOURCE]),
+        type=click.Choice([
+            TENANT_RESOURCE, 
+            ORG_RESOURCE,
+            PROJECT_RESOURCE,
+            PROFORMA_RESOURCE,
+            USER_RESOURCE,
+        ]),
         **{**defaults, **attrs}
     )
 
