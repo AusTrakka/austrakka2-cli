@@ -39,4 +39,3 @@ def feedback_delete(msg_id: int):
     Delete a feedback message
     '''
     delete_feedback(msg_id)
-

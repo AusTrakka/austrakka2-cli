@@ -21,5 +21,3 @@ def delete_feedback(msg_id: int):
     api_delete(
         f'{MESSAGES_PATH}/Feedback/{msg_id}'
     )
-
-
