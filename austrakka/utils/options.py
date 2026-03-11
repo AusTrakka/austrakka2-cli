@@ -15,8 +15,7 @@ from austrakka.utils.option_utils import \
     MutuallyExclusiveOption, \
     RequiredMutuallyExclusiveOption
 from austrakka import __prog_name__ as PROG_NAME
-from austrakka.utils.privilege import TENANT_RESOURCE
-from austrakka.utils.privilege import ORG_RESOURCE
+from austrakka.utils.privilege import ALL_RESOURCES
 
 
 def opt_abbrev(**attrs: t.Any):
@@ -719,7 +718,7 @@ def opt_record_type(**attrs: t.Any):
     return create_option(
         '-rt',
         '--record-type',
-        type=click.Choice([TENANT_RESOURCE, ORG_RESOURCE]),
+        type=click.Choice(ALL_RESOURCES),
         **{**defaults, **attrs}
     )
 
