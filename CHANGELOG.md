@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning].
 ## [0.81.0] - 2026-03-11
 
 ### Added
-- Filtering options to `[org|user|proforma|project] log list` commands.
+- Filtering options to `[org|proforma|project] log list` commands.
 - Filtering options to `admin rlog list` commands.
 
 ### Changed
