@@ -61,10 +61,8 @@ def _get_server_info(url: str, data: Any) -> Union[tuple[str, str, str], None]:
         logger.warning(
             "ServerInfo is incomplete for environment. " +
             "Using default values. If you have issues authenticating, " +
-            "remove the section for " +
-            url +
-            " from " +
-            get_config_file())
+            f"remove the section for {url} from {get_config_file()}"
+        )
         return None
     return (
         client_id,
@@ -94,9 +92,8 @@ def get_server_info_or_create(
     if exists:
         return _get_server_info(url, data)
     logger.debug(
-        "Server info does not exist for " +
-        url +
-        ". Attempting to get it")
+        f"Server info does not exist for {url}. Attempting to get it"
+    )
     env_entry = _get_new_server_info(url, vertify_vert)
     if env_entry is None:
         return None
