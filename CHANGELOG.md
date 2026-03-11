@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.81.0] - 2026-03-11
+
+### Added
+- Filtering options to `[org|user|proforma|project] log list` commands.
+- Filtering options to `admin rlog list` commands.
+
+### Changed
+
+- `iam role definition add` -> `iam role scope add`.
+- `iam role definition remove` -> `iam role scope remove`.
+
+### Removed
+
+- `iam role definition list`. 
+
 ## [0.80.1] - 2026-02-24
 
 ### Changed
