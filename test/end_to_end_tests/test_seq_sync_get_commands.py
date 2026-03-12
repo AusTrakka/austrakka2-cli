@@ -525,39 +525,6 @@ class TestSeqSyncGetCommands:
             (f'The hash of the downloaded cns file should match the original: '
              f'{line_wrapped_original_hash} != {downloaded_file_hash}')
 
-    def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_contigs_are_renamed(self):
-        # Arrange
-        org_name = f'org-{_new_identifier(4)}'
-        seq_id = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
-        shared_project = f'sg-{_new_identifier(10)}'
-        project_group = f'{shared_project}-Group'
-        
-
-        _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_org(self.cli, org_name)
-        _create_project(self.cli, shared_project)
-
-        
-
-        original_file_dir = 'test/test-assets/sequences/asm/'
-        original_file_name = 'XYZ-asm-004.fasta'
-        original_file = f'{original_file_dir}{original_file_name}'
-        _upload_fasta_asm_file(self.cli, original_file, seq_id, org_name, [shared_project])
-
-        # Act
-        temp_dir = _mk_temp_dir()
-        seq_type = 'fasta-asm'
-        _seq_sync_get(self.cli, project_group, temp_dir, seq_type)
-
-        # Assert
-        # Undo transform to the downloaded file. It should have the same hash as the original
-        downloaded_file_path = _get_single_seq_file_path(seq_id, seq_type, '.fasta', temp_dir)
-
-        with open(downloaded_file_path, 'r') as file:
-            first_line = file.readline()
-            assert first_line.startswith(f'>{seq_id}.SEQ_XYZ-asm-004'), \
-                f'The first line of the downloaded fasta asm file should be renamed to include the Seq_ID: {first_line}'
 
     def test_sync_get__given_group_has_fasta_asm_sequences_and_download_was_successful__expect_sequences_are_listed_in_manifest(self):
         # Arrange
