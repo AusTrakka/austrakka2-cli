@@ -13,11 +13,6 @@ from austrakka.utils.output import print_dict
 from austrakka.utils.output import log_response_compact
 from austrakka.utils.paths import PROJECT_PATH
 
-DATASET_UPLOAD_PATH = 'dataset'
-DATASET_ACK_PATH = 'acknowledge'
-DATASET_TRACK_PATH = 'dataset-progress'
-DATASET_TRACK_DETAILED_PATH = 'dataset-progress-details'
-
 
 @logger_wraps()
 def list_dataset_views(
