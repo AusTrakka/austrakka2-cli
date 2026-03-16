@@ -130,6 +130,18 @@ def opt_user_position(var_name='position', **attrs: t.Any):
     )
 
 
+def opt_username(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Unique username',
+    }
+    return create_option(
+        "--username",
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
+
 def opt_dashboard_name(var_name='dashboard_name', **attrs: t.Any):
     defaults = {
         'required': True,
