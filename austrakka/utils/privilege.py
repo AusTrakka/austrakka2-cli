@@ -10,6 +10,13 @@ PROJECT_RESOURCE = 'Project'
 PROFORMA_RESOURCE = 'Proforma'
 USER_RESOURCE = 'User'
 
+ALL_RESOURCES = [
+    TENANT_RESOURCE,
+    ORG_RESOURCE,
+    PROJECT_RESOURCE,
+    PROFORMA_RESOURCE,
+]
+
 
 def _convert_record_type_to_route_string(record_type):
     record_type_route = record_type
