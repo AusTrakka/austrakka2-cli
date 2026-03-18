@@ -1,6 +1,7 @@
 from io import BufferedReader
 import click
 
+from austrakka.components.admin.message.feedback import feedback
 from austrakka.components.admin.message.dl import dead_letter
 from austrakka.components.admin.message.funcs import add_message
 from austrakka.components.admin.message.funcs import opt_queue_name
@@ -16,6 +17,7 @@ def message(ctx):
 
 # pylint: disable=expression-not-assigned
 message.add_command(dead_letter) if show_admin_cmds() else None
+message.add_command(feedback) if show_admin_cmds() else None
 
 
 @message.command('add')
