@@ -103,7 +103,7 @@ def add_fasta_cns_submission(
     if should_create:
         _create_samples(seq_ids, owner_org, shared_projects)
     for record in records:
-        seq_id = record.id
+        seq_id = record.id.split()[0].split("|")[0]
         logger.info(f"Uploading {seq_id}")
         total_upload_count += 1
 
