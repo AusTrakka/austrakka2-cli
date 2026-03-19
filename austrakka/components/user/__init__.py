@@ -82,7 +82,7 @@ def user_add(
 
 
 @user.command('update', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
-@opt_user_object_id()
+@opt_identifier()
 @opt_name(help="Display Name", required=False)
 @opt_email_address(required=False)
 @opt_user_position(required=False)
@@ -92,7 +92,7 @@ def user_add(
 @opt_user_no_dl_quota(default=None)
 @opt_user_monthly_dl_quota_bytes()
 def user_update(
-    user_id: str,
+    global_id: str,
     org: str,
     is_active: bool,
     email: str,
@@ -103,7 +103,7 @@ def user_update(
     download_quota: int,
 ):
     update_user(
-        user_id, 
+        global_id, 
         name, 
         email, 
         position,
@@ -116,15 +116,15 @@ def user_update(
 
 
 @user.command('enable', help=f"Re-enable a user in {PROG_NAME}")
-@opt_user_object_id()
-def user_enable(user_id: str):
-    enable_user(user_id)
+@opt_identifier()
+def user_enable(global_id: str):
+    enable_user(global_id)
 
 
 @user.command('disable', help=f"Disable a user in {PROG_NAME}")
-@opt_user_object_id()
-def user_disable(user_id: str):
-    disable_user(user_id)
+@opt_identifier()
+def user_disable(global_id: str):
+    disable_user(global_id)
 
 
 @user.command('rename', help="Rename a user username")
