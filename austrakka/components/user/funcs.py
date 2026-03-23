@@ -7,7 +7,7 @@ from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.paths import USER_PATH
+from austrakka.utils.paths import USER_PATH, USER_V2_PATH
 
 
 @logger_wraps()
@@ -23,6 +23,7 @@ def list_users(show_disabled: bool, out_format: str):
 @logger_wraps()
 def add_user(
         user_id: str,
+        username: str,
         org: str,
         email: str,
         position: str,
@@ -38,6 +39,7 @@ def add_user(
         
     user = {
         "objectId": user_id,
+        "username": username,
         "organisation": {
             "abbreviation": org
         },
@@ -115,3 +117,13 @@ def enable_user(user_id: str):
 @logger_wraps()
 def disable_user(user_id: str):
     api_patch(path=f'{USER_PATH}/disable/{user_id}')
+
+
+@logger_wraps()
+def rename_user(global_id: str, username: str):
+    api_patch(
+        path=f'{USER_V2_PATH}/rename/{global_id}',
+        data={
+            "username": username,
+        }
+    )
