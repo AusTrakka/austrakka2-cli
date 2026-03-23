@@ -14,7 +14,7 @@ def opt_queue_name(**attrs: t.Any):
         'required': True,
         'help': 'Message queue name'}
     return create_option(
-        "--queue-name",
+        "--queue",
         **{**defaults, **attrs}
     )
 
