@@ -11,7 +11,7 @@ from austrakka.components.iam.privilege.funcs import (
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import (
     opt_role,
-    opt_user_global_id, opt_identifier)
+    opt_identifier)
 from austrakka.utils.output import table_format_option
 
 
