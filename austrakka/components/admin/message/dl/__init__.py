@@ -20,31 +20,31 @@ def dead_letter(ctx):
 @opt_queue_name()
 @opt_msg_id()
 @object_format_option()
-def dl_show(queue_name: str, msg_id: int, out_format: str):
+def dl_show(queue: str, msg_id: int, out_format: str):
     '''
     Show contents of dead letter message
     '''
-    show_dl(queue_name, msg_id, out_format)
+    show_dl(queue, msg_id, out_format)
 
 
 @dead_letter.command('list')
 @opt_queue_name(required=False, default="")
 @object_format_option()
-def dl_list(queue_name: str, out_format: str):
+def dl_list(queue: str, out_format: str):
     '''
     List dead letter messages
     '''
-    list_dl(queue_name, out_format)
+    list_dl(queue, out_format)
 
 
 @dead_letter.command('delete')
 @opt_queue_name()
 @opt_msg_id()
-def dl_delete(queue_name: str, msg_id: int):
+def dl_delete(queue: str, msg_id: int):
     '''
     Delete a dead letter message
     '''
-    delete_dl(queue_name, msg_id)
+    delete_dl(queue, msg_id)
 
 
 @dead_letter.command('summary')
@@ -59,8 +59,8 @@ def dl_summary(out_format: str):
 @dead_letter.command('resend')
 @opt_queue_name()
 @opt_msg_id()
-def dl_resend(queue_name: str, msg_id: int):
+def dl_resend(queue: str, msg_id: int):
     '''
     Resend a dead letter message
     '''
-    resend_dl(queue_name, msg_id)
+    resend_dl(queue, msg_id)
