@@ -5,6 +5,7 @@ import typing as t
 import click
 
 from austrakka.utils.api import api_patch
+from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.option_utils import create_option
 from austrakka.utils.paths import MESSAGES_PATH
 
@@ -13,7 +14,7 @@ def opt_queue_name(**attrs: t.Any):
         'required': True,
         'help': 'Message queue name'}
     return create_option(
-        "--queue-name",
+        "--queue",
         **{**defaults, **attrs}
     )
 
@@ -34,4 +35,25 @@ def add_message(file: BufferedReader, queue_name: str):
     api_patch(
         f'{MESSAGES_PATH}/{queue_name}',
         data=file_json
+    )
+
+
+def metrics_message(queue_name: str, out_format: str):
+    call_get_and_print(
+        f'{MESSAGES_PATH}/Metrics/{queue_name}',
+        out_format,
+    )
+
+
+def show_message(queue_name: str, msg_id: int, out_format: str):
+    call_get_and_print(
+        f'{MESSAGES_PATH}/Queue/{queue_name}/{msg_id}',
+        out_format,
+    )
+
+
+def list_message(queue_name: str, out_format: str):
+    call_get_and_print(
+        f'{MESSAGES_PATH}/Queue/{queue_name}',
+        out_format,
     )
