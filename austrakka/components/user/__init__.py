@@ -5,6 +5,8 @@ import click
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import \
+    opt_identifier, \
+    opt_username, \
     opt_owner_group_roles, \
     opt_name, \
     opt_email_address, \
@@ -24,6 +26,7 @@ from .funcs import add_user
 from .funcs import update_user
 from .funcs import enable_user
 from .funcs import disable_user
+from .funcs import rename_user
 
 
 @click.group()
@@ -43,6 +46,7 @@ def user_list(show_disabled: bool, out_format: str):
 
 @user.command('add', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
 @opt_user_object_id()
+@opt_username()
 @opt_organisation()
 @opt_owner_group_roles(required=False)
 @opt_is_austrakka_process(default=False)
@@ -53,6 +57,7 @@ def user_list(show_disabled: bool, out_format: str):
 @opt_user_monthly_dl_quota_bytes()
 def user_add(
         user_id: str,
+        username: str,
         org: str,
         email: str,
         position: str,
@@ -63,7 +68,8 @@ def user_add(
         download_quota: int,
 ):
     add_user(
-        user_id, 
+        user_id,
+        username,
         org, 
         email,
         position,
@@ -119,3 +125,10 @@ def user_enable(user_id: str):
 @opt_user_object_id()
 def user_disable(user_id: str):
     disable_user(user_id)
+
+
+@user.command('rename', help="Rename a user username")
+@opt_identifier()
+@opt_username(help="New username for user")
+def user_rename(global_id: str, username: str):
+    rename_user(global_id, username)
