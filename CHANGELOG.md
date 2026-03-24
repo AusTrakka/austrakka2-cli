@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.82.1] - 2026-03-24
+
+### Fixed
+- Issues running queue related commands.
+
+## [0.82.0] - 2026-03-23
+
+### Added
+- `admin message [metrics|list|show]`.
+- `admin message feedback [delete|list|show]`.
+- `user rename`.
+
+### Changed
+- `user add` now requires `--username`.
+- `--queue-name` has been renamed to `--queue` for `austrakka admin message dl [show|list|delete|resend]`.
+
 ## [0.81.0] - 2026-03-11
 
 ### Added
