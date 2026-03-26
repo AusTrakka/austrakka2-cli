@@ -52,7 +52,7 @@ def user_list(show_disabled: bool, out_format: str):
 @opt_is_austrakka_process(default=False)
 @opt_server_username()
 @opt_user_no_dl_quota()
-@opt_email_address(required=False)
+@opt_email_address()
 @opt_user_position()
 @opt_user_monthly_dl_quota_bytes()
 def user_add(
