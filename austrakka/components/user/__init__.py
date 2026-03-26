@@ -86,14 +86,12 @@ def user_add(
 @opt_name(help="Display Name", required=False)
 @opt_email_address(required=False)
 @opt_user_position(required=False)
-@opt_organisation(required=False)
 @opt_is_active(required=False)
 @opt_server_username(required=False)
 @opt_user_no_dl_quota(default=None)
 @opt_user_monthly_dl_quota_bytes()
 def user_update(
     global_id: str,
-    org: str,
     is_active: bool,
     email: str,
     position: str,
@@ -107,7 +105,6 @@ def user_update(
         name, 
         email, 
         position,
-        org, 
         server_username, 
         is_active, 
         no_download_quota, 
