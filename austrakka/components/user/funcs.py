@@ -4,10 +4,9 @@ from loguru import logger
 
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.api import api_post
-from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.paths import GROUP_PATH, USER_PATH, USER_V2_PATH
+from austrakka.utils.paths import GROUP_PATH, USER_PATH
 
 
 @logger_wraps()
@@ -127,7 +126,7 @@ def disable_user(global_id: str):
 @logger_wraps()
 def rename_user(global_id: str, username: str):
     api_patch(
-        path=f'{USER_V2_PATH}/rename/{global_id}',
+        path=f'{USER_PATH}/rename/{global_id}',
         data={
             "username": username,
         }

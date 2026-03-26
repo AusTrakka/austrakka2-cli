@@ -19,8 +19,6 @@ from austrakka.utils.options import opt_organisation
 from austrakka.utils.options import opt_show_disabled
 from austrakka.utils.options import opt_server_username
 from austrakka import __prog_name__ as PROG_NAME
-from austrakka.utils.privilege import USER_RESOURCE
-from austrakka.utils.subcommands.log import log_subcommands
 from .funcs import list_users
 from .funcs import add_user
 from .funcs import update_user
@@ -35,7 +33,6 @@ def user(ctx):
     '''Commands related to users'''
     ctx.context = ctx.parent.context
 
-user.add_command(log_subcommands(USER_RESOURCE))
 
 @user.command('list', help=f"List users in {PROG_NAME}")
 @opt_show_disabled()
