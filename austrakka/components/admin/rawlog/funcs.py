@@ -59,7 +59,8 @@ def regenerate_raw_log(global_id: str):
     )
 
 @logger_wraps()
-def regenerate_raw_log_bulk(spec: str, start: str, end: str, submitter: str, allow_no_filters: bool):
+def regenerate_raw_log_bulk(spec: str, start: str, end: str, submitter: str, 
+                            allow_no_filters: bool):
     params = { "allowNoFilters": str(allow_no_filters).lower() }
     if spec is not None:
         params["spec"] = spec
