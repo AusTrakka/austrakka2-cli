@@ -8,7 +8,6 @@ from austrakka.utils.helpers.project import get_project_by_abbrev
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import get_viewtype_columns
 from austrakka.utils.paths import PROJECT_PATH
-from austrakka.utils.paths import PROJECT_V2_PATH
 from austrakka.utils.paths import SET_TYPE
 from austrakka.utils.paths import SET_DASHBOARD
 from austrakka.utils.paths import ASSIGNED_DASHBOARD
@@ -151,8 +150,8 @@ def set_project_type(abbrev: str, project_type: str):
 
 @logger_wraps()
 def enable_project(abbrev: str):
-    api_patch(f'{PROJECT_V2_PATH}/{abbrev}/Enable')
+    api_patch(f'{PROJECT_PATH}/{abbrev}/Enable')
 
 @logger_wraps()
 def disable_project(abbrev: str):
-    api_patch(f'{PROJECT_V2_PATH}/{abbrev}/Disable')
+    api_patch(f'{PROJECT_PATH}/{abbrev}/Disable')
