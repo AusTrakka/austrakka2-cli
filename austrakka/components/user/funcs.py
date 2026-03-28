@@ -4,10 +4,9 @@ from loguru import logger
 
 from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.api import api_post
-from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.paths import USER_PATH, USER_V2_PATH
+from austrakka.utils.paths import GROUP_PATH, USER_PATH
 
 
 @logger_wraps()
@@ -40,12 +39,9 @@ def add_user(
     user = {
         "objectId": user_id,
         "username": username,
-        "organisation": {
-            "abbreviation": org
-        },
+        "organisation": org,
         "contactEmail": email,
         "position": position,
-        "ownerGroupRoles": list(owner_group_roles),
         "isAusTrakkaProcess": is_process,
         "analysisServerUsername": server_username,
         "monthlyBytesQuota": download_quota,
@@ -57,25 +53,35 @@ def add_user(
         data=user
     )
 
+    api_patch(
+        path=f'{GROUP_PATH}/assign',
+        data={
+            "identifier": username,
+            "entitlements": [
+                { "groupName": f"{org}-Owner", "roleName": role} 
+                for role 
+                in owner_group_roles
+            ],
+        },
+    )
+
 
 def update_user(
         global_id: str,
         name: str = None,
         email: str = None,
         position: str = None,
-        org: str = None,
         server_username: str = None,
         is_active: bool = None,
         no_download_quota: bool = None,
         download_quota: int = None,
 ):
-    user_resp = api_get(f'{USER_PATH}/userId/{global_id}')
+    user_resp = api_get(f'{USER_PATH}/{global_id}')
     user_full = user_resp['data']
     user: Dict[str, Any] = {
         "displayName": user_full['displayName'],
         "contactEmail": user_full['contactEmail'],
         "position": user_full['position'],
-        "orgAbbrev": user_full['orgAbbrev'],
         "isActive": user_full['isActive'],
         "analysisServerUsername": user_full['analysisServerUsername'],
         "noDownloadQuota": user_full['noDownloadQuota'],
@@ -92,8 +98,6 @@ def update_user(
         user['contactEmail'] = email
     if position is not None:
         user['position'] = position
-    if org is not None:
-        user['orgAbbrev'] = org
     if is_active is not None:
         user['isActive'] = is_active
     if server_username is not None:
@@ -103,7 +107,7 @@ def update_user(
     if download_quota is not None:
         user['monthlyBytesQuota'] = download_quota
 
-    api_put(
+    api_patch(
         path=f'{USER_PATH}/{global_id}',
         data=user
     )
@@ -122,7 +126,7 @@ def disable_user(global_id: str):
 @logger_wraps()
 def rename_user(global_id: str, username: str):
     api_patch(
-        path=f'{USER_V2_PATH}/rename/{global_id}',
+        path=f'{USER_PATH}/rename/{global_id}',
         data={
             "username": username,
         }
