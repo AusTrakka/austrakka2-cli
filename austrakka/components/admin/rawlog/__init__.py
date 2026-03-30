@@ -2,9 +2,29 @@ import click
 
 from austrakka.utils.options import opt_identifier, opt_view_type
 from austrakka.utils.output import object_format_option, table_format_option
+from austrakka.utils.option_utils import create_option
 from austrakka.components.admin.rawlog.funcs import \
     show_raw_log, list_raw_logs, regenerate_raw_log, regenerate_raw_log_bulk
 
+def opt_spec_filter():
+    return create_option(
+        '--spec', help='Type class of raw event to filter on', required=False)
+
+def opt_start_datetime_filter():
+    return create_option(
+        '--start', help='Start datetime to filter from', required=False)
+
+def opt_end_datetime_filter():
+    return create_option(
+        '--end', help='End datetime to filter to', required=False)
+
+def opt_submitter_filter():
+    return create_option(
+        '--submitter', help='Submitter global ID to filter on', required=False)
+
+def opt_allow_no_filters(help="Allow listing without any filters, which will return ALL raw logs"):
+    return create_option(
+        '--allow-no-filters', is_flag=True, default=False, help=help)
 
 @click.group('rlog')
 @click.pass_context
@@ -22,12 +42,11 @@ def rawlog_show(global_id: str, out_format: str):
     show_raw_log(global_id, out_format)
 
 @rawlog.command('list')
-@click.option('--spec', help='Type class of raw event to filter on', required=False)
-@click.option('--start', help='Start datetime to filter from', required=False)
-@click.option('--end', help='End datetime to filter to', required=False)
-@click.option('--submitter', help='Submitter global ID to filter on', required=False)
-@click.option('--allow-no-filters', is_flag=True, default=False,
-              help="Allow listing without any filters, which will return ALL raw logs")
+@opt_spec_filter()
+@opt_start_datetime_filter()
+@opt_end_datetime_filter()
+@opt_submitter_filter()
+@opt_allow_no_filters()
 @table_format_option(default='json')
 @opt_view_type()
 def rawlog_list(spec: str, start: str, end: str, submitter: str, allow_no_filters: bool,
@@ -44,12 +63,11 @@ def rawlog_regenerate(global_id: str):
     regenerate_raw_log(global_id)
 
 @rawlog.command('regen-bulk')
-@click.option('--spec', help='Type class of raw event to filter on', required=False)
-@click.option('--start', help='Start datetime to filter from', required=False)
-@click.option('--end', help='End datetime to filter to', required=False)
-@click.option('--submitter', help='Submitter global ID to filter on', required=False)
-@click.option('--allow-no-filters', is_flag=True, default=False,
-              help="Allow listing without any filters, which will return ALL raw logs")
+@opt_spec_filter()
+@opt_start_datetime_filter()
+@opt_end_datetime_filter()
+@opt_submitter_filter()
+@opt_allow_no_filters(help="Allow listing without any filters, which will regenerate ALL logs")
 def rawlog_bulk_regen(spec: str, start: str, end: str, submitter: str, allow_no_filters: bool):
     '''
     Regenerate logs derived from multiple raw log entries.
