@@ -1,6 +1,9 @@
+
+from loguru import logger
+
 from austrakka.utils.datetimes import dt_parse
 from austrakka.utils.helpers.output import call_get_and_print
-from austrakka.utils.api import api_post
+from austrakka.utils.api import api_post, api_get
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import get_viewtype_columns
 from austrakka.utils.paths import TENANT_PATH
@@ -53,4 +56,41 @@ def regenerate_raw_log(global_id: str):
     api_post(
         f"{TENANT_PATH}/RawLog/{global_id}/Regenerate",
         data={'rawLogGlobalId': global_id}
+    )
+
+@logger_wraps()
+def regenerate_raw_log_bulk(spec: str, start: str, end: str, submitter: str, 
+                            allow_no_filters: bool):
+    params = { "allowNoFilters": str(allow_no_filters).lower() }
+    if spec is not None:
+        params["spec"] = spec
+    if start is not None:
+        params["startDateTime"] = dt_parse(start)
+    if end is not None:
+        params["endDateTime"] = dt_parse(end)
+    if submitter is not None:
+        params["submitterGlobalId"] = submitter
+
+    # First query to check what we are about to do
+    # For now we only care about the log count, but in the future may check log status
+    logs_response = api_get(
+        path=f"{TENANT_PATH}/RawLogs",
+        params=params,
+    )['data']
+    
+    log_count = len(logs_response)
+    if log_count == 0:
+        logger.info("No raw logs found matching the specified filters.")
+        return
+    
+    confirmation = input(f"{log_count} raw logs will be regenerated. Do you want to proceed?"
+                         " (only yes will continue): ")
+    
+    if confirmation.lower() != "yes":
+        logger.info("Aborting")
+        return
+
+    api_post(
+        f"{TENANT_PATH}/RawLogs/BulkRegenerate",
+        params=params,
     )
