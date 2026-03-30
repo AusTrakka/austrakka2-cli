@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.82.2] - 2026-03-30
+
+### Fixed
+- `user list --show-disabled` now works as expected.
+
 ## [0.82.1] - 2026-03-24
 
 ### Fixed

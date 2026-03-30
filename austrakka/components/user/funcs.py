@@ -13,8 +13,11 @@ from austrakka.utils.paths import USER_PATH, USER_V2_PATH
 @logger_wraps()
 def list_users(show_disabled: bool, out_format: str):
     call_get_and_print(
-        f'{USER_PATH}/?includeall={show_disabled}',
+        USER_PATH,
         out_format=out_format,
+        params = {
+            'includeall': show_disabled,
+        },
         datetime_cols=['created','lastUpdated','lastLogIn','lastActive'],
     )
 
