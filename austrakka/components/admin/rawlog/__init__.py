@@ -22,6 +22,7 @@ def opt_submitter_filter():
     return create_option(
         '--submitter', help='Submitter global ID to filter on', required=False)
 
+# pylint: disable=redefined-builtin
 def opt_allow_no_filters(help="Allow listing without any filters, which will return ALL raw logs"):
     return create_option(
         '--allow-no-filters', is_flag=True, default=False, help=help)
