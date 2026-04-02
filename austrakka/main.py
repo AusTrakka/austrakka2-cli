@@ -7,13 +7,15 @@ import click
 from click.core import Context
 from loguru import logger
 
+from austrakka.utils.privilege import TENANT_RESOURCE
+
 from austrakka.utils.context import CxtKey
 from austrakka.utils.context import AusTrakkaCxt
 from austrakka.components.admin import admin
 from austrakka.components.auth import auth
 from austrakka.components.user import user
 from austrakka.components.org import org
-from austrakka.components.log import log
+from austrakka.utils.subcommands.log import log_subcommands
 from austrakka.components.project import project
 from austrakka.components.tree import tree
 from austrakka.components.metadata import metadata
@@ -164,7 +166,7 @@ def get_cli():
     cli.add_command(field)
     cli.add_command(fieldtype)
     cli.add_command(iam) if show_admin_cmds() else None
-    cli.add_command(log) if show_admin_cmds() else None
+    cli.add_command(log_subcommands(TENANT_RESOURCE)) if show_admin_cmds() else None
     return cli
 
 

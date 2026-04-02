@@ -1,18 +1,25 @@
 import click
 
+from austrakka.utils.privilege import TENANT_RESOURCE
 from austrakka.components.log.funcs import list_logs
 from austrakka.utils.output import table_format_option
 from austrakka.utils.options import opt_identifier, opt_view_type
 
-
 def log_subcommands(root_type: str):
-    @click.group(help=f"Commands related to {root_type.lower()} logs")
+    root_type_name = 'system' if root_type == TENANT_RESOURCE else root_type.lower()
+    
+    @click.group(help=f"Commands related to {root_type_name} logs")
     @click.pass_context
     def log(ctx):
         ctx.context = ctx.parent.context
 
     @log.command('list')
-    @opt_identifier()
+    @( # This adds the identifier parameter only if the root_type is not tenant
+        opt_identifier(
+            required=True,
+            help=f"Identifier of the {root_type_name} for which to retrieve logs")
+        if root_type != TENANT_RESOURCE else lambda f: f
+    )
     @click.option(
         '--start',
         help=(
@@ -40,7 +47,6 @@ def log_subcommands(root_type: str):
     @table_format_option()
     @opt_view_type()
     def activity_get(
-        global_id: str,
         start: str,
         end: str,
         event_type: str,
@@ -48,7 +54,8 @@ def log_subcommands(root_type: str):
         resource_identifier: str,
         resource_type: str,
         out_format: str,
-        view_type: str
+        view_type: str,
+        global_id: str = None,
     ):
         list_logs(
             root_type,
