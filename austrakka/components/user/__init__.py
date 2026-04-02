@@ -20,7 +20,7 @@ from austrakka.utils.options import opt_show_disabled
 from austrakka.utils.options import opt_server_username
 from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.privilege import USER_RESOURCE
-from austrakka.utils.subcommands.log import log_subcommands
+from austrakka.components.log import log_subcommands
 from .funcs import list_users
 from .funcs import add_user
 from .funcs import update_user

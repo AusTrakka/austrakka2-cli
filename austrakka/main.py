@@ -15,7 +15,7 @@ from austrakka.components.admin import admin
 from austrakka.components.auth import auth
 from austrakka.components.user import user
 from austrakka.components.org import org
-from austrakka.utils.subcommands.log import log_subcommands
+from austrakka.components.log import log_subcommands
 from austrakka.components.project import project
 from austrakka.components.tree import tree
 from austrakka.components.metadata import metadata
