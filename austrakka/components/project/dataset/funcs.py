@@ -3,7 +3,7 @@ import os
 import time
 
 from loguru import logger
-from austrakka.utils.api import api_post, api_get, api_patch
+from austrakka.utils.api import api_get, api_patch
 from austrakka.utils.fs import get_hash
 from austrakka.utils.helpers.output import call_get_and_print_table_on_state_change
 from austrakka.utils.helpers.output import call_get_and_print_dataset_status
@@ -34,15 +34,10 @@ def add_dataset(
     file_hash = get_hash(filepath)
     with open(filepath, 'rb') as file_content:
         files = [('files[]', (filename, file_content))]
-        tracking_token = upload_multipart_tracking_token(path=path,
+        upload_multipart_tracking_token(path=path,
                                                          files=files,
                                                          file_hash=file_hash,
                                                          custom_headers=custom_headers)
-    logger.info('Acknowledging...')
-    path_ack = "/".join([PROJECT_PATH, abbrev, DATASET_ACK_PATH, tracking_token])
-    return api_post(
-        path=path_ack,
-    )
 
 
 @logger_wraps()
@@ -86,10 +81,6 @@ def add_dataset_blocking(
                                                          files=files,
                                                          file_hash=file_hash,
                                                          custom_headers=custom_headers)
-    path_ack = "/".join([PROJECT_PATH, abbrev, DATASET_ACK_PATH, tracking_token])
-    api_post(
-        path=path_ack,
-    )
     path_track = "/".join([PROJECT_PATH,
                            abbrev,
                            DATASET_TRACK_PATH,

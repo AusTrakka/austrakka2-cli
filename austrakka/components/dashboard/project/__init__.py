@@ -35,7 +35,7 @@ def dashboard_update(dashboard_id: int, name: str):
 @project.command('list', hidden=hide_admin_cmds())
 @table_format_option()
 def dashboards_list(out_format: str):
-    """List project dashboards available for use in a given project"""
+    """List dashboards available for use in projects"""
     list_dashboards(out_format)
 
 

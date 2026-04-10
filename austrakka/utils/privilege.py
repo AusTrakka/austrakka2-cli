@@ -1,6 +1,6 @@
 from austrakka.utils.paths import ORG_V2_PATH
 from austrakka.utils.paths import PROFORMA_V2_PATH
-from austrakka.utils.paths import PROJECT_V2_PATH
+from austrakka.utils.paths import PROJECT_PATH
 from austrakka.utils.paths import TENANT_PATH
 from austrakka.utils.paths import USER_V2_PATH
 
@@ -10,13 +10,20 @@ PROJECT_RESOURCE = 'Project'
 PROFORMA_RESOURCE = 'Proforma'
 USER_RESOURCE = 'User'
 
+ALL_RESOURCES = [
+    TENANT_RESOURCE,
+    ORG_RESOURCE,
+    PROJECT_RESOURCE,
+    PROFORMA_RESOURCE,
+]
+
 
 def _convert_record_type_to_route_string(record_type):
     record_type_route = record_type
     if record_type == ORG_RESOURCE:
         record_type_route = ORG_V2_PATH
     if record_type == PROJECT_RESOURCE:
-        record_type_route = PROJECT_V2_PATH
+        record_type_route = PROJECT_PATH
     if record_type == PROFORMA_RESOURCE:
         record_type_route = PROFORMA_V2_PATH
     if record_type == USER_RESOURCE:

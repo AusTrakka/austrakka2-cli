@@ -7,18 +7,26 @@ from austrakka.utils.api import api_post
 from austrakka.utils.api import api_put
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.paths import USER_PATH
+from austrakka.utils.paths import USER_PATH, USER_V2_PATH
 
 
 @logger_wraps()
 def list_users(show_disabled: bool, out_format: str):
-    call_get_and_print(f'{USER_PATH}/?includeall={show_disabled}', out_format)
+    call_get_and_print(
+        USER_PATH,
+        out_format=out_format,
+        params = {
+            'includeall': show_disabled,
+        },
+        datetime_cols=['created','lastUpdated','lastLogIn','lastActive'],
+    )
 
 
 # pylint: disable=duplicate-code
 @logger_wraps()
 def add_user(
         user_id: str,
+        username: str,
         org: str,
         email: str,
         position: str,
@@ -34,6 +42,7 @@ def add_user(
         
     user = {
         "objectId": user_id,
+        "username": username,
         "organisation": {
             "abbreviation": org
         },
@@ -53,7 +62,7 @@ def add_user(
 
 
 def update_user(
-        object_id: str,
+        global_id: str,
         name: str = None,
         email: str = None,
         position: str = None,
@@ -63,7 +72,7 @@ def update_user(
         no_download_quota: bool = None,
         download_quota: int = None,
 ):
-    user_resp = api_get(f'{USER_PATH}/userId/{object_id}')
+    user_resp = api_get(f'{USER_PATH}/userId/{global_id}')
     user_full = user_resp['data']
     user: Dict[str, Any] = {
         "displayName": user_full['displayName'],
@@ -98,16 +107,26 @@ def update_user(
         user['monthlyBytesQuota'] = download_quota
 
     api_put(
-        path=f'{USER_PATH}/{object_id}',
+        path=f'{USER_PATH}/{global_id}',
         data=user
     )
 
 
 @logger_wraps()
-def enable_user(user_id: str):
-    api_patch(path=f'{USER_PATH}/enable/{user_id}')
+def enable_user(global_id: str):
+    api_patch(path=f'{USER_PATH}/enable/{global_id}')
 
 
 @logger_wraps()
-def disable_user(user_id: str):
-    api_patch(path=f'{USER_PATH}/disable/{user_id}')
+def disable_user(global_id: str):
+    api_patch(path=f'{USER_PATH}/disable/{global_id}')
+
+
+@logger_wraps()
+def rename_user(global_id: str, username: str):
+    api_patch(
+        path=f'{USER_V2_PATH}/rename/{global_id}',
+        data={
+            "username": username,
+        }
+    )

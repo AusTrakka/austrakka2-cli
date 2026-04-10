@@ -1,4 +1,3 @@
-from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -10,6 +9,8 @@ from pandas import DataFrame
 from tabulate import tabulate
 from loguru import logger
 
+from austrakka.utils.misc import logger_wraps
+from austrakka.utils.datetimes import dt_format_and_convert
 from austrakka.utils.enums.api import RESPONSE_TYPE
 from austrakka.utils.enums.api import RESPONSE_TYPE_ERROR
 from austrakka.utils.enums.api import RESPONSE_TYPE_SUCCESS
@@ -22,6 +23,7 @@ from austrakka.utils.enums.view_type import COMPACT, MORE, FULL
 _FORMAT_PREFIX = '_format_'
 _EXTENSION_PREFIX = '_extension_'
 
+DEFAULT_DATETIME_COLUMNS = ['created', 'lastUpdated', 'eventTime']
 
 # pylint: disable=too-few-public-methods
 class FORMATS:
@@ -54,14 +56,12 @@ def _extension_tsv():
 
 def _format_csv(
         dataframe: pd.DataFrame,
-        headers: Union[str, List[Any]],
 ) -> str:
-    return dataframe.to_csv(header=headers, index=False)
+    return dataframe.to_csv(index=False)
 
 
 def _format_json(
         dataframe: pd.DataFrame,
-        _,
 ) -> str:
     return dataframe.to_json(
         orient='records',
@@ -71,23 +71,20 @@ def _format_json(
 
 def _format_pretty(
         dataframe: pd.DataFrame,
-        headers: Union[str, List[Any]],
 ) -> str:
-    return tabulate(dataframe, headers=headers, showindex=False) + "\n"
+    return tabulate(dataframe, headers=dataframe.columns, showindex=False) + "\n"
 
 
 def _format_html(
         dataframe: pd.DataFrame,
-        headers: Union[str, List[Any]],
 ) -> str:
-    return dataframe.to_html(header=headers, index=False) + "\n"
+    return dataframe.to_html(index=False) + "\n"
 
 
 def _format_tsv(
         dataframe: pd.DataFrame,
-        headers: Union[str, List[Any]],
 ) -> str:
-    return dataframe.to_csv(header=headers, index=False, sep='\t')
+    return dataframe.to_csv(index=False, sep='\t')
 
 
 def default_table_format():
@@ -97,56 +94,46 @@ def default_table_format():
 def default_object_format():
     return FORMATS.JSON
 
-
+@logger_wraps()
 def print_dataframe(
         dataframe: pd.DataFrame,
         output_format: str = default_object_format(),
-        headers: Union[str, List[Any]] = 'keys',
+        restricted_cols: List[str] = None,
+        datetime_cols: List[str] = None,
 ):
-    output = convert_format(dataframe, output_format, headers)
+    if datetime_cols is None:
+        datetime_cols = []
+    datetime_cols = list(set(datetime_cols + DEFAULT_DATETIME_COLUMNS))
+    
+    if output_format in object_format_types():
+        restricted_cols = None
+    
+    if restricted_cols:
+        # Preserve column order
+        dataframe = dataframe[[c for c in dataframe.columns if c in restricted_cols]]
 
-    # pylint: disable=print-function
+    for col in datetime_cols:
+        if col in dataframe.columns:
+            dataframe[col] = dt_format_and_convert(dataframe[col])
+
+    output = convert_format(dataframe, output_format)
+
+    # pylint: disable=bad-builtin
     print(output, end='')
 
 
 def print_dict(
         data: dict,
         output_format: str = default_object_format(),
-        headers: Union[str, List[Any]] = 'keys',
 ):
-    print_dataframe(_create_dataframe(data), output_format, headers)
-
-
-def print_dataframe_viewtype(
-        data: DataFrame,
-        view_type: str,
-        compact_fields: list[str],
-        more_fields: list[str],
-        output_format: str = default_object_format(),):
-
-    if output_format == FORMATS.JSON:
-        view_type = FULL
-
-    if view_type == COMPACT:
-        allowed_columns = set(compact_fields)
-    elif view_type == MORE:
-        allowed_columns = set(compact_fields + more_fields)
-    else:
-        assert view_type == FULL
-        allowed_columns = set(data.columns)
-
-    # Preserve column order
-    column_list = [c for c in data.columns if c in allowed_columns]    
-    print_dataframe(data[column_list], output_format)
-
+    print_dataframe(_create_dataframe(data), output_format)
 
 def convert_format(
         dataframe: pd.DataFrame,
         output_format: str = default_object_format(),
-        headers: Union[str, List[Any]] = 'keys',
 ):
     format_func = f'{_FORMAT_PREFIX}{output_format}'
-    return globals()[format_func](dataframe, headers)
+    return globals()[format_func](dataframe)
 
 
 def _get_output_extension(output_format: str):
@@ -164,15 +151,13 @@ def write_dataframe(
         dataframe: pd.DataFrame,
         base_filepath: str,
         output_format: str = default_object_format(),
-        headers: Union[str, List[Any]] = 'keys',
 ):
     """
     :param dataframe:
     :param output_format:
-    :param headers:
     :param base_filepath: Should NOT include an extension.
     """
-    output = convert_format(dataframe, output_format, headers)
+    output = convert_format(dataframe, output_format)
     extension = _get_output_extension(output_format)
     filename = base_filepath + "." + extension
     with open(filename, "w", encoding="utf-8") as file:
@@ -184,15 +169,13 @@ def write_dict(
         data: dict,
         base_filepath: str,
         output_format: str = default_object_format(),
-        headers: Union[str, List[Any]] = 'keys',
 ):
     """
     :param data:
     :param output_format:
-    :param headers:
     :param base_filepath: Should NOT include an extension.
     """
-    write_dataframe(_create_dataframe(data), base_filepath, output_format, headers)
+    write_dataframe(_create_dataframe(data), base_filepath, output_format)
 
 
 def table_format_types():
@@ -292,3 +275,21 @@ def create_response_object(message: str, message_type: str):
         RESPONSE_MESSAGE: message,
         RESPONSE_TYPE: message_type
     }
+
+def get_viewtype_columns(
+        view_type: str,
+        compact_fields: list[str],
+        more_fields: list[str]
+) -> Union[List[str], None]:
+    if view_type == COMPACT:
+        return compact_fields
+    if view_type == MORE:
+        return list(set(compact_fields + more_fields))
+    
+    assert view_type == FULL
+    return None
+
+
+def read_pd(data, out_format: str) -> DataFrame:
+    max_level = -1 if out_format in object_format_types() else 9999
+    return pd.json_normalize(data, max_level=max_level)

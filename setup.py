@@ -138,6 +138,7 @@ setup(
         "httpx[http2]",
         "biopython",
         "XlsxWriter",
+        "dateparser",
     ],  # Optional
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
