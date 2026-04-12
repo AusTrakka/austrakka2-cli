@@ -55,11 +55,11 @@ def log_subcommands(root_type: str):
         resource_type: str,
         out_format: str,
         view_type: str,
-        global_id: str = None,
+        identifier: str = None,
     ):
         list_logs(
             root_type,
-            global_id,
+            identifier,
             start,
             end,
             event_type,

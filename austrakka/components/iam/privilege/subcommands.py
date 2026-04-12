@@ -12,6 +12,7 @@ from .funcs import (
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import (
     opt_role,
+    opt_user_identifier,
     opt_identifier)
 from austrakka.utils.output import table_format_option
 
@@ -39,8 +40,8 @@ def privilege_subcommands(root_type: str):
         if root_type != TENANT_RESOURCE else lambda f: f
     )
     @table_format_option()
-    def privilege_list(out_format: str, global_id:str=None):
-        list_privileges(root_type, global_id, out_format)
+    def privilege_list(out_format: str, identifier:str=None):
+        list_privileges(root_type, identifier, out_format)
 
 
     @privilege.command('list-by-role',
@@ -55,15 +56,15 @@ def privilege_subcommands(root_type: str):
          if root_type != TENANT_RESOURCE else lambda f: f
     )
     @table_format_option()
-    def privilege_list_by_role(role: str, out_format: str, global_id:str=None):
-        list_by_role_privileges(role, root_type, global_id, out_format)
+    def privilege_list_by_role(role: str, out_format: str, identifier:str=None):
+        list_by_role_privileges(role, root_type, identifier, out_format)
 
 
     @privilege.command('list-by-user',
                         help=f"List all roles held by a specific "
                              f"user for the {root_type_name}.",
                         hidden=hide_admin_cmds())
-    @opt_identifier(option_name="--user-id", var_name="user_id", help="User identifier")
+    @opt_user_identifier()
     @( # This adds the identifier parameter only if the root_type is not tenant
         opt_identifier(
             required=True,
@@ -71,14 +72,14 @@ def privilege_subcommands(root_type: str):
         if root_type != TENANT_RESOURCE else lambda f: f
     )
     @table_format_option()
-    def privilege_list_by_user(user_id: str, out_format: str, global_id:str=None):
-        list_by_user_privileges(user_id, root_type, global_id, out_format)
+    def privilege_list_by_user(user_id: str, out_format: str, identifier:str=None):
+        list_by_user_privileges(user_id, root_type, identifier, out_format)
 
 
     @privilege.command('assign',
                         help=f"Assign {root_type_name}-level privileges to a user",
                         hidden=hide_admin_cmds())
-    @opt_identifier(option_name="--user-id", var_name="user_id", help="User identifier")
+    @opt_user_identifier()
     @opt_role()
     @( # This adds the identifier parameter only if the root_type is not tenant
         opt_identifier(
@@ -89,14 +90,14 @@ def privilege_subcommands(root_type: str):
     def privilege_assign(
             user_id: str,
             role: str,
-            global_id: str = None):
-        assign_privilege(user_id, role, global_id, root_type)
+            identifier: str = None):
+        assign_privilege(user_id, role, identifier, root_type)
 
 
     @privilege.command('unassign',
                         help=f"Remove {root_type_name}-level privileges from a user",
                         hidden=hide_admin_cmds())
-    @opt_identifier(option_name="--user-id", var_name="user_id", help="User identifier")
+    @opt_user_identifier()
     @opt_role()
     @( # This adds the identifier parameter only if the root_type is not tenant
         opt_identifier(
@@ -107,7 +108,7 @@ def privilege_subcommands(root_type: str):
     def privilege_unassign(
             user_id: str,
             role: str,
-            global_id: str = None):
-        unassign_privilege(user_id, role, global_id, root_type)
+            identifier: str = None):
+        unassign_privilege(user_id, role, identifier, root_type)
 
     return privilege

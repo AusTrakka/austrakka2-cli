@@ -36,11 +36,11 @@ def rawlog(ctx):
 @rawlog.command('show')
 @opt_identifier(help="Raw log global ID")
 @object_format_option()
-def rawlog_show(global_id: str, out_format: str):
+def rawlog_show(identifier: str, out_format: str):
     '''
     Get a single raw log by global ID.
     '''
-    show_raw_log(global_id, out_format)
+    show_raw_log(identifier, out_format)
 
 @rawlog.command('list')
 @opt_spec_filter()
@@ -59,9 +59,9 @@ def rawlog_list(spec: str, start: str, end: str, submitter: str, allow_no_filter
 
 @rawlog.command('regen')
 @opt_identifier(help="Raw log global ID")
-def rawlog_regenerate(global_id: str):
+def rawlog_regenerate(identifier: str):
     """Regenerate logs derived from a raw log entry"""
-    regenerate_raw_log(global_id)
+    regenerate_raw_log(identifier)
 
 @rawlog.command('regen-bulk')
 @opt_spec_filter()
