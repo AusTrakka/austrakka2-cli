@@ -51,7 +51,7 @@ def log_subcommands(root_type: str):
         end: str,
         event_type: str,
         submitter: str,
-        resource_identifier: str,
+        resource: str,
         resource_type: str,
         out_format: str,
         view_type: str,
@@ -64,7 +64,7 @@ def log_subcommands(root_type: str):
             end,
             event_type,
             submitter,
-            resource_identifier,
+            resource,
             resource_type,
             out_format,
             view_type
