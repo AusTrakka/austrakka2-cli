@@ -15,7 +15,7 @@ from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_organisation
 from austrakka.utils.privilege import PROJECT_RESOURCE
 from austrakka.components.log import log_subcommands
-from austrakka.utils.subcommands.privilege import privilege_subcommands
+from austrakka.components.iam.privilege import privilege_subcommands
 from .funcs import disable_project, enable_project, list_projects, \
     add_project, \
     update_project, \
