@@ -765,7 +765,7 @@ def opt_privilege_level(**attrs: t.Any):
 def opt_role(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'The role name that is unique.',
+        'help': 'Role name',
     }
     return create_option(
         "-r",
