@@ -2,6 +2,12 @@
 import click
 
 from austrakka.utils.privilege import TENANT_RESOURCE
+from austrakka.utils.cmd_filter import hide_admin_cmds
+from austrakka.utils.options import (
+    opt_role,
+    opt_user_identifier,
+    opt_identifier)
+from austrakka.utils.output import table_format_option
 from .funcs import (
     list_privileges,
     list_by_role_privileges,
@@ -9,12 +15,7 @@ from .funcs import (
     assign_privilege,
     unassign_privilege,
 )
-from austrakka.utils.cmd_filter import hide_admin_cmds
-from austrakka.utils.options import (
-    opt_role,
-    opt_user_identifier,
-    opt_identifier)
-from austrakka.utils.output import table_format_option
+
 
 
 def privilege_subcommands(root_type: str):
