@@ -45,7 +45,7 @@ def change_user_group_assignment(user_id, group_roles, sub_path):
         })
 
     payload = {
-        "objectId": user_id,
+        "identifier": user_id,
         "entitlements": group_role_pairs
     }
 

@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.83.0] - 2026-04-14
+
+### Added
+- `admin rlog regen-bulk` command.
+- `project privilege [assign|list|list-by-user|list-by-role|unassign]` commands.
+
+### Changed
+- `admin rlog regenerate` -> `admin rlog regen`.
+- `[-ui|--user-id]` -> `-id` for `group role [add|remove]`.
+- `[-ui|--user-id]` -> `--user-id` for `iam privilege [list-by-user|assign|unassign]`.
+- `[-ui|--user-id]` -> `-id` for `user [update|enable|disable]`.
+
+### Fixed
+- Issues with pipe characters in FASTA file headers for `seq add`.
+
 ## [0.82.2] - 2026-03-30
 
 ### Fixed
@@ -83,7 +98,6 @@ over 256 allowed values.
 ### Added
 
 - `--view-type` option to `log list`.
->>>>>>> Development
 
 ### Removed
 
