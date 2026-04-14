@@ -6,8 +6,8 @@ from austrakka.utils.privilege import get_priv_path
 from austrakka.utils.datetimes import dt_parse
 
 COMPACT_FIELDS = ['eventTime','resourceType','resourceName','eventType',
-                  'eventStatus','submitterDisplayName']
-MORE_FIELDS = ['clientSessionId','callId','globalId']
+                  'eventStatus','submitterUsername']
+MORE_FIELDS = ['clientSessionId','callId','globalId', 'submitterDisplayName']
 FIELD_ORDERING = ['globalId'] + COMPACT_FIELDS + ['callId','clientSessionId']
 
 # pylint: disable=duplicate-code

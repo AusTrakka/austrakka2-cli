@@ -63,7 +63,7 @@ def privilege_list_by_role(role: str, record_type: str, global_id: str, out_form
 
 
 @privilege.command('list-by-user', hidden=hide_admin_cmds())
-@opt_user_object_id()
+@opt_identifier(option_name="--user-id", var_name="user_id", help="User identifier")
 @opt_record_type(default=TENANT_RESOURCE)
 @opt_identifier(
     required=False,
@@ -80,7 +80,7 @@ def privilege_list_by_user(user_id: str, record_type: str, global_id: str, out_f
 
 
 @privilege.command('assign', hidden=hide_admin_cmds())
-@opt_user_global_id()
+@opt_identifier(option_name="--user-id", var_name="user_id", help="User identifier")
 @opt_role()
 @opt_identifier(
     required=False,
@@ -89,7 +89,7 @@ def privilege_list_by_user(user_id: str, record_type: str, global_id: str, out_f
 )
 @opt_record_type(default=TENANT_RESOURCE)
 def privilege_assign(
-        user_global_id: str,
+        user_id: str,
         role: str,
         global_id: str,
         record_type: str):
@@ -97,11 +97,11 @@ def privilege_assign(
     Assign privileges to access a record by a user
     """
     validate_global_id(record_type, global_id)
-    assign_privilege(user_global_id, role, global_id, record_type)
+    assign_privilege(user_id, role, global_id, record_type)
 
 
 @privilege.command('unassign', hidden=hide_admin_cmds())
-@opt_user_global_id()
+@opt_identifier(option_name="--user-id", var_name="user_id", help="User identifier")
 @opt_role()
 @opt_identifier(
     required=False,
@@ -110,7 +110,7 @@ def privilege_assign(
 )
 @opt_record_type(default=TENANT_RESOURCE)
 def privilege_unassign(
-        user_global_id: str,
+        user_id: str,
         role: str,
         global_id: str,
         record_type: str):
@@ -118,7 +118,7 @@ def privilege_unassign(
     Remove privileges to access a record from a user
     """
     validate_global_id(record_type, global_id)
-    unassign_privilege(user_global_id, role, global_id, record_type)
+    unassign_privilege(user_id, role, global_id, record_type)
 
 
 def validate_global_id(record_type: str, global_id: Union[str, None]):

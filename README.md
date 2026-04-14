@@ -19,6 +19,18 @@ Note that currently, sequence data can only be submitted using the CLI, and cann
 
 ## Installation
 
+### Standalone CLI
+
+Currently only supported on Linux:
+
+`curl -o- https://raw.githubusercontent.com/AusTrakka/austrakka2-cli/refs/heads/master/scripts/install | bash`
+
+This will install `trakka` to `~/.local/bin`. You can pass a custom directory like this:
+
+`curl -o- https://raw.githubusercontent.com/AusTrakka/austrakka2-cli/refs/heads/master/scripts/install | bash -s [OTHER_DIR]`
+
+### Using Python
+
 The CLI requires Python to run. If you would like to use conda to install Python, install the CLI, and save the necessary environment variables,
 you can first install either Miniforge (https://github.com/conda-forge/miniforge) or Miniconda (https://docs.conda.io/en/latest/miniconda.html). We recommend Miniforge for most users.
 
