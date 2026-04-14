@@ -90,7 +90,8 @@ def configure_state_machine() -> StateMachine:
         SName.DONE_DOWNLOADING: State(SName.DONE_DOWNLOADING),
         SName.FINALISING: State(SName.FINALISING),
         SName.DONE_FINALISING: State(SName.DONE_FINALISING),
-        SName.FINALISATION_FAILED: State(SName.FINALISATION_FAILED, is_end_state=True),
+        SName.FINALISATION_FAILED: State(SName.FINALISATION_FAILED, 
+                                         is_end_state=True, is_error_state=True),
         SName.AGGREGATING: State(SName.AGGREGATING),
         SName.DONE_AGGREGATING: State(SName.AGGREGATING),
         SName.PURGING: State(SName.PURGING),
@@ -173,7 +174,7 @@ def pull_manifest(sync_state: dict):
     
     seq_type_enum = convert_to_seq_type(seq_type)
     raise_sync_exception_if_none(
-        seq_type_enum, 
+        seq_type_enum,
         "pull_manifest: seq_type_enum cannot be None."
         "Please check the state file.")
     

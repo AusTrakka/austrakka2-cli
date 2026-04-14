@@ -96,9 +96,10 @@ def _call_batched_submission(
     
     filepath = Path(file.name)
     # pylint: disable=C0103
-    df = pd.read_csv(file, dtype=str, index_col=False, keep_default_na=False, na_values='')
+    if filepath.suffix == '.csv':
+        df = pd.read_csv(file, dtype=str, index_col=False, keep_default_na=False, na_values='')
 
-    if  filepath.suffix == '.xlsx':
+    elif filepath.suffix == '.xlsx':
         # Batching not currently supported, just upload the original file
         _call_submission(path, file, owner_org, shared_projects, proforma_abbrev)
         return
@@ -106,6 +107,7 @@ def _call_batched_submission(
     if filepath.suffix != '.csv':
         raise ValueError('File must be .csv or .xlsx')
     
+    # pylint: disable=possibly-used-before-assignment
     num_rows = df.shape[0]
     if num_rows <= batch_size:
         # Just upload the original file

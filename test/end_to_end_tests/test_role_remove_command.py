@@ -39,7 +39,9 @@ def _create_role(cli: AusTrakkaTestCli, role_name: str):
         'add',
         '-r', role_name,
         '-d', f'Test role {role_name}',
-        '-pv', 'User'
+        '-pv', 'User',
+        '-rt', 'Tenant',
+        '--scope', 'ListRolesTenant'
     ])
     assert result.exit_code == 0, f'Failed to create role {role_name} as part of test setup: {result.output}'
 

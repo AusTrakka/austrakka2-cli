@@ -207,6 +207,7 @@ to see the usage of the `metadata add` command to upload metadata files.
 | `AT_LOG_LEVEL`          | Level of logging                                                                                                                                |
 | `AT_LOG`                | Set to `file` to redirecting logging to a temp file                                                                                             |
 | `AT_CMD_SET`            | Set to `austrakka-admin` to display admin commands (these will not actually run successfully unless you have an appropriate role on the server) |
+| `AT_TIMEZONE`           | Set to change the default timezone used for datetime display and parsing. Default if unset is to use your local timezone.                       |
 | `AT_SKIP_CERT_VERIFY`   | Skips verification of the cert used by the AusTrakka backend                                                                                    |
 | `AT_SKIP_VERSION_CHECK` | Skips checking of new CLI version                                                                                                               |
 | `AT_USE_HTTP2`          | Uses HTTP2 (experimental)                                                                                                                       |
@@ -226,3 +227,11 @@ Each component package contains the following files:
 | `funcs.py`    | Any functions associated with the component.                                                                                                                                                                                                 |
 | `opts.py`     | Click command line options associated with the component. Defined here so they can be reused across the CLI. Eg. `--species` is used for multiple commands. The species CLI option is defined here and imported to all commands that use it. |
 | `enums.py`    | Any enumerations associated with the component.                                                                                                                                                                                              |
+
+
+## Build
+
+```bash
+pipenv install --python=3.14 --dev
+pipenv run ./scripts/build [OUTPUT_DIR]
+```

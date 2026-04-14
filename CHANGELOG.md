@@ -5,6 +5,100 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.82.2] - 2026-03-30
+
+### Fixed
+- `user list --show-disabled` now works as expected.
+
+## [0.82.1] - 2026-03-24
+
+### Fixed
+- Issues running queue related commands.
+
+## [0.82.0] - 2026-03-23
+
+### Added
+- `admin message [metrics|list|show]`.
+- `admin message feedback [delete|list|show]`.
+- `user rename`.
+
+### Changed
+- `user add` now requires `--username`.
+- `--queue-name` has been renamed to `--queue` for `austrakka admin message dl [show|list|delete|resend]`.
+
+## [0.81.0] - 2026-03-11
+
+### Added
+- Filtering options to `[org|proforma|project] log list` commands.
+- Filtering options to `admin rlog list` commands.
+
+### Changed
+
+- `iam role definition add` -> `iam role scope add`.
+- `iam role definition remove` -> `iam role scope remove`.
+
+### Removed
+
+- `iam role definition list`. 
+
+## [0.80.1] - 2026-02-24
+
+### Changed
+- `seq sync get` now has `--reset` enabled by default.
+
+## [0.80.0] - 2026-02-23
+
+### Added
+- Added a top-level `--timezone` option, which can be used to set the default timezone for datetime
+display and parsing. This defaults to the local timezone if not set.
+- Better formatting for displayed datetimes, incluing default timezone conversion.
+- Admin-only commands added to interact with raw log entries.
+
+### Changed
+
+- The `proforma generate` command for admins has been improved: Type Dictionary values will be sorted, and range 
+validation will be used for Excel validation of these values. This allows for Excel-level validation of variables with
+over 256 allowed values.
+
+### Fixed
+
+- Fixed issue where the `seq sync get` command would not always return a non-zero exit code on failure.
+
+## [0.79.0] - 2026-02-09
+
+### Added
+
+- `project [disable|enable]` commands.
+
+### Changed
+- `proforma add-version` accepts abbreviation.
+- `-gid` options are now `-id` and accept either a GUID or abbreviation for an entity.
+- `[-vt|--view-type]` is ignored for `[-f|--format] [json|html]`.
+
+### Fixed
+- Issue where `[-f|--format] [json|html]` would flatten one level of the returned entity.
+
+## [0.78.0] - 2026-01-28
+
+### Added
+
+- `--view-type` option to `log list`.
+>>>>>>> Development
+
+### Removed
+
+- `project settings` command. Settings are now displayed via `project list`. 
+
+## [0.77.0] - 2025-12-18
+
+### Added
+
+- `log list` for viewing platform logs.
+- `org log list` for viewing organisation logs.
+- `proforma log list` for viewing proforma logs.
+- `project log list` for viewing project logs.
+- `user log list` for viewing user logs.
+
 ## [0.76.1] - 2025-12-02
 
 ### Fixed
