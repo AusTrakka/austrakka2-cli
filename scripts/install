@@ -17,12 +17,12 @@ export OS_NAME=$(uname | awk '{print tolower($0)}')
 export ARCH=$(uname -m)
 
 if [ "$OS_NAME" != "linux" ]; then
-    echo "OS $OS_NAME not supported. trakka must be built from source"
+    echo "OS $OS_NAME not supported. trakka can be installed via pip: https://pypi.org/project/trakka/"
     exit 1
 fi
 
 if [ "$ARCH" != "x86_64" ]; then
-    echo "Architecture $ARCH not supported. trakka must be built from source"
+    echo "Architecture $ARCH not supported. trakka can be installed via pip: https://pypi.org/project/trakka/"
     exit 1
 fi
 
