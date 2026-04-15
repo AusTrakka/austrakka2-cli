@@ -74,11 +74,11 @@ def regenerate_raw_log_bulk(spec: str, start: str, end: str, submitter: str,
     # First query to check what we are about to do
     # For now we only care about the log count, but in the future may check log status
     logs_response = api_get(
-        path=f"{TENANT_PATH}/RawLogs",
+        path=f"{TENANT_PATH}/RawLogs/Metrics",
         params=params,
     )['data']
     
-    log_count = len(logs_response)
+    log_count = logs_response['count']
     if log_count == 0:
         logger.info("No raw logs found matching the specified filters.")
         return
