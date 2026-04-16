@@ -1,7 +1,6 @@
 # pylint: disable=expression-not-assigned
 import click
 
-from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.output import table_format_option
 from austrakka.utils.output import object_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
@@ -47,7 +46,7 @@ project.add_command(privilege_subcommands(PROJECT_RESOURCE))
 @project.command(
         'add', 
         hidden=hide_admin_cmds(),
-        help=f'Add a new project to {PROG_NAME}.'
+        help=f'Add a new project'
 )
 @opt_abbrev(help="Project Abbreviation")
 @opt_name(help="Project name")
@@ -131,7 +130,7 @@ def dashboard_get(project_abbrev: str, out_format: str):
     get_dashboard(project_abbrev, out_format)
 
 
-@project.command('list', help=f'List projects in {PROG_NAME}')
+@project.command('list', help=f'List projects')
 @opt_view_type()
 @table_format_option()
 def projects_list(view_type: str,out_format: str):

@@ -7,7 +7,6 @@ from austrakka.components.project.dataset.funcs import add_dataset_blocking, \
 from austrakka.components.project.dataset.funcs import add_dataset, \
     track_dataset
 from austrakka.utils.output import table_format_option
-from austrakka import __prog_name__ as PROG_NAME
 
 
 @click.group()
@@ -19,7 +18,7 @@ def dataset(ctx):
 
 @dataset.command(
         'async-add',
-        help=f'Upload a dataset file to the given project in {PROG_NAME}.',
+        help=f'Upload a dataset file to the given project',
 )
 @click.argument('project-abbrev', type=str)
 @click.option('-fp',
@@ -35,7 +34,7 @@ def dataset_add(
 
 @dataset.command(
         'track-upload',
-        help=f'Check for a job states given a project in {PROG_NAME} and a Tracking Token',
+        help=f'Check for a job states given a project and a Tracking Token',
 )
 @click.argument('project-abbrev', type=str)
 @opt_tracking_token()
