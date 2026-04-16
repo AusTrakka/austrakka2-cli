@@ -8,7 +8,7 @@ def opt_tenant_id(func):
         show_envvar=True,
         required=True,
         envvar='AT_AUTH_TENANT_ID',
-        help=f'Tenant ID',
+        help='Tenant ID',
         default=Auth.TENANT_ID.value,
     )(func)
 
@@ -19,7 +19,7 @@ def opt_client_id(func):
         show_envvar=True,
         required=True,
         envvar='AT_AUTH_CLIENT_ID',
-        help=f'Client ID',
+        help='Client ID',
         default=Auth.CLIENT_ID.value,
     )(func)
 
@@ -30,7 +30,7 @@ def opt_backend_app_uri(func):
         show_envvar=True,
         required=True,
         envvar='AT_AUTH_APP_URI',
-        help=f'API URI',
+        help='API URI',
         default=Auth.APP_SCOPE.value,
     )(func)
 

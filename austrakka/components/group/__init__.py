@@ -56,7 +56,7 @@ def group_update(
         org)
 
 
-@group.command('list', help=f'List all known groups')
+@group.command('list', help='List all known groups')
 @table_format_option()
 def group_list(out_format: str):
     list_group(out_format)

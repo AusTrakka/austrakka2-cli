@@ -48,7 +48,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 @click.group(
     cls=AusTrakkaCliTopLevel, 
     context_settings=CONTEXT_SETTINGS,
-    help=f"""
+    help="""
     A cli for interfacing with Trakka.
     """,
 )
@@ -111,7 +111,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     default=False,
     show_default=True,
     type=bool,
-    help=f"Skip check for new CLI version"
+    help="Skip check for new CLI version"
 )
 @click.option(
     '--log',

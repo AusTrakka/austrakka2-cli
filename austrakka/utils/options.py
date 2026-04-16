@@ -584,7 +584,7 @@ def opt_is_geo(is_update=False, **attrs: t.Any):
 
 def opt_is_austrakka_process(**attrs: t.Any):
     defaults = {
-        'help': f'Determines if the user is a process'
+        'help': 'Determines if the user is a process'
     }
     return create_option(
         '--is-process/--not-process',

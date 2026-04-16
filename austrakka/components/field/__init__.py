@@ -14,7 +14,7 @@ def field(ctx):
     ctx.context = ctx.parent.context
 
 
-@field.command('list', help=f'List metadata fields')
+@field.command('list', help='List metadata fields')
 @opt_view_type()
 @table_format_option()
 def field_list(view_type: str, out_format: str):
@@ -24,7 +24,7 @@ def field_list(view_type: str, out_format: str):
 @field.command(
         'add', 
         hidden=hide_admin_cmds(),
-        help=f'Add a metadata field',
+        help='Add a metadata field',
 )
 @opt_name(help="Field name")
 @opt_fieldtype()
@@ -72,7 +72,7 @@ def field_add(
 @field.command(
         'update', 
         hidden=hide_admin_cmds(),
-        help=f"Update a metadata field"
+        help="Update a metadata field"
 )
 @click.argument('fieldname')
 @opt_name(required=False,
@@ -145,7 +145,7 @@ def field_list_proformas(fieldname: str, out_format: str):
 @field.command(
         'disable', 
         hidden=hide_admin_cmds(),
-        help=f"Disable a metadata field"
+        help="Disable a metadata field"
 )
 @click.argument('fieldname')
 def field_disable(fieldname: str):
@@ -155,7 +155,7 @@ def field_disable(fieldname: str):
 @field.command(
         'enable', 
         hidden=hide_admin_cmds(),
-        help=f"Enable a metadata field"
+        help="Enable a metadata field"
 )
 @click.argument('fieldname')
 def field_enable(fieldname: str):

@@ -21,14 +21,14 @@ def plot(ctx):
     ctx.context = ctx.parent.context
 
 
-@plot.command('list', help=f'List plots by project')
+@plot.command('list', help='List plots by project')
 @opt_project(required=True)
 @table_format_option()
 def plot_list(project: str, out_format: str):
     list_plots(project, out_format)
 
 
-@plot.command('add', hidden=hide_admin_cmds(), help=f"Add plot to a project")
+@plot.command('add', hidden=hide_admin_cmds(), help="Add plot to a project")
 @opt_abbrev()
 @opt_name()
 @opt_description()
@@ -56,7 +56,7 @@ def plot_add(
     )
 
 
-@plot.command('update', hidden=hide_admin_cmds(), help=f"Update a plot")
+@plot.command('update', hidden=hide_admin_cmds(), help="Update a plot")
 @click.argument('plot-abbrev', type=str)
 @opt_name(required=False)
 @opt_description(required=False)
@@ -102,6 +102,6 @@ def plot_enable(plot_abbrev: str):
     enable_plot(plot_abbrev)
 
 
-@plot.command('types', help=f'List plot types')
+@plot.command('types', help='List plot types')
 def plot_types():
     list_plot_types()

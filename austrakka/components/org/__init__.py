@@ -24,13 +24,13 @@ def org(ctx):
 org.add_command(privilege_subcommands(ORG_RESOURCE))
 org.add_command(log_subcommands(ORG_RESOURCE))
 
-@org.command('list', help=f"List organisations")
+@org.command('list', help="List organisations")
 @table_format_option()
 def org_list(out_format: str):
     list_orgs(out_format)
 
 
-@org.command('add', hidden=hide_admin_cmds(), help=f"Add organisation")
+@org.command('add', hidden=hide_admin_cmds(), help="Add organisation")
 @opt_name(help="Organisation Name")
 @opt_abbrev(help="Organisation Abbreviation")
 @opt_state(required=False)
@@ -46,7 +46,7 @@ def org_add(
     add_org(name, abbrev, country, state, is_active)
 
 
-@org.command('update', hidden=hide_admin_cmds(), help=f"Update organisation")
+@org.command('update', hidden=hide_admin_cmds(), help="Update organisation")
 @click.argument('org-abbrev', type=str)
 @opt_name(help="Organisation Name", required=False)
 @opt_state(required=False)

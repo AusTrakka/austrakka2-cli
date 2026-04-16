@@ -33,7 +33,7 @@ def metadata(ctx):
     ctx.context = ctx.parent.context
     
 
-@metadata.command('add', help=f'Upload metadata submission')
+@metadata.command('add', help='Upload metadata submission')
 @click.argument('file', type=click.File('rb'))
 @opt_owner_org(required=True)
 @opt_shared_projects()
@@ -57,7 +57,7 @@ def submission_add(
         batch_size)
 
 
-@metadata.command('update', help=f"""
+@metadata.command('update', help="""
     Upload metadata to existing samples.
     The update operation does not require (or accept) Owner_group.
     The specified pro forma must contain Seq_ID and metadata fields

@@ -18,7 +18,7 @@ def dataset(ctx):
 
 @dataset.command(
         'async-add',
-        help=f'Upload a dataset file to the given project',
+        help='Upload a dataset file to the given project',
 )
 @click.argument('project-abbrev', type=str)
 @click.option('-fp',
@@ -34,7 +34,7 @@ def dataset_add(
 
 @dataset.command(
         'track-upload',
-        help=f'Check for a job states given a project and a Tracking Token',
+        help='Check for a job states given a project and a Tracking Token',
 )
 @click.argument('project-abbrev', type=str)
 @opt_tracking_token()
