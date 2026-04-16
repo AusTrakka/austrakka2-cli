@@ -19,8 +19,6 @@ from austrakka.utils.options import opt_organisation
 from austrakka.utils.options import opt_show_disabled
 from austrakka.utils.options import opt_server_username
 from austrakka import __prog_name__ as PROG_NAME
-from austrakka.utils.privilege import USER_RESOURCE
-from austrakka.utils.subcommands.log import log_subcommands
 from .funcs import list_users
 from .funcs import add_user
 from .funcs import update_user
@@ -35,7 +33,6 @@ def user(ctx):
     '''Commands related to users'''
     ctx.context = ctx.parent.context
 
-user.add_command(log_subcommands(USER_RESOURCE))
 
 @user.command('list', help=f"List users in {PROG_NAME}")
 @opt_show_disabled()
@@ -86,14 +83,12 @@ def user_add(
 @opt_name(help="Display Name", required=False)
 @opt_email_address(required=False)
 @opt_user_position(required=False)
-@opt_organisation(required=False)
 @opt_is_active(required=False)
 @opt_server_username(required=False)
 @opt_user_no_dl_quota(default=None)
 @opt_user_monthly_dl_quota_bytes()
 def user_update(
     global_id: str,
-    org: str,
     is_active: bool,
     email: str,
     position: str,
@@ -107,7 +102,6 @@ def user_update(
         name, 
         email, 
         position,
-        org, 
         server_username, 
         is_active, 
         no_download_quota, 
