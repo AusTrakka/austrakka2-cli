@@ -48,8 +48,8 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 @click.group(
     cls=AusTrakkaCliTopLevel, 
     context_settings=CONTEXT_SETTINGS,
-    help=f"""
-    A cli for interfacing with {PROG_NAME}.
+    help="""
+    A cli for interfacing with Trakka.
     """,
 )
 @click.option(
@@ -111,7 +111,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     default=False,
     show_default=True,
     type=bool,
-    help=f"Skip check for new {PROG_NAME} CLI version"
+    help="Skip check for new CLI version"
 )
 @click.option(
     '--log',
@@ -119,7 +119,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     show_envvar=True,
     help='Outputs logs to a temporary file',
 )
-@click.version_option(message="%(prog)s v%(version)s", version=VERSION, prog_name=PROG_NAME.lower())
+@click.version_option(message="%(prog)s v%(version)s", version=VERSION, prog_name=PROG_NAME)
 @click.pass_context
 def cli(
         ctx: Context,

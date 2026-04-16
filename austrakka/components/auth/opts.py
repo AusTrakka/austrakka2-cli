@@ -1,6 +1,5 @@
 import click
 from austrakka.components.auth.enums import Auth
-from austrakka import __prog_name__ as PROG_NAME
 
 
 def opt_tenant_id(func):
@@ -9,7 +8,7 @@ def opt_tenant_id(func):
         show_envvar=True,
         required=True,
         envvar='AT_AUTH_TENANT_ID',
-        help=f'{PROG_NAME} tenant ID',
+        help='Tenant ID',
         default=Auth.TENANT_ID.value,
     )(func)
 
@@ -20,7 +19,7 @@ def opt_client_id(func):
         show_envvar=True,
         required=True,
         envvar='AT_AUTH_CLIENT_ID',
-        help=f'{PROG_NAME} client ID',
+        help='Client ID',
         default=Auth.CLIENT_ID.value,
     )(func)
 
@@ -31,7 +30,7 @@ def opt_backend_app_uri(func):
         show_envvar=True,
         required=True,
         envvar='AT_AUTH_APP_URI',
-        help=f'{PROG_NAME} API URI',
+        help='API URI',
         default=Auth.APP_SCOPE.value,
     )(func)
 

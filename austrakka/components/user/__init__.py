@@ -18,7 +18,6 @@ from austrakka.utils.options import opt_user_object_id
 from austrakka.utils.options import opt_organisation
 from austrakka.utils.options import opt_show_disabled
 from austrakka.utils.options import opt_server_username
-from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.privilege import USER_RESOURCE
 from austrakka.utils.subcommands.log import log_subcommands
 from .funcs import list_users
@@ -37,14 +36,14 @@ def user(ctx):
 
 user.add_command(log_subcommands(USER_RESOURCE))
 
-@user.command('list', help=f"List users in {PROG_NAME}")
+@user.command('list', help="List users")
 @opt_show_disabled()
 @table_format_option()
 def user_list(show_disabled: bool, out_format: str):
     list_users(show_disabled, out_format)
 
 
-@user.command('add', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
+@user.command('add', hidden=hide_admin_cmds(), help='Add user')
 @opt_user_object_id()
 @opt_username()
 @opt_organisation()
@@ -81,7 +80,7 @@ def user_add(
     )
 
 
-@user.command('update', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
+@user.command('update', hidden=hide_admin_cmds(), help='Update user')
 @opt_identifier()
 @opt_name(help="Display Name", required=False)
 @opt_email_address(required=False)
@@ -115,13 +114,13 @@ def user_update(
     )
 
 
-@user.command('enable', help=f"Re-enable a user in {PROG_NAME}")
+@user.command('enable', help="Re-enable a user")
 @opt_identifier()
 def user_enable(global_id: str):
     enable_user(global_id)
 
 
-@user.command('disable', help=f"Disable a user in {PROG_NAME}")
+@user.command('disable', help="Disable a user")
 @opt_identifier()
 def user_disable(global_id: str):
     disable_user(global_id)
