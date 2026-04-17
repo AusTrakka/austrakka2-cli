@@ -31,3 +31,8 @@ def check_version(current):
     # pylint: disable=broad-exception-caught
     except Exception as ex:
         logger.warning(f"Error checking for new version : {ex}")
+
+def warn_if_austrakka():
+    if PROG_NAME == "austrakka":
+        logger.warning("'austrakka' will be replaced with 'trakka' in the "
+            + "future. Use `pip install trakka` to install it.")

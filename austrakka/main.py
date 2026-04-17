@@ -39,7 +39,7 @@ from austrakka.utils.logger import setup_logger
 from austrakka.utils.logger import LOG_LEVEL_INFO
 from austrakka.utils.logger import LOG_LEVELS
 from austrakka.utils.cmd_filter import show_admin_cmds
-from austrakka.utils.version import check_version
+from austrakka.utils.version import check_version, warn_if_austrakka
 
 
 CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
@@ -143,6 +143,7 @@ def cli(
         CxtKey.TIMEZONE.value: timezone,
     }
     setup_logger(log_level, log_var)
+    warn_if_austrakka()
     if not skip_version_check:
         check_version(VERSION)
 
