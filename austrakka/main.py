@@ -151,6 +151,9 @@ def cli(
         )
         if server_info is None:
             check_version(VERSION)
+        else:
+            logger.debug("Not checking for new CLI updates as server is not"
+                         + " rolling.")
 
 
 def get_cli():

@@ -106,12 +106,18 @@ def get_server_info_or_create(
 
 
 def _get_new_server_info(url: str, vertify_vert: bool) -> Union[Dict, None]:
-    r = httpx.get(url + "/api/Version", verify=not vertify_vert)
-    if not r.is_success:
+    data = {}
+    try:
+        r = httpx.get(url + "/api/Version", verify=not vertify_vert)
+        if not r.is_success:
+            logger.warning(
+                "Unable to contact server to determine auth information.")
+            return None
+        data = r.json()
+    except httpx.HTTPError as ex:
         logger.warning(
-            "Unable to contact server to determine auth information.")
+            f"Unable to contact server to determine auth information. - {ex}")
         return None
-    data = r.json()
     client_id = data["data"]["clientId"]
     tenant_id = data["data"]["tenantId"]
     api_scope = data["data"]["apiScope"]
