@@ -7,6 +7,7 @@ import click
 from click.core import Context
 from loguru import logger
 
+from austrakka.utils.config import get_server_info_or_create
 from austrakka.utils.context import CxtKey
 from austrakka.utils.context import AusTrakkaCxt
 from austrakka.components.admin import admin
@@ -144,7 +145,15 @@ def cli(
     }
     setup_logger(log_level, log_var)
     if not skip_version_check:
-        check_version(VERSION)
+        server_info = get_server_info_or_create(
+            uri,
+            skip_cert_verify,
+        )
+        if server_info is None:
+            check_version(VERSION)
+        else:
+            logger.debug("Not checking for new CLI updates as server is not"
+                         + " rolling.")
 
 
 def get_cli():
