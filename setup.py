@@ -8,7 +8,7 @@ Modified by Madoshakalaka@Github (dependency links added)
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 from os import path
-from austrakka import __version__ as version
+from trakka import __version__ as version
 
 # io.open is needed for projects that support Python 2.7
 # It ensures open() defaults to text mode with universal newlines,
@@ -37,7 +37,7 @@ setup(
     # There are some restrictions on what makes a valid project name
     # specification here:
     # https://packaging.python.org/specifications/core-metadata/#name
-    name="austrakka",  # Required
+    name="trakka",  # Required
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
     #
@@ -48,7 +48,7 @@ setup(
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description="A CLI to interact with a AusTrakka instance",  # Optional
+    description="A CLI to interact with a Trakka instance",  # Optional
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
     #
@@ -178,7 +178,7 @@ setup(
     # executes the function `main` from this package when invoked:
     # TODO: update this
     entry_points={
-        "console_scripts": ["austrakka=austrakka.main:main"]
+        "console_scripts": ["trakka=trakka.main:main"]
     },  # Optional
     # List additional URLs that are relevant to your project as a dict.
     #
