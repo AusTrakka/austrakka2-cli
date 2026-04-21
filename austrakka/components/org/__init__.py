@@ -9,8 +9,8 @@ from austrakka.utils.options import opt_is_active
 from austrakka.utils.options import opt_country
 from austrakka.utils.options import opt_state
 from austrakka.utils.privilege import ORG_RESOURCE
-from austrakka.utils.subcommands.privilege import privilege_subcommands
-from austrakka.utils.subcommands.log import log_subcommands
+from austrakka.components.iam.privilege import privilege_subcommands
+from austrakka.components.log import log_subcommands
 from .funcs import list_orgs
 from .funcs import add_org
 from .funcs import update_org

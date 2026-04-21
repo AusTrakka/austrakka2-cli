@@ -4,7 +4,7 @@ from typing import List
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.privilege import PROFORMA_RESOURCE
-from austrakka.utils.subcommands.log import log_subcommands
+from austrakka.components.log import log_subcommands
 from .funcs import \
     add_proforma, \
     update_proforma, \
