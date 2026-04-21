@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.84.0] - 2026-04-21
+
+### Removed
+- `-rt/--record-type` and `-id` options from `iam privilege`; for non-system privileges use `[org|project] privilege`. 
+- `-rt/--record-type` and `-id` options from `log`; for non-system logs use `[org|project] log`. 
+
 ## [0.83.1] - 2026-04-20
 
 ### Changed
