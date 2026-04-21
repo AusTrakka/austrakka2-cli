@@ -1,7 +1,7 @@
 import os
 
 AUSTRAKKA_ADMIN = 'austrakka-admin'
-TRAKKA_ADMIN = 'trakka-admin'
+TRAKKA_ADMIN = 'admin'
 
 
 def show_admin_cmds():
