@@ -23,11 +23,11 @@ Note that currently, sequence data can only be submitted using the CLI, and cann
 
 Currently only supported on Linux:
 
-`curl -o- https://raw.githubusercontent.com/Trakka-Platform/cli/refs/heads/master/scripts/install | bash`
+`curl -o- https://raw.githubusercontent.com/trakka-platform/cli/refs/heads/master/scripts/install | bash`
 
 This will install `trakka` to `~/.local/bin`. You can pass a custom directory like this:
 
-`curl -o- https://raw.githubusercontent.com/Trakka-Platform/cli/refs/heads/master/scripts/install | bash -s [OTHER_DIR]`
+`curl -o- https://raw.githubusercontent.com/trakka-platform/cli/refs/heads/master/scripts/install | bash -s [OTHER_DIR]`
 
 ### Using Python
 
