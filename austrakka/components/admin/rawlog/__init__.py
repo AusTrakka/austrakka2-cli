@@ -34,7 +34,7 @@ def rawlog(ctx):
     ctx.context = ctx.parent.context
 
 @rawlog.command('show')
-@opt_identifier(help="Raw log global ID")
+@opt_identifier(help="Raw log global ID", var_name="global_id")
 @object_format_option()
 def rawlog_show(global_id: str, out_format: str):
     '''
@@ -58,7 +58,7 @@ def rawlog_list(spec: str, start: str, end: str, submitter: str, allow_no_filter
     list_raw_logs(spec, start, end, submitter, allow_no_filters, out_format, view_type)
 
 @rawlog.command('regen')
-@opt_identifier(help="Raw log global ID")
+@opt_identifier(help="Raw log global ID", var_name="global_id")
 def rawlog_regenerate(global_id: str):
     """Regenerate logs derived from a raw log entry"""
     regenerate_raw_log(global_id)
