@@ -11,13 +11,13 @@ from ete_utils import (
     _new_identifier,
     seq_id_field_name,
     _clone_cns_fasta_file)
-from test.utils.austrakka_test_cli import AusTrakkaTestCli
+from test.utils.trakka_test_cli import TrakkaTestCli
 
 
 class TestSeqGetCommand:
     @pytest.fixture(autouse=True)
-    def _use_cli(self, austrakka_test_cli: AusTrakkaTestCli):
-        self.cli = austrakka_test_cli
+    def _use_cli(self, trakka_test_cli: TrakkaTestCli):
+        self.cli = trakka_test_cli
 
     
     def test_list__given_group_name_and_seq_id_are_not_specified__expect_cli_error(self):
