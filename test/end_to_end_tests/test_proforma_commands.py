@@ -20,7 +20,7 @@ class TestProformaCommands:
             '--format',
             'json'
         ])
-        return json.loads(result.output)
+        return json.loads(result.stdout)
 
     def test_add_version_no_op_when_spec_is_identical(self):
         # Arrange

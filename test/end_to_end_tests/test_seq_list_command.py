@@ -89,7 +89,7 @@ class TestSeqGetCommand:
         
         # Assert
         assert result.exit_code == 0, f'The seq get command should succeed: {result.output}'
-        json_result = json.loads(result.output)
+        json_result = json.loads(result.stdout)
 
         # Count elements by type
         fastq_ill_pe_count = sum(1 for item in json_result if item.get("type") == "fastq-ill-pe")
@@ -138,7 +138,7 @@ class TestSeqGetCommand:
 
         # Assert
         assert result.exit_code == 0, f'The seq get command should succeed: {result.output}'
-        json_result = json.loads(result.output)
+        json_result = json.loads(result.stdout)
 
         # Count elements by type
         fastq_ill_pe_count = sum(1 for item in json_result if item.get("type") == "fastq-ill-pe")
@@ -188,7 +188,7 @@ class TestSeqGetCommand:
 
         # Assert
         assert result.exit_code == 0, f'The seq get command should succeed: {result.output}'
-        json_result = json.loads(result.output)
+        json_result = json.loads(result.stdout)
 
         # Count elements by type
         fastq_ill_pe_count = sum(1 for item in json_result if item.get("type") == "fastq-ill-pe")
@@ -237,7 +237,7 @@ class TestSeqGetCommand:
 
         # Assert
         assert result.exit_code == 0, f'The seq get command should succeed: {result.output}'
-        json_result = json.loads(result.output)
+        json_result = json.loads(result.stdout)
 
         # Count elements by type
         fastq_ill_pe_count = sum(1 for item in json_result if item.get("type") == "fastq-ill-pe")
