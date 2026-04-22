@@ -1,5 +1,4 @@
 # pylint: disable=expression-not-assigned
-import os
 import sys
 import uuid
 
@@ -38,7 +37,7 @@ from trakka.utils.output import log_response
 from trakka.utils.logger import setup_logger
 from trakka.utils.logger import LOG_LEVEL_INFO
 from trakka.utils.logger import LOG_LEVELS
-from trakka.utils.cmd_filter import show_admin_cmds
+from trakka.utils.cmd_filter import USER, show_admin_cmds
 from trakka.utils.version import check_version
 
 
@@ -55,19 +54,19 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 @click.option(
     TrakkaCxt.get_option_name(CxtKey.URI), 
     show_envvar=True,
-    envvar=TrakkaCxt.get_env_var_name(CxtKey.URI),
+    envvar=TrakkaCxt.get_env_var_names(CxtKey.URI),
     required=True
 )
 @click.option(
     TrakkaCxt.get_option_name(CxtKey.TOKEN),
     show_envvar=True,
-    envvar=TrakkaCxt.get_env_var_name(CxtKey.TOKEN),
+    envvar=TrakkaCxt.get_env_var_names(CxtKey.TOKEN),
     required=True
 )
 @click.option(
     TrakkaCxt.get_option_name(CxtKey.LOG_LEVEL), 
     show_envvar=True,
-    envvar=TrakkaCxt.get_env_var_name(CxtKey.LOG_LEVEL),
+    envvar=TrakkaCxt.get_env_var_names(CxtKey.LOG_LEVEL),
     default=LOG_LEVEL_INFO,
     type=click.Choice(LOG_LEVELS),
     show_default=True
@@ -76,7 +75,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     TrakkaCxt.get_option_name(CxtKey.TIMEZONE),
     '-tz',
     show_envvar=True,
-    envvar=TrakkaCxt.get_env_var_name(CxtKey.TIMEZONE),
+    envvar=TrakkaCxt.get_env_var_names(CxtKey.TIMEZONE),
     default=LOCAL_TIMEZONE,
     show_default=True,
     help='Timezone to use for any datetime output or parsing. '
@@ -86,7 +85,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 @click.option(
     TrakkaCxt.get_option_name(CxtKey.SKIP_CERT_VERIFY),
     show_envvar=True,
-    envvar=TrakkaCxt.get_env_var_name(CxtKey.SKIP_CERT_VERIFY),
+    envvar=TrakkaCxt.get_env_var_names(CxtKey.SKIP_CERT_VERIFY),
     required=True,
     default=False,
     show_default=True,
@@ -96,7 +95,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 @click.option(
     TrakkaCxt.get_option_name(CxtKey.USE_HTTP2), 
     show_envvar=True,
-    envvar=TrakkaCxt.get_env_var_name(CxtKey.USE_HTTP2),
+    envvar=TrakkaCxt.get_env_var_names(CxtKey.USE_HTTP2),
     required=True,
     default=False,
     show_default=True,
@@ -106,12 +105,22 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 @click.option(
     TrakkaCxt.get_option_name(CxtKey.SKIP_VERSION_CHECK),
     show_envvar=True,
-    envvar=TrakkaCxt.get_env_var_name(CxtKey.SKIP_VERSION_CHECK),
+    envvar=TrakkaCxt.get_env_var_names(CxtKey.SKIP_VERSION_CHECK),
     required=True,
     default=False,
     show_default=True,
     type=bool,
     help="Skip check for new CLI version"
+)
+@click.option(
+    TrakkaCxt.get_option_name(CxtKey.CMD_SET),
+    show_envvar=True,
+    envvar=TrakkaCxt.get_env_var_names(CxtKey.CMD_SET),
+    required=True,
+    default=USER,
+    show_default=True,
+    type=str,
+    help="Hide/show admin commands"
 )
 @click.option(
     '--log',
@@ -131,6 +140,7 @@ def cli(
         use_http2: bool,
         skip_version_check: bool,
         log_var: str,
+        cmd_set: str,
 ):
     ctx.context = {
         CxtKey.URI.value: uri,
@@ -141,10 +151,12 @@ def cli(
         CxtKey.LOG_LEVEL.value: log_level,
         CxtKey.SESSION_ID.value: str(uuid.uuid4()),
         CxtKey.TIMEZONE.value: timezone,
+        CxtKey.CMD_SET.value: cmd_set,
     }
     setup_logger(log_level, log_var)
     if not skip_version_check:
         check_version(VERSION)
+    TrakkaCxt.check_deprecated_env_vars()
 
 
 def get_cli():
@@ -178,7 +190,8 @@ def main():
         sys.exit(1)
     except Exception as ex:  # pylint: disable=broad-except
         # Cannot use TrakkaCxt.value here because there is no click context
-        if is_debug(os.getenv(TrakkaCxt.get_env_var_name(CxtKey.LOG_LEVEL), '')):
+
+        if is_debug(TrakkaCxt.get_env_var_value(CxtKey.LOG_LEVEL, '')):
             logger.exception(ex)
         else:
             logger.error(ex)

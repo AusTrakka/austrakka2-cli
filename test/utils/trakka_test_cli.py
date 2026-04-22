@@ -29,7 +29,7 @@ class TrakkaTestCli:
 
         :raises CliTestException: there is a problem with the provided config
         """
-        at_uri = os.getenv(TrakkaCxt.get_env_var_name(CxtKey.URI), '')
+        at_uri = TrakkaCxt.get_env_var_value(CxtKey.URI, '')
         if PRODLIKE_DOMAIN in at_uri:
             raise CliTestException(f"Unable to run tests against {at_uri}")
 
