@@ -5,7 +5,7 @@ AUSTRAKKA_ADMIN = 'austrakka-admin'
 TRAKKA_ADMIN = 'admin'
 USER = 'user'
 
-_deprecation_warning_printed = False
+_DEPRECATION_WARNING_PRINTED = False
 
 def show_admin_cmds():
     cmd_set = TrakkaCxt.get_env_var_value(CxtKey.CMD_SET, '')
@@ -20,8 +20,9 @@ def hide_admin_cmds():
 def deprecation_warning(value: str):
     # This global flag is required as this function will be called
     # for every instance of a admin command
-    global _deprecation_warning_printed
-    if _deprecation_warning_printed:
+    # pylint: disable=global-statement
+    global _DEPRECATION_WARNING_PRINTED
+    if _DEPRECATION_WARNING_PRINTED:
         return
     if value == AUSTRAKKA_ADMIN:
         env_var_names = ", ".join(TrakkaCxt.get_env_var_names(CxtKey.CMD_SET))
@@ -30,5 +31,7 @@ def deprecation_warning(value: str):
         # means this line might look different; it's temporary,
         # and as only internal users are using this flag we can
         # remove it sooner.
-        logger.warning("Value " + AUSTRAKKA_ADMIN + " for env vars " + env_var_names + " is deprecated and will be replaced with " + TRAKKA_ADMIN + " in a future release.")
-        _deprecation_warning_printed = True
+        logger.warning("Value " + AUSTRAKKA_ADMIN + " for env vars " 
+            + env_var_names + " is deprecated and will be replaced with " 
+            + TRAKKA_ADMIN + " in a future release.")
+        _DEPRECATION_WARNING_PRINTED = True

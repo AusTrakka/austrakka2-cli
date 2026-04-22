@@ -1,5 +1,4 @@
 # pylint: disable=expression-not-assigned
-import os
 import sys
 import uuid
 
