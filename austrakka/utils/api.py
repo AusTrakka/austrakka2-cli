@@ -221,7 +221,7 @@ def api_put(
 def api_patch(
         path: str,
         params: Dict = None,
-        data: Union[Dict, List] = None,
+        data: Union[Dict, List, str] = None,
         client: httpx.Client = None,
 ):
     return client.patch(
