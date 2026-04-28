@@ -1,0 +1,84 @@
+#!/bin/bash
+set -e 
+
+if [ -n "$1" ]; then
+    if [[ -d $1 ]]; then
+        BIN_DIR=$1
+    else
+        echo >&2 path passed is not a directory
+        exit 1
+    fi
+else
+    echo "Install path not passed. Defaulting to ~/.local/bin"
+    BIN_DIR=~/.local/bin
+fi
+
+export OS_NAME=$(uname | awk '{print tolower($0)}')
+export ARCH=$(uname -m)
+
+if [ "$OS_NAME" != "linux" ]; then
+    echo "OS $OS_NAME not supported. trakka can be installed via pip: https://pypi.org/project/trakka/"
+    exit 1
+fi
+
+if [ "$ARCH" != "x86_64" ]; then
+    echo "Architecture $ARCH not supported. trakka can be installed via pip: https://pypi.org/project/trakka/"
+    exit 1
+fi
+
+mkdir -p "$BIN_DIR"
+
+export DL_URL=$(curl -s https://api.github.com/repos/austrakka/austrakka2-cli/releases/latest \
+              | grep browser_download_url \
+              | cut -d '"' -f 4 \
+              | grep '\linux.zip')
+
+export NEW_VERSION=$(echo "$DL_URL" | awk -F '/' '{print $8}')
+export INSTALLED_VERSION=$(trakka --version | awk -F ' v' '{print $2}')
+
+if [ "$NEW_VERSION" == "$INSTALLED_VERSION" ]; then
+    echo "Latest version $INSTALLED_VERSION is already installed. Skipping installation"
+    exit 0
+fi
+
+echo "trakka $INSTALLED_VERSION is currently installed"
+echo "Downloading trakka $NEW_VERSION"
+
+export ZIP_DIR=$(mktemp -d)
+
+wget --directory-prefix="$ZIP_DIR" "$DL_URL"
+
+unzip "$ZIP_DIR"/*zip -d "$ZIP_DIR"/trakka-lib
+
+if [ -d "$BIN_DIR/trakka-lib" ]; then
+  echo "Removing existing $BIN_DIR/trakka-lib"
+fi
+
+rm -rf "$BIN_DIR/trakka-lib" -f
+
+if [ -f "$BIN_DIR/trakka" ]; then
+  echo "Removing existing $BIN_DIR/trakka"
+fi
+
+rm "$BIN_DIR/trakka" -f
+
+echo "Installing trakka $NEW_VERSION"
+cp -r "$ZIP_DIR/trakka-lib" "$BIN_DIR/trakka-lib"
+cd "$BIN_DIR" && { ln -s ./trakka-lib/trakka trakka ; cd - || exit 1; }
+
+echo "Testing installed trakka version"
+
+export NEW_INSTALLED_VERSION=$("$BIN_DIR"/trakka --version | awk -F ' v' '{print $2}')
+
+if [ "$NEW_VERSION" != "$NEW_INSTALLED_VERSION" ]; then
+    echo "Installation failed. Attempted to install $NEW_VERSION but instead $NEW_INSTALLED_VERSION is installed"
+    exit 1
+fi
+
+echo "Cleaning up build directory"
+
+rm -rf "$ZIP_DIR" -f
+
+echo "Installed trakka $NEW_INSTALLED_VERSION to '$BIN_DIR/trakka'. Ensure $BIN_DIR is in your \$PATH variable"
+
+exit 0

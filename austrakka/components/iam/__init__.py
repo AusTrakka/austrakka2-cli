@@ -1,5 +1,8 @@
-from austrakka.utils.options import *
-from .privilege import privilege
+# pylint: disable=expression-not-assigned
+import click
+
+from austrakka.utils.privilege import TENANT_RESOURCE
+from .privilege import privilege_subcommands
 from .scope import scope
 from .role import role
 
@@ -13,4 +16,4 @@ def iam(ctx):
 
 iam.add_command(scope)
 iam.add_command(role)
-iam.add_command(privilege)
+iam.add_command(privilege_subcommands(TENANT_RESOURCE))

@@ -130,6 +130,7 @@ def opt_user_position(var_name='position', **attrs: t.Any):
     )
 
 
+# Used to assign usernames, not to specify users
 def opt_username(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -518,28 +519,27 @@ def opt_user_object_id(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_user_identifier(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Username or user global ID',
+    }
+    return create_option(
+        '-u',
+        '--user-id',
+        'user_id',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
 
-def opt_identifier(option_name='-id', var_name='global_id', **attrs: t.Any):
+def opt_identifier(option_name='-id', var_name='identifier', **attrs: t.Any):
     defaults = {
         'required': True,
         'help': 'Accepts an ID; global ID or an abbreviation',
     }
     return create_option(
         option_name,
-        var_name, # id is reserved, so just keeping this as global_id
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
-def opt_user_global_id(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'User global ID',
-    }
-    return create_option(
-        '-ugi',
-        '--user-global-id',
+        var_name,
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -765,7 +765,7 @@ def opt_privilege_level(**attrs: t.Any):
 def opt_role(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'The role name that is unique.',
+        'help': 'Role name',
     }
     return create_option(
         "-r",
