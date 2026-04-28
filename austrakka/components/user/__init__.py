@@ -5,6 +5,7 @@ import click
 from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import \
+    opt_identifier, \
     opt_user_identifier, \
     opt_username, \
     opt_owner_group_roles, \
@@ -19,7 +20,7 @@ from austrakka.utils.options import opt_organisation
 from austrakka.utils.options import opt_show_disabled
 from austrakka.utils.options import opt_server_username
 from austrakka import __prog_name__ as PROG_NAME
-from .funcs import list_users
+from .funcs import list_users, move_user_org
 from .funcs import add_user
 from .funcs import update_user
 from .funcs import enable_user
@@ -126,3 +127,21 @@ def user_disable(user_id: str):
 @opt_username(help="New username for user")
 def user_rename(user_id: str, username: str):
     rename_user(user_id, username)
+
+
+@user.command('move-org', help="Move a user to another org")
+@opt_user_identifier()
+@opt_identifier(
+    required=True,
+    help="Origin organisation identifier",
+    option_name="--origin-org",
+    var_name="origin_org_id",
+)
+@opt_identifier(
+    required=True,
+    help="Target organisation identifier",
+    option_name="--target-org",
+    var_name="target_org_id",
+)
+def user_move_org(user_id: str, origin_org_id: str, target_org_id: str):
+    move_user_org(user_id, origin_org_id, target_org_id)

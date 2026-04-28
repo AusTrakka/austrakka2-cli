@@ -6,7 +6,7 @@ from austrakka.utils.api import api_patch, api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.paths import GROUP_PATH, USER_PATH
+from austrakka.utils.paths import GROUP_PATH, ORG_V2_PATH, USER_PATH
 
 
 @logger_wraps()
@@ -133,4 +133,12 @@ def rename_user(user_id: str, username: str):
         data={
             "username": username,
         }
+    )
+
+
+@logger_wraps()
+def move_user_org(user_id: str, origin_org_id: str, target_org_id: str):
+    api_patch(
+        path=f'{ORG_V2_PATH}/{origin_org_id}/User/{user_id}',
+        data=target_org_id
     )
