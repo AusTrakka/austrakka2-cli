@@ -331,7 +331,7 @@ def opt_organisation(**attrs: t.Any):
     defaults = {
         'required': True,
         'help': 'Organisation abbreviation. Must match an organisation ' +
-                f'known to {PROG_NAME}, use `{PROG_NAME.lower()} org list` to see valid ' +
+                f', use `{PROG_NAME} org list` to see valid ' +
                 'values',
     }
     return create_option(
@@ -357,7 +357,7 @@ def opt_email(**attrs: t.Any):
 def opt_proforma(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': f'Proforma abbreviation. Use `{PROG_NAME.lower()} proforma list` to see '
+        'help': f'Proforma abbreviation. Use `{PROG_NAME} proforma list` to see '
                 'options.',
     }
     return create_option(
@@ -455,7 +455,7 @@ def opt_tree(**attrs: t.Any):
 def opt_fieldtype(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': f'Metadata field type. Use `{PROG_NAME.lower()} fieldtype list` to see '
+        'help': f'Metadata field type. Use `{PROG_NAME} fieldtype list` to see '
                 'options.'
     }
     return create_option(
@@ -469,7 +469,7 @@ def opt_fieldtype(**attrs: t.Any):
 def opt_plottype(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': f'Plot type. Use `{PROG_NAME.lower()} plot types` to see options.'
+        'help': f'Plot type. Use `{PROG_NAME} plot types` to see options.'
     }
     return create_option(
         '-pt',
@@ -584,7 +584,7 @@ def opt_is_geo(is_update=False, **attrs: t.Any):
 
 def opt_is_austrakka_process(**attrs: t.Any):
     defaults = {
-        'help': f'Determines if the user is an {PROG_NAME} process'
+        'help': 'Determines if the user is a process'
     }
     return create_option(
         '--is-process/--not-process',

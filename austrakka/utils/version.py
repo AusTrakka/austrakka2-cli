@@ -4,12 +4,12 @@ from semver import compare, VersionInfo
 from loguru import logger
 from austrakka import __prog_name__ as PROG_NAME
 
-PYPI_PACKAGE_URI = f'https://pypi.org/pypi/{PROG_NAME.lower()}/json'
+PYPI_PACKAGE_URI = f'https://pypi.org/pypi/{PROG_NAME}/json'
 
 
 def check_version(current):
     # Add this back in once we're ready to start moving users to trakka
-    # if PROG_NAME.lower() == "austrakka":
+    # if PROG_NAME == "austrakka":
     #     logger.warning("The 'austrakka' CLI is deprecated. Please install 'trakka'.")
 
     try:
@@ -20,13 +20,13 @@ def check_version(current):
         latest_parsed = VersionInfo.parse(latest)
         if latest_parsed.major > current_parsed.major:
             logger.critical(
-                f"A new major version of '{PROG_NAME.lower()}' is available: "
+                f"A new major version of '{PROG_NAME}' is available: "
                 f"{latest} Please update immediately")
         elif latest_parsed.minor > current_parsed.minor:
-            logger.error(f"A new minor version of '{PROG_NAME.lower()}' is available: "
+            logger.error(f"A new minor version of '{PROG_NAME}' is available: "
                          f"{latest} Update to avoid any compatibility issues")
         elif latest_parsed.patch > current_parsed.patch:
-            logger.warning(f"A new patch version of '{PROG_NAME.lower()}' is available: "
+            logger.warning(f"A new patch version of '{PROG_NAME}' is available: "
                            f"{latest}")
     # pylint: disable=broad-exception-caught
     except Exception as ex:
