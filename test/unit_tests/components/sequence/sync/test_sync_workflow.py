@@ -5,13 +5,13 @@ import shutil
 
 from datetime import datetime
 
-from austrakka.components.sequence.sync.sync_workflow import analyse
-from austrakka.components.sequence.sync.sync_workflow import finalise
-from austrakka.components.sequence.sync.sync_workflow import purge
-from austrakka.components.sequence.sync.state_machine import SName
-from austrakka.components.sequence.sync.state_machine import Action
-from austrakka.components.sequence.sync.constant import *
-from austrakka.utils.enums.seq import SeqType
+from trakka.components.sequence.sync.sync_workflow import analyse
+from trakka.components.sequence.sync.sync_workflow import finalise
+from trakka.components.sequence.sync.sync_workflow import purge
+from trakka.components.sequence.sync.state_machine import SName
+from trakka.components.sequence.sync.state_machine import Action
+from trakka.components.sequence.sync.constant import *
+from trakka.utils.enums.seq import SeqType
 from test.end_to_end_tests.ete_utils import _mk_temp_dir
 
 # Test constants
