@@ -5,7 +5,7 @@ import click
 from trakka.utils.output import table_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import \
-    opt_identifier, \
+    opt_user_identifier, \
     opt_username, \
     opt_owner_group_roles, \
     opt_name, \
@@ -19,7 +19,7 @@ from trakka.utils.options import opt_organisation
 from trakka.utils.options import opt_show_disabled
 from trakka.utils.options import opt_server_username
 from trakka.utils.privilege import USER_RESOURCE
-from trakka.utils.subcommands.log import log_subcommands
+from trakka.components.log import log_subcommands
 from .funcs import list_users
 from .funcs import add_user
 from .funcs import update_user
@@ -81,7 +81,7 @@ def user_add(
 
 
 @user.command('update', hidden=hide_admin_cmds(), help='Update user')
-@opt_identifier()
+@opt_user_identifier()
 @opt_name(help="Display Name", required=False)
 @opt_email_address(required=False)
 @opt_user_position(required=False)
@@ -91,7 +91,7 @@ def user_add(
 @opt_user_no_dl_quota(default=None)
 @opt_user_monthly_dl_quota_bytes()
 def user_update(
-    global_id: str,
+    user_id: str,
     org: str,
     is_active: bool,
     email: str,
@@ -102,7 +102,7 @@ def user_update(
     download_quota: int,
 ):
     update_user(
-        global_id, 
+        user_id, 
         name, 
         email, 
         position,
@@ -115,19 +115,19 @@ def user_update(
 
 
 @user.command('enable', help="Re-enable a user")
-@opt_identifier()
-def user_enable(global_id: str):
-    enable_user(global_id)
+@opt_user_identifier()
+def user_enable(user_id: str):
+    enable_user(user_id)
 
 
 @user.command('disable', help="Disable a user")
-@opt_identifier()
-def user_disable(global_id: str):
-    disable_user(global_id)
+@opt_user_identifier()
+def user_disable(user_id: str):
+    disable_user(user_id)
 
 
 @user.command('rename', help="Rename a user username")
-@opt_identifier()
+@opt_user_identifier()
 @opt_username(help="New username for user")
-def user_rename(global_id: str, username: str):
-    rename_user(global_id, username)
+def user_rename(user_id: str, username: str):
+    rename_user(user_id, username)

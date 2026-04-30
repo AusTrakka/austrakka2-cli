@@ -8,8 +8,8 @@ from trakka.utils.options import opt_is_active
 from trakka.utils.options import opt_country
 from trakka.utils.options import opt_state
 from trakka.utils.privilege import ORG_RESOURCE
-from trakka.utils.subcommands.privilege import privilege_subcommands
-from trakka.utils.subcommands.log import log_subcommands
+from trakka.components.iam.privilege import privilege_subcommands
+from trakka.components.log import log_subcommands
 from .funcs import list_orgs
 from .funcs import add_org
 from .funcs import update_org

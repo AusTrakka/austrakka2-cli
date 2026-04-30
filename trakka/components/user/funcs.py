@@ -62,7 +62,7 @@ def add_user(
 
 
 def update_user(
-        global_id: str,
+        user_id: str,
         name: str = None,
         email: str = None,
         position: str = None,
@@ -72,7 +72,7 @@ def update_user(
         no_download_quota: bool = None,
         download_quota: int = None,
 ):
-    user_resp = api_get(f'{USER_PATH}/userId/{global_id}')
+    user_resp = api_get(f'{USER_PATH}/userId/{user_id}')
     user_full = user_resp['data']
     user: Dict[str, Any] = {
         "displayName": user_full['displayName'],
@@ -107,25 +107,25 @@ def update_user(
         user['monthlyBytesQuota'] = download_quota
 
     api_put(
-        path=f'{USER_PATH}/{global_id}',
+        path=f'{USER_PATH}/{user_id}',
         data=user
     )
 
 
 @logger_wraps()
-def enable_user(global_id: str):
-    api_patch(path=f'{USER_PATH}/enable/{global_id}')
+def enable_user(user_id: str):
+    api_patch(path=f'{USER_PATH}/enable/{user_id}')
 
 
 @logger_wraps()
-def disable_user(global_id: str):
-    api_patch(path=f'{USER_PATH}/disable/{global_id}')
+def disable_user(user_id: str):
+    api_patch(path=f'{USER_PATH}/disable/{user_id}')
 
 
 @logger_wraps()
-def rename_user(global_id: str, username: str):
+def rename_user(user_id: str, username: str):
     api_patch(
-        path=f'{USER_V2_PATH}/rename/{global_id}',
+        path=f'{USER_V2_PATH}/rename/{user_id}',
         data={
             "username": username,
         }

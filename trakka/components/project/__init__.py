@@ -13,8 +13,8 @@ from trakka.utils.options import opt_dashboard_name
 from trakka.utils.options import opt_description
 from trakka.utils.options import opt_organisation
 from trakka.utils.privilege import PROJECT_RESOURCE
-from trakka.utils.subcommands.log import log_subcommands
-from trakka.utils.subcommands.privilege import privilege_subcommands
+from trakka.components.log import log_subcommands
+from trakka.components.iam.privilege import privilege_subcommands
 from .funcs import disable_project, enable_project, list_projects, \
     add_project, \
     update_project, \

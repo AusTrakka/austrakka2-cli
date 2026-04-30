@@ -7,13 +7,15 @@ import click
 from click.core import Context
 from loguru import logger
 
+from trakka.utils.privilege import TENANT_RESOURCE
+
 from trakka.utils.context import CxtKey
 from trakka.utils.context import TrakkaCxt
 from trakka.components.admin import admin
 from trakka.components.auth import auth
 from trakka.components.user import user
 from trakka.components.org import org
-from trakka.components.log import log
+from trakka.components.log import log_subcommands
 from trakka.components.project import project
 from trakka.components.tree import tree
 from trakka.components.metadata import metadata
@@ -39,7 +41,7 @@ from trakka.utils.logger import setup_logger
 from trakka.utils.logger import LOG_LEVEL_INFO
 from trakka.utils.logger import LOG_LEVELS
 from trakka.utils.cmd_filter import show_admin_cmds
-from trakka.utils.version import check_version
+from trakka.utils.version import check_version, warn_if_austrakka
 
 
 CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
@@ -143,6 +145,7 @@ def cli(
         CxtKey.TIMEZONE.value: timezone,
     }
     setup_logger(log_level, log_var)
+    warn_if_austrakka()
     if not skip_version_check:
         check_version(VERSION)
 
@@ -164,7 +167,7 @@ def get_cli():
     cli.add_command(field)
     cli.add_command(fieldtype)
     cli.add_command(iam) if show_admin_cmds() else None
-    cli.add_command(log) if show_admin_cmds() else None
+    cli.add_command(log_subcommands(TENANT_RESOURCE)) if show_admin_cmds() else None
     return cli
 
 
