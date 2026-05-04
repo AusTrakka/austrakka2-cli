@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.84.1] - 2026-05-04
+
+### Changed
+- `sample chown` is no longer an admin only command.
+
 ## [0.84.0] - 2026-04-21
 
 ### Removed
