@@ -71,8 +71,8 @@ def opt_inherit(**attrs: t.Any):
 @proforma.command(
         'add', 
         hidden=hide_admin_cmds(),
-        help=f"""
-            Add a new proforma to {PROG_NAME}.
+        help="""
+            Add a new proforma.
             This adds a validation spec which may be selected to upload data. 
             This will add a new proforma with a new abbreviation, not a new version of an existing proforma.
             This command does not add the Excel proforma template document; 
@@ -147,13 +147,13 @@ def proforma_add_version(
 
             Usage:
 
-            {PROG_NAME.lower()} proforma attach [PROFORMA_ABBREV] 
+            {PROG_NAME} proforma attach [PROFORMA_ABBREV] 
             ~~This will pull the most recent existing file from a previous proforma version
 
-            {PROG_NAME.lower()} proforma attach [PROFORMA_ABBREV] -f [FILEPATH]
+            {PROG_NAME} proforma attach [PROFORMA_ABBREV] -f [FILEPATH]
             ~~uploads and attaches a new file
 
-            {PROG_NAME.lower()} proforma attach [PROFORMA_ABBREV] -id [PROFORMA-VERSION-ID]
+            {PROG_NAME} proforma attach [PROFORMA_ABBREV] -id [PROFORMA-VERSION-ID]
             ~~This will pull an existing file from a previous proforma version
         """
 )
@@ -219,7 +219,7 @@ def proforma_generate(proforma_abbrev: str, restrict, nndss, metadata_class):
         metadata_classes=metadata_class
         )
 
-@proforma.command('list', help=f'List metadata proformas in {PROG_NAME}')
+@proforma.command('list', help='List metadata proformas')
 @opt_view_type()
 @table_format_option()
 def proforma_list(view_type: str, out_format: str):
