@@ -71,7 +71,7 @@ def get_document_list(
         path,
         params=params,
         out_format=out_format,
-        datetime_cols=['created', 'lastUpdated'],
+        datetime_cols=['created'],
         restricted_cols=display_cols,
     )
 
