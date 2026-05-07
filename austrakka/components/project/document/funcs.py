@@ -61,12 +61,18 @@ def get_document_list(
     
     path = f'{PROJECT_PATH}/{abbrev}/{DOCUMENT_PATH}'
     params = { "showDisabled": str(show_disabled).lower() }
+    
+    display_cols = [
+        'uniqueStringId','fileName', 'description', 'fileSize', 'createdBy', 'created']
+    if show_disabled:
+        display_cols.append('isActive')
 
     call_get_and_print(
         path,
         params=params,
         out_format=out_format,
-        datetime_cols=['uploadedDate'],
+        datetime_cols=['created', 'lastUpdated'],
+        restricted_cols=display_cols,
     )
 
 @logger_wraps()
@@ -147,10 +153,11 @@ def _get_unqiue_filepath(file_path) -> str:
 
 def update_document(
     abbrev: str,
-    document_id: int,
+    document_id: str,
     file_name: str,
     description: str
 ):
+
     path = f'{PROJECT_PATH}/{abbrev}/{DOCUMENT_PATH}/{document_id}/update'
     body = {
         'FileName': file_name,

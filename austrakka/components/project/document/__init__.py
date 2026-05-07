@@ -58,7 +58,7 @@ def document_add(
 @opt_output_dir()
 def document_download(
     project_abbrev: str,
-    document_id: int,
+    document_id: str,
     output_dir: str
 ):
     download_document(project_abbrev, document_id, output_dir)
@@ -71,7 +71,7 @@ def document_download(
 @opt_document_id()
 def document_delete(
     project_abbrev: str,
-    document_id: int,
+    document_id: str,
 ):
     disable_document(project_abbrev, document_id)
 
@@ -84,7 +84,7 @@ def document_delete(
 @opt_document_id()
 def document_enable(
     project_abbrev: str,
-    document_id: int,
+    document_id: str,
 ):
     enable_document(project_abbrev, document_id)
 
@@ -99,7 +99,7 @@ def document_enable(
 @opt_description(required=False, help="Brief description of document. ")
 def document_update(
     project_abbrev: str,
-    document_id: int,
+    document_id: str,
     file_name: str,
     description: str
 ):
