@@ -81,7 +81,20 @@ def download_document(
         document_id: str,
         output_dir: str):
     
-    _download_document(abbrev, document_id, output_dir)
+    path = f'{PROJECT_PATH}/{abbrev}/{DOCUMENT_PATH}/{document_id}/download'
+    
+    def _write_chunks(resp: httpx.Response):
+        filename = get_header_value(resp, HEADERS.CONTENT_DISPOSITION, "filename")
+        file_path = os.path.join(output_dir, filename)
+        file_path = _get_unqiue_filepath(file_path)
+
+        with open(file_path, "wb") as file:
+            for chunk in resp.iter_raw(chunk_size=128):
+                file.write(chunk)
+
+        logger.success(f"Downloaded: {filename} To: {file_path}")
+    
+    api_get_stream(path, _write_chunks)
 
 @logger_wraps()
 def disable_document(
@@ -106,37 +119,6 @@ def _post_document(files, file_hash: FileHash, custom_headers: dict, path):
                      file_hash=file_hash,
                      custom_headers=custom_headers)
     
-
-def _download_document(abbrev, document_id, output_dir):
-    path = f'{PROJECT_PATH}/{abbrev}/{DOCUMENT_PATH}/{document_id}/download'
-    try:
-        def _write_chunks(resp: httpx.Response):
-            filename = get_header_value(resp, HEADERS.CONTENT_DISPOSITION, "filename")
-            file_path = os.path.join(output_dir, filename)
-            file_path = _get_unqiue_filepath(file_path)
-
-            with open(file_path, "wb") as file:
-                for chunk in resp.iter_raw(chunk_size=128):
-                    file.write(chunk)
-
-            logger.success(f"Downloaded: {filename} To: {file_path}")
-        
-        api_get_stream(path, _write_chunks)
-
-    except FailedResponseException as ex:
-        log_response_compact(ex.parsed_resp)
-        logger.error(
-            f"Failed downloading document with ID {document_id} from {abbrev}. Error: {ex}"
-        )
-    except UnknownResponseException as ex:
-        log_response_compact(ex)
-        logger.error(
-            f"Failed downloading document with ID {document_id} from {abbrev}. Error: {ex}"
-        )
-    except HTTPStatusError as ex:
-        logger.error(
-            f"Failed downloading document with ID {document_id} from {abbrev}. Error: {ex}"
-        )
 
 def _get_unqiue_filepath(file_path) -> str:
     if not os.path.exists(file_path):

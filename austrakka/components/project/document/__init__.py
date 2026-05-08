@@ -3,7 +3,7 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 
 from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.output import table_format_option
-from austrakka.utils.options import opt_description, opt_document_file_name, opt_document_id, \
+from austrakka.utils.options import opt_description, opt_document_file_name, opt_identifier, \
     opt_output_dir
 from austrakka.components.project.document.funcs import add_document, enable_document, \
     get_document_list, download_document, disable_document, update_document
@@ -54,7 +54,7 @@ def document_add(
     help=f'Download a document within a given project in {PROG_NAME}',
 )
 @click.argument('project-abbrev', type=str)
-@opt_document_id()
+@opt_identifier(var_name="document_id", help="Identifier for a project document")
 @opt_output_dir()
 def document_download(
     project_abbrev: str,
@@ -68,7 +68,7 @@ def document_download(
     help=f'Delete a document within a given project in {PROG_NAME}',
 )
 @click.argument('project-abbrev', type=str)
-@opt_document_id()
+@opt_identifier(var_name="document_id", help="Identifier for a project document")
 def document_delete(
     project_abbrev: str,
     document_id: str,
@@ -81,7 +81,7 @@ def document_delete(
     hidden=hide_admin_cmds()
 )
 @click.argument('project-abbrev', type=str)
-@opt_document_id()
+@opt_identifier(var_name="document_id", help="Identifier for a project document")
 def document_enable(
     project_abbrev: str,
     document_id: str,
@@ -94,7 +94,7 @@ def document_enable(
     help=f'Update a document within a given project in {PROG_NAME}',
 )
 @click.argument('project-abbrev', type=str)
-@opt_document_id()
+@opt_identifier(var_name="document_id", help="Identifier for a project document")
 @opt_document_file_name(required=False)
 @opt_description(required=False, help="Brief description of document. ")
 def document_update(

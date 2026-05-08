@@ -905,18 +905,6 @@ def opt_user_monthly_dl_quota_bytes(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
-def opt_document_id(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'Unique string identifier of project document'
-    }
-    return create_option(
-        '--document-id',
-        '-id',
-        type=str,
-        **{**defaults, **attrs}
-    )
-
 def opt_document_file_name(**attrs: t.Any):
     defaults = {
         'required': False,
