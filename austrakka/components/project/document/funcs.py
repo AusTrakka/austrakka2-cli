@@ -11,7 +11,7 @@ from austrakka.utils.exceptions import FailedResponseException, UnknownResponseE
 from austrakka.utils.fs import FileHash, get_hash
 from austrakka.utils.retry import retry
 from austrakka.utils.helpers.upload import upload_multipart
-from austrakka.utils.output import log_response_compact, log_response
+from austrakka.utils.output import log_response
 from austrakka.utils.paths import PROJECT_PATH
 
 DOCUMENT_PATH = 'documents'
