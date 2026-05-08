@@ -19,8 +19,8 @@ from austrakka.utils.options import opt_user_object_id
 from austrakka.utils.options import opt_organisation
 from austrakka.utils.options import opt_show_disabled
 from austrakka.utils.options import opt_server_username
-from austrakka import __prog_name__ as PROG_NAME
-from .funcs import list_users, move_user_org
+from .funcs import list_users
+from .funcs import move_user_org
 from .funcs import add_user
 from .funcs import update_user
 from .funcs import enable_user
@@ -35,14 +35,14 @@ def user(ctx):
     ctx.context = ctx.parent.context
 
 
-@user.command('list', help=f"List users in {PROG_NAME}")
+@user.command('list', help="List users")
 @opt_show_disabled()
 @table_format_option()
 def user_list(show_disabled: bool, out_format: str):
     list_users(show_disabled, out_format)
 
 
-@user.command('add', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
+@user.command('add', hidden=hide_admin_cmds(), help='Add user')
 @opt_user_object_id()
 @opt_username()
 @opt_organisation()
@@ -79,7 +79,7 @@ def user_add(
     )
 
 
-@user.command('update', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
+@user.command('update', hidden=hide_admin_cmds(), help='Update user')
 @opt_user_identifier()
 @opt_name(help="Display Name", required=False)
 @opt_email_address(required=False)
@@ -110,13 +110,13 @@ def user_update(
     )
 
 
-@user.command('enable', help=f"Re-enable a user in {PROG_NAME}")
+@user.command('enable', help="Re-enable a user")
 @opt_user_identifier()
 def user_enable(user_id: str):
     enable_user(user_id)
 
 
-@user.command('disable', help=f"Disable a user in {PROG_NAME}")
+@user.command('disable', help="Disable a user")
 @opt_user_identifier()
 def user_disable(user_id: str):
     disable_user(user_id)
@@ -133,15 +133,15 @@ def user_rename(user_id: str, username: str):
 @opt_user_identifier()
 @opt_identifier(
     required=True,
-    help="Origin organisation identifier",
-    option_name="--origin-org",
-    var_name="origin_org_id",
+    help="Old organisation identifier",
+    option_name="--old-org",
+    var_name="old_org_id",
 )
 @opt_identifier(
     required=True,
-    help="Target organisation identifier",
-    option_name="--target-org",
-    var_name="target_org_id",
+    help="New organisation identifier",
+    option_name="--new-org",
+    var_name="new_org_id",
 )
-def user_move_org(user_id: str, origin_org_id: str, target_org_id: str):
-    move_user_org(user_id, origin_org_id, target_org_id)
+def user_move_org(user_id: str, old_org_id: str, new_org_id: str):
+    move_user_org(user_id, old_org_id, new_org_id)
