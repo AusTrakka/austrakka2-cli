@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Union, List
 from loguru import logger
 
 from austrakka.utils.api import api_get
@@ -10,7 +10,7 @@ def call_get_and_print(
         path: str,
         out_format: str,
         params: Dict = None,
-        restricted_cols: list[str] = None,
+        restricted_cols: Union[List[str], None] = None,
         datetime_cols: list[str] = None
 ):
     params = {} if params is None else params
