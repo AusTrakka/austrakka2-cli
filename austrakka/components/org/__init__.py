@@ -1,3 +1,4 @@
+# pylint: disable=expression-not-assigned
 import click
 
 from austrakka.utils.output import table_format_option
