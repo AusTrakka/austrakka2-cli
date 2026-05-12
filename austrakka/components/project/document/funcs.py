@@ -19,6 +19,7 @@ DOCUMENT_PATH = 'documents'
 @logger_wraps()
 def add_document(
         filepath: str,
+        file_name: str,
         description: str,
         abbrev: str):
 
@@ -26,13 +27,14 @@ def add_document(
     file_hash = get_hash(filepath)
 
     safe_description = description.strip()
+    safe_file_name = file_name.strip() if file_name else os.path.basename(filepath)
 
     with open(filepath, 'rb') as file_content:
         files = [('files[]', (filepath, file_content))]
 
         custom_headers = {
             'X-Metadata-Description' : safe_description,
-            'X-Metadata-Filename': os.path.basename(filepath),
+            'X-Metadata-Filename': safe_file_name,
         }
         try:
             retry(

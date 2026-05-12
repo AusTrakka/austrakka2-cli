@@ -3,7 +3,7 @@ from austrakka.utils.cmd_filter import hide_admin_cmds
 
 from austrakka import __prog_name__ as PROG_NAME
 from austrakka.utils.output import table_format_option
-from austrakka.utils.options import opt_description, opt_document_file_name, opt_identifier, \
+from austrakka.utils.options import opt_description, opt_name, opt_file, opt_identifier, \
     opt_output_dir
 from austrakka.components.project.document.funcs import add_document, enable_document, \
     get_document_list, download_document, disable_document, update_document
@@ -38,16 +38,15 @@ def document_list_all(project_abbrev: str, out_format: str):
     help=f'Upload a document to a project in {PROG_NAME}',
 )
 @click.argument('project-abbrev', type=str)
-@click.option('-fp',
-              '--file-path',
-              help='Document to upload to the project.', required=True,)
-@opt_description(required=True,
-                 help="Brief description of document. ")
+@opt_file(help='File path of document to upload to the project.', required=True)
+@opt_name(required=False, help='Name of the document.')
+@opt_description(required=True, help="Brief description of the document.")
 def document_add(
         project_abbrev: str,
-        file_path: str,
+        file: str,
+        file_name: str,
         description: str):
-    add_document(file_path, description, project_abbrev)    
+    add_document(file, file_name, description, project_abbrev)    
 
 @document.command(
     'download',
@@ -64,12 +63,12 @@ def document_download(
     download_document(project_abbrev, document_id, output_dir)
 
 @document.command(
-    'delete',
-    help=f'Delete a document within a given project in {PROG_NAME}',
+    'disable',
+    help=f'Disable a document within a given project in {PROG_NAME}',
 )
 @click.argument('project-abbrev', type=str)
 @opt_identifier(var_name="document_id", help="Identifier for a project document")
-def document_delete(
+def document_disable(
     project_abbrev: str,
     document_id: str,
 ):
@@ -95,8 +94,8 @@ def document_enable(
 )
 @click.argument('project-abbrev', type=str)
 @opt_identifier(var_name="document_id", help="Identifier for a project document")
-@opt_document_file_name(required=False)
-@opt_description(required=False, help="Brief description of document. ")
+@opt_name(required=False, help='Name of the document.')
+@opt_description(required=False, help="Brief description of the document.")
 def document_update(
     project_abbrev: str,
     document_id: str,

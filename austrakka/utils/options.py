@@ -904,27 +904,3 @@ def opt_user_monthly_dl_quota_bytes(**attrs: t.Any):
         default=None,
         **{**defaults, **attrs}
     )
-
-def opt_document_file_name(**attrs: t.Any):
-    defaults = {
-        'required': False,
-        'help': 'Name of document file'
-    }
-    return create_option(
-        '--file-name',
-        '-fn',
-        type=str,
-        **{**defaults, **attrs}
-    )
-
-def opt_document_description(**attrs: t.Any):
-    defaults = {
-        'required': False,
-        'help': 'Description of document'
-    }
-    return create_option(
-        '--description',
-        '-d',
-        type=str,
-        **{**defaults, **attrs}
-    )
