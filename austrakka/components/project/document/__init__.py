@@ -39,7 +39,7 @@ def document_list_all(project_abbrev: str, out_format: str):
 )
 @click.argument('project-abbrev', type=str)
 @opt_file(help='File path of document to upload to the project.', required=True)
-@opt_name(required=False, help='Name of the document.')
+@opt_name(required=False, help='Name of the document without file extension.')
 @opt_description(required=True, help="Brief description of the document.")
 def document_add(
         project_abbrev: str,

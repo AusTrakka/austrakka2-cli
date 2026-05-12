@@ -21,7 +21,12 @@ def add_document(
     path = f'{PROJECT_PATH}/{abbrev}/{DOCUMENT_PATH}/upload'
 
     safe_description = description.strip()
-    safe_file_name = name.strip() if name else os.path.basename(file.name)
+
+    original_filename = os.path.basename(file.name)
+    filename_without_ext, extension = os.path.splitext(original_filename)
+    base_name = name.strip() if name else filename_without_ext
+    safe_file_name = base_name + extension
+
     custom_headers = {
         'X-Metadata-Description' : safe_description,
         'X-Metadata-Filename': safe_file_name,
