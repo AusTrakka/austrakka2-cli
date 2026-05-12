@@ -1,4 +1,5 @@
 
+from io import BufferedReader
 import os
 from loguru import logger
 import httpx
@@ -6,7 +7,7 @@ from httpx import HTTPStatusError
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.http import HEADERS, get_header_value
 from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import api_patch, api_get_stream
+from austrakka.utils.api import api_patch, api_get_stream, api_post_multipart
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from austrakka.utils.fs import FileHash, get_hash
 from austrakka.utils.retry import retry
@@ -18,41 +19,25 @@ DOCUMENT_PATH = 'documents'
 
 @logger_wraps()
 def add_document(
-        filepath: str,
-        file_name: str,
+        file: BufferedReader,
+        name: str,
         description: str,
         abbrev: str):
 
     path = f'{PROJECT_PATH}/{abbrev}/{DOCUMENT_PATH}/upload'
-    file_hash = get_hash(filepath)
 
     safe_description = description.strip()
-    safe_file_name = file_name.strip() if file_name else os.path.basename(filepath)
-
-    with open(filepath, 'rb') as file_content:
-        files = [('files[]', (filepath, file_content))]
-
-        custom_headers = {
-            'X-Metadata-Description' : safe_description,
-            'X-Metadata-Filename': safe_file_name,
-        }
-        try:
-            retry(
-                func=lambda f=files,
-                fh=file_hash,
-                ch=custom_headers: _post_document(f, fh, ch, path),
-                retries=0,
-                desc=f"{abbrev} at " + "/".join([PROJECT_PATH]),
-                delay=0.0
-            )
-        except FailedResponseException as ex:
-            logger.error(f'Document {filepath} failed upload')
-            log_response(ex.parsed_resp)
-        except (
-                PermissionError, UnknownResponseException, HTTPStatusError
-        ) as ex:
-            logger.error(f'Document {filepath} failed upload')
-            logger.error(ex)
+    safe_file_name = name.strip() if name else os.path.basename(file.name)
+    custom_headers = {
+        'X-Metadata-Description' : safe_description,
+        'X-Metadata-Filename': safe_file_name,
+    }
+    api_post_multipart(
+        path=path,
+        data={},
+        files={'file': (file.name, file)},
+        custom_headers=custom_headers
+    )
 
 
 @logger_wraps()
@@ -114,14 +99,6 @@ def enable_document(
     path = f'{PROJECT_PATH}/{abbrev}/{DOCUMENT_PATH}/{document_id}/enable'
     api_patch(path)
     
-
-def _post_document(files, file_hash: FileHash, custom_headers: dict, path):
-    upload_multipart(path=path,
-                     files=files,
-                     file_hash=file_hash,
-                     custom_headers=custom_headers)
-    
-
 def _get_unqiue_filepath(file_path) -> str:
     if not os.path.exists(file_path):
         return file_path

@@ -44,9 +44,9 @@ def document_list_all(project_abbrev: str, out_format: str):
 def document_add(
         project_abbrev: str,
         file: str,
-        file_name: str,
+        name: str,
         description: str):
-    add_document(file, file_name, description, project_abbrev)    
+    add_document(file, name, description, project_abbrev)    
 
 @document.command(
     'download',
