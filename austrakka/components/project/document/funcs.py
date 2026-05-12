@@ -3,16 +3,10 @@ from io import BufferedReader
 import os
 from loguru import logger
 import httpx
-from httpx import HTTPStatusError
 from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.http import HEADERS, get_header_value
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.api import api_patch, api_get_stream, api_post_multipart
-from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
-from austrakka.utils.fs import FileHash, get_hash
-from austrakka.utils.retry import retry
-from austrakka.utils.helpers.upload import upload_multipart
-from austrakka.utils.output import log_response
 from austrakka.utils.paths import PROJECT_PATH
 
 DOCUMENT_PATH = 'documents'
