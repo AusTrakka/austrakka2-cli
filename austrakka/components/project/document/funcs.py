@@ -45,8 +45,10 @@ def get_document_list(
         out_format: str,
         show_disabled: bool):
     
-    path = f'{PROJECT_PATH}/{abbrev}/{DOCUMENT_PATH}'
-    params = { "showDisabled": str(show_disabled).lower() }
+    if show_disabled:
+        path = f'{PROJECT_PATH}/{abbrev}/{DOCUMENT_PATH}/list-all'
+    else:
+        path = f'{PROJECT_PATH}/{abbrev}/{DOCUMENT_PATH}'
     
     display_cols = [
         'uniqueStringId','fileName', 'description', 'fileSize', 'createdBy', 'created']
@@ -55,7 +57,6 @@ def get_document_list(
 
     call_get_and_print(
         path,
-        params=params,
         out_format=out_format,
         datetime_cols=['created'],
         restricted_cols=display_cols,
