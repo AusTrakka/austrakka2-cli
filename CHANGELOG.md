@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.85.0] - 2026-05-20
+
+### Added 
+- `project document [add|disable|download|enable|list|list-all|update]` commands.
+- `user move-org` command.
+
 ## [0.84.1] - 2026-05-04
 
 ### Changed
