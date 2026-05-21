@@ -28,7 +28,7 @@ def add_tree(
         data={
             'name': name,
             'description': description,
-            'project': project,
+            'projectAbbrev': project,
             'isActive': is_active,
             'abbreviation': abbrev
         }
@@ -54,7 +54,7 @@ def update_tree(
     if is_active is not None:
         tree['isActive'] = is_active
     if project is not None:
-        tree['project'] = project
+        tree['projectAbbrev'] = project
 
     api_put(
         path=f'{TREE_PATH}/{abbrev}',
