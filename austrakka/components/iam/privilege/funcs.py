@@ -42,8 +42,8 @@ def assign_privilege(
         record_type: str
 ):
     payload = {
-        "roleGlobalId": role,
-        "assigneeGlobalId": user_id
+        "roleIdentifier": role,
+        "assigneeIdentifier": user_id
     }
 
     return api_post(
