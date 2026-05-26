@@ -12,7 +12,7 @@ from .funcs import \
 @click.group()
 @click.pass_context
 def field(ctx):
-    """Commands related to group fields access"""
+    """Commands related to org fields"""
     ctx.context = ctx.parent.context
 
 
@@ -21,7 +21,7 @@ def field(ctx):
 @opt_field_name()
 def group_add_field(identifier, field_names):
     '''
-    Allow fields to show for the given org.
+    Add fields to the data view for the given org
     '''
     add_field(identifier, field_names)
 
@@ -31,7 +31,7 @@ def group_add_field(identifier, field_names):
 @opt_field_name()
 def group_remove_field(identifier, field_names):
     '''
-    Deny fields from showing for the given org.
+    Remove fields from the data view for the given org
     '''
     remove_field(identifier, field_names)
 
@@ -42,6 +42,6 @@ def group_remove_field(identifier, field_names):
 @opt_view_type()
 def group_list_field(identifier: str, out_format: str, view_type: str):
     '''
-    List of fields allowed to show for the given org.
+    List of fields in data view for the given org
     '''
     list_field(identifier, out_format, view_type)
