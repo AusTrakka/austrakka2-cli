@@ -1,3 +1,4 @@
+# pylint: disable=expression-not-assigned
 import click
 
 from austrakka.utils.output import table_format_option
@@ -10,6 +11,8 @@ from austrakka.utils.options import opt_state
 from austrakka.utils.privilege import ORG_RESOURCE
 from austrakka.components.iam.privilege import privilege_subcommands
 from austrakka.components.log import log_subcommands
+from austrakka.components.org.field import field
+from austrakka.utils.cmd_filter import show_admin_cmds
 from .funcs import list_orgs
 from .funcs import add_org
 from .funcs import update_org
@@ -23,6 +26,7 @@ def org(ctx):
 
 org.add_command(privilege_subcommands(ORG_RESOURCE))
 org.add_command(log_subcommands(ORG_RESOURCE))
+org.add_command(field) if show_admin_cmds() else None
 
 @org.command('list', help="List organisations")
 @table_format_option()
