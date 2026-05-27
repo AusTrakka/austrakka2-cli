@@ -259,18 +259,6 @@ def options_seq_id_or_file(func):
     )
     return _opt_seq_id(_opt_file(func))
 
-def opt_prov_id(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'provision id',
-    }
-    return create_option(
-        "-pi",
-        "--prov-id",
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
 
 def opt_field_name(**attrs: t.Any):
     defaults = {
