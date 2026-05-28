@@ -1,6 +1,5 @@
 # pylint: disable=R0801
 import json
-from typing import Optional
 
 import httpx
 from httpx import HTTPStatusError
@@ -15,14 +14,14 @@ from austrakka.utils.paths import PROJECT_PATH
 
 
 @logger_wraps()
-def list_dataset_views(
+def get_view(
         abbrev: str,
         out_format: str):
     path = "/".join([PROJECT_PATH, abbrev, 'project-views'])
     response = api_get(path)
     data = response['data'] if ('data' in response) else response
-    if not data:
-        logger.info("No Views available")
+    if data is None:
+        logger.info("No View available")
         return
 
     print_dict(
@@ -32,23 +31,20 @@ def list_dataset_views(
 
 
 @logger_wraps()
-def download_dataset_view(
-        dataset_view_id: Optional[str],
+def download_view(
         abbrev: str,
         out_format: str
 ):
-    query_path = f'?datasetViewId={dataset_view_id}' if dataset_view_id is not None else ''
-    api_path = "/".join([PROJECT_PATH, abbrev, f'download-project-view{query_path}'])
-    dataset_msg = f'dataset {dataset_view_id} of ' if dataset_view_id is not None else ''
+    api_path = "/".join([PROJECT_PATH, abbrev, "download-project-view"])
     try:
         def _write_chunks(resp: httpx.Response):
             filename = get_header_value(resp, HEADERS.CONTENT_DISPOSITION, "filename")
-            logger.info(f"Downloading file {filename} for {dataset_msg}{abbrev}")
+            logger.info(f"Downloading file {filename} for {abbrev}")
             json_str = ""
             for chunk in resp.iter_bytes():
                 json_str += chunk.decode('utf-8')
             print_dict(json.loads(json_str), out_format)
-            logger.success(f"Successfully downloaded file {filename} for {dataset_msg}{abbrev}")
+            logger.success(f"Successfully downloaded file {filename} for {abbrev}")
 
         api_get_stream(api_path, _write_chunks)
 
@@ -58,5 +54,5 @@ def download_dataset_view(
         log_response_compact(ex)
     except HTTPStatusError as ex:
         logger.error(
-            f'Failed to download from {dataset_msg}{abbrev}. Error: {ex}'
+            f'Failed to download from {abbrev}. Error: {ex}'
         )
