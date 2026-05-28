@@ -4,7 +4,6 @@ import click
 
 from austrakka.utils.output import table_format_option
 from austrakka.utils.output import FORMATS
-from austrakka.utils.options import opt_view_id
 
 from .funcs import get_view, \
     download_view
@@ -28,7 +27,7 @@ def metadata(ctx):
 @click.argument('project-abbrev', type=str)
 @table_format_option()
 def get_dataset_view(project_abbrev: str, out_format: str):
-    """Get a list of metadata views for a given project."""
+    """Get view information for a given project."""
     get_view(project_abbrev, out_format)
 
 @metadata.command('download')

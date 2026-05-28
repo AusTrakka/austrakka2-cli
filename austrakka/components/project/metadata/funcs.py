@@ -4,8 +4,9 @@ import json
 import httpx
 from httpx import HTTPStatusError
 from loguru import logger
-from austrakka.utils.api import api_get, api_get_stream
+from austrakka.utils.api import api_get_stream
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
+from austrakka.utils.helpers.output import call_get_and_print
 from austrakka.utils.http import get_header_value, HEADERS
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dict
@@ -18,17 +19,7 @@ def get_view(
         abbrev: str,
         out_format: str):
     path = "/".join([PROJECT_PATH, abbrev, 'project-views'])
-    response = api_get(path)
-    data = response['data'] if ('data' in response) else response
-    if data is None:
-        logger.info("No View available")
-        return
-
-    print_dict(
-        data,
-        out_format,
-    )
-
+    call_get_and_print(path, out_format)
 
 @logger_wraps()
 def download_view(

@@ -845,16 +845,6 @@ def opt_tree_version_id(**attrs: t.Any):
     )
 
 
-def opt_view_id(**attrs: t.Any):
-    defaults = {
-        'required': False,
-        'help': 'Project metadata view ID',
-    }
-    return create_option(
-        '--view-id',
-        **{**defaults, **attrs}
-    )
-
 
 def opt_server_username(**attrs: t.Any):
     defaults = {
