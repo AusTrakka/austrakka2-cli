@@ -73,7 +73,7 @@ setup(
     #
     # This field corresponds to the "Home-Page" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#home-page-optional
-    url="https://github.com/AusTrakka/austrakka2-cli",  # Optional
+    url="https://github.com/trakka-platform/cli",  # Optional
     # This should be your name or the name of the organization which owns the
     # project.
     # author="AusTrakka Dev Team",  # Optional
