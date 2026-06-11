@@ -8,13 +8,15 @@ from click.core import Context
 from loguru import logger
 
 from austrakka.utils.config import get_server_info_or_create
+from austrakka.utils.privilege import TENANT_RESOURCE
+
 from austrakka.utils.context import CxtKey
 from austrakka.utils.context import AusTrakkaCxt
 from austrakka.components.admin import admin
 from austrakka.components.auth import auth
 from austrakka.components.user import user
 from austrakka.components.org import org
-from austrakka.components.log import log
+from austrakka.components.log import log_subcommands
 from austrakka.components.project import project
 from austrakka.components.tree import tree
 from austrakka.components.metadata import metadata
@@ -40,7 +42,7 @@ from austrakka.utils.logger import setup_logger
 from austrakka.utils.logger import LOG_LEVEL_INFO
 from austrakka.utils.logger import LOG_LEVELS
 from austrakka.utils.cmd_filter import show_admin_cmds
-from austrakka.utils.version import check_version
+from austrakka.utils.version import check_version, warn_if_austrakka
 
 
 CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
@@ -49,8 +51,8 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
 @click.group(
     cls=AusTrakkaCliTopLevel, 
     context_settings=CONTEXT_SETTINGS,
-    help=f"""
-    A cli for interfacing with {PROG_NAME}.
+    help="""
+    A cli for interfacing with Trakka.
     """,
 )
 @click.option(
@@ -112,7 +114,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     default=False,
     show_default=True,
     type=bool,
-    help=f"Skip check for new {PROG_NAME} CLI version"
+    help="Skip check for new CLI version"
 )
 @click.option(
     '--log',
@@ -120,7 +122,7 @@ CONTEXT_SETTINGS = {"help_option_names": HELP_OPTS}
     show_envvar=True,
     help='Outputs logs to a temporary file',
 )
-@click.version_option(message="%(prog)s v%(version)s", version=VERSION, prog_name=PROG_NAME.lower())
+@click.version_option(message="%(prog)s v%(version)s", version=VERSION, prog_name=PROG_NAME)
 @click.pass_context
 def cli(
         ctx: Context,
@@ -144,6 +146,7 @@ def cli(
         CxtKey.TIMEZONE.value: timezone,
     }
     setup_logger(log_level, log_var)
+    warn_if_austrakka()
     if not skip_version_check:
         server_info = get_server_info_or_create(
             uri,
@@ -173,7 +176,7 @@ def get_cli():
     cli.add_command(field)
     cli.add_command(fieldtype)
     cli.add_command(iam) if show_admin_cmds() else None
-    cli.add_command(log) if show_admin_cmds() else None
+    cli.add_command(log_subcommands(TENANT_RESOURCE)) if show_admin_cmds() else None
     return cli
 
 

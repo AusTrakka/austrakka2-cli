@@ -130,6 +130,7 @@ def opt_user_position(var_name='position', **attrs: t.Any):
     )
 
 
+# Used to assign usernames, not to specify users
 def opt_username(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -330,7 +331,7 @@ def opt_organisation(**attrs: t.Any):
     defaults = {
         'required': True,
         'help': 'Organisation abbreviation. Must match an organisation ' +
-                f'known to {PROG_NAME}, use `{PROG_NAME.lower()} org list` to see valid ' +
+                f', use `{PROG_NAME} org list` to see valid ' +
                 'values',
     }
     return create_option(
@@ -356,7 +357,7 @@ def opt_email(**attrs: t.Any):
 def opt_proforma(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': f'Proforma abbreviation. Use `{PROG_NAME.lower()} proforma list` to see '
+        'help': f'Proforma abbreviation. Use `{PROG_NAME} proforma list` to see '
                 'options.',
     }
     return create_option(
@@ -454,7 +455,7 @@ def opt_tree(**attrs: t.Any):
 def opt_fieldtype(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': f'Metadata field type. Use `{PROG_NAME.lower()} fieldtype list` to see '
+        'help': f'Metadata field type. Use `{PROG_NAME} fieldtype list` to see '
                 'options.'
     }
     return create_option(
@@ -468,7 +469,7 @@ def opt_fieldtype(**attrs: t.Any):
 def opt_plottype(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': f'Plot type. Use `{PROG_NAME.lower()} plot types` to see options.'
+        'help': f'Plot type. Use `{PROG_NAME} plot types` to see options.'
     }
     return create_option(
         '-pt',
@@ -518,28 +519,27 @@ def opt_user_object_id(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_user_identifier(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Username or user global ID',
+    }
+    return create_option(
+        '-u',
+        '--user-id',
+        'user_id',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
 
-def opt_identifier(option_name='-id', var_name='global_id', **attrs: t.Any):
+def opt_identifier(option_name='-id', var_name='identifier', **attrs: t.Any):
     defaults = {
         'required': True,
         'help': 'Accepts an ID; global ID or an abbreviation',
     }
     return create_option(
         option_name,
-        var_name, # id is reserved, so just keeping this as global_id
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
-def opt_user_global_id(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'User global ID',
-    }
-    return create_option(
-        '-ugi',
-        '--user-global-id',
+        var_name,
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -584,7 +584,7 @@ def opt_is_geo(is_update=False, **attrs: t.Any):
 
 def opt_is_austrakka_process(**attrs: t.Any):
     defaults = {
-        'help': f'Determines if the user is an {PROG_NAME} process'
+        'help': 'Determines if the user is a process'
     }
     return create_option(
         '--is-process/--not-process',
@@ -765,7 +765,7 @@ def opt_privilege_level(**attrs: t.Any):
 def opt_role(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'The role name that is unique.',
+        'help': 'Role name',
     }
     return create_option(
         "-r",

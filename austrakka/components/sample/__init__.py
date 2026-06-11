@@ -27,7 +27,6 @@ def sample(ctx):
     ctx.context = ctx.parent.context
 
 @sample.command('chown',
-    hidden=hide_admin_cmds(),
     help="Transfer ownership of samples to another organisation")
 @create_option(
     "--old-owner",

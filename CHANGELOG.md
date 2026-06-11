@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.86.0] - 2026-06-01
+
+### Changed
+- Update to match change to the API. This is a backwards-incompatible change which requires a CLI version update. 
+This specifically affects the `project tree add` command.
+
+## [0.85.0] - 2026-05-20
+
+### Added 
+- `project document [add|disable|download|enable|list|list-all|update]` commands.
+- `user move-org` command.
+
+## [0.84.1] - 2026-05-04
+
+### Changed
+- `sample chown` is no longer an admin-only command.
+
+## [0.84.0] - 2026-04-21
+
+### Removed
+- `-rt/--record-type` and `-id` options from `iam privilege`; for non-system privileges use `[org|project] privilege`. 
+- `-rt/--record-type` and `-id` options from `log`; for non-system logs use `[org|project] log`. 
+
+## [0.83.1] - 2026-04-20
+
+### Changed
+- Improved performance of `admin rlog regen-bulk` command.
+
 ## [0.83.0] - 2026-04-14
 
 ### Added

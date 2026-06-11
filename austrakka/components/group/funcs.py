@@ -20,7 +20,7 @@ def update_group(
         payload["name"] = newname
 
     if org:
-        payload["organisation"] = {"abbreviation": org}
+        payload["organisation"] = org
 
     api_put(
         path=f'{GROUP_PATH}/{name}',
@@ -39,7 +39,7 @@ def add_group(
     }
 
     if org:
-        payload["organisation"] = {"abbreviation": org}
+        payload["organisation"] = org
 
     return api_post(
         path=GROUP_PATH,

@@ -53,9 +53,7 @@ def add_project(
             "name": name,
             "description": description,
             "isActive": True,
-            "requestingOrg": {
-                "abbreviation": org
-            },
+            "requestingOrg": org,
             "dashboardName": dashboard_name,
             "type": project_type,
             "clientType": client_type,
@@ -93,7 +91,7 @@ def update_project(
     }
     
     if project['requestingOrg'] is None:
-        put_project['requestingOrg'] = {'abbreviation': None}
+        put_project['requestingOrg'] = None
 
     if name is not None:
         put_project['name'] = name
@@ -102,9 +100,7 @@ def update_project(
     if is_active is not None:
         put_project['isActive'] = is_active
     if org is not None:
-        put_project['requestingOrg'] = {
-            "abbreviation": org
-        }
+        put_project['requestingOrg'] = org
     if dashboard_name is not None:
         put_project['dashboardName'] = dashboard_name
     if project_type is not None:

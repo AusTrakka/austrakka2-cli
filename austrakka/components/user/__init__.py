@@ -6,6 +6,7 @@ from austrakka.utils.output import table_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import \
     opt_identifier, \
+    opt_user_identifier, \
     opt_username, \
     opt_owner_group_roles, \
     opt_name, \
@@ -18,10 +19,8 @@ from austrakka.utils.options import opt_user_object_id
 from austrakka.utils.options import opt_organisation
 from austrakka.utils.options import opt_show_disabled
 from austrakka.utils.options import opt_server_username
-from austrakka import __prog_name__ as PROG_NAME
-from austrakka.utils.privilege import USER_RESOURCE
-from austrakka.utils.subcommands.log import log_subcommands
 from .funcs import list_users
+from .funcs import move_user_org
 from .funcs import add_user
 from .funcs import update_user
 from .funcs import enable_user
@@ -35,16 +34,15 @@ def user(ctx):
     '''Commands related to users'''
     ctx.context = ctx.parent.context
 
-user.add_command(log_subcommands(USER_RESOURCE))
 
-@user.command('list', help=f"List users in {PROG_NAME}")
+@user.command('list', help="List users")
 @opt_show_disabled()
 @table_format_option()
 def user_list(show_disabled: bool, out_format: str):
     list_users(show_disabled, out_format)
 
 
-@user.command('add', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
+@user.command('add', hidden=hide_admin_cmds(), help='Add user')
 @opt_user_object_id()
 @opt_username()
 @opt_organisation()
@@ -81,19 +79,17 @@ def user_add(
     )
 
 
-@user.command('update', hidden=hide_admin_cmds(), help=f'Add users in {PROG_NAME}')
-@opt_identifier()
+@user.command('update', hidden=hide_admin_cmds(), help='Update user')
+@opt_user_identifier()
 @opt_name(help="Display Name", required=False)
 @opt_email_address(required=False)
 @opt_user_position(required=False)
-@opt_organisation(required=False)
 @opt_is_active(required=False)
 @opt_server_username(required=False)
 @opt_user_no_dl_quota(default=None)
 @opt_user_monthly_dl_quota_bytes()
 def user_update(
-    global_id: str,
-    org: str,
+    user_id: str,
     is_active: bool,
     email: str,
     position: str,
@@ -103,11 +99,10 @@ def user_update(
     download_quota: int,
 ):
     update_user(
-        global_id, 
+        user_id, 
         name, 
         email, 
         position,
-        org, 
         server_username, 
         is_active, 
         no_download_quota, 
@@ -115,20 +110,38 @@ def user_update(
     )
 
 
-@user.command('enable', help=f"Re-enable a user in {PROG_NAME}")
-@opt_identifier()
-def user_enable(global_id: str):
-    enable_user(global_id)
+@user.command('enable', help="Re-enable a user")
+@opt_user_identifier()
+def user_enable(user_id: str):
+    enable_user(user_id)
 
 
-@user.command('disable', help=f"Disable a user in {PROG_NAME}")
-@opt_identifier()
-def user_disable(global_id: str):
-    disable_user(global_id)
+@user.command('disable', help="Disable a user")
+@opt_user_identifier()
+def user_disable(user_id: str):
+    disable_user(user_id)
 
 
 @user.command('rename', help="Rename a user username")
-@opt_identifier()
+@opt_user_identifier()
 @opt_username(help="New username for user")
-def user_rename(global_id: str, username: str):
-    rename_user(global_id, username)
+def user_rename(user_id: str, username: str):
+    rename_user(user_id, username)
+
+
+@user.command('move-org', help="Move a user to another org")
+@opt_user_identifier()
+@opt_identifier(
+    required=True,
+    help="Old organisation identifier",
+    option_name="--old-org",
+    var_name="old_org_id",
+)
+@opt_identifier(
+    required=True,
+    help="New organisation identifier",
+    option_name="--new-org",
+    var_name="new_org_id",
+)
+def user_move_org(user_id: str, old_org_id: str, new_org_id: str):
+    move_user_org(user_id, old_org_id, new_org_id)
