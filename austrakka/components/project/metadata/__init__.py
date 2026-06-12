@@ -11,15 +11,12 @@ from .funcs import get_view, \
 @click.group()
 @click.pass_context
 def metadata(ctx):
-    """Commands to query for metadata views for a project, including commands for setting how
-    the views are generated. This sub command is predominantly used for fetching metadata
-    that was uploaded and shared with the project, as well as project analysis metadata
-    that was uploaded by a project analyst. Data from both sources are merged to create
-    one or more unified views which are accessible to project members.
-
-    All views have the same number of sample rows but differ in the number of fields. The
-    base view contains all fields which are accessible by the project. All other views are
-    subsets of the base."""
+    """Commands to query for metadata views for a project, including commands for setting how 
+    the views are generated. This sub command is predominantly used for fetching metadata 
+    that was uploaded and shared with the project, as well as project analysis metadata 
+    that was uploaded by a project analyst. Data from both sources are merged to create a unified
+    view which is accessible to project members. 
+    """
     ctx.context = ctx.parent.context
 
 
@@ -37,5 +34,5 @@ def download_dataset_view(
         project_abbrev: str,
         out_format: str,
 ):
-    """Get a specific metadata view. By default, the full metadata view is returned."""
-    download_view( project_abbrev, out_format)
+    """Download sample metadata for the project."""
+    download_dataset_view(view_id, project_abbrev, out_format)
