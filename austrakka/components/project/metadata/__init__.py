@@ -11,8 +11,8 @@ from .funcs import get_view, \
 @click.group()
 @click.pass_context
 def metadata(ctx):
-    """Commands to query for metadata views for a project, including commands for setting how 
-    the views are generated. This sub command is predominantly used for fetching metadata 
+    """Commands to query for metadata views for a project. 
+    This sub command is predominantly used for fetching metadata 
     that was uploaded and shared with the project, as well as project analysis metadata 
     that was uploaded by a project analyst. Data from both sources are merged to create a unified
     view which is accessible to project members. 
