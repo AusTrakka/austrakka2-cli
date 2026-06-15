@@ -24,7 +24,6 @@ from .funcs import disable_project, enable_project, list_projects, \
 
 from .dataset import dataset
 from .field import field
-from .provision import provision
 from .metadata import metadata
 from .document import document
 
@@ -37,7 +36,6 @@ def project(ctx):
 
 
 project.add_command(field)
-project.add_command(provision)
 project.add_command(metadata)
 project.add_command(dataset)
 project.add_command(document)
@@ -46,7 +44,7 @@ project.add_command(privilege_subcommands(PROJECT_RESOURCE))
 
 
 @project.command(
-        'add', 
+        'add',
         hidden=hide_admin_cmds(),
         help='Add a new project'
 )
@@ -78,7 +76,7 @@ def project_add(
 
 
 @project.command(
-        'update', 
+        'update',
         hidden=hide_admin_cmds(),
         help='Update an existing project',
 )
@@ -138,7 +136,7 @@ def dashboard_get(project_abbrev: str, out_format: str):
 def projects_list(view_type: str,out_format: str):
     list_projects(view_type, out_format)
 
-    
+
 @project.command('set-type')
 @click.argument('project-abbrev', type=str)
 @opt_type()
