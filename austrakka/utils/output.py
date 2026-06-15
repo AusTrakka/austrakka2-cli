@@ -114,7 +114,7 @@ def print_dataframe(
 
     for col in datetime_cols:
         if col in dataframe.columns:
-            dataframe[col] = dt_format_and_convert(dataframe[col])
+            dataframe.loc[:,col] = dt_format_and_convert(dataframe[col])
 
     output = convert_format(dataframe, output_format)
 
