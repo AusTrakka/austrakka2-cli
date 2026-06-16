@@ -16,6 +16,7 @@ from austrakka.utils.cmd_filter import show_admin_cmds
 from .funcs import list_orgs
 from .funcs import add_org
 from .funcs import update_org
+from .metadata import metadata
 
 
 @click.group()
@@ -27,6 +28,7 @@ def org(ctx):
 org.add_command(privilege_subcommands(ORG_RESOURCE))
 org.add_command(log_subcommands(ORG_RESOURCE))
 org.add_command(field) if show_admin_cmds() else None
+org.add_command(metadata)
 
 @org.command('list', help="List organisations")
 @table_format_option()

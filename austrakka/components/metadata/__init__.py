@@ -13,7 +13,6 @@ from austrakka.utils.options import opt_field_name
 from austrakka.components.metadata.funcs import add_metadata
 from austrakka.components.metadata.funcs import validate_metadata
 from austrakka.components.metadata.funcs import append_metadata
-from austrakka.components.metadata.funcs import list_metadata, list_metadata_by_field
 from austrakka.utils.output import table_format_option, FORMATS
 
 ADD_APPEND_BATCH_SIZE_HELP = (
@@ -108,16 +107,3 @@ def submission_validate(
     """
     validate_metadata(file, owner_org, proforma, is_update, batch_size)
 
-
-@metadata.command('list')
-@opt_group_name()
-@opt_field_name(
-    required=False, 
-    help="Fields to retrieve; if none specified, all fields will be retrieved")
-@table_format_option(FORMATS.CSV)
-def metadata_list(group_name: str, field_names: List[str], out_format: str):
-    """List metadata for a specific group"""
-    if len(field_names)==0:
-        list_metadata(group_name, out_format)
-    else:
-        list_metadata_by_field(group_name, field_names, out_format)
