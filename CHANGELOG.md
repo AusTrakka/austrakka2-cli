@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.87.0] - 2026-06-15
+
+### Changed
+- Obsolete project provision commands removed.
+- Will not warn about out-of-date CLI version if the user is targeting a non-rolling Trakka instance.
+
 ## [0.86.0] - 2026-06-01
 
 ### Changed
