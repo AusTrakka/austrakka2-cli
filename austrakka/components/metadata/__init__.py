@@ -7,13 +7,10 @@ import click
 
 from austrakka.utils.options import opt_proforma, opt_batch_size, opt_owner_org, opt_shared_projects
 from austrakka.utils.options import opt_is_update
-from austrakka.utils.options import opt_group_name
 from austrakka.utils.options import opt_blanks_delete
-from austrakka.utils.options import opt_field_name
 from austrakka.components.metadata.funcs import add_metadata
 from austrakka.components.metadata.funcs import validate_metadata
 from austrakka.components.metadata.funcs import append_metadata
-from austrakka.utils.output import table_format_option, FORMATS
 
 ADD_APPEND_BATCH_SIZE_HELP = (
     'The number of rows to split the metadata upload into before uploading. '
@@ -106,4 +103,3 @@ def submission_validate(
     action. No data will modified.
     """
     validate_metadata(file, owner_org, proforma, is_update, batch_size)
-

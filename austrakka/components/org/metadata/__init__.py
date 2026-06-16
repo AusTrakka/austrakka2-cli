@@ -9,6 +9,7 @@ from austrakka.utils.output import FORMATS
 from .funcs import list_metadata
 from .funcs import list_metadata_by_field
 
+# pylint: disable=R0801
 @click.group()
 @click.pass_context
 def metadata(ctx):
