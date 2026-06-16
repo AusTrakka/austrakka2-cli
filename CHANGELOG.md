@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.87.1]
+
+### Changed
+- Reverted renaming of provision commands.
+
 ## [0.87.0] - 2026-06-15
 
 ### Changed
