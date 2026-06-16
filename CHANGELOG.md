@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.87.1] - 2026-06-16
+
+### Changed
+- Reverted renaming of provision commands.
+
+## [0.87.0] - 2026-06-15
+
+### Changed
+- Obsolete project provision commands removed.
+- Will not warn about out-of-date CLI version if the user is targeting a non-rolling Trakka instance.
+
+## [0.86.0] - 2026-06-01
+
+### Changed
+- Update to match change to the API. This is a backwards-incompatible change which requires a CLI version update. 
+This specifically affects the `project tree add` command.
+
 ## [0.85.0] - 2026-05-20
 
 ### Added 
@@ -14,7 +31,7 @@ and this project adheres to [Semantic Versioning].
 ## [0.84.1] - 2026-05-04
 
 ### Changed
-- `sample chown` is no longer an admin only command.
+- `sample chown` is no longer an admin-only command.
 
 ## [0.84.0] - 2026-04-21
 
