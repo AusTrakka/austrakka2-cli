@@ -260,23 +260,41 @@ def proforma_enable(proforma_abbrev: str):
 
 @proforma.command('share', hidden=hide_admin_cmds())
 @click.argument('proforma-abbrev', type=click.STRING)
-@opt_group_name(var_name='group_names', multiple=True)
-def proforma_share(proforma_abbrev: str, group_names: List[str]):
+@opt_group_name(var_name='group_names',
+                cls=RequiredMutuallyExclusiveOption,
+                mutually_exclusive=['projects'],
+                required=False,
+                multiple=True)
+@opt_project(var_name='projects',
+             mutually_exclusive=['group_names'],
+             cls=RequiredMutuallyExclusiveOption,
+             required=False,
+             multiple=True)
+def proforma_share(proforma_abbrev: str, group_names: List[str], projects: List[str]):
     """
     Share a proforma with one or more groups, which may be project groups. 
     The proforma will be visible and useable by Uploaders in these groups.
     """
-    share_proforma(proforma_abbrev, group_names)
+    share_proforma(proforma_abbrev, group_names, projects)
 
 
 @proforma.command('unshare', hidden=hide_admin_cmds())
 @click.argument('proforma-abbrev', type=click.STRING)
-@opt_group_name(var_name='group_names', multiple=True)
-def proforma_unshare(proforma_abbrev: str, group_names: List[str]):
+@opt_group_name(var_name='group_names',
+                cls=RequiredMutuallyExclusiveOption,
+                mutually_exclusive=['projects'],
+                required=False,
+                multiple=True)
+@opt_project(var_name='projects',
+             cls=RequiredMutuallyExclusiveOption,
+             mutually_exclusive=['group_names'],
+             required=False,
+             multiple=True)
+def proforma_unshare(proforma_abbrev: str, group_names: List[str], projects: List[str]):
     """
     Unshare a proforma with one or more groups.
     """
-    unshare_proforma(proforma_abbrev, group_names)
+    unshare_proforma(proforma_abbrev, group_names, projects)
 
 
 @proforma.command('list-groups')
