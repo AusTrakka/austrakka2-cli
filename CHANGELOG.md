@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.88.0] - 2026-06-17
+
+## Changed
+- `user move-org` is now `user transfer`.
+- `sample chown` is now `sample transfer`, with parameters consistent with `user transfer`.
+
 ## [0.87.1] - 2026-06-16
 
 ### Changed
