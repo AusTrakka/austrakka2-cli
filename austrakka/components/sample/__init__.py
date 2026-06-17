@@ -33,7 +33,9 @@ def sample(ctx):
 @sample.command('transfer',
     help="""Transfer samples to another organisation.
 
-This will not be reversible unless you also have appropriate permissions in the other organisation.""")
+This will not be reversible unless you also have appropriate permissions in the other organisation.
+""")
+# pylint: disable=duplicate-code
 @opt_identifier(
     required=True,
     help="Old organisation identifier",
