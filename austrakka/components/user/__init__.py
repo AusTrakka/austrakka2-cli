@@ -129,7 +129,7 @@ def user_rename(user_id: str, username: str):
     rename_user(user_id, username)
 
 
-@user.command('move-org', help="Move a user to another org")
+@user.command('transfer', help="Move a user account to another organisation")
 @opt_user_identifier()
 @opt_identifier(
     required=True,
