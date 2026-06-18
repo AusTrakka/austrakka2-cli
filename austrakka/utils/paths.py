@@ -17,7 +17,6 @@ SEQUENCE_BY_GROUP_PATH = 'by-group'
 SEQUENCE_BY_SAMPLE_PATH = 'by-sample'
 SEQUENCE_TYPE_QUERY = 'seqType'
 SEQUENCE_READ_QUERY = 'read'
-METADATA_SEARCH_PATH = 'MetadataSearch'
 SAMPLE_PATH = 'Sample'
 GROUP_PATH = 'Group'
 PLOT_PATH = "Plots"
