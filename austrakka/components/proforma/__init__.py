@@ -7,6 +7,7 @@ from austrakka.utils.privilege import PROFORMA_RESOURCE
 from austrakka.components.log import log_subcommands
 from .funcs import \
     add_proforma, \
+    rm_attach_proforma, \
     update_proforma, \
     add_version_proforma, \
     list_proformas, \
@@ -287,3 +288,18 @@ def proforma_list_groups(proforma_abbrev: str, out_format: str):
     List groups which have access to the given proforma.
     """
     list_groups_proforma(proforma_abbrev, out_format)
+
+
+@proforma.command('rm-attach')
+@opt_identifier(help="Identifier for a proforma")
+@create_option(
+    '--version',
+    type=int,
+    required=True,
+    help='Proforma version',
+)
+def proforma_rm_attach(identifier: str, version: int):
+    """
+    Removes attachment from proforma
+    """
+    rm_attach_proforma(identifier, version)
