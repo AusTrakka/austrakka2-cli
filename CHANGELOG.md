@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.88.1] - 2026-06-19
+
+### Added
+- The `proforma share` command can now take a `--project` parameter to share a proforma with a project, as an
+alternative to using the `--group-name` parameter to share with the project group. This syntax is more consistent with
+other commands and will be used in the future. The `--group-name` parameter is still supported in this release.
+
 ## [0.88.0] - 2026-06-17
 
 ## Changed
