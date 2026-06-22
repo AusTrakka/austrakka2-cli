@@ -11,6 +11,7 @@ from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
 from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from austrakka.utils.helpers.upload import upload_multipart
+from austrakka.utils.helpers.share import resolve_share_targets
 from austrakka.utils.misc import logger_wraps
 from austrakka.utils.output import print_dataframe, log_response, get_viewtype_columns
 from austrakka.utils.paths import PROFORMA_PATH
@@ -53,7 +54,8 @@ def enable_proforma(abbrev: str):
 
 
 @logger_wraps()
-def share_proforma(abbrev: str, group_names: List[str]):
+def share_proforma(abbrev: str, group_names: List[str], projects: List[str]):
+    group_names = resolve_share_targets(group_names, projects)
     api_patch(
         path=f'{PROFORMA_PATH}/{abbrev}/share',
         data=group_names
@@ -63,7 +65,8 @@ def share_proforma(abbrev: str, group_names: List[str]):
 
 
 @logger_wraps()
-def unshare_proforma(abbrev: str, group_names: List[str]):
+def unshare_proforma(abbrev: str, group_names: List[str], projects: List[str]):
+    group_names = resolve_share_targets(group_names, projects)
     api_patch(
         path=f'{PROFORMA_PATH}/{abbrev}/unshare',
         data=group_names

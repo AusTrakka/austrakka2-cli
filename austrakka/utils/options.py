@@ -301,7 +301,7 @@ def opt_description(**attrs: t.Any):
     )
 
 
-def opt_project(**attrs: t.Any):
+def opt_project(var_name='project',**attrs: t.Any):
     defaults = {
         'required': True,
         'multiple': False,
@@ -310,6 +310,7 @@ def opt_project(**attrs: t.Any):
     return create_option(
         '-p',
         '--project',
+        var_name,
         type=click.STRING,
         **{**defaults, **attrs}
     )
