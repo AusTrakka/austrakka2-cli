@@ -49,9 +49,9 @@ This will not be reversible unless you also have appropriate permissions in the 
     var_name="new_org_id",
 )
 @options_seq_id_or_file
-def owner_change(old_org: str, new_org: str, seq_id: [str], file: BufferedReader):
+def owner_change(old_org_id: str, new_org_id: str, seq_id: [str], file: BufferedReader):
     seq_ids = get_seq_list(seq_id, file)
-    change_owner(old_org, new_org, seq_ids)
+    change_owner(old_org_id, new_org_id, seq_ids)
 
 @sample.command('show', hidden=hide_admin_cmds())
 @opt_seq_id(multiple=False)
