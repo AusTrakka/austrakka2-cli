@@ -6,7 +6,7 @@ from austrakka.utils.output import object_format_option
 from austrakka.utils.cmd_filter import hide_admin_cmds
 from austrakka.utils.options import opt_abbrev, \
     opt_is_active, \
-    opt_type, \
+    opt_label, \
     opt_view_type, opt_project_client_type, opt_merge_algorithm
 from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_dashboard_name
@@ -19,9 +19,7 @@ from .funcs import disable_project, enable_project, list_projects, \
     add_project, \
     update_project, \
     set_dashboard, \
-    get_dashboard, \
-    set_project_type
-
+    get_dashboard
 from .dataset import dataset
 from .field import field
 from .metadata import metadata
@@ -53,7 +51,7 @@ project.add_command(privilege_subcommands(PROJECT_RESOURCE))
 @opt_description(required=False)
 @opt_organisation(help="Requesting organisation abbreviation", required=False)
 @opt_dashboard_name(required=False)
-@opt_type(required=False)
+@opt_label(required=False)
 @opt_project_client_type()
 @opt_merge_algorithm()
 def project_add(
@@ -62,7 +60,7 @@ def project_add(
         description: str,
         org: str,
         dashboard_name: str,
-        project_type: str,
+        project_label: str,
         client_type: str,
         merge_algo: str):
     add_project(abbrev,
@@ -70,7 +68,7 @@ def project_add(
                 description,
                 org,
                 dashboard_name,
-                project_type,
+                project_label,
                 client_type,
                 merge_algo)
 
@@ -86,7 +84,7 @@ def project_add(
 @opt_is_active(help="Set project active status", is_update=True, required=False)
 @opt_organisation(help="New requesting organisation abbreviation", required=False)
 @opt_dashboard_name(help="New dashboard", required=False)
-@opt_type(help="New project type", required=False)
+@opt_label(help="New project type", required=False)
 @opt_project_client_type(required=False)
 @opt_merge_algorithm(required=False)
 def project_update(
@@ -135,14 +133,6 @@ def dashboard_get(project_abbrev: str, out_format: str):
 @table_format_option()
 def projects_list(view_type: str,out_format: str):
     list_projects(view_type, out_format)
-
-
-@project.command('set-type')
-@click.argument('project-abbrev', type=str)
-@opt_type()
-def project_set_type(project_abbrev: str, project_type: str):
-    '''Set a type for a project'''
-    set_project_type(project_abbrev, project_type)
 
 
 @project.command('enable')
