@@ -66,7 +66,6 @@ def update_project(
         project_abbreviation: str,
         name: str,
         description: str,
-        is_active: bool,
         org: str,
         dashboard_name: str,
         project_label: str,
@@ -80,7 +79,6 @@ def update_project(
         **{k: project[k] for k in [
             'name',
             'description',
-            'isActive',
             'requestingOrg',
             'dashboardName',
             'label',
@@ -96,8 +94,6 @@ def update_project(
         put_project['name'] = name
     if description is not None:
         put_project['description'] = description
-    if is_active is not None:
-        put_project['isActive'] = is_active
     if org is not None:
         put_project['requestingOrg'] = org
     if dashboard_name is not None:
