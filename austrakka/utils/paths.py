@@ -23,7 +23,6 @@ PLOT_PATH = "Plots"
 PROJECT_DASHBOARD_PATH = 'ProjectDashboards'
 SET_DASHBOARD = 'set-dashboard'
 ASSIGNED_DASHBOARD = 'assigned-dashboard'
-SET_TYPE = 'set-type'
 TENANT_PATH = 'Tenant'
 MESSAGES_PATH = 'Message'
 SCOPES_PATH = 'Scopes'
