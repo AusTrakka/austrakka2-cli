@@ -66,13 +66,13 @@ def opt_name(var_name='name', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
-def opt_type(var_name='project_type', help_string='Type string.', **attrs: t.Any):
+def opt_label(var_name='project_label', help_string='Type string.', **attrs: t.Any):
     defaults = {
         'help': help_string,
     }
     return create_option(
         "-t",
-        "--type",
+        "--label",
         var_name,
         type=click.STRING,
         **{**defaults, **attrs}

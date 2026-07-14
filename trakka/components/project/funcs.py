@@ -8,14 +8,13 @@ from trakka.utils.helpers.project import get_project_by_abbrev
 from trakka.utils.misc import logger_wraps
 from trakka.utils.output import get_viewtype_columns
 from trakka.utils.paths import PROJECT_PATH
-from trakka.utils.paths import SET_TYPE
 from trakka.utils.paths import SET_DASHBOARD
 from trakka.utils.paths import ASSIGNED_DASHBOARD
 
 compact_fields = [
     "projectId",        # Project ID
     "abbreviation",     # Abbreviation or short name
-    "type",             # Type for the project
+    "label",             # Type for the project
     "isActive",         # Active status
     "name"              # Full name of the project
 ]
@@ -25,7 +24,7 @@ more_fields = [
     "projectId",        # Project ID
     "abbreviation",     # Abbreviation or short name
     "clientType",       # the 'secret' client type
-    "type",             # Type for the project
+    "label",             # Type for the project
     "isActive",         # Active status
     "name",             # Project name
     "description",      # Description of the project
@@ -43,7 +42,7 @@ def add_project(
         description: str,
         org: str,
         dashboard_name: str,
-        project_type: str,
+        project_label: str,
         client_type: str,
         merge_algo: str):
     return api_post(
@@ -55,7 +54,7 @@ def add_project(
             "isActive": True,
             "requestingOrg": org,
             "dashboardName": dashboard_name,
-            "type": project_type,
+            "label": project_label,
             "clientType": client_type,
             "mergeAlgorithm": merge_algo, 
        }
@@ -67,10 +66,9 @@ def update_project(
         project_abbreviation: str,
         name: str,
         description: str,
-        is_active: bool,
         org: str,
         dashboard_name: str,
-        project_type: str,
+        project_label: str,
         client_type: str,
         merge_algorithm: str
 ):
@@ -81,10 +79,9 @@ def update_project(
         **{k: project[k] for k in [
             'name',
             'description',
-            'isActive',
             'requestingOrg',
             'dashboardName',
-            'type',
+            'label',
             'clientType',
             'mergeAlgorithm'
         ]},
@@ -97,14 +94,12 @@ def update_project(
         put_project['name'] = name
     if description is not None:
         put_project['description'] = description
-    if is_active is not None:
-        put_project['isActive'] = is_active
     if org is not None:
         put_project['requestingOrg'] = org
     if dashboard_name is not None:
         put_project['dashboardName'] = dashboard_name
-    if project_type is not None:
-        put_project['type'] = project_type
+    if project_label is not None:
+        put_project['label'] = project_label
     if client_type is not None:
         put_project['clientType'] = client_type
     if merge_algorithm is not None:
@@ -137,12 +132,6 @@ def list_projects(view_type: str, out_format: str):
 def get_dashboard(project_abbreviation: str, out_format: str):
     joined_path = '/'.join([PROJECT_PATH, ASSIGNED_DASHBOARD, project_abbreviation])
     call_get_and_print(joined_path, out_format)
-
-    
-@logger_wraps() 
-def set_project_type(abbrev: str, project_type: str):
-    path = '/'.join([PROJECT_PATH, abbrev, SET_TYPE])
-    api_patch(path, data=project_type,)
 
 @logger_wraps()
 def enable_project(abbrev: str):
