@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+
+## [0.89.0] - 2026-07-14
+
+### Added
+- `proforma rm-attach` command to remove attached proforma templates.
+
+### Changed
+- `group field [add|remove|list]` -> `org field [add|remove|list]`. Now operates on an organisation rather than a group.
+- `metadata list` -> `org metadata get`. Now operates on an organisation rather than a group.
+- Clean up contig name generated fasta file for `seq sync` command.
+- `--type` -> `--label` for `project [add|update]`.
+
+### Removed
+- `project set-type`. This can be set using `project [add|update]`.
+- `[--is-active|--not-active]` from `project update`: use `project [enable|disable]` instead. 
+
+### Fixed
+- Fixed displaying of columns for `field list` using `--view-type more`.
+
 ## [0.88.1] - 2026-06-19
 
 ### Added

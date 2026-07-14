@@ -5,7 +5,7 @@ from httpx import HTTPStatusError
 from loguru import logger
 
 
-from austrakka.utils.api import api_get
+from austrakka.utils.api import api_delete, api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
@@ -402,3 +402,7 @@ def _build_field_spec(
             )
     
     return field_spec
+
+
+def rm_attach_proforma(identifier: str, version: int):
+    api_delete(path=f'{PROFORMA_PATH}/{identifier}/{version}/Attach')
