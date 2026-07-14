@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning].
 This change is due to enable and disable commands being already available for this purpose.
   - The 'project_type' parameter is now called 'project_label'. 
 This will affect project add and project update commands.
+  - Projects now have a 'Status' property that can be updated using project update.
 
 ## Removed
   - The 'project set-type' has been removed as project update encapsulates this functionality.
