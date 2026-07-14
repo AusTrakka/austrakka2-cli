@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning].
 
 ### Changed
 - `group field [add|remove|list]` -> `org field [add|remove|list]`. Now operates on an organisation rather than a group.
-- `metadata list` -> `org metadata list`. Now operates on an organisation rather than a group.
+- `metadata list` -> `org metadata get`. Now operates on an organisation rather than a group.
 - Clean up contig name generated fasta file for `seq sync` command.
 - `--type` -> `--label` for `project [add|update]`.
 
