@@ -9,7 +9,9 @@ from austrakka.utils.api import api_delete, api_get
 from austrakka.utils.api import api_post
 from austrakka.utils.api import api_patch
 from austrakka.utils.api import api_put
-from austrakka.utils.exceptions import FailedResponseException, UnknownResponseException
+from austrakka.utils.exceptions import AusTrakkaCliException
+from austrakka.utils.exceptions import FailedResponseException
+from austrakka.utils.exceptions import UnknownResponseException
 from austrakka.utils.helpers.upload import upload_multipart
 from austrakka.utils.helpers.share import resolve_share_targets
 from austrakka.utils.misc import logger_wraps
@@ -233,7 +235,8 @@ def _get_proforma_fields_df(data):
         'nndssFieldLabel',
         'metaDataColumnPrimitiveType',
         'metaDataColumnValidValues',
-        'isRequired'
+        'isRequired',
+        'class'
     ]]
 
     field_df.rename(
@@ -406,3 +409,29 @@ def _build_field_spec(
 
 def rm_attach_proforma(identifier: str, version: int):
     api_delete(path=f'{PROFORMA_PATH}/{identifier}/{version}/Attach')
+
+
+def update_field_class_proforma(
+        identifier: str, 
+        field_identifiers: List[str],
+        metadata_class: str,
+):
+    response = api_get(
+        path=f"{PROFORMA_PATH}/abbrev/{identifier}"
+    )
+    fields = response["data"]["columnMappings"]
+    field_abbrevs = [f["metaDataColumnName"] for f in fields]
+    field_global_ids = [f["metaDataColumnGlobalId"] for f in fields]
+    for field_identifier in field_identifiers:
+        if field_identifier not in field_abbrevs and field_identifier not in field_global_ids:
+            raise AusTrakkaCliException(
+                f'Field {field_identifier} is not in proforma {identifier}'
+            )
+
+    for field_identifier in field_identifiers:
+        api_patch(
+            path=f'{PROFORMA_PATH}/{identifier}/Field/{field_identifier}',
+            data={
+                "class": metadata_class,
+            },
+        )
