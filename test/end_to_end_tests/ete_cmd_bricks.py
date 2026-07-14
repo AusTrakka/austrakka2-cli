@@ -303,7 +303,7 @@ def _create_field_if_not_exists(cli: TrakkaTestCli, field_name):
     assert result.exit_code == 0, f'Failed to list fields as part of test setup: {result.output}'
 
     # parse json array to find field_name matching "columnName" in the json
-    fields = json.loads(result.output)
+    fields = json.loads(result.stdout)
     if field_name.casefold() not in [field['columnName'].casefold() for field in fields]:
         result = cli.invoke([
             'field',
@@ -339,4 +339,4 @@ def _list_seq_by_group(cli: TrakkaTestCli, group: str):
     ])
 
     assert result.exit_code == 0, f'Failed to list sequences by group {group} as part of test setup: {result.output}'
-    return json.loads(result.output)
+    return json.loads(result.stdout)

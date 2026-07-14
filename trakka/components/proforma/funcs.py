@@ -5,12 +5,13 @@ from httpx import HTTPStatusError
 from loguru import logger
 
 
-from trakka.utils.api import api_get
+from trakka.utils.api import api_delete, api_get
 from trakka.utils.api import api_post
 from trakka.utils.api import api_patch
 from trakka.utils.api import api_put
 from trakka.utils.exceptions import FailedResponseException, UnknownResponseException
 from trakka.utils.helpers.upload import upload_multipart
+from trakka.utils.helpers.share import resolve_share_targets
 from trakka.utils.misc import logger_wraps
 from trakka.utils.output import print_dataframe, log_response, get_viewtype_columns
 from trakka.utils.paths import PROFORMA_PATH
@@ -53,7 +54,8 @@ def enable_proforma(abbrev: str):
 
 
 @logger_wraps()
-def share_proforma(abbrev: str, group_names: List[str]):
+def share_proforma(abbrev: str, group_names: List[str], projects: List[str]):
+    group_names = resolve_share_targets(group_names, projects)
     api_patch(
         path=f'{PROFORMA_PATH}/{abbrev}/share',
         data=group_names
@@ -63,7 +65,8 @@ def share_proforma(abbrev: str, group_names: List[str]):
 
 
 @logger_wraps()
-def unshare_proforma(abbrev: str, group_names: List[str]):
+def unshare_proforma(abbrev: str, group_names: List[str], projects: List[str]):
+    group_names = resolve_share_targets(group_names, projects)
     api_patch(
         path=f'{PROFORMA_PATH}/{abbrev}/unshare',
         data=group_names
@@ -399,3 +402,7 @@ def _build_field_spec(
             )
     
     return field_spec
+
+
+def rm_attach_proforma(identifier: str, version: int):
+    api_delete(path=f'{PROFORMA_PATH}/{identifier}/{version}/Attach')

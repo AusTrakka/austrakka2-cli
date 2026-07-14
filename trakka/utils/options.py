@@ -259,18 +259,6 @@ def options_seq_id_or_file(func):
     )
     return _opt_seq_id(_opt_file(func))
 
-def opt_prov_id(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'provision id',
-    }
-    return create_option(
-        "-pi",
-        "--prov-id",
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
 
 def opt_field_name(**attrs: t.Any):
     defaults = {
@@ -313,7 +301,7 @@ def opt_description(**attrs: t.Any):
     )
 
 
-def opt_project(**attrs: t.Any):
+def opt_project(var_name='project',**attrs: t.Any):
     defaults = {
         'required': True,
         'multiple': False,
@@ -322,6 +310,7 @@ def opt_project(**attrs: t.Any):
     return create_option(
         '-p',
         '--project',
+        var_name,
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -856,16 +845,6 @@ def opt_tree_version_id(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
-
-def opt_view_id(**attrs: t.Any):
-    defaults = {
-        'required': False,
-        'help': 'Project metadata view ID',
-    }
-    return create_option(
-        '--view-id',
-        **{**defaults, **attrs}
-    )
 
 
 def opt_server_username(**attrs: t.Any):

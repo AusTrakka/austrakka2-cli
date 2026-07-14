@@ -15,12 +15,12 @@ PURGE = 'Purge'
 SAMPLES_OWNER = 'samplesOwner'
 
 @logger_wraps()
-def change_owner(curr_owner: str, new_owner: str, seq_ids: [str]):
+def change_owner(curr_org: str, new_org: str, seq_ids: [str]):
     api_patch(
-        path=f"{ORG_V2_PATH}/{curr_owner}/{SAMPLES_OWNER}",
+        path=f"{ORG_V2_PATH}/{curr_org}/{SAMPLES_OWNER}",
         data={
             "seqIds": seq_ids,
-            "newOwnerAbbrev": new_owner
+            "newOwnerAbbrev": new_org
         },
     )
 

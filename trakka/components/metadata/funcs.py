@@ -7,12 +7,18 @@ import codecs
 from loguru import logger
 import pandas as pd
 
+<<<<<<< HEAD:trakka/components/metadata/funcs.py
 from trakka.utils.misc import logger_wraps
 from trakka.utils.api import api_post_multipart
 from trakka.utils.paths import SUBMISSION_PATH
 from trakka.utils.paths import METADATA_SEARCH_PATH
 from trakka.utils.helpers.groups import get_group_by_name
 from trakka.utils.helpers.output import call_get_and_print
+=======
+from austrakka.utils.misc import logger_wraps
+from austrakka.utils.api import api_post_multipart
+from austrakka.utils.paths import SUBMISSION_PATH
+>>>>>>> Development:austrakka/components/metadata/funcs.py
 
 SUBMISSION_UPLOAD = 'UploadSubmissions'
 SUBMISSION_UPLOAD_APPEND = 'UploadSubmissions?appendMode=True'
@@ -146,28 +152,4 @@ def _call_submission(
         },
         files={'file': (file.name, file)},
         custom_headers=headers
-    )
-
-
-@logger_wraps()
-def list_metadata(group_name: str, out_format: str):
-    group_id: str = get_group_by_name(group_name)['groupId']
-    call_get_and_print(
-        f'{METADATA_SEARCH_PATH}',
-        out_format,
-        params={
-            'groupContext': group_id
-        }
-    )
-
-@logger_wraps()
-def list_metadata_by_field(group_name: str, field_names: List[str], out_format: str):
-    group_id: str = get_group_by_name(group_name)['groupId']
-    call_get_and_print(
-        f'{METADATA_SEARCH_PATH}/{METADATA_BY_FIELD_PATH}',
-        out_format,
-        params={
-            'groupContext': group_id,
-            'fields': field_names
-        }
     )
