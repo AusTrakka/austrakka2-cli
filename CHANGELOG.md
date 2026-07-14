@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [00.88.2] - Unreleased
+## [0.88.2] - Unreleased
 
 ## Changed
   - The project update command no longer accepts the 'isActive' parameter. 

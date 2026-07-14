@@ -891,7 +891,6 @@ def opt_status(**attrs: t.Any):
     }
     return create_option(
         "--status", "-st",
-        # todo: should we leave this freetext instead, or update as and when new options are added?
         type=click.Choice([OPEN, CLOSED]),
         required=False,
         default=None,
