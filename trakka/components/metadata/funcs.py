@@ -7,18 +7,9 @@ import codecs
 from loguru import logger
 import pandas as pd
 
-<<<<<<< HEAD:trakka/components/metadata/funcs.py
 from trakka.utils.misc import logger_wraps
 from trakka.utils.api import api_post_multipart
 from trakka.utils.paths import SUBMISSION_PATH
-from trakka.utils.paths import METADATA_SEARCH_PATH
-from trakka.utils.helpers.groups import get_group_by_name
-from trakka.utils.helpers.output import call_get_and_print
-=======
-from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import api_post_multipart
-from austrakka.utils.paths import SUBMISSION_PATH
->>>>>>> Development:austrakka/components/metadata/funcs.py
 
 SUBMISSION_UPLOAD = 'UploadSubmissions'
 SUBMISSION_UPLOAD_APPEND = 'UploadSubmissions?appendMode=True'

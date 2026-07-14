@@ -3,11 +3,11 @@ from io import BufferedReader
 import os
 from loguru import logger
 import httpx
-from austrakka.utils.helpers.output import call_get_and_print
-from austrakka.utils.http import HEADERS, get_header_value
-from austrakka.utils.misc import logger_wraps
-from austrakka.utils.api import api_patch, api_get_stream, api_post_multipart
-from austrakka.utils.paths import PROJECT_PATH
+from trakka.utils.helpers.output import call_get_and_print
+from trakka.utils.http import HEADERS, get_header_value
+from trakka.utils.misc import logger_wraps
+from trakka.utils.api import api_patch, api_get_stream, api_post_multipart
+from trakka.utils.paths import PROJECT_PATH
 
 DOCUMENT_PATH = 'documents'
 

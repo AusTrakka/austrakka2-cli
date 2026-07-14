@@ -1,10 +1,10 @@
 from typing import List
 
-from austrakka.utils.api import api_patch
-from austrakka.utils.misc import logger_wraps
-from austrakka.utils.output import get_viewtype_columns
-from austrakka.utils.paths import ORG_V2_PATH
-from austrakka.utils.helpers.output import call_get_and_print
+from trakka.utils.api import api_patch
+from trakka.utils.misc import logger_wraps
+from trakka.utils.output import get_viewtype_columns
+from trakka.utils.paths import ORG_V2_PATH
+from trakka.utils.helpers.output import call_get_and_print
 
 
 @logger_wraps()

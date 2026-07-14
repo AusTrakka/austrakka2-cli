@@ -1,9 +1,9 @@
 
 
 from typing import List
-from austrakka.utils.helpers.output import call_get_and_print
-from austrakka.utils.misc import logger_wraps
-from austrakka.utils.paths import ORG_V2_PATH
+from trakka.utils.helpers.output import call_get_and_print
+from trakka.utils.misc import logger_wraps
+from trakka.utils.paths import ORG_V2_PATH
 
 
 @logger_wraps()

@@ -2,9 +2,9 @@ from typing import List
 
 import click
 
-from austrakka.utils.options import opt_field_name, opt_identifier
-from austrakka.utils.output import table_format_option
-from austrakka.utils.output import FORMATS
+from trakka.utils.options import opt_field_name, opt_identifier
+from trakka.utils.output import table_format_option
+from trakka.utils.output import FORMATS
 
 from .funcs import get_metadata
 from .funcs import get_metadata_by_field

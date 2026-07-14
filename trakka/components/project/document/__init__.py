@@ -1,11 +1,11 @@
 import click
-from austrakka.utils.cmd_filter import hide_admin_cmds
+from trakka.utils.cmd_filter import hide_admin_cmds
 
-from austrakka import __prog_name__ as PROG_NAME
-from austrakka.utils.output import table_format_option
-from austrakka.utils.options import opt_description, opt_name, opt_file, opt_identifier, \
+from trakka import __prog_name__ as PROG_NAME
+from trakka.utils.output import table_format_option
+from trakka.utils.options import opt_description, opt_name, opt_file, opt_identifier, \
     opt_output_dir
-from austrakka.components.project.document.funcs import add_document, enable_document, \
+from trakka.components.project.document.funcs import add_document, enable_document, \
     get_document_list, download_document, disable_document, update_document
 
 @click.group()
