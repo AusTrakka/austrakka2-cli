@@ -53,7 +53,7 @@ class TestSyncWorkflow:
 
         # Assert
         df2 = pd.read_csv(clone)
-        status = df2.loc[0, [STATUS_KEY]][0]
+        status = df2.loc[0, STATUS_KEY]
         assert status == MISSING
 
     def test_analyse2_new_manifest_hash_dont_match_local_expect_entries_marked_as_drifted(self):
@@ -88,7 +88,7 @@ class TestSyncWorkflow:
 
         # Assert
         df2 = pd.read_csv(clone)
-        status = df2.loc[0, [STATUS_KEY]][0]
+        status = df2.loc[0, STATUS_KEY]
         assert status == DRIFTED
 
     def test_analyse3_new_manifest_hash_matches_local_expect_entries_marked_as_match(self):
@@ -123,7 +123,7 @@ class TestSyncWorkflow:
 
         # Assert
         df2 = pd.read_csv(clone)
-        status = df2.loc[0, [STATUS_KEY]][0]
+        status = df2.loc[0, STATUS_KEY]
         assert status == MATCH
 
     def test_analyse5_hash_check_option_omitted_expect_hash_check_is_on_by_default(self):
@@ -158,7 +158,7 @@ class TestSyncWorkflow:
 
         # Assert
         df2 = pd.read_csv(clone)
-        status = df2.loc[0, [STATUS_KEY]][0]
+        status = df2.loc[0, STATUS_KEY]
         assert status == DRIFTED
 
     def test_analyse6_restarting_analyse_expect_no_hash_check_for_entries_already_matched(self):
@@ -193,7 +193,7 @@ class TestSyncWorkflow:
 
         # Assert
         df2 = pd.read_csv(clone)
-        status = df2.loc[0, [STATUS_KEY]][0]
+        status = df2.loc[0, STATUS_KEY]
         assert status == MATCH
 
     # Failure at the download stage. The file started partial download
@@ -233,7 +233,7 @@ class TestSyncWorkflow:
 
         # Assert
         df2 = pd.read_csv(clone)
-        status = df2.loc[0, [STATUS_KEY]][0]
+        status = df2.loc[0, STATUS_KEY]
         assert status == DRIFTED
 
     # Failure at the download stage. The file download did not start
@@ -273,7 +273,7 @@ class TestSyncWorkflow:
 
         # Assert
         df2 = pd.read_csv(clone)
-        status = df2.loc[0, [STATUS_KEY]][0]
+        status = df2.loc[0, STATUS_KEY]
         assert status == MISSING
 
     # Failure at the download stage. The file was partially downloaded
@@ -314,7 +314,7 @@ class TestSyncWorkflow:
 
         # Assert
         df2 = pd.read_csv(clone)
-        status = df2.loc[0, [STATUS_KEY]][0]
+        status = df2.loc[0, STATUS_KEY]
         assert status == DRIFTED
 
     def test_analyse10_given_option_to_use_hash_cache_expect_will_not_calculate_hash_from_scratch(self):
@@ -354,7 +354,7 @@ class TestSyncWorkflow:
 
         # Assert
         df2 = pd.read_csv(clone)
-        status = df2.loc[0, [STATUS_KEY]][0]
+        status = df2.loc[0, STATUS_KEY]
         assert status == MATCH
 
     def test_analyse11_given_option_to_use_cache_but_no_cache_exist_expect_will_calculate_hash_from_scratch(self):
@@ -389,7 +389,7 @@ class TestSyncWorkflow:
 
         # Assert
         df2 = pd.read_csv(clone)
-        status = df2.loc[0, [STATUS_KEY]][0]
+        status = df2.loc[0, STATUS_KEY]
         assert status == DRIFTED
 
     def test_finalise1_int_manifest_has_failures_expect_finalisation_failed_state(self):
