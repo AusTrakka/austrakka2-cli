@@ -8,6 +8,7 @@ from austrakka.components.log import log_subcommands
 from .funcs import \
     add_proforma, \
     rm_attach_proforma, \
+    update_field_class_proforma, \
     update_proforma, \
     add_version_proforma, \
     list_proformas, \
@@ -321,3 +322,29 @@ def proforma_rm_attach(identifier: str, version: int):
     Removes attachment from proforma
     """
     rm_attach_proforma(identifier, version)
+
+
+@proforma.command('field-class')
+@opt_identifier(help="Identifier for a proforma")
+@opt_identifier(
+    help="Identifier for a field in the proforma", 
+    option_name="--field-id",
+    var_name="field_identifiers",
+    multiple=True,
+)
+@create_option(
+    '--class',
+    "metadata_class",
+    type=click.Choice(["Enhanced", "Required", "Minimum"]),
+    required=True,
+    help='Metadata class',
+)
+def proforma_update_field_class(
+        identifier: str, 
+        field_identifiers: List[str],
+        metadata_class: str,
+):
+    """
+    Updates metadata class for a field in a proforma.
+    """
+    update_field_class_proforma(identifier, field_identifiers, metadata_class)
