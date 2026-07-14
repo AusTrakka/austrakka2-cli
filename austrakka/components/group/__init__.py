@@ -1,7 +1,6 @@
 # pylint: disable=expression-not-assigned
 import click
 
-from austrakka.components.group.field import field
 from austrakka.components.group.funcs import add_group
 from austrakka.components.group.funcs import list_group
 from austrakka.components.group.funcs import update_group
@@ -19,7 +18,6 @@ def group(ctx):
     ctx.context = ctx.parent.context
 
 
-group.add_command(field) if show_admin_cmds() else None
 group.add_command(role) if show_admin_cmds() else None
 
 
