@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Get version
         run: |
-          echo "VERSION=$(cat austrakka/__init__.py | grep __version__ | cut -d "=" -f2 | cut -d "\"" -f2)" >> $GITHUB_ENV
+          echo "VERSION=$(cat trakka/__init__.py | grep __version__ | cut -d "=" -f2 | cut -d "\"" -f2)" >> $GITHUB_ENV
       - name: Bump version and push tag
         id: tag_version
         uses: mathieudutour/github-tag-action@v5.6

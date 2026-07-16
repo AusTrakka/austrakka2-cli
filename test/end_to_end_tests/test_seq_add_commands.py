@@ -7,12 +7,12 @@ from ete_cmd_bricks import (
     _upload_fasta_asm_file, _upload_min_metadata)
 
 from ete_utils import _new_identifier
-from test.utils.austrakka_test_cli import AusTrakkaTestCli
+from test.utils.trakka_test_cli import TrakkaTestCli
 
 class TestSeqAddCommands:
     @pytest.fixture(autouse=True)
-    def _use_cli(self, austrakka_test_cli: AusTrakkaTestCli):
-        self.cli = austrakka_test_cli
+    def _use_cli(self, trakka_test_cli: TrakkaTestCli):
+        self.cli = trakka_test_cli
 
 
     def test_seq_add_fasta_asm__given_sample_has_no_prior_asm_sequences__expect_success_without_needing_skip_or_force(self):
