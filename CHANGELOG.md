@@ -5,17 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [0.88.2] - Unreleased
+## [0.89.0] - 2026-07-14
 
-## Changed
-  - The project update command no longer accepts the 'isActive' parameter. 
-This change is due to enable and disable commands being already available for this purpose.
-  - The 'project_type' parameter is now called 'project_label'. 
-This will affect project add and project update commands.
-  - Projects now have a 'Status' property that can be updated using project update.
+### Added
+- `proforma rm-attach` command to remove attached proforma templates.
+- `--status` parameter to update project status in `project update`.
 
-## Removed
-  - The 'project set-type' has been removed as project update encapsulates this functionality.
+### Changed
+- `group field [add|remove|list]` -> `org field [add|remove|list]`. Now operates on an organisation rather than a group.
+- `metadata list` -> `org metadata get`. Now operates on an organisation rather than a group.
+- Clean up contig name generated fasta file for `seq sync` command.
+- `--type` -> `--label` for `project [add|update]`.
+
+### Removed
+- `project set-type`. This can be set using `project [add|update]`.
+- `[--is-active|--not-active]` from `project update`: use `project [enable|disable]` instead. 
+
+### Fixed
+- Fixed displaying of columns for `field list` using `--view-type more`.
 
 ## [0.88.1] - 2026-06-19
 
