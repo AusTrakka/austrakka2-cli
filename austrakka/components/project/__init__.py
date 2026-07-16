@@ -12,6 +12,7 @@ from austrakka.utils.options import opt_name
 from austrakka.utils.options import opt_dashboard_name
 from austrakka.utils.options import opt_description
 from austrakka.utils.options import opt_organisation
+from austrakka.utils.options import opt_status
 from austrakka.utils.privilege import PROJECT_RESOURCE
 from austrakka.components.log import log_subcommands
 from austrakka.components.iam.privilege import privilege_subcommands
@@ -83,26 +84,30 @@ def project_add(
 @opt_description(help="New project description", required=False)
 @opt_organisation(help="New requesting organisation abbreviation", required=False)
 @opt_dashboard_name(help="New dashboard", required=False)
-@opt_label(help="New project type", required=False)
+@opt_label(help="New project label", required=False)
 @opt_project_client_type(required=False)
 @opt_merge_algorithm(required=False)
+@opt_status(help="Set current project status")
 def project_update(
         project_abbrev: str,
         name: str,
         description: str,
         org: str,
         dashboard_name: str,
-        project_type: str,
+        project_label: str,
         client_type: str,
-        merge_algo: str):
+        merge_algo: str,
+        status: str
+):
     update_project(project_abbrev,
                    name,
                    description,
                    org,
                    dashboard_name,
-                   project_type,
+                   project_label,
                    client_type,
-                   merge_algo)
+                   merge_algo,
+                   status)
 
 
 @project.command('set-dashboard', hidden=hide_admin_cmds())
@@ -123,7 +128,6 @@ def dashboard_get(project_abbrev: str, out_format: str):
     Get the name of the dashboard currently assigned to a project.
     '''
     get_dashboard(project_abbrev, out_format)
-
 
 @project.command('list', help='List projects')
 @opt_view_type()

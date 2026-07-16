@@ -10,6 +10,7 @@ from austrakka.utils.enums.privilege_level import (
 
 from austrakka.utils.enums.seq import SeqType
 from austrakka.utils.enums.view_type import MORE, COMPACT, FULL
+from austrakka.utils.enums.project_status import OPEN, CLOSED
 from austrakka.utils.option_utils import \
     create_option, \
     MutuallyExclusiveOption, \
@@ -879,6 +880,18 @@ def opt_user_monthly_dl_quota_bytes(**attrs: t.Any):
     return create_option(
         '--download-quota',
         type=int,
+        required=False,
+        default=None,
+        **{**defaults, **attrs}
+    )
+
+def opt_status(**attrs: t.Any):
+    defaults = {
+        "help": "Sets the current status of the project"
+    }
+    return create_option(
+        "--status", "-st",
+        type=click.Choice([OPEN, CLOSED]),
         required=False,
         default=None,
         **{**defaults, **attrs}

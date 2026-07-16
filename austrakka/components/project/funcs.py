@@ -14,9 +14,10 @@ from austrakka.utils.paths import ASSIGNED_DASHBOARD
 compact_fields = [
     "projectId",        # Project ID
     "abbreviation",     # Abbreviation or short name
-    "label",             # Type for the project
+    "label",            # Type for the project
     "isActive",         # Active status
-    "name"              # Full name of the project
+    "name",             # Full name of the project
+    "status",  # The current status of the project
 ]
 
 more_fields = [
@@ -70,7 +71,8 @@ def update_project(
         dashboard_name: str,
         project_label: str,
         client_type: str,
-        merge_algorithm: str
+        merge_algorithm: str,
+        status: str,
 ):
     project = get_project_by_abbrev(project_abbreviation)
     
@@ -83,7 +85,8 @@ def update_project(
             'dashboardName',
             'label',
             'clientType',
-            'mergeAlgorithm'
+            'mergeAlgorithm',
+            'status',
         ]},
     }
     
@@ -104,6 +107,8 @@ def update_project(
         put_project['clientType'] = client_type
     if merge_algorithm is not None:
         put_project['mergeAlgorithm'] = merge_algorithm
+    if status is not None:
+        put_project['status'] = status
         
     return api_put(
         path=f"{PROJECT_PATH}/{project_abbreviation}",
