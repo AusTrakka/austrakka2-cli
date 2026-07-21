@@ -3,9 +3,6 @@ set -e
 
 # This script assumes a python environment is active with required dependencies
 
-# This line can be removed once trakka is made the default name
-sed -i.bak "s/\"austrakka\"/\"trakka\"/g" austrakka/__init__.py
-
 if [ -n "$1" ]; then
     if [[ -d $1 ]]; then
         WORK_DIR=$1

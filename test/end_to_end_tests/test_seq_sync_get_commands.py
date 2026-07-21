@@ -25,13 +25,13 @@ from ete_utils import (
     _calc_hash,
     _undo_fasta_asm_transform,
     _textwrap, _read_cns_to_set, _get_single_seq_file_path)
-from test.utils.austrakka_test_cli import AusTrakkaTestCli
+from test.utils.trakka_test_cli import TrakkaTestCli
 
 
 class TestSeqSyncGetCommands:
     @pytest.fixture(autouse=True)
-    def _use_cli(self, austrakka_test_cli: AusTrakkaTestCli):
-        self.cli = austrakka_test_cli
+    def _use_cli(self, trakka_test_cli: TrakkaTestCli):
+        self.cli = trakka_test_cli
 
     def test_sync_get__given_consensus_fasta_with_multi_sequences_is_uploaded_and_then_syncd_to_disk__expect_all_sequences_are_also_merged_into_a_single_file(self):
         # Arrange

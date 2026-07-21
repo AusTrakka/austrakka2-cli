@@ -1,7 +1,7 @@
 import os
 
 from cx_Freeze import setup
-from austrakka import __version__ as VERSION
+from trakka import __version__ as VERSION
 
 build_dir = os.environ.get("TRAKKA_CLI_BUILD_DIR")
 
@@ -44,5 +44,5 @@ setup(
     version=VERSION,
     description="Trakka CLI",
     options={"build_exe": build_exe_options},
-    executables=[{"script": "austrakka/main.py", "base": "console", "target_name": "trakka"}],
+    executables=[{"script": "trakka/main.py", "base": "console", "target_name": "trakka"}],
 )

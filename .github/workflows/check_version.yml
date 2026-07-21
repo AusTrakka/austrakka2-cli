@@ -23,8 +23,8 @@ jobs:
           path: master
       - name: Get versions
         run: |
-          echo "MASTER_VERSION=$(cat master/austrakka/__init__.py | grep __version__ | cut -d "=" -f2 | cut -d "\"" -f2)" >> $GITHUB_ENV
-          echo "PR_VERSION=$(cat pr/austrakka/__init__.py | grep __version__ | cut -d "=" -f2 | cut -d "\"" -f2)" >> $GITHUB_ENV
+          echo "MASTER_VERSION=$(cat master/trakka/__init__.py | grep __version__ | cut -d "=" -f2 | cut -d "\"" -f2)" >> $GITHUB_ENV
+          echo "PR_VERSION=$(cat pr/trakka/__init__.py | grep __version__ | cut -d "=" -f2 | cut -d "\"" -f2)" >> $GITHUB_ENV
       - name: Compare Versions
         id: compare_versions
         uses: samcarswell/semver-compare-action@0.1

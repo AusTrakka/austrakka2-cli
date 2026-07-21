@@ -15,7 +15,7 @@ fi
 
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-VERSION=$(grep __version__ "$SCRIPT_DIR/../austrakka/__init__.py" | awk '{print $3}' | sed s/\"//g)
+VERSION=$(grep __version__ "$SCRIPT_DIR/../trakka/__init__.py" | awk '{print $3}' | sed s/\"//g)
 OS=$(uname | awk '{print tolower($0)}')
 ZIP_NAME=trakka-"$VERSION"-"$OS".zip
 

@@ -4,13 +4,13 @@ from click.testing import Result
 
 from ete_cmd_bricks import _create_proforma, _create_field_if_not_exists
 from ete_utils import _new_identifier
-from test.utils.austrakka_test_cli import AusTrakkaTestCli
+from test.utils.trakka_test_cli import TrakkaTestCli
 
 
 class TestProformaCommands:
     @pytest.fixture(autouse=True)
-    def _use_cli(self, austrakka_test_cli: AusTrakkaTestCli):
-        self.cli = austrakka_test_cli
+    def _use_cli(self, trakka_test_cli: TrakkaTestCli):
+        self.cli = trakka_test_cli
 
     def _get_proforma_fields(self, proforma_name: str):
         result: Result = self.cli.invoke([

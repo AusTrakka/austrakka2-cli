@@ -12,13 +12,13 @@ from ete_utils import (
     seq_id_field_name,
     _clone_cns_fasta_file)
 
-from test.utils.austrakka_test_cli import AusTrakkaTestCli
+from test.utils.trakka_test_cli import TrakkaTestCli
 
 
 class TestSeqPurgeCommand:
     @pytest.fixture(autouse=True)
-    def _use_cli(self, austrakka_test_cli: AusTrakkaTestCli):
-        self.cli = austrakka_test_cli
+    def _use_cli(self, trakka_test_cli: TrakkaTestCli):
+        self.cli = trakka_test_cli
     
     def test_purge__given_seq_type_not_specified__expect_cli_error(self):
         # Arrange
