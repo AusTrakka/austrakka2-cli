@@ -13,12 +13,11 @@ from trakka.utils.paths import METADATA_COLUMN_V2_PATH
 
 list_compact_fields = ['columnName', 'metaDataColumnTypeName', 'metaDataColumnValidValues']
 list_more_fields = [
-    'columnName', 
-    'metaDataColumnTypeName', 
-    'metaDataColumnValidValues', 
     'description', 
+    'examples',
     'nndssFieldLabel',
     'canVisualise',
+    'geoField',
     'columnOrder']
 
 @logger_wraps()

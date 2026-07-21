@@ -146,9 +146,11 @@ def aggregate(sync_state: dict):
                 raise WorkflowError('Aggregate failed.')
 
             with open(single_fasta_path, 'r', encoding='UTF-8') as fasta:
-                lines = fasta.readlines()
-                int_aggr_file.writelines(lines)
-                fasta.close()
+                for line in fasta:
+                    if line.startswith('>'):
+                        int_aggr_file.write(f'>{row[SEQ_ID_KEY]}\n')
+                    else:
+                        int_aggr_file.write(line)
 
         int_aggr_file.close()
 

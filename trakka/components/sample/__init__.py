@@ -2,11 +2,15 @@
 from io import BufferedReader
 import click
 
-from trakka.utils.options import opt_seq_id, opt_group_name, opt_project, options_seq_id_or_file
+from trakka.utils.options import \
+    opt_seq_id, \
+    opt_group_name, \
+    opt_project, \
+    options_seq_id_or_file, \
+    opt_identifier
 from trakka.utils.option_utils import get_seq_list
 from trakka.utils.option_utils import RequiredMutuallyExclusiveOption
 from trakka.utils.cmd_filter import hide_admin_cmds
-from ...utils.option_utils import create_option
 from ...utils.output import table_format_option
 from ...utils.output import object_format_option
 from .funcs import \
@@ -26,23 +30,28 @@ def sample(ctx):
     """Commands related to samples"""
     ctx.context = ctx.parent.context
 
-@sample.command('chown',
-    hidden=hide_admin_cmds(),
-    help="Transfer ownership of samples to another organisation")
-@create_option(
-    "--old-owner",
+@sample.command('transfer',
+    help="""Transfer samples to another organisation.
+
+This will not be reversible unless you also have appropriate permissions in the other organisation.
+""")
+# pylint: disable=duplicate-code
+@opt_identifier(
     required=True,
-    help='Abbreviated name of current owning organisation'
+    help="Old organisation identifier",
+    option_name="--old-org",
+    var_name="old_org_id",
 )
-@create_option(
-    "--new-owner",
+@opt_identifier(
     required=True,
-    help='Abbreviated name of new owning organisation'
+    help="New organisation identifier",
+    option_name="--new-org",
+    var_name="new_org_id",
 )
 @options_seq_id_or_file
-def owner_change(old_owner: str, new_owner: str, seq_id: [str], file: BufferedReader):
+def owner_change(old_org_id: str, new_org_id: str, seq_id: [str], file: BufferedReader):
     seq_ids = get_seq_list(seq_id, file)
-    change_owner(old_owner, new_owner, seq_ids)
+    change_owner(old_org_id, new_org_id, seq_ids)
 
 @sample.command('show', hidden=hide_admin_cmds())
 @opt_seq_id(multiple=False)

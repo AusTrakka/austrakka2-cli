@@ -4,9 +4,10 @@ from typing import List
 from trakka.utils.output import table_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.privilege import PROFORMA_RESOURCE
-from trakka.utils.subcommands.log import log_subcommands
+from trakka.components.log import log_subcommands
 from .funcs import \
     add_proforma, \
+    rm_attach_proforma, \
     update_proforma, \
     add_version_proforma, \
     list_proformas, \
@@ -260,23 +261,41 @@ def proforma_enable(proforma_abbrev: str):
 
 @proforma.command('share', hidden=hide_admin_cmds())
 @click.argument('proforma-abbrev', type=click.STRING)
-@opt_group_name(var_name='group_names', multiple=True)
-def proforma_share(proforma_abbrev: str, group_names: List[str]):
+@opt_group_name(var_name='group_names',
+                cls=RequiredMutuallyExclusiveOption,
+                mutually_exclusive=['projects'],
+                required=False,
+                multiple=True)
+@opt_project(var_name='projects',
+             mutually_exclusive=['group_names'],
+             cls=RequiredMutuallyExclusiveOption,
+             required=False,
+             multiple=True)
+def proforma_share(proforma_abbrev: str, group_names: List[str], projects: List[str]):
     """
     Share a proforma with one or more groups, which may be project groups. 
     The proforma will be visible and useable by Uploaders in these groups.
     """
-    share_proforma(proforma_abbrev, group_names)
+    share_proforma(proforma_abbrev, group_names, projects)
 
 
 @proforma.command('unshare', hidden=hide_admin_cmds())
 @click.argument('proforma-abbrev', type=click.STRING)
-@opt_group_name(var_name='group_names', multiple=True)
-def proforma_unshare(proforma_abbrev: str, group_names: List[str]):
+@opt_group_name(var_name='group_names',
+                cls=RequiredMutuallyExclusiveOption,
+                mutually_exclusive=['projects'],
+                required=False,
+                multiple=True)
+@opt_project(var_name='projects',
+             cls=RequiredMutuallyExclusiveOption,
+             mutually_exclusive=['group_names'],
+             required=False,
+             multiple=True)
+def proforma_unshare(proforma_abbrev: str, group_names: List[str], projects: List[str]):
     """
     Unshare a proforma with one or more groups.
     """
-    unshare_proforma(proforma_abbrev, group_names)
+    unshare_proforma(proforma_abbrev, group_names, projects)
 
 
 @proforma.command('list-groups')
@@ -287,3 +306,18 @@ def proforma_list_groups(proforma_abbrev: str, out_format: str):
     List groups which have access to the given proforma.
     """
     list_groups_proforma(proforma_abbrev, out_format)
+
+
+@proforma.command('rm-attach')
+@opt_identifier(help="Identifier for a proforma")
+@create_option(
+    '--version',
+    type=int,
+    required=True,
+    help='Proforma version',
+)
+def proforma_rm_attach(identifier: str, version: int):
+    """
+    Removes attachment from proforma
+    """
+    rm_attach_proforma(identifier, version)

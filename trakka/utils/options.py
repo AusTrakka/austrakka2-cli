@@ -10,6 +10,7 @@ from trakka.utils.enums.privilege_level import (
 
 from trakka.utils.enums.seq import SeqType
 from trakka.utils.enums.view_type import MORE, COMPACT, FULL
+from trakka.utils.enums.project_status import OPEN, CLOSED
 from trakka.utils.option_utils import \
     create_option, \
     MutuallyExclusiveOption, \
@@ -66,13 +67,13 @@ def opt_name(var_name='name', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
-def opt_type(var_name='project_type', help_string='Type string.', **attrs: t.Any):
+def opt_label(var_name='project_label', help_string='Type string.', **attrs: t.Any):
     defaults = {
         'help': help_string,
     }
     return create_option(
         "-t",
-        "--type",
+        "--label",
         var_name,
         type=click.STRING,
         **{**defaults, **attrs}
@@ -130,6 +131,7 @@ def opt_user_position(var_name='position', **attrs: t.Any):
     )
 
 
+# Used to assign usernames, not to specify users
 def opt_username(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -258,18 +260,6 @@ def options_seq_id_or_file(func):
     )
     return _opt_seq_id(_opt_file(func))
 
-def opt_prov_id(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'provision id',
-    }
-    return create_option(
-        "-pi",
-        "--prov-id",
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
 
 def opt_field_name(**attrs: t.Any):
     defaults = {
@@ -312,7 +302,7 @@ def opt_description(**attrs: t.Any):
     )
 
 
-def opt_project(**attrs: t.Any):
+def opt_project(var_name='project',**attrs: t.Any):
     defaults = {
         'required': True,
         'multiple': False,
@@ -321,6 +311,7 @@ def opt_project(**attrs: t.Any):
     return create_option(
         '-p',
         '--project',
+        var_name,
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -518,28 +509,27 @@ def opt_user_object_id(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_user_identifier(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Username or user global ID',
+    }
+    return create_option(
+        '-u',
+        '--user-id',
+        'user_id',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
 
-def opt_identifier(option_name='-id', var_name='global_id', **attrs: t.Any):
+def opt_identifier(option_name='-id', var_name='identifier', **attrs: t.Any):
     defaults = {
         'required': True,
         'help': 'Accepts an ID; global ID or an abbreviation',
     }
     return create_option(
         option_name,
-        var_name, # id is reserved, so just keeping this as global_id
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
-def opt_user_global_id(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'help': 'User global ID',
-    }
-    return create_option(
-        '-ugi',
-        '--user-global-id',
+        var_name,
         type=click.STRING,
         **{**defaults, **attrs}
     )
@@ -765,7 +755,7 @@ def opt_privilege_level(**attrs: t.Any):
 def opt_role(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'The role name that is unique.',
+        'help': 'Role name',
     }
     return create_option(
         "-r",
@@ -857,16 +847,6 @@ def opt_tree_version_id(**attrs: t.Any):
     )
 
 
-def opt_view_id(**attrs: t.Any):
-    defaults = {
-        'required': False,
-        'help': 'Project metadata view ID',
-    }
-    return create_option(
-        '--view-id',
-        **{**defaults, **attrs}
-    )
-
 
 def opt_server_username(**attrs: t.Any):
     defaults = {
@@ -900,6 +880,18 @@ def opt_user_monthly_dl_quota_bytes(**attrs: t.Any):
     return create_option(
         '--download-quota',
         type=int,
+        required=False,
+        default=None,
+        **{**defaults, **attrs}
+    )
+
+def opt_status(**attrs: t.Any):
+    defaults = {
+        "help": "Sets the current status of the project"
+    }
+    return create_option(
+        "--status", "-st",
+        type=click.Choice([OPEN, CLOSED]),
         required=False,
         default=None,
         **{**defaults, **attrs}
