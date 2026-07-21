@@ -40,7 +40,7 @@ from trakka.utils.output import log_response
 from trakka.utils.logger import setup_logger
 from trakka.utils.logger import LOG_LEVEL_INFO
 from trakka.utils.logger import LOG_LEVELS
-from trakka.utils.cmd_filter import USER, show_admin_cmds
+from trakka.utils.cmd_filter import USER
 from trakka.utils.cmd_filter import show_admin_cmds
 from trakka.utils.version import check_version, warn_if_austrakka
 
