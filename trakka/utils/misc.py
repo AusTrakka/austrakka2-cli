@@ -10,11 +10,11 @@ from trakka.utils.context import CxtKey
 
 HELP_OPTS = ['-h', '--help']
 
-MISSING_TOKEN_HELP = '''Error: Environment variable AT_TOKEN is not set.
+MISSING_TOKEN_HELP = '''Error: Environment variable TRAKKA_TOKEN is not set.
 
 This value can be obtained by running the following command:
 trakka auth user'''
-MISSING_URI_HELP = '''Error: Environment variable AT_URI is not set.
+MISSING_URI_HELP = '''Error: Environment variable TRAKKA_URI is not set.
 
 Please contact a Trakka admin if you do not have this value.'''
 
