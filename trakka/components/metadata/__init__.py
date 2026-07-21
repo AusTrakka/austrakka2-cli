@@ -7,14 +7,10 @@ import click
 
 from trakka.utils.options import opt_proforma, opt_batch_size, opt_owner_org, opt_shared_projects
 from trakka.utils.options import opt_is_update
-from trakka.utils.options import opt_group_name
 from trakka.utils.options import opt_blanks_delete
-from trakka.utils.options import opt_field_name
 from trakka.components.metadata.funcs import add_metadata
 from trakka.components.metadata.funcs import validate_metadata
 from trakka.components.metadata.funcs import append_metadata
-from trakka.components.metadata.funcs import list_metadata, list_metadata_by_field
-from trakka.utils.output import table_format_option, FORMATS
 
 ADD_APPEND_BATCH_SIZE_HELP = (
     'The number of rows to split the metadata upload into before uploading. '
@@ -107,17 +103,3 @@ def submission_validate(
     action. No data will modified.
     """
     validate_metadata(file, owner_org, proforma, is_update, batch_size)
-
-
-@metadata.command('list')
-@opt_group_name()
-@opt_field_name(
-    required=False, 
-    help="Fields to retrieve; if none specified, all fields will be retrieved")
-@table_format_option(FORMATS.CSV)
-def metadata_list(group_name: str, field_names: List[str], out_format: str):
-    """List metadata for a specific group"""
-    if len(field_names)==0:
-        list_metadata(group_name, out_format)
-    else:
-        list_metadata_by_field(group_name, field_names, out_format)

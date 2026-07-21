@@ -67,11 +67,19 @@ class TestSeqSyncGetCommands:
         with open(merged_file, 'r') as file:
             merged_content = set(file.read().split('\n'))
 
-            # open cns_fasta_path and read the content
-            with open(cns_fasta_path, 'r') as file:
-                original_content = set(file.read().split('\n'))
-                assert merged_content == original_content, \
-                    'The merged file should contain all sequences from the original file.'
+        with open(cns_fasta_path, 'r') as file:
+            original_content = set(file.read().split('\n'))
+
+        # Sequence lines should be unchanged
+        original_sequence_lines = {line for line in original_content if not line.startswith('>')}
+        assert original_sequence_lines.issubset(merged_content), \
+            'The merged file should contain all sequences from the original file.'
+
+        # Headers should be rewritten to seq_ids
+        assert f'>{seq_id}' in merged_content, \
+            f'The merged file should contain the rewritten header >{seq_id}'
+        assert f'>{seq_id2}' in merged_content, \
+            f'The merged file should contain the rewritten header >{seq_id2}'
 
     def test_sync_get__given_consensus_fasta_with_multi_sequences_is_uploaded_and_then_syncd_to_disk__expect_each_sequence_to_also_have_its_own_file(self):
         # Arrange

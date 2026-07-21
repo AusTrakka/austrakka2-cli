@@ -24,24 +24,24 @@ def role_list(show_disabled: bool, out_format: str):
 
 
 @role.command('add', hidden=hide_admin_cmds())
-@opt_identifier(help="User identifier")
+@opt_user_identifier()
 @opt_group_role()
 def role_add(
-        global_id: str,
+        user_id: str,
         group_role: List[str]):
     """
     Assign the user to the specified groups with the specified roles.
     """
-    add_role(global_id, group_role)
+    add_role(user_id, group_role)
 
 
 @role.command('remove', hidden=hide_admin_cmds())
-@opt_identifier(help="User identifier")
+@opt_user_identifier()
 @opt_group_role()
 def role_remove(
-        global_id: str,
+        user_id: str,
         group_role: List[str]):
     """
     Remove the user from the specified group and role combinations.
     """
-    remove_role(global_id, group_role)
+    remove_role(user_id, group_role)

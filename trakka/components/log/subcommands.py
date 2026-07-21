@@ -1,18 +1,25 @@
 import click
 
+from trakka.utils.privilege import TENANT_RESOURCE
 from trakka.components.log.funcs import list_logs
 from trakka.utils.output import table_format_option
 from trakka.utils.options import opt_identifier, opt_view_type
 
-
 def log_subcommands(root_type: str):
-    @click.group(help=f"Commands related to {root_type.lower()} logs")
+    root_type_name = 'system' if root_type == TENANT_RESOURCE else root_type.lower()
+    
+    @click.group(help=f"Commands related to {root_type_name} logs")
     @click.pass_context
     def log(ctx):
         ctx.context = ctx.parent.context
 
     @log.command('list')
-    @opt_identifier()
+    @( # This adds the identifier parameter only if the root_type is not tenant
+        opt_identifier(
+            required=True,
+            help=f"Identifier of the {root_type_name} for which to retrieve logs")
+        if root_type != TENANT_RESOURCE else lambda f: f
+    )
     @click.option(
         '--start',
         help=(
@@ -32,7 +39,7 @@ def log_subcommands(root_type: str):
     @click.option('--event-type', help='Event type to filter on', required=False)
     @click.option('--submitter', help='Submitter display name to filter on', required=False)
     @click.option(
-        '--resource-identifier',
+        '--resource',
         help='Resource name or identifier to filter on (strict match only)',
         required=False
     )
@@ -40,24 +47,24 @@ def log_subcommands(root_type: str):
     @table_format_option()
     @opt_view_type()
     def activity_get(
-        global_id: str,
         start: str,
         end: str,
         event_type: str,
         submitter: str,
-        resource_identifier: str,
+        resource: str,
         resource_type: str,
         out_format: str,
-        view_type: str
+        view_type: str,
+        identifier: str = None,
     ):
         list_logs(
             root_type,
-            global_id,
+            identifier,
             start,
             end,
             event_type,
             submitter,
-            resource_identifier,
+            resource,
             resource_type,
             out_format,
             view_type

@@ -60,7 +60,7 @@ def _role_exists(cli: TrakkaTestCli, role_name: str) -> bool:
     # Parse JSON output to check if role exists
     import json
     try:
-        roles_data = json.loads(result.output)
+        roles_data = json.loads(result.stdout)
         if isinstance(roles_data, list):
             return any(role.get('name') == role_name for role in roles_data)
         elif isinstance(roles_data, dict) and 'data' in roles_data:

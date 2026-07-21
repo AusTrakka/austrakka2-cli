@@ -5,27 +5,26 @@ from trakka.utils.output import table_format_option
 from trakka.utils.output import object_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import opt_abbrev, \
-    opt_is_active, \
-    opt_type, \
+    opt_label, \
     opt_view_type, opt_project_client_type, opt_merge_algorithm
+
 from trakka.utils.options import opt_name
 from trakka.utils.options import opt_dashboard_name
 from trakka.utils.options import opt_description
 from trakka.utils.options import opt_organisation
+from trakka.utils.options import opt_status
 from trakka.utils.privilege import PROJECT_RESOURCE
-from trakka.utils.subcommands.log import log_subcommands
-from trakka.utils.subcommands.privilege import privilege_subcommands
+from trakka.components.log import log_subcommands
+from trakka.components.iam.privilege import privilege_subcommands
 from .funcs import disable_project, enable_project, list_projects, \
     add_project, \
     update_project, \
     set_dashboard, \
-    get_dashboard, \
-    set_project_type
-
+    get_dashboard
 from .dataset import dataset
 from .field import field
-from .provision import provision
 from .metadata import metadata
+from .document import document
 
 
 @click.group()
@@ -36,15 +35,15 @@ def project(ctx):
 
 
 project.add_command(field)
-project.add_command(provision)
 project.add_command(metadata)
 project.add_command(dataset)
+project.add_command(document)
 project.add_command(log_subcommands(PROJECT_RESOURCE))
 project.add_command(privilege_subcommands(PROJECT_RESOURCE))
 
 
 @project.command(
-        'add', 
+        'add',
         hidden=hide_admin_cmds(),
         help='Add a new project'
 )
@@ -53,7 +52,7 @@ project.add_command(privilege_subcommands(PROJECT_RESOURCE))
 @opt_description(required=False)
 @opt_organisation(help="Requesting organisation abbreviation", required=False)
 @opt_dashboard_name(required=False)
-@opt_type(required=False)
+@opt_label(required=False)
 @opt_project_client_type()
 @opt_merge_algorithm()
 def project_add(
@@ -62,7 +61,7 @@ def project_add(
         description: str,
         org: str,
         dashboard_name: str,
-        project_type: str,
+        project_label: str,
         client_type: str,
         merge_algo: str):
     add_project(abbrev,
@@ -70,44 +69,45 @@ def project_add(
                 description,
                 org,
                 dashboard_name,
-                project_type,
+                project_label,
                 client_type,
                 merge_algo)
 
 
 @project.command(
-        'update', 
+        'update',
         hidden=hide_admin_cmds(),
         help='Update an existing project',
 )
 @click.argument('project-abbrev', type=str)
 @opt_name(help="New project name", required=False)
 @opt_description(help="New project description", required=False)
-@opt_is_active(help="Set project active status", is_update=True, required=False)
 @opt_organisation(help="New requesting organisation abbreviation", required=False)
 @opt_dashboard_name(help="New dashboard", required=False)
-@opt_type(help="New project type", required=False)
+@opt_label(help="New project label", required=False)
 @opt_project_client_type(required=False)
 @opt_merge_algorithm(required=False)
+@opt_status(help="Set current project status")
 def project_update(
         project_abbrev: str,
         name: str,
         description: str,
-        is_active: bool,
         org: str,
         dashboard_name: str,
-        project_type: str,
+        project_label: str,
         client_type: str,
-        merge_algo: str):
+        merge_algo: str,
+        status: str
+):
     update_project(project_abbrev,
                    name,
                    description,
-                   is_active,
                    org,
                    dashboard_name,
-                   project_type,
+                   project_label,
                    client_type,
-                   merge_algo)
+                   merge_algo,
+                   status)
 
 
 @project.command('set-dashboard', hidden=hide_admin_cmds())
@@ -129,20 +129,11 @@ def dashboard_get(project_abbrev: str, out_format: str):
     '''
     get_dashboard(project_abbrev, out_format)
 
-
 @project.command('list', help='List projects')
 @opt_view_type()
 @table_format_option()
 def projects_list(view_type: str,out_format: str):
     list_projects(view_type, out_format)
-
-    
-@project.command('set-type')
-@click.argument('project-abbrev', type=str)
-@opt_type()
-def project_set_type(project_abbrev: str, project_type: str):
-    '''Set a type for a project'''
-    set_project_type(project_abbrev, project_type)
 
 
 @project.command('enable')
