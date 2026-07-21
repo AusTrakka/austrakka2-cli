@@ -1,13 +1,13 @@
 import pytest
 
 from ete_utils import _new_identifier
-from test.utils.austrakka_test_cli import AusTrakkaTestCli
+from test.utils.trakka_test_cli import TrakkaTestCli
 
 
 class TestRoleRemoveCommand:
     @pytest.fixture(autouse=True)
-    def _use_cli(self, austrakka_test_cli: AusTrakkaTestCli):
-        self.cli = austrakka_test_cli
+    def _use_cli(self, trakka_test_cli: TrakkaTestCli):
+        self.cli = trakka_test_cli
 
     def test_role_remove__given_role_exists_and_not_in_use__expect_success(self):
         # Arrange
@@ -31,7 +31,7 @@ class TestRoleRemoveCommand:
         assert not _role_exists(self.cli, role_name), f'Role {role_name} should not exist after removal'
 
 
-def _create_role(cli: AusTrakkaTestCli, role_name: str):
+def _create_role(cli: TrakkaTestCli, role_name: str):
     """Create a role for testing purposes"""
     result = cli.invoke([
         'iam',
@@ -46,7 +46,7 @@ def _create_role(cli: AusTrakkaTestCli, role_name: str):
     assert result.exit_code == 0, f'Failed to create role {role_name} as part of test setup: {result.output}'
 
 
-def _role_exists(cli: AusTrakkaTestCli, role_name: str) -> bool:
+def _role_exists(cli: TrakkaTestCli, role_name: str) -> bool:
     """Check if a role exists by attempting to list roles and parsing output"""
     result = cli.invoke([
         'iam',

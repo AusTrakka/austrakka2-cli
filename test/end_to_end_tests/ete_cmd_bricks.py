@@ -4,10 +4,10 @@ import tempfile
 from click.testing import CliRunner
 from ete_utils import _save_to_test_dir, _create_single_seq_csv, _new_identifier, _create_paired_seq_csv
 from ete_constants import seq_id_field_name
-from test.utils.austrakka_test_cli import AusTrakkaTestCli
+from test.utils.trakka_test_cli import TrakkaTestCli
 
 
-def _sample_unshare(cli: AusTrakkaTestCli, seq_id: str, group_name: str):
+def _sample_unshare(cli: TrakkaTestCli, seq_id: str, group_name: str):
     result = cli.invoke([
         'sample',
         'unshare',
@@ -19,7 +19,7 @@ def _sample_unshare(cli: AusTrakkaTestCli, seq_id: str, group_name: str):
 
 
 def _seq_sync_get(
-        cli: AusTrakkaTestCli,
+        cli: TrakkaTestCli,
         group: str,
         output_dir: str,
         seq_type: str,
@@ -46,7 +46,7 @@ def _seq_sync_get(
 
 
 def _upload_fastq_ill_se_file(
-        cli: AusTrakkaTestCli,
+        cli: TrakkaTestCli,
         seq_id: str,
         fastq_file_path: str,
         owner_org: str,
@@ -87,7 +87,7 @@ def _upload_fastq_ill_se_file(
 
 
 def _upload_fastq_ill_pe_file(
-        cli: AusTrakkaTestCli,
+        cli: TrakkaTestCli,
         seq_id: str,
         fastq_file_path1: str,
         fastq_file_path2: str,
@@ -129,7 +129,7 @@ def _upload_fastq_ill_pe_file(
 
 
 def _upload_fasta_asm_file(
-        cli: AusTrakkaTestCli,
+        cli: TrakkaTestCli,
         fasta_file_path: str,
         seq_id: str,
         owner_org: str,
@@ -168,7 +168,7 @@ def _upload_fasta_asm_file(
 
 
 def _upload_fasta_cns_file(
-        cli: AusTrakkaTestCli,
+        cli: TrakkaTestCli,
         fasta_file_path: str,
         owner_org: str,
         shared_projects: list[str] = None,
@@ -203,7 +203,7 @@ def _upload_fasta_cns_file(
 
 
 def _upload_min_metadata(
-        cli: AusTrakkaTestCli,
+        cli: TrakkaTestCli,
         proforma: str,
         seq_ids: list[str],
         owner_org: str,
@@ -232,7 +232,7 @@ def _upload_min_metadata(
 def _create_csv_content(seq_ids) -> str:
     return f'{seq_id_field_name}\n' + "\n".join(seq_ids) + "\n"
 
-def _create_project(cli: AusTrakkaTestCli, name: str):
+def _create_project(cli: TrakkaTestCli, name: str):
     result = cli.invoke([
         'project',
         'add',
@@ -246,7 +246,7 @@ def _create_project(cli: AusTrakkaTestCli, name: str):
     assert result.exit_code == 0, f'Failed to create project {name} as part of test setup: {result.output}'
 
 
-def _create_group(cli: AusTrakkaTestCli, name: str):
+def _create_group(cli: TrakkaTestCli, name: str):
     result = cli.invoke([
         'group',
         'add',
@@ -259,7 +259,7 @@ def _create_group(cli: AusTrakkaTestCli, name: str):
 
 
 def _create_proforma(
-        cli: AusTrakkaTestCli,
+        cli: TrakkaTestCli,
         name: str,
         required_fields: list[str] = None,
         optional_fields: list[str] = None):
@@ -292,7 +292,7 @@ def _create_proforma(
     assert result.exit_code == 0, f'Failed to create proforma {name}: {result.output}'
 
 
-def _create_field_if_not_exists(cli: AusTrakkaTestCli, field_name):
+def _create_field_if_not_exists(cli: TrakkaTestCli, field_name):
     result = cli.invoke([
         'field',
         'list',
@@ -315,7 +315,7 @@ def _create_field_if_not_exists(cli: AusTrakkaTestCli, field_name):
 
         assert result.exit_code == 0, f'Failed to create field {field_name} as part of test setup: {result.output}'
 
-def _create_org(cli: AusTrakkaTestCli, name: str):
+def _create_org(cli: TrakkaTestCli, name: str):
     result = cli.invoke([
         'org',
         'add',
@@ -328,7 +328,7 @@ def _create_org(cli: AusTrakkaTestCli, name: str):
     assert result.exit_code == 0, f'Failed to create org {name} as part of test setup: {result.output}'
 
 
-def _list_seq_by_group(cli: AusTrakkaTestCli, group: str):
+def _list_seq_by_group(cli: TrakkaTestCli, group: str):
     result = cli.invoke([
         'seq',
         'list',
