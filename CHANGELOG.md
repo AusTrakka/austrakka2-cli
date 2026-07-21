@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.90.0] - 2026-07-21
+
+### Added
+- `--status` to `project update`.
+
 ## [0.89.0] - 2026-07-14
 
 ### Added
