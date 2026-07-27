@@ -73,6 +73,7 @@ def update_project(
         client_type: str,
         merge_algorithm: str,
         status: str,
+        watermark_trees: bool
 ):
     project = get_project_by_abbrev(project_abbreviation)
     
@@ -87,6 +88,7 @@ def update_project(
             'clientType',
             'mergeAlgorithm',
             'status',
+            'watermarkTrees'
         ]},
     }
     
@@ -109,6 +111,8 @@ def update_project(
         put_project['mergeAlgorithm'] = merge_algorithm
     if status is not None:
         put_project['status'] = status
+    if watermark_trees is not None:
+        put_project['watermarkTrees'] = watermark_trees
         
     return api_put(
         path=f"{PROJECT_PATH}/{project_abbreviation}",
