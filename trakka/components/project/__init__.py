@@ -65,7 +65,8 @@ def project_add(
         dashboard_name: str,
         project_label: str,
         client_type: str,
-        merge_algo: str):
+        merge_algo: str,
+        watermark_trees: bool):
     add_project(abbrev,
                 name,
                 description,
@@ -73,7 +74,8 @@ def project_add(
                 dashboard_name,
                 project_label,
                 client_type,
-                merge_algo)
+                merge_algo,
+                watermark_trees)
 
 
 @project.command(

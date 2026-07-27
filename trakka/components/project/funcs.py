@@ -45,7 +45,9 @@ def add_project(
         dashboard_name: str,
         project_label: str,
         client_type: str,
-        merge_algo: str):
+        merge_algo: str,
+        watermark_trees: bool
+):
     return api_post(
         path=PROJECT_PATH,
         data={
@@ -58,6 +60,7 @@ def add_project(
             "label": project_label,
             "clientType": client_type,
             "mergeAlgorithm": merge_algo, 
+            "watermarkTrees": watermark_trees
        }
     )
 
