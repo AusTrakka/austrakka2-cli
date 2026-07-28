@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.90.0] - 2026-07-28
+
+### Added
+- `proforma field-class` command to update a proforma field class.
+- `admin user update-object-id` command to update a user's object id.
+
 ## [0.89.1] - 2026-07-21
 
 ### Added
