@@ -8,4 +8,3 @@ def update_object_id(identifier: str, user_id: str):
     api_patch(
         f"{USER_PATH}/{identifier}/update-object-id/{user_id}",
     )
-
