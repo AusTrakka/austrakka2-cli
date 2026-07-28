@@ -1,7 +1,7 @@
 import pytest
 
-from austrakka.components.sequence.sync.sync_workflow import configure_state_machine
-from austrakka.components.sequence.sync.state_machine import *
+from trakka.components.sequence.sync.sync_workflow import configure_state_machine
+from trakka.components.sequence.sync.state_machine import *
 
 
 class TestStateMachine:

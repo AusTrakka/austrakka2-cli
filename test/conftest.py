@@ -1,8 +1,8 @@
 import pathlib
-from test.utils.austrakka_test_cli import AusTrakkaTestCli
+from test.utils.trakka_test_cli import TrakkaTestCli
 import pytest
 
-from austrakka.main import get_cli
+from trakka.main import get_cli
 
 
 def pytest_collection_modifyitems(config, items):
@@ -34,8 +34,8 @@ def pytest_configure(config):
 
 
 @pytest.fixture()
-def austrakka_test_cli():
+def trakka_test_cli():
     """
-    Access the AusTrakka CLI in a test.
+    Access the Trakka CLI in a test.
     """
-    return AusTrakkaTestCli(get_cli())
+    return TrakkaTestCli(get_cli())

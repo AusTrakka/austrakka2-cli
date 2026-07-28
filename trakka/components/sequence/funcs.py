@@ -1,0 +1,640 @@
+# pylint: disable=too-many-locals
+import os
+from pathlib import Path
+from io import BufferedReader, StringIO, TextIOWrapper
+import codecs
+import hashlib
+from dataclasses import dataclass
+from typing import List
+from typing import Dict
+
+import httpx
+import pandas as pd
+from pandas.core.frame import DataFrame
+from loguru import logger
+from httpx import HTTPStatusError
+from Bio import SeqIO
+
+from trakka.utils.exceptions import FailedResponseException, CliArgumentException
+from trakka.utils.exceptions import UnknownResponseException
+from trakka.utils.exceptions import IncorrectHashException
+from trakka.utils.misc import logger_wraps
+from trakka.utils.api import api_patch
+from trakka.utils.api import api_post_multipart_raw
+from trakka.utils.api import api_get
+from trakka.utils.api import api_post
+from trakka.utils.api import get_response
+from trakka.utils.api import api_get_stream
+from trakka.utils.enums.api import RESPONSE_TYPE_ERROR
+from trakka.utils.paths import SAMPLE_PATH
+from trakka.utils.paths import SEQUENCE_PATH
+from trakka.utils.paths import SEQUENCE_TYPE_QUERY
+from trakka.utils.paths import SEQUENCE_READ_QUERY
+from trakka.utils.paths import SEQUENCE_DOWNLOAD_PATH
+from trakka.utils.paths import SEQUENCE_BY_GROUP_PATH
+from trakka.utils.paths import SEQUENCE_BY_SAMPLE_PATH
+from trakka.utils.output import create_response_object
+from trakka.utils.output import log_response
+from trakka.utils.output import log_response_compact
+from trakka.utils.fs import create_dir
+
+from trakka.utils.output import print_dataframe
+from trakka.utils.enums.seq import SeqType
+from trakka.utils.retry import retry
+from trakka.utils.api import api_delete
+from trakka.utils.fs import FileHash, verify_hash
+
+SEQ_ID_CSV = 'Seq_ID'
+SEQ_ID_HEADER = 'seq-id'
+PATH_CSV = 'filepath'
+PATH_HEADER = 'filename'
+PATH_1_CSV = 'filepath1'
+PATH_2_CSV = 'filepath2'
+PATH_1_HEADER = 'filename1'
+PATH_2_HEADER = 'filename2'
+
+# Map CSV columns into their relevant headers
+HEADER_MAP = {
+    SEQ_ID_CSV: SEQ_ID_HEADER,
+    PATH_1_CSV: PATH_1_HEADER,
+    PATH_2_CSV: PATH_2_HEADER,
+    PATH_CSV: PATH_HEADER,
+}
+
+USE_IS_ACTIVE_FLAG = 'useIsActiveFlag'
+
+MODE_HEADER = 'mode'
+MODE_SKIP = 'skip'
+MODE_OVERWRITE = 'overwrite'
+SEQTYPE_HEADER = 'seq-type'
+
+CSV_COLUMNS = {
+    SeqType.FASTQ_ILL_PE: [SEQ_ID_CSV, PATH_1_CSV, PATH_2_CSV],
+}
+
+
+@dataclass
+class SeqFile:
+    multipart: tuple
+    sha256: str
+    filename: str
+    read_hint: str = None
+
+
+@logger_wraps()
+def add_fasta_cns_submission(
+        fasta_file: BufferedReader,
+        owner_org: str,
+        shared_projects: List[str],
+        should_create: bool,
+        skip: bool = False,
+        force: bool = False,
+):
+    """Iterate through a FASTA file and submit each sequence as a separate sample"""
+    _validate_streamlined_seq_args(owner_org, shared_projects, should_create)
+
+    name_prefix = _calc_name_prefix(fasta_file)
+
+    failed_samples = []
+    upload_success_count = 0
+    total_upload_count = 0
+    records = list(SeqIO.parse(TextIOWrapper(fasta_file), 'fasta'))
+    seq_ids = [record.id for record in records]
+    if should_create:
+        _create_samples(seq_ids, owner_org, shared_projects)
+    for record in records:
+        seq_id = record.id.split()[0].split("|")[0]
+        logger.info(f"Uploading {seq_id}")
+        total_upload_count += 1
+
+        file = _create_single_contig_file(
+            name_prefix,
+            seq_id,
+            record)
+
+        custom_headers = _build_headers(
+            SeqType.FASTA_CNS,
+            pd.Series({SEQ_ID_CSV: seq_id, PATH_CSV: file.filename}),
+            force,
+            skip,
+            [file]
+        )
+
+        try:
+            retry(
+                func=lambda f=[file], ch=custom_headers: _post_sequence(f, ch),
+                retries=1,
+                desc=f"{seq_id} at " + SEQUENCE_PATH,
+                delay=0.0
+            )
+            upload_success_count += 1
+        except FailedResponseException as ex:
+            logger.error(f'Sample {seq_id} failed upload')
+            log_response(ex.parsed_resp)
+            failed_samples.append(seq_id)
+        except (
+                PermissionError, UnknownResponseException, HTTPStatusError
+        ) as ex:
+            logger.error(f'Sample {seq_id} failed upload')
+            logger.error(ex)
+            failed_samples.append(seq_id)
+
+    logger.success(f"Uploaded {upload_success_count} of {total_upload_count} samples")
+    if failed_samples:
+        failed_samples_str = ", ".join(failed_samples)
+        logger.error(f"Failed to upload {len(failed_samples)} samples: {failed_samples_str}")
+
+
+@logger_wraps()
+def add_sequence_submission(
+        seq_type: SeqType,
+        csv_file: BufferedReader,
+        owner_org: str,
+        shared_projects: List[str],
+        should_create: bool,
+        skip: bool = False,
+        force: bool = False,
+):
+    """
+    Generic handling of uploading any sequence type.
+    Handles the case where the user provides a CSV mapping Seq_IDs to files.
+    """
+    _validate_streamlined_seq_args(owner_org, shared_projects, should_create)
+    csv_dataframe = _get_and_validate_csv(csv_file, seq_type)
+
+    seq_ids = list(csv_dataframe['Seq_ID'])
+    if should_create:
+        _create_samples(seq_ids, owner_org, shared_projects)
+
+    messages = _validate_csv_sequence_submission(csv_dataframe, seq_type)
+    if messages:
+        raise ValueError(messages)
+
+    failed_samples = []
+    upload_success_count = 0
+    total_upload_count = 0
+        
+    for _, row in csv_dataframe.iterrows():
+        try:
+            logger.info(f"Uploading {row[SEQ_ID_CSV]}")
+            total_upload_count += 1
+
+            sample_files = _get_files_from_csv_paths(row, seq_type)
+            custom_headers = _build_headers(seq_type, row, force, skip, sample_files)
+
+            retry(lambda sf=sample_files, ch=custom_headers: _post_sequence(
+                sf, ch), 1, "/".join([SEQUENCE_PATH]))
+            upload_success_count += 1
+
+        except FailedResponseException as ex:
+            logger.error(f'Sample {row[SEQ_ID_CSV]} failed upload')
+            log_response(ex.parsed_resp)
+            failed_samples.append(row[SEQ_ID_CSV])
+
+        except (
+                PermissionError,
+                UnknownResponseException,
+                HTTPStatusError,
+                IncorrectHashException,
+        ) as ex:
+            logger.error(f'Sample {row[SEQ_ID_CSV]} failed upload')
+            logger.error(ex)
+            failed_samples.append(row[SEQ_ID_CSV])
+        except Exception as ex:
+            raise ex from ex
+        
+    logger.info(f"Uploaded {upload_success_count} of {total_upload_count} samples")
+    if failed_samples:
+        failed_samples_str = ", ".join(failed_samples)
+        logger.error(f"Failed to upload {len(failed_samples)} samples: {failed_samples_str}")
+
+
+@logger_wraps()
+def purge_sequence(seq_id: str, seq_type: SeqType, skip: bool, force: bool, delete_all: bool):
+    custom_headers = {}
+    _set_mode_header(custom_headers, force, skip)
+    api_path = "/".join([SEQUENCE_PATH, SEQUENCE_BY_SAMPLE_PATH, seq_id, seq_type.value])
+
+    if delete_all:
+        api_path = api_path + '?deleteAll=true'
+
+    api_delete(
+        path=api_path,
+        custom_headers=custom_headers
+    )
+
+def _calc_name_prefix(fasta_file):
+    original_filename = Path(fasta_file.name)
+    if not original_filename:
+        original_filename = Path("unnamed.fasta")
+    if original_filename.suffix not in [".fa", ".fasta"]:
+        raise ValueError("FASTA file suffix is expected to be .fa or .fasta")
+    name_prefix = original_filename.stem
+    return name_prefix
+
+
+def _create_single_contig_file(name_prefix, seq_id, record) -> SeqFile:
+    """
+    Generate the upload single-contig FASTA file for a single FASTA record
+    """
+    single_contig_filename = f"{name_prefix}_{seq_id}_split.fasta"
+    single_contig = StringIO()
+    SeqIO.write([record], single_contig, "fasta")
+    encode = codecs.getwriter('utf-8')
+    return SeqFile(
+        multipart=('files[]', (single_contig_filename, encode(single_contig))),
+        sha256=hashlib.sha256(single_contig.getvalue().encode()).hexdigest(),
+        filename=single_contig_filename,
+    )
+
+
+def _get_and_validate_csv(csv_file: BufferedReader, seq_type: SeqType):
+    usecols = _csv_columns(seq_type)
+    try:
+        csv_dataframe = pd.read_csv(
+            csv_file,
+            usecols=usecols,
+            dtype=str
+        )
+        return csv_dataframe
+    except ValueError:
+        logger.error(
+            "The CSV file mapping samples to sequences must contain exactly "
+            f"the column headers {','.join(usecols)}")
+        raise
+
+
+def _post_sequence(sample_files: list[SeqFile], custom_headers):
+    """Post sequence files to the API and verify hashes. seq-type is sent in headers."""
+    files = [file.multipart for file in sample_files]
+    resp = api_post_multipart_raw(
+        path=SEQUENCE_PATH,
+        files=files,
+        custom_headers=custom_headers,
+    )
+
+    data = get_response(resp, True)
+
+    if resp.status_code == 200:
+        hashes = [FileHash(filename=f.filename, sha256=f.sha256)
+                  for f in sample_files]
+        verify_hash(hashes, data)
+
+
+def take_sample_names(data, filter_prop):
+    try:
+        # Expecting response with flat sample summary dtos
+        fss_dtos = list(data)
+        fastq_fss_dtos = filter(lambda fss: fss[filter_prop], fss_dtos)
+        samples_map = map(lambda x: x['sampleName'], fastq_fss_dtos)
+        samples_names = list(samples_map)
+        return samples_names
+
+    except Exception as ex:
+        logger.error(
+            'Error while fetching sample names for samples '
+            'with fastq files attached: ')
+        raise ex from ex
+
+
+def _validate_csv_sequence_submission(csv_dataframe: DataFrame, seq_type: SeqType):
+    messages = []
+
+    # Check for missing values
+    for column in csv_dataframe.columns:
+        if csv_dataframe[column].isnull().values.any():
+            messages.append(create_response_object(
+                f'{column} column contains missing values',
+                RESPONSE_TYPE_ERROR
+            ))
+
+    # Check for duplicate values
+    for column in csv_dataframe.columns:
+        if csv_dataframe[column].duplicated().any():
+            messages.append(create_response_object(
+                f'{column} column contains duplicate values',
+                RESPONSE_TYPE_ERROR
+            ))
+
+    # In the case of paired-end data, check no file pairs are the same
+    if seq_type == SeqType.FASTQ_ILL_PE:
+        for _, row in csv_dataframe.iterrows():
+            if row[PATH_1_CSV] == row[PATH_2_CSV]:
+                messages.append(create_response_object(
+                    f'Read files for {row[SEQ_ID_CSV]} are the same',
+                    RESPONSE_TYPE_ERROR
+                ))
+
+    # Check files are present
+    for _, row in csv_dataframe.iterrows():
+        _check_csv_files(row, messages)
+
+    return messages
+
+
+def _download_seq_file(file_path, filename, query_path, params, sample_dir):
+    try:
+        def _write_chunks(resp: httpx.Response):
+            for chunk in resp.iter_raw(chunk_size=128):
+                file.write(chunk)
+
+        if not os.path.exists(sample_dir):
+            create_dir(sample_dir)
+        with open(file_path, 'wb') as file:
+            api_get_stream(query_path, _write_chunks, params)
+
+        logger.success(f'Downloaded: {filename} To: {file_path}')
+
+    except FailedResponseException as ex:
+        log_response_compact(ex.parsed_resp)
+        logger.error(f'Failed downloading {filename} To: {file_path}')
+        os.remove(file_path)
+    except UnknownResponseException as ex:
+        log_response_compact(ex)
+        logger.error(f'Failed downloading {filename} To: {file_path}')
+        os.remove(file_path)
+    except HTTPStatusError as ex:
+        logger.error(
+            f'Failed downloading {filename} To: {file_path}. Error: {ex}'
+        )
+        os.remove(file_path)
+
+
+def _get_seq_download_path(
+        seq_id: str,
+        read: str,
+        seq_type: str, ):
+    download_path = f'{SEQUENCE_PATH}/{SEQUENCE_DOWNLOAD_PATH}/{seq_id}'
+    params = {
+        SEQUENCE_TYPE_QUERY: seq_type,
+    }
+    if seq_type == SeqType.FASTQ_ILL_PE.value:
+        params[SEQUENCE_READ_QUERY] = read
+
+    return download_path, params
+
+
+def _download_sequences(
+        output_dir: str,
+        samples_seq_info: pd.DataFrame,
+):
+    for _i, ssi in samples_seq_info.iterrows():
+        sample_name = ssi['sampleName']
+        dto_read = str(ssi['read'])
+        filename = ssi['fileNameOnDisk']
+        seq_type = ssi['type']
+
+        sample_dir = os.path.join(output_dir, sample_name, seq_type)
+        file_path = os.path.join(sample_dir, filename)
+
+        if os.path.exists(file_path):
+            logger.warning(
+                f'Found a local copy of {filename}.  Skipping...')
+            continue
+
+        query_path, params = _get_seq_download_path(
+            sample_name,
+            dto_read,
+            seq_type, )
+
+        _download_seq_file(file_path, filename, query_path, params, sample_dir)
+
+
+def _filter_sequences(data, seq_type: SeqType) -> List[Dict]:
+    data_filtered = list(filter(lambda x: seq_type is None or x['type'] == seq_type.value, data))
+    data_filtered = list(filter(lambda x: x['isActive'] is True, data_filtered))
+    return data_filtered
+
+
+def _get_seq_api_by_group(group_name: str):
+    api_path = SEQUENCE_PATH
+    if group_name is not None:
+        api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}'
+    else:
+        raise ValueError("A filter has not been passed")
+    return api_path
+
+
+def _get_seq_api_by_sample_names(seq_ids: List[str]):
+    api_path = SEQUENCE_PATH
+    paths = []
+    if seq_ids is not None:
+        for sample in seq_ids:
+            api_path += f'/{SEQUENCE_BY_SAMPLE_PATH}/{sample}'
+            paths.append(api_path)
+            api_path = SEQUENCE_PATH
+    else:
+        raise ValueError("A filter has not been passed")
+    return paths
+
+
+# pylint: disable=duplicate-code,no-else-return
+def _get_seq_data(
+        group_name: str,
+        seq_type: SeqType = None,
+        seq_ids: List[str] = None,
+):
+    if group_name is None and (seq_ids is None or len(seq_ids) == 0):
+        raise ValueError(
+            "Either group name or Seq_IDs must be provided to get sequence information")
+    data = []
+    if group_name:
+        api_path = _get_seq_api_by_group(group_name)
+        data = api_get(path=api_path)['data']
+        result = _filter_sequences(data, seq_type)
+    else:
+        api_paths = _get_seq_api_by_sample_names(seq_ids)
+        for path in api_paths:
+            data.extend(api_get(path=path)['data'])
+        result = _filter_sequences(data, seq_type)
+        skipped_samples = [sample for sample in seq_ids if
+                           sample not in [item['sampleName'] for item in result]]
+        if skipped_samples:
+            logger.warning('Skipped samples with no available sequences: '
+                           f'{",".join(skipped_samples)}')
+    df = pd.DataFrame(result, dtype=str)
+    # pd DF from records is coercing read to a float and producing nans regardless of dtype
+    df['read'] = pd.Series([row['read'] for row in result], dtype=str)
+    return df
+
+
+# pylint: disable=duplicate-code
+def get_sequences(
+        output_dir,
+        seq_type: SeqType = None,
+        group_name: str = None,
+        seq_ids: List[str] = None,
+):
+    if not os.path.exists(output_dir):
+        create_dir(output_dir)
+
+    data = _get_seq_data(
+        group_name,
+        seq_type,
+        seq_ids,
+    )
+    _download_sequences(output_dir, data)
+
+
+# pylint: disable=duplicate-code
+def list_sequences(
+        out_format: str,
+        group_name: str,
+        seq_type: SeqType = None,
+        seq_ids: List[str] = None,
+):
+    data = _get_seq_data(
+        group_name,
+        seq_type,
+        seq_ids,
+    )
+    print_dataframe(
+        data,
+        out_format,
+    )
+
+
+def _build_headers(seq_type, csv_row, force, skip, seq_files: List[SeqFile]):
+    # seq type
+    headers = {
+        SEQTYPE_HEADER: seq_type.value,
+    }
+    # Put all values from CSV row in headers (Seq_ID and file paths)
+    for column in csv_row.index:
+        if column == SEQ_ID_CSV:
+            headers[SEQ_ID_HEADER] = csv_row[column]
+        else:
+            headers[HEADER_MAP[column]] = os.path.basename(csv_row[column])
+    _set_mode_header(headers, force, skip)
+    _set_hash_headers(headers, seq_files)
+    return headers
+
+
+def _set_hash_headers(headers, seq_files):
+    if len(seq_files) == 2:
+        for seq_file in seq_files:
+            if seq_file.read_hint == 'r1':
+                headers[f'{PATH_1_HEADER}-hash'] = seq_file.sha256
+            elif seq_file.read_hint == "r2":
+                headers[f'{PATH_2_HEADER}-hash'] = seq_file.sha256
+    elif len(seq_files) == 1:
+        headers[f'{PATH_HEADER}-hash'] = seq_files[0].sha256
+    else:
+        raise ValueError("Invalid number of files. Must be 1 or 2 but got {len(seq_files)}")
+
+
+def _set_mode_header(headers, force, skip):
+    assert not (skip and force)
+    if skip:
+        headers[MODE_HEADER] = MODE_SKIP
+    if force:
+        headers[MODE_HEADER] = MODE_OVERWRITE
+
+
+def _check_csv_files(csv_row: pd.Series, messages: List[Dict]):
+    for column in csv_row.index:
+        if column == SEQ_ID_CSV:
+            continue
+        if not os.path.isfile(csv_row[column]):
+            messages.append(create_response_object(
+                f'File {csv_row[column]} not found',
+                RESPONSE_TYPE_ERROR
+            ))
+
+
+def _get_files_from_csv_paths(csv_row: pd.Series, seq_type: SeqType) -> List[SeqFile]:
+    sample_files = []
+    columns = _csv_columns(seq_type)
+    for column in columns:
+        # We assume everything in the CSV that's not the Seq_ID is a file path
+        if column == SEQ_ID_CSV:
+            continue
+        read_hint = _col_name_to_read_hint(column)
+        file = _get_file(csv_row[column], read_hint)
+        _ensure_read_hint_and_filename_agrees(file)
+        sample_files.append(file)
+    return sample_files
+
+
+def _col_name_to_read_hint(column):
+    read_hint = None
+    if column == PATH_1_CSV:
+        read_hint = 'r1'
+    elif column == PATH_2_CSV:
+        read_hint = 'r2'
+    return read_hint
+
+
+def _ensure_read_hint_and_filename_agrees(file):
+    file_path = Path(file.filename)
+    file_name = file_path.stem.casefold()
+
+    if file.read_hint == "r1" and file_name.endswith("_r2"):
+        raise ValueError(f"File {file.filename} ends with '_r2' but "
+                         f"is assigned to {PATH_1_CSV} which is reserved for read one.")
+
+    if file.read_hint == "r2" and file_name.endswith("_r1"):
+        raise ValueError(f"File {file.filename} ends with '_r1' but "
+                         f"is assigned to {PATH_2_CSV} which is reserved for read two.")
+
+
+def _get_file(filepath: str, read_hint: str = None) -> SeqFile:
+    # pylint: disable=consider-using-with
+    file = open(filepath, 'rb')
+    filename = os.path.basename(file.name)
+    return SeqFile(
+        multipart=('files[]', (filename, file)),
+        sha256=hashlib.sha256(file.read()).hexdigest(),
+        filename=filename,
+        read_hint=read_hint
+    )
+
+
+def _csv_columns(seq_type: SeqType):
+    if seq_type in CSV_COLUMNS:
+        return CSV_COLUMNS[seq_type]
+    return [SEQ_ID_CSV, PATH_CSV]
+
+
+def _create_samples(
+        seq_ids: List[str],
+        owner_org: str,
+        shared_projects: list[str],
+) -> None:
+    for seq_id in seq_ids:
+        try:
+            api_post(SAMPLE_PATH, data={
+                'name': seq_id,
+                'owner': owner_org,
+            })
+        except FailedResponseException as ex:
+            sample_exists_msg = f"Sample {seq_id} already exists"
+            if any(sample_exists_msg in m for m in ex.get_error_messages()):
+                logger.warning(sample_exists_msg)
+            else:
+                raise ex
+    for project in shared_projects:
+        api_patch(f'{SAMPLE_PATH}/Share', data={
+            'seqIds': seq_ids,
+            'groupName': f'{project}-Group',
+        })
+
+
+def _validate_streamlined_seq_args(
+        owner_org: str,
+        shared_projects: list[str],
+        should_create: bool,
+):
+    # This should not trigger since owner_org should now be required
+    if owner_org is None:
+        raise CliArgumentException("Owner organisation has not been specified")
+
+    # This is not allowed, as we will not be submitting a CSV
+    if shared_projects and not should_create:
+        raise CliArgumentException(
+            "Shared projects can only be specified for this command when creating new samples; "
+            "use --create to enable sample creation and sharing.")
+    
+    # This is allowed, but suspect - often indicates user error
+    if should_create and not shared_projects:
+        logger.warning("Shared projects have not been specified. New samples will not be shared.")

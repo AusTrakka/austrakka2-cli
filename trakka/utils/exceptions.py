@@ -1,0 +1,63 @@
+from trakka.utils.enums.api import RESPONSE_TYPE
+from trakka.utils.enums.api import RESPONSE_TYPE_ERROR
+from trakka.utils.enums.api import RESPONSE_TYPE_SUCCESS
+from trakka.utils.enums.api import RESPONSE_TYPE_WARNING
+from trakka.utils.enums.api import RESPONSE_MESSAGES
+from trakka.utils.enums.api import RESPONSE_MESSAGE
+
+class UnknownResponseException(Exception):
+    pass
+
+
+class UnauthorizedException(Exception):
+    pass
+
+
+class FailedResponseException(Exception):
+    def __init__(self, parsed_resp, status_code=None):
+        self.parsed_resp = parsed_resp
+        self.message = f'Request failed: {parsed_resp}'
+        self.status_code = status_code
+        super().__init__(self.message)
+
+    def get_messages(self, message_type: str):
+        return [
+            message[RESPONSE_MESSAGE]
+            for message
+            in self.parsed_resp[RESPONSE_MESSAGES]
+            if message[RESPONSE_TYPE] == message_type
+        ]
+
+    def get_error_messages(self):
+        return self.get_messages(RESPONSE_TYPE_ERROR)
+
+    def get_warning_messages(self):
+        return self.get_messages(RESPONSE_TYPE_WARNING)
+
+    def get_success_messages(self):
+        return self.get_messages(RESPONSE_TYPE_SUCCESS)
+
+
+class IncorrectHashException(Exception):
+    pass
+
+
+class TrakkaCliException(Exception):
+    pass
+
+
+class CliArgumentException(Exception):
+    pass
+
+
+class SyncException(Exception):
+    pass
+
+
+class SeqTypeConversionException(Exception):
+    pass
+
+
+def raise_sync_exception_if_none(value, message):
+    if value is None:
+        raise SyncException(message)

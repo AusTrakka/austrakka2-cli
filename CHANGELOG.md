@@ -5,16 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [00.88.2] - Unreleased
+## [0.89.1] - 2026-07-21
 
-## Changed
-  - The project update command no longer accepts the 'isActive' parameter. 
-This change is due to enable and disable commands being already available for this purpose.
-  - The 'project_type' parameter is now called 'project_label'. 
-This will affect project add and project update commands.
+### Added
+- `--status` to `project update`.
 
-## Removed
-  - The 'project set-type' has been removed as project update encapsulates this functionality.
+## [0.89.0] - 2026-07-14
+
+### Added
+- `proforma rm-attach` command to remove attached proforma templates.
+- `--status` parameter to update project status in `project update`.
+
+### Changed
+- `group field [add|remove|list]` -> `org field [add|remove|list]`. Now operates on an organisation rather than a group.
+- `metadata list` -> `org metadata get`. Now operates on an organisation rather than a group.
+- Clean up contig name generated fasta file for `seq sync` command.
+- `--type` -> `--label` for `project [add|update]`.
+
+### Removed
+- `project set-type`. This can be set using `project [add|update]`.
+- `[--is-active|--not-active]` from `project update`: use `project [enable|disable]` instead. 
+
+### Fixed
+- Fixed displaying of columns for `field list` using `--view-type more`.
 
 ## [0.88.1] - 2026-06-19
 
@@ -102,7 +115,7 @@ This specifically affects the `project tree add` command.
 
 ### Changed
 - `user add` now requires `--username`.
-- `--queue-name` has been renamed to `--queue` for `austrakka admin message dl [show|list|delete|resend]`.
+- `--queue-name` has been renamed to `--queue` for `trakka admin message dl [show|list|delete|resend]`.
 
 ## [0.81.0] - 2026-03-11
 
@@ -198,7 +211,7 @@ over 256 allowed values.
 - `iam privilege list-by-user` now accepts `-gid, --global-id` rather than a positonal argument.
 - `org privilege list-by-role` now accepts `-gid, --global-id` rather than a positonal argument.
 - `org privilege list-by-user` now accepts `-gid, --global-id` rather than a positonal argument.
-- Updated the `austrakka proforma list` command to accept the `-vt`/`--view-type` option, which determines the verbosity of the output.  
+- Updated the `trakka proforma list` command to accept the `-vt`/`--view-type` option, which determines the verbosity of the output.  
   Possible values for `-vt` are:
     - `compact`: Displays minimal columns.
     - `more`: Displays additional columns.
@@ -317,7 +330,7 @@ if the `--create` flag is set.
 
 ### Changed
 - Updated the `project update` command to accept the project type parameter `-t`/`--type`.  
-- Updated the `austrakka project list` command to accept the `-vt`/`--view-type` option, which determines the verbosity of the output.  
+- Updated the `trakka project list` command to accept the `-vt`/`--view-type` option, which determines the verbosity of the output.  
   Possible values for `-vt` are:
     - `compact`: Displays minimal columns.
     - `more`: Displays additional columns.
@@ -346,7 +359,7 @@ is not required.
 ## [0.65.0]
 ### Changed
 - Project dashboard commands now take a project abbreviation as an argument, rather than a project ID. 
-This update corresponds to a change in the AusTrakka API.
+This update corresponds to a change in the Trakka API.
 - Removed unused commands and parameters concerning dashboard widgets. The `project get-dashboard` command 
 now shows the currently-assigned dashboard for a project.
 
@@ -438,8 +451,8 @@ These changes involve backwards-incompatible changes to syntax. Sequence data ty
   - fasta-asm - FASTA assembly, may be multi-contig
   - fasta-cns - single-contig consensus FASTA sequence (previously called fasta)
 - The `seq add` command has been updated to support more types of sequence data. 
- The syntax for uploading single-contig consensus sequences is now `austrakka seq add fasta-cns seqs.fasta`. 
- The syntax for uploading other types of sequence data is now `austrakka seq add <seqtype> files.csv`.
+ The syntax for uploading single-contig consensus sequences is now `trakka seq add fasta-cns seqs.fasta`. 
+ The syntax for uploading other types of sequence data is now `trakka seq add <seqtype> files.csv`.
 - The `seq sync get` and `seq get` commands have been updated to support more types of sequence data. 
 It is now possible to sync multiple types of sequence data from the same group or project to the same output directory.
 Sequences will now be downloaded to a subdirectory specific to the sequence type, i.e. <seq_id>/<seqtype>/<file> .
@@ -570,7 +583,7 @@ In the case of fasta-cns data, the aggregated sequence file, previously named al
 - `sample groups` command.
 
 ### Changed
-- `user add` and `user update` to handle AusTrakka process accounts.
+- `user add` and `user update` to handle Trakka process accounts.
 
 ## [0.35.1] - 2023-09-18
 ### Changed
@@ -580,7 +593,7 @@ In the case of fasta-cns data, the aggregated sequence file, previously named al
 ### Changed
 - `seq add` commands will now provide a summary at the end of a bulk upload, including the number of sequences uploaded, and which sequences failed upload.
 - Sequence list and download commands no longer take the deprecated --sub-query-type flag. 
-A CLI update to this version will be required to support download from the updated AusTrakka server.
+A CLI update to this version will be required to support download from the updated Trakka server.
 
 ### Fixed
 - `proforma attach` command options --file-path and --n-previous are now correctly mutually exclusive
@@ -701,7 +714,7 @@ A CLI update to this version will be required to support download from the updat
 
 ## [0.25.0] - 2023-03-02
 ### Added
-- Added `proforma listgroups` command to show ProFormaEditors and AusTrakkaAdmins what group has access to a given pro forma.
+- Added `proforma listgroups` command to show ProFormaEditors and TrakkaAdmins what group has access to a given pro forma.
 
 ## [0.24.1] - 2023-02-23
 ### Changed
