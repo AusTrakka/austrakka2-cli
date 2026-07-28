@@ -8,7 +8,10 @@ from trakka.utils.api import api_delete, api_get
 from trakka.utils.api import api_post
 from trakka.utils.api import api_patch
 from trakka.utils.api import api_put
-from trakka.utils.exceptions import FailedResponseException, UnknownResponseException
+from trakka.utils.exceptions import \
+    FailedResponseException, \
+    UnknownResponseException, \
+    TrakkaCliException
 from trakka.utils.helpers.upload import upload_multipart
 from trakka.utils.helpers.share import resolve_share_targets
 from trakka.utils.misc import logger_wraps
@@ -421,7 +424,7 @@ def update_field_class_proforma(
     field_global_ids = [f["metaDataColumnGlobalId"] for f in fields]
     for field_identifier in field_identifiers:
         if field_identifier not in field_abbrevs and field_identifier not in field_global_ids:
-            raise trakkaCliException(
+            raise TrakkaCliException(
                 f'Field {field_identifier} is not in proforma {identifier}'
             )
 
