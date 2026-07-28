@@ -6,7 +6,7 @@ from trakka.utils.api import api_patch, api_get
 from trakka.utils.api import api_post
 from trakka.utils.helpers.output import call_get_and_print
 from trakka.utils.misc import logger_wraps
-from trakka.utils.paths import GROUP_PATH, ORG_V2_PATH, USER_PATH
+from trakka.utils.paths import GROUP_PATH, ORG_PATH, USER_PATH
 
 
 @logger_wraps()
@@ -139,6 +139,6 @@ def rename_user(user_id: str, username: str):
 @logger_wraps()
 def move_user_org(user_id: str, origin_org_id: str, target_org_id: str):
     api_patch(
-        path=f'{ORG_V2_PATH}/{origin_org_id}/User/{user_id}',
+        path=f'{ORG_PATH}/{origin_org_id}/User/{user_id}',
         data=target_org_id
     )
