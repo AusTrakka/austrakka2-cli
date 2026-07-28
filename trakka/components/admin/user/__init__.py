@@ -6,7 +6,7 @@ from trakka.utils.options import opt_identifier, opt_user_object_id
 @click.group('user')
 @click.pass_context
 def user(ctx):
-    """Commands related to raw logs"""
+    """Commands related to users"""
     ctx.context = ctx.parent.context
 
 @user.command('update-object-id')
