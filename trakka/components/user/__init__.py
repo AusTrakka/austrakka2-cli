@@ -2,7 +2,7 @@ from typing import List
 
 import click
 
-from trakka.utils.output import table_format_option
+from trakka.utils.output import table_format_option, default_object_format
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import \
     opt_identifier, \
@@ -85,6 +85,7 @@ def user_add(
 @opt_email_address(required=False)
 @opt_user_position(required=False)
 @opt_is_active(required=False)
+@opt_is_trakka_process(default=None)
 @opt_server_username(required=False)
 @opt_user_no_dl_quota(default=None)
 @opt_user_monthly_dl_quota_bytes()
@@ -97,6 +98,7 @@ def user_update(
     server_username: str,
     no_download_quota: bool,
     download_quota: int,
+    is_process: bool,
 ):
     update_user(
         user_id, 
@@ -106,7 +108,8 @@ def user_update(
         server_username, 
         is_active, 
         no_download_quota, 
-        download_quota
+        download_quota,
+        is_process
     )
 
 

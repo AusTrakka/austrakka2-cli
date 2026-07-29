@@ -78,6 +78,7 @@ def update_user(
         is_active: bool = None,
         no_download_quota: bool = None,
         download_quota: int = None,
+        is_process: bool = None 
 ):
     user_resp = api_get(f'{USER_PATH}/{user_id}')
     user_full = user_resp['data']
@@ -109,6 +110,8 @@ def update_user(
         user['noDownloadQuota'] = no_download_quota
     if download_quota is not None:
         user['monthlyBytesQuota'] = download_quota
+    if is_process is not None:
+        user['isAusTrakkaProcess'] = is_process
 
     api_patch(
         path=f'{USER_PATH}/{user_id}',
