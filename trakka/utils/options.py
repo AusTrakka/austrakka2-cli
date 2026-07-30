@@ -72,7 +72,7 @@ def opt_label(var_name='project_label', help_string='Type string.', **attrs: t.A
         'help': help_string,
     }
     return create_option(
-        "-t",
+        "-l",
         "--label",
         var_name,
         type=click.STRING,
