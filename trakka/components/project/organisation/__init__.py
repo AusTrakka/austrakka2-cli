@@ -2,7 +2,8 @@ from typing import List
 
 import click
 
-from trakka.components.project.organisation.funcs import get_project_organisation_list, add_project_organisation, \
+from trakka.components.project.organisation.funcs import get_project_organisation_list, \
+    add_project_organisation, \
     remove_project_organisation
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import opt_project_organisation
