@@ -53,7 +53,7 @@ project.add_command(privilege_subcommands(PROJECT_RESOURCE))
 @opt_organisation(help="Requesting organisation abbreviation", required=False)
 @opt_dashboard_name(required=False)
 @opt_label(required=False)
-@opt_project_client_type()
+@opt_project_client_type(required=False, default='aardvark')
 @opt_merge_algorithm()
 def project_add(
         abbrev: str,
