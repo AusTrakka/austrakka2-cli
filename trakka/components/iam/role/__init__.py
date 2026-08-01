@@ -31,23 +31,19 @@ def roles_list(view_type: str, out_format: str):
 @opt_role()
 @opt_description()
 @opt_privilege_level()
-@opt_record_type(
-    required=True, 
-    multiple=True, 
-    help="Name of each allowed record types where a role can be used to control access."
-)
+@opt_resource_type(help="Type of the resource to which the role grants access.")
 @opt_identifier('--scope', 'scopes', multiple=True, help="Scope ID")
 def role_add(
         role: str,
         description: str,
         privilege_level: str,
-        record_type: list[str],
+        resource_type: str,
         scopes: list[str],
 ):
     """
     Add a new role
     """
-    add_role(role, description, privilege_level, record_type, scopes)
+    add_role(role, description, privilege_level, resource_type, scopes)
 
 
 # pylint: disable=expression-not-assigned,duplicate-code
@@ -57,28 +53,13 @@ def role_add(
 @opt_new_name(required=False)
 @opt_description(required=False)
 @opt_privilege_level(required=False)
-@create_option('-art',
-               '--allowed-record-types',
-               help='Name of each allowed record types where a role can be used to control access.',
-               cls=MutuallyExclusiveOption,
-               multiple=True,
-               mutually_exclusive=["clear_allowed_record_types"],
-               required=False)
-@create_option('-clr',
-               '--clear-allowed-record-types',
-               cls=MutuallyExclusiveOption,
-               help="Clear the list of allowed record types current set on the role.",
-               type=click.BOOL,
-               mutually_exclusive=["allowed_record_types"],
-               required=False,
-               is_flag=True)
+@opt_resource_type(help="Type of the resource to which the role grants access.")
 def role_update(
         role: str,
         new_name: str,
         description: str,
         privilege_level: str,
-        allowed_record_types: list[str],
-        clear_allowed_record_types: bool):
+        resource_type: str):
     """
     Update a role
     """
@@ -87,8 +68,8 @@ def role_update(
         new_name,
         description,
         privilege_level,
-        allowed_record_types,
-        clear_allowed_record_types)
+        resource_type)
+
 
 
 # pylint: disable=redefined-outer-name
