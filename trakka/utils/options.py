@@ -899,7 +899,8 @@ def opt_status(**attrs: t.Any):
 
 def opt_watermark_trees(**attrs: t.Any):
     defaults = {
-        "help": "When enabled, trees exported from this project will have a watermark applied to them",
+        "help": "When enabled, trees exported from this project will "
+        "have a watermark applied to them",
         "default": False,
     }
     return create_option(
