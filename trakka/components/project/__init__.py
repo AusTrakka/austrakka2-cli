@@ -56,7 +56,7 @@ project.add_command(privilege_subcommands(PROJECT_RESOURCE))
 @opt_label(required=False)
 @opt_project_client_type()
 @opt_merge_algorithm()
-@opt_watermark_trees(default=None)
+@opt_watermark_trees()
 def project_add(
         abbrev: str,
         name: str,
