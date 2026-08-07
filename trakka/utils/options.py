@@ -899,12 +899,13 @@ def opt_status(**attrs: t.Any):
 
 def opt_watermark_trees(**attrs: t.Any):
     defaults = {
-        "help": "If set, trees will be watermarked with the project abbreviation"
+        "help": "When enabled, trees exported from this project will have a watermark applied to them",
+        "default": False,
     }
     return create_option(
-        "--watermark-trees",
+        "--watermark-trees/--no-watermark-trees",
         type=bool,
+        is_flag=True,
         required=False,
-        default=False,
         **{**defaults, **attrs}
     )
