@@ -41,9 +41,7 @@ project.add_command(dataset)
 project.add_command(document)
 project.add_command(log_subcommands(PROJECT_RESOURCE))
 project.add_command(privilege_subcommands(PROJECT_RESOURCE))
-
-if show_admin_cmds():
-    project.add_command(organisation, name="org")
+project.add_command(organisation, name="org")
 
 @project.command(
         'add',

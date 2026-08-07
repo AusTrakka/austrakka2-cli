@@ -896,16 +896,3 @@ def opt_status(**attrs: t.Any):
         default=None,
         **{**defaults, **attrs}
     )
-
-def opt_project_organisation(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'multiple': True,
-        'help': "Organisations related to this project"
-    }
-    return create_option(
-        "-o",
-        "--organisation-names",
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )

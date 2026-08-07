@@ -6,7 +6,7 @@ from trakka.components.project.organisation.funcs import get_project_organisatio
     add_project_organisation, \
     remove_project_organisation
 from trakka.utils.cmd_filter import hide_admin_cmds
-from trakka.utils.options import opt_project_organisation
+from trakka.utils.options import opt_organisation
 from trakka.utils.output import table_format_option
 
 
@@ -15,7 +15,6 @@ from trakka.utils.output import table_format_option
 def organisation(ctx):
     """Commands to manage project organisations"""
     ctx.context = ctx.parent.context
-
 
 @organisation.command('list')
 @table_format_option()
@@ -26,14 +25,14 @@ def project_list_organisations(project_identifier: str, out_format: str):
 
 @organisation.command('add', hidden=hide_admin_cmds())
 @click.argument('project-identifier', type=click.STRING)
-@opt_project_organisation()
-def project_add_organisation(project_identifier: str, organisation_names: List[str]):
+@opt_organisation(multiple=True, help="Organisations related to this project")
+def project_add_organisation(project_identifier: str, org: List[str]):
     """Adds new organisations to the project"""
-    add_project_organisation(project_identifier, organisation_names)
+    add_project_organisation(project_identifier, org)
 
 @organisation.command('remove', hidden=hide_admin_cmds())
 @click.argument('project-identifier', type=click.STRING)
-@opt_project_organisation()
-def project_remove_organisation(project_identifier: str, organisation_names: List[str]):
+@opt_organisation(multiple=True, help="Organisations related to this project")
+def project_remove_organisation(project_identifier: str, org: List[str]):
     """Removes organisations from the project"""
-    remove_project_organisation(project_identifier, organisation_names)
+    remove_project_organisation(project_identifier, org)
