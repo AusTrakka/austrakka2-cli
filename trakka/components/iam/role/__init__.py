@@ -53,7 +53,7 @@ def role_add(
 @opt_new_name(required=False)
 @opt_description(required=False)
 @opt_privilege_level(required=False)
-@opt_resource_type(help="Type of the resource to which the role grants access.")
+@opt_resource_type(required=False, help="Type of the resource to which the role grants access.")
 def role_update(
         role: str,
         new_name: str,
