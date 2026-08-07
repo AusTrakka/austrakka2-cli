@@ -103,7 +103,7 @@ def project_update(
         client_type: str,
         merge_algo: str,
         status: str,
-        watermark_trees: bool = None
+        watermark_trees: bool
 ):
     update_project(project_abbrev,
                    name,
