@@ -6,7 +6,7 @@ from trakka.components.project.organisation.funcs import get_project_organisatio
     add_project_organisation, \
     remove_project_organisation
 from trakka.utils.cmd_filter import hide_admin_cmds
-from trakka.utils.options import opt_organisation
+from trakka.utils.options import opt_organisation, opt_identifier
 from trakka.utils.output import table_format_option
 
 
@@ -18,21 +18,21 @@ def organisation(ctx):
 
 @organisation.command('list')
 @table_format_option()
-@click.argument('project-identifier', type=click.STRING)
-def project_list_organisations(project_identifier: str, out_format: str):
+@opt_identifier(help="Project abbrev or global id", var_name="identifier")
+def project_list_organisations(identifier: str, out_format: str):
     """Lists all organisations in the project"""
-    get_project_organisation_list(project_identifier, out_format)
+    get_project_organisation_list(identifier, out_format)
 
 @organisation.command('add', hidden=hide_admin_cmds())
-@click.argument('project-identifier', type=click.STRING)
+@opt_identifier(help="Project abbrev or global id", var_name="identifier")
 @opt_organisation(multiple=True, help="Organisations related to this project")
-def project_add_organisation(project_identifier: str, org: List[str]):
+def project_add_organisation(identifier: str, org: List[str]):
     """Adds new organisations to the project"""
-    add_project_organisation(project_identifier, org)
+    add_project_organisation(identifier, org)
 
 @organisation.command('remove', hidden=hide_admin_cmds())
-@click.argument('project-identifier', type=click.STRING)
+@opt_identifier(help="Project abbrev or global id", var_name="identifier")
 @opt_organisation(multiple=True, help="Organisations related to this project")
-def project_remove_organisation(project_identifier: str, org: List[str]):
+def project_remove_organisation(identifier: str, org: List[str]):
     """Removes organisations from the project"""
-    remove_project_organisation(project_identifier, org)
+    remove_project_organisation(identifier, org)
