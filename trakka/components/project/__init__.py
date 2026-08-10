@@ -13,6 +13,7 @@ from trakka.utils.options import opt_dashboard_name
 from trakka.utils.options import opt_description
 from trakka.utils.options import opt_organisation
 from trakka.utils.options import opt_status
+from trakka.utils.options import opt_watermark_trees
 from trakka.utils.privilege import PROJECT_RESOURCE
 from trakka.components.log import log_subcommands
 from trakka.components.iam.privilege import privilege_subcommands
@@ -56,6 +57,7 @@ project.add_command(organisation, name="org")
 @opt_label(required=False)
 @opt_project_client_type(required=False, default='aardvark')
 @opt_merge_algorithm()
+@opt_watermark_trees()
 def project_add(
         abbrev: str,
         name: str,
@@ -64,7 +66,8 @@ def project_add(
         dashboard_name: str,
         project_label: str,
         client_type: str,
-        merge_algo: str):
+        merge_algo: str,
+        watermark_trees: bool):
     add_project(abbrev,
                 name,
                 description,
@@ -72,7 +75,8 @@ def project_add(
                 dashboard_name,
                 project_label,
                 client_type,
-                merge_algo)
+                merge_algo,
+                watermark_trees)
 
 
 @project.command(
@@ -89,6 +93,7 @@ def project_add(
 @opt_project_client_type(required=False)
 @opt_merge_algorithm(required=False)
 @opt_status(help="Set current project status")
+@opt_watermark_trees(default=None)
 def project_update(
         project_abbrev: str,
         name: str,
@@ -98,7 +103,8 @@ def project_update(
         project_label: str,
         client_type: str,
         merge_algo: str,
-        status: str
+        status: str,
+        watermark_trees: bool
 ):
     update_project(project_abbrev,
                    name,
@@ -108,7 +114,8 @@ def project_update(
                    project_label,
                    client_type,
                    merge_algo,
-                   status)
+                   status,
+                   watermark_trees)
 
 
 @project.command('set-dashboard', hidden=hide_admin_cmds())
