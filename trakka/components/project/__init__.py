@@ -3,7 +3,7 @@ import click
 
 from trakka.utils.output import table_format_option
 from trakka.utils.output import object_format_option
-from trakka.utils.cmd_filter import hide_admin_cmds
+from trakka.utils.cmd_filter import hide_admin_cmds, show_admin_cmds
 from trakka.utils.options import opt_abbrev, \
     opt_label, \
     opt_view_type, opt_project_client_type, opt_merge_algorithm
@@ -25,6 +25,7 @@ from .dataset import dataset
 from .field import field
 from .metadata import metadata
 from .document import document
+from .organisation import organisation
 
 
 @click.group()
@@ -40,7 +41,7 @@ project.add_command(dataset)
 project.add_command(document)
 project.add_command(log_subcommands(PROJECT_RESOURCE))
 project.add_command(privilege_subcommands(PROJECT_RESOURCE))
-
+project.add_command(organisation, name="org")
 
 @project.command(
         'add',
