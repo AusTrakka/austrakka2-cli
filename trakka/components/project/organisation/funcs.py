@@ -1,5 +1,4 @@
 from typing import List
-from loguru import logger
 from trakka.utils.api import api_get, api_patch
 from trakka.utils.misc import logger_wraps
 from trakka.utils.output import print_dict
