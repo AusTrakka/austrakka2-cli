@@ -12,10 +12,6 @@ def get_project_organisation_list(identifier: str, out_format: str):
     response = api_get(uri)
     data = response.get('data', response)
 
-    if data is None:
-        logger.info("No Project Organisations available")
-        return
-
     print_dict(data, out_format)
 
 @logger_wraps()
