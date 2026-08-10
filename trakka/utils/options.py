@@ -712,14 +712,14 @@ def opt_fieldtype_value(var_name='values', **attrs: t.Any):
     )
 
 
-def opt_record_type(**attrs: t.Any):
+def opt_resource_type(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Record type that is the subject of access control. ',
+        'help': 'Resource type that is the subject of access control. ',
     }
     return create_option(
         '-rt',
-        '--record-type',
+        '--resource-type',
         type=click.Choice(ALL_RESOURCES),
         **{**defaults, **attrs}
     )
