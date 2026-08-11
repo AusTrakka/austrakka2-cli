@@ -6,7 +6,7 @@ from trakka.utils.api import api_patch, api_get
 from trakka.utils.api import api_post
 from trakka.utils.helpers.output import call_get_and_print
 from trakka.utils.misc import logger_wraps
-from trakka.utils.paths import GROUP_PATH, ORG_V2_PATH, USER_PATH
+from trakka.utils.paths import GROUP_PATH, ORG_PATH, USER_PATH
 
 
 @logger_wraps()
@@ -78,6 +78,7 @@ def update_user(
         is_active: bool = None,
         no_download_quota: bool = None,
         download_quota: int = None,
+        is_process: bool = None 
 ):
     user_resp = api_get(f'{USER_PATH}/{user_id}')
     user_full = user_resp['data']
@@ -109,6 +110,8 @@ def update_user(
         user['noDownloadQuota'] = no_download_quota
     if download_quota is not None:
         user['monthlyBytesQuota'] = download_quota
+    if is_process is not None:
+        user['isAusTrakkaProcess'] = is_process
 
     api_patch(
         path=f'{USER_PATH}/{user_id}',
@@ -139,6 +142,6 @@ def rename_user(user_id: str, username: str):
 @logger_wraps()
 def move_user_org(user_id: str, origin_org_id: str, target_org_id: str):
     api_patch(
-        path=f'{ORG_V2_PATH}/{origin_org_id}/User/{user_id}',
+        path=f'{ORG_PATH}/{origin_org_id}/User/{user_id}',
         data=target_org_id
     )

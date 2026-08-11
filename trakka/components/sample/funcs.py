@@ -2,7 +2,7 @@ from trakka.utils.helpers.share import resolve_share_target
 from trakka.utils.misc import logger_wraps
 from trakka.utils.api import api_patch, api_get
 from trakka.utils.paths import SAMPLE_PATH
-from trakka.utils.paths import ORG_V2_PATH
+from trakka.utils.paths import ORG_PATH
 from trakka.utils.helpers.groups import format_group_dto_for_output
 from trakka.utils.helpers.output import call_get_and_print
 
@@ -17,7 +17,7 @@ SAMPLES_OWNER = 'samplesOwner'
 @logger_wraps()
 def change_owner(curr_org: str, new_org: str, seq_ids: [str]):
     api_patch(
-        path=f"{ORG_V2_PATH}/{curr_org}/{SAMPLES_OWNER}",
+        path=f"{ORG_PATH}/{curr_org}/{SAMPLES_OWNER}",
         data={
             "seqIds": seq_ids,
             "newOwnerAbbrev": new_org

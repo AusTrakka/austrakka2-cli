@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.91.0] - 2026-08-11
+
+### Added
+`project org [add|list|remove]`.
+`[--watermark-trees|--no-watermark-trees]` to `project [add|update]`.
+
+### Changed
+`-ct/--client-type` is no longer required for `project add`.
+
+### Fixed
+- `[--is-process|--not-process]` did not function in `user update`.
+
 ## [0.90.0] - 2026-07-28
 
 ### Added
