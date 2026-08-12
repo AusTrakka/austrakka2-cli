@@ -34,7 +34,7 @@ This will install `trakka` to `~/.local/bin`. You can pass a custom directory li
 The CLI requires Python to run. If you would like to use conda to install Python, install the CLI, and save the necessary environment variables,
 you can first install either Miniforge (https://github.com/conda-forge/miniforge) or Miniconda (https://docs.conda.io/en/latest/miniconda.html). We recommend Miniforge for most users.
 
-Note that as a part of installing the CLI, you will need to set the environment's `AT_URI` variable.
+Note that as a part of installing the CLI, you will need to set the environment's `TRAKKA_URI` variable.
 
 ### Install into a conda environment (optional but recommended)
 
@@ -44,9 +44,9 @@ variables set and the `at-login` alias, run:
 conda create -n trakka python=3.12
 conda activate trakka
 python -m pip install trakka
-conda env config vars set AT_URI=[VALUE]
+conda env config vars set TRAKKA_URI=[VALUE]
 mkdir -p ${CONDA_PREFIX}/etc/conda/activate.d
-echo "alias at-login=\"export AT_TOKEN=\\\$(trakka auth user)\"" > ${CONDA_PREFIX}/etc/conda/activate.d/trakka-alias.sh
+echo "alias at-login=\"export TRAKKA_TOKEN=\\\$(trakka auth user)\"" > ${CONDA_PREFIX}/etc/conda/activate.d/trakka-alias.sh
 ```
 Note that the last two lines are valid only for Linux/Mac and will not work on Windows. These lines create an alias `at-login` 
 in the conda environment, which will log you in to the CLI.
@@ -67,28 +67,28 @@ To install without conda, simply install with
 python -m pip install trakka
 ```
 
-You will need to set the environment variable `AT_URI`.
+You will need to set the environment variable `TRAKKA_URI`.
 You can do this by running:
 
 > #### Mac / Linux
 >```
->export AT_URI=[VALUE]
+>export TRAKKA_URI=[VALUE]
 >```
 >You may wish to add this to your `.bashrc` or `.zshrc` file.
 
 >#### Windows: Powershell
 >```
->$Env:AT_URI = [VALUE]
+>$Env:TRAKKA_URI = [VALUE]
 >```
 
-To use the CLI, you must log in by setting the `AT_TOKEN` environment variable using the 
+To use the CLI, you must log in by setting the `TRAKKA_TOKEN` environment variable using the 
 `trakka auth user` command (see User Authentication, below). 
 
 > #### Mac / Linux
 >You may wish to configure 
 >a login command for convenience:
 >```
->alias at-login="export AT_TOKEN=\$(trakka auth user)"
+>alias at-login="export TRAKKA_TOKEN=\$(trakka auth user)"
 >```
 >You may wish to add this to your `.bashrc` or `.zshrc` file.
 
@@ -96,7 +96,7 @@ To use the CLI, you must log in by setting the `AT_TOKEN` environment variable u
 >You may wish to configure 
 >a login command for convenience:
 >```
->Function at-login { $Env:AT_TOKEN = trakka auth user }
+>Function at-login { $Env:TRAKKA_TOKEN = trakka auth user }
 >```
 >You may wish to add this to your `config.ps1` file.
 
@@ -131,26 +131,26 @@ to the Trakka web interface, and will authenticate you via your institution's id
 >at-login
 >``` 
 >
->Otherwise, you will need to set the `AT_TOKEN` environment variable. In a Mac or Linux environment you can run:
+>Otherwise, you will need to set the `TRAKKA_TOKEN` environment variable. In a Mac or Linux environment you can run:
 >```
->export AT_TOKEN=$(trakka auth user)
+>export TRAKKA_TOKEN=$(trakka auth user)
 >```
 
 >#### Windows: Powershell
 >
 >```
->$Env:AT_TOKEN = trakka auth user
+>$Env:TRAKKA_TOKEN = trakka auth user
 >```
 
 >#### Windows: Cmd
 >
->Set the `AT_TOKEN` environment variable by first running
+>Set the `TRAKKA_TOKEN` environment variable by first running
 >```
 >trakka auth user
 >```
 >to obtain a token string, and then running 
 >```
->set AT_TOKEN=<output of previous command>
+>set TRAKKA_TOKEN=<output of previous command>
 >```
 >:w
 > to set the environment variable.
@@ -161,31 +161,31 @@ This authentication mode is intended for long-term automated processes. Most use
 
 To authenticate a process, you'll need to set the following environment variables:
 ```bash
-AT_AUTH_PROCESS_ID
-AT_AUTH_PROCESS_SECRET
+TRAKKA_AUTH_PROCESS_ID
+TRAKKA_AUTH_PROCESS_SECRET
 ```
-Values for `AT_AUTH_PROCESS_ID` and `AT_AUTH_PROCESS_SECRET` will be provided to you by the Trakka team. Note that the secret value is sensitive.
+Values for `TRAKKA_AUTH_PROCESS_ID` and `TRAKKA_AUTH_PROCESS_SECRET` will be provided to you by the Trakka team. Note that the secret value is sensitive.
 
 Once these variables are set, run the following to authorise:
 
 >#### Mac/Linux
 >```
->export AT_TOKEN=$(trakka auth process)
+>export TRAKKA_TOKEN=$(trakka auth process)
 >```
 
 >#### Windows: Powershell
 >```
->$Env:AT_TOKEN = trakka auth process
+>$Env:TRAKKA_TOKEN = trakka auth process
 >```
 
 >#### Windows: Cmd
->Set the `AT_TOKEN` environment variable by first running
+>Set the `TRAKKA_TOKEN` environment variable by first running
 >```
 >trakka auth process
 >```
 >to obtain a token string, and then running 
 >```
->set AT_TOKEN=<output of previous command>
+>set TRAKKA_TOKEN=<output of previous command>
 >```
 >to set the environment variable.
 
@@ -214,17 +214,17 @@ to see the usage of the `metadata add` command to upload metadata files.
 
 | Name                    | Description                                                                                                                                     |
 |-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| `AT_TOKEN`              | Trakka auth token                                                                                                                            |
-| `AT_URI`                | URI for API endpoint                                                                                                                            |
-| `AT_LOG_LEVEL`          | Level of logging                                                                                                                                |
-| `AT_LOG`                | Set to `file` to redirecting logging to a temp file                                                                                             |
-| `AT_CMD_SET`            | Set to `trakka-admin` to display admin commands (these will not actually run successfully unless you have an appropriate role on the server) |
-| `AT_TIMEZONE`           | Set to change the default timezone used for datetime display and parsing. Default if unset is to use your local timezone.                       |
-| `AT_SKIP_CERT_VERIFY`   | Skips verification of the cert used by the Trakka backend                                                                                    |
-| `AT_SKIP_VERSION_CHECK` | Skips checking of new CLI version                                                                                                               |
-| `AT_USE_HTTP2`          | Uses HTTP2 (experimental)                                                                                                                       |
+| `TRAKKA_TOKEN`              | Trakka auth token                                                                                                                            |
+| `TRAKKA_URI`                | URI for API endpoint                                                                                                                            |
+| `TRAKKA_LOG_LEVEL`          | Level of logging                                                                                                                                |
+| `TRAKKA_LOG`                | Set to `file` to redirecting logging to a temp file                                                                                             |
+| `TRAKKA_CMD_SET`            | Set to `trakka-admin` to display admin commands (these will not actually run successfully unless you have an appropriate role on the server) |
+| `TRAKKA_TIMEZONE`           | Set to change the default timezone used for datetime display and parsing. Default if unset is to use your local timezone.                       |
+| `TRAKKA_SKIP_CERT_VERIFY`   | Skips verification of the cert used by the Trakka backend                                                                                    |
+| `TRAKKA_SKIP_VERSION_CHECK` | Skips checking of new CLI version                                                                                                               |
+| `TRAKKA_USE_HTTP2`          | Uses HTTP2 (experimental)                                                                                                                       |
 
-All commands require `AT_URI` and `AT_TOKEN` to be set, except for `auth` commands.
+All commands require `TRAKKA_URI` and `TRAKKA_TOKEN` to be set, except for `auth` commands.
 
 ## Project Structure
 
