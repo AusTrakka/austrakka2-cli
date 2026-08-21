@@ -18,7 +18,7 @@ from .funcs import \
     enable_sample, \
     unshare_sample, \
     share_sample, \
-    get_groups, \
+    get_sample_projects, \
     show_sample, \
     purge_sample, \
     change_owner
@@ -99,15 +99,15 @@ def sample_disable(seq_id: [str], file: BufferedReader):
     disable_sample(seq_ids)
 
 
-@sample.command('groups')
+@sample.command('projects')
 @table_format_option()
 @opt_seq_id(multiple=False)
-def seq_groups(
+def sample_projects(
         seq_id: str,
         out_format: str
 ):
-    """List the groups that the sample record is in (shared with, or owned by)."""
-    get_groups(
+    """List the projects that the sample record is shared with."""
+    get_sample_projects(
         seq_id,
         out_format,
     )
