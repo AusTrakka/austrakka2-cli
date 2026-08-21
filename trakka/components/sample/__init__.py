@@ -20,6 +20,7 @@ from .funcs import \
     share_sample, \
     get_sample_projects, \
     show_sample, \
+    show_sample_details, \
     purge_sample, \
     change_owner
 
@@ -57,9 +58,15 @@ def owner_change(old_org_id: str, new_org_id: str, seq_id: [str], file: Buffered
 @opt_seq_id(multiple=False)
 @object_format_option()
 def sample_show(seq_id: str, out_format: str):
-    """Show all available information about a sample record."""
+    """Show basic information about a sample record."""
     show_sample(seq_id, out_format)
 
+@sample.command('show-details', hidden=hide_admin_cmds())
+@opt_seq_id(multiple=False)
+@object_format_option()
+def sample_show_details(seq_id: str, out_format: str):
+    """Show all available information about a sample record."""
+    show_sample_details(seq_id, out_format)
 
 @sample.command('unshare')
 @opt_group_name(mutually_exclusive=['project'],

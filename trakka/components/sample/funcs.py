@@ -1,7 +1,7 @@
 from trakka.utils.helpers.share import resolve_share_target
 from trakka.utils.misc import logger_wraps
 from trakka.utils.api import api_patch
-from trakka.utils.paths import SAMPLE_PATH
+from trakka.utils.paths import SAMPLE_PATH, DETAILS_PATH
 from trakka.utils.paths import ORG_PATH
 from trakka.utils.helpers.output import call_get_and_print
 
@@ -30,6 +30,16 @@ def show_sample(
 ):
     call_get_and_print(
         path="/".join([SAMPLE_PATH, seq_id]),
+        out_format=out_format
+    )
+
+@logger_wraps()
+def show_sample_details(
+        seq_id: str,
+        out_format: str,
+):
+    call_get_and_print(
+        path="/".join([SAMPLE_PATH, seq_id, DETAILS_PATH]),
         out_format=out_format
     )
 
