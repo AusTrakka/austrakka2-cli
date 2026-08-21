@@ -1,7 +1,6 @@
 from trakka.utils.helpers.share import resolve_share_target
 from trakka.utils.misc import logger_wraps
-from trakka.utils.api import api_patch, api_get
-from trakka.utils.output import print_dataframe
+from trakka.utils.api import api_patch
 from trakka.utils.paths import SAMPLE_PATH
 from trakka.utils.paths import ORG_PATH
 from trakka.utils.helpers.output import call_get_and_print
