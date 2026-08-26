@@ -106,7 +106,7 @@ def add_version_proforma(
 
     _validate_add_version_args(inherit, required_columns, optional_columns, remove_field)
 
-    data = api_get(path=f'{PROFORMA_PATH}/abbrev/{abbrev}')['data']
+    data = api_get(path=f'{PROFORMA_PATH}/{abbrev}')['data']
 
     current_field_spec = {field['metaDataColumnName']: field['isRequired']
                           for field in data['columnMappings']}
@@ -209,7 +209,7 @@ def generate_proforma(
     "Generate an XLSX template for a pro forma"    
     # Get the pro forma spec
     response = api_get(
-        path=f"{PROFORMA_PATH}/abbrev/{abbrev}"
+        path=f"{PROFORMA_PATH}/{abbrev}"
     )
     field_df = _get_proforma_fields_df(response['data'])
     field_df.index = field_df['name']
@@ -304,7 +304,7 @@ def list_proformas(view_type: str, out_format: str):
 @logger_wraps()
 def show_proforma(abbrev: str, out_format: str):
     response = api_get(
-        path=f"{PROFORMA_PATH}/abbrev/{abbrev}"
+        path=f"{PROFORMA_PATH}/{abbrev}"
     )
     data = response['data'] if ('data' in response) else response
 
@@ -417,7 +417,7 @@ def update_field_class_proforma(
         metadata_class: str,
 ):
     response = api_get(
-        path=f"{PROFORMA_PATH}/abbrev/{identifier}"
+        path=f"{PROFORMA_PATH}/{identifier}"
     )
     fields = response["data"]["columnMappings"]
     field_abbrevs = [f["metaDataColumnName"] for f in fields]
