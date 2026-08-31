@@ -1,6 +1,8 @@
 from typing import List
 
 
+from trakka.components.proforma.org import org
+from trakka.components.proforma.project import project
 from trakka.utils.output import table_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.privilege import PROFORMA_RESOURCE
@@ -32,6 +34,8 @@ def proforma(ctx):
     ctx.context = ctx.parent.context
 
 proforma.add_command(log_subcommands(PROFORMA_RESOURCE))
+proforma.add_command(org)
+proforma.add_command(project)
 
 # proforma-specific options used in multiple commands
 opt_required = create_option(
