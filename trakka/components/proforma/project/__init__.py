@@ -55,4 +55,3 @@ def proforma_unshare_projects(identifier: str, projects: List[str]):
     Unshare proforma with projects
     '''
     unshare_entities(identifier, PROJECT_RESOURCE, projects)
-

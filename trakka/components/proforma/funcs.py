@@ -17,7 +17,7 @@ from trakka.utils.helpers.upload import upload_multipart
 from trakka.utils.helpers.share import resolve_share_targets
 from trakka.utils.misc import logger_wraps
 from trakka.utils.output import print_dataframe, log_response, get_viewtype_columns
-from trakka.utils.paths import ORG_PATH, PROFORMA_PATH
+from trakka.utils.paths import PROFORMA_PATH
 from trakka.utils.privilege import ORG_RESOURCE, PROJECT_RESOURCE
 from trakka.utils.retry import retry
 from trakka.utils.fs import FileHash, get_hash
@@ -484,4 +484,3 @@ def unshare_entities(identifier: str, entity_type: str, entity_identifiers: List
         path=path,
         data=entity_identifiers,
     )
-

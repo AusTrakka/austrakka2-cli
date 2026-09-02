@@ -55,4 +55,3 @@ def proforma_unshare_orgs(identifier: str, orgs: List[str]):
     Unshare proforma with organisations
     '''
     unshare_entities(identifier, ORG_RESOURCE, orgs)
-
