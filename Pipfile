@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pylint = "==4.0.4"
+pylint = "==4.0.8"
 autopep8 = "==2.3.2"
 pycodestyle = "==2.14.0"
 pytest = "==9.0.2"
