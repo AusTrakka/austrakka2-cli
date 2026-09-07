@@ -16,6 +16,7 @@ SEQUENCE_BY_SAMPLE_PATH = 'by-sample'
 SEQUENCE_TYPE_QUERY = 'seqType'
 SEQUENCE_READ_QUERY = 'read'
 SAMPLE_PATH = 'Sample'
+DETAILS_PATH = 'Details'
 GROUP_PATH = 'Group'
 PLOT_PATH = "Plots"
 PROJECT_DASHBOARD_PATH = 'ProjectDashboards'
