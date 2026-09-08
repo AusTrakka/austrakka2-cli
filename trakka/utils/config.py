@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 from typing import Any, Dict, Union
+from urllib.parse import urljoin
 
 import httpx
 from loguru import logger
@@ -108,7 +109,7 @@ def get_server_info_or_create(
 def _get_new_server_info(url: str, vertify_vert: bool) -> Union[Dict, None]:
     data = {}
     try:
-        r = httpx.get(url + "/api/Version", verify=not vertify_vert)
+        r = httpx.get(urljoin(url, "/api/Version"), verify=not vertify_vert)
         if not r.is_success:
             logger.warning(
                 "Unable to contact server to determine auth information.")
