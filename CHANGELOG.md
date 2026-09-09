@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.92.0] - 2026-09-08
+
+### Removed
+- `-ogr/--owner-group-roles` option from `user add`. Use `org privilege assign` to assign directly against the organisation instead.
+
 ## [0.91.0] - 2026-08-11
 
 ### Added
