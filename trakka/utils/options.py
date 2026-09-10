@@ -72,7 +72,7 @@ def opt_label(var_name='project_label', help_string='Type string.', **attrs: t.A
         'help': help_string,
     }
     return create_option(
-        "-t",
+        "-l",
         "--label",
         var_name,
         type=click.STRING,
@@ -482,21 +482,6 @@ def opt_plotspec(**attrs: t.Any):
     )
 
 
-def opt_owner_group_roles(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'multiple': True,
-        'help': 'The user''s Owner group and role assignment. Exclude ' +
-                'this option if the user is not an owner.',
-    }
-    return create_option(
-        '-ogr',
-        '--owner-group-roles',
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
 def opt_user_object_id(**attrs: t.Any):
     defaults = {
         'required': True,
@@ -712,14 +697,14 @@ def opt_fieldtype_value(var_name='values', **attrs: t.Any):
     )
 
 
-def opt_record_type(**attrs: t.Any):
+def opt_resource_type(**attrs: t.Any):
     defaults = {
         'required': True,
-        'help': 'Record type that is the subject of access control. ',
+        'help': 'Resource type that is the subject of access control. ',
     }
     return create_option(
         '-rt',
-        '--record-type',
+        '--resource-type',
         type=click.Choice(ALL_RESOURCES),
         **{**defaults, **attrs}
     )
@@ -894,5 +879,19 @@ def opt_status(**attrs: t.Any):
         type=click.Choice([OPEN, CLOSED]),
         required=False,
         default=None,
+        **{**defaults, **attrs}
+    )
+
+def opt_watermark_trees(**attrs: t.Any):
+    defaults = {
+        "help": "When enabled, trees exported from this project will "
+        "have a watermark applied to them",
+        "default": False,
+    }
+    return create_option(
+        "--watermark-trees/--no-watermark-trees",
+        type=bool,
+        is_flag=True,
+        required=False,
         **{**defaults, **attrs}
     )

@@ -19,6 +19,7 @@ jobs:
           source_branch: Development
           target_branch: UAT
           title: Development -> UAT
+          body: "Automated PR created by pipelines"
       - name: Create auto UAT -> master PR
         uses: devops-infra/action-pull-request@v0.5.5
         if: ${{ github.ref_name == 'UAT' }}
@@ -27,6 +28,7 @@ jobs:
           source_branch: UAT
           target_branch: master
           title: UAT -> master
+          body: "Automated PR created by pipelines"
       - name: Create auto master -> Development PR
         uses: devops-infra/action-pull-request@v0.5.5
         if: ${{ github.ref_name == 'master' }}
@@ -35,3 +37,4 @@ jobs:
           source_branch: master
           target_branch: Development
           title: master -> Development
+          body: "Automated PR created by pipelines"

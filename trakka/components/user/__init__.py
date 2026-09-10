@@ -1,5 +1,3 @@
-from typing import List
-
 import click
 
 from trakka.utils.output import table_format_option
@@ -8,7 +6,6 @@ from trakka.utils.options import \
     opt_identifier, \
     opt_user_identifier, \
     opt_username, \
-    opt_owner_group_roles, \
     opt_name, \
     opt_email_address, \
     opt_is_active, \
@@ -46,7 +43,6 @@ def user_list(show_disabled: bool, out_format: str):
 @opt_user_object_id()
 @opt_username()
 @opt_organisation()
-@opt_owner_group_roles(required=False)
 @opt_is_trakka_process(default=False)
 @opt_server_username()
 @opt_user_no_dl_quota()
@@ -59,7 +55,6 @@ def user_add(
         org: str,
         email: str,
         position: str,
-        owner_group_roles: List[str],
         is_process: bool,
         server_username: str,
         no_download_quota: bool,
@@ -71,7 +66,6 @@ def user_add(
         org, 
         email,
         position,
-        owner_group_roles, 
         is_process, 
         server_username, 
         no_download_quota, 
@@ -85,6 +79,7 @@ def user_add(
 @opt_email_address(required=False)
 @opt_user_position(required=False)
 @opt_is_active(required=False)
+@opt_is_trakka_process(default=None)
 @opt_server_username(required=False)
 @opt_user_no_dl_quota(default=None)
 @opt_user_monthly_dl_quota_bytes()
@@ -97,6 +92,7 @@ def user_update(
     server_username: str,
     no_download_quota: bool,
     download_quota: int,
+    is_process: bool,
 ):
     update_user(
         user_id, 
@@ -106,7 +102,8 @@ def user_update(
         server_username, 
         is_active, 
         no_download_quota, 
-        download_quota
+        download_quota,
+        is_process
     )
 
 

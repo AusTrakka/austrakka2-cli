@@ -5,12 +5,8 @@ from trakka.utils.api import api_post, api_patch, api_delete
 
 from trakka.utils.misc import logger_wraps
 
-list_compact_fields = ['name', 'description', 'privilegeLevel']
+list_compact_fields = ['name', 'description', 'resourceType', 'privilegeLevel']
 list_more_fields = [
-    'name', 
-    'description', 
-    'privilegeLevel', 
-    'resourceTypes', 
     'created', 
     'createdBy']
 
@@ -34,7 +30,7 @@ def add_role(
         role: str, 
         description: str, 
         privilege_level: str, 
-        allowed_record_types: list[str],
+        resource_type: str,
         scopes: list[str],
 ):
     """
@@ -45,7 +41,7 @@ def add_role(
         "name": role,
         "description": description,
         "privilegeLevel": privilege_level,
-        "resourceTypes": list(allowed_record_types),
+        "resourceType": resource_type,
         "scopes": list(scopes),
     }
 
@@ -61,18 +57,16 @@ def update_role(
         new_name: str,
         description: str,
         privilege_level: str,
-        allowed_record_types: list[str],
-        clear_allowed_record_types: bool):
+        resource_type: str):
     """
     Update a role.
     """
     if (not new_name and
             not description and
             not privilege_level and
-            not allowed_record_types and
-            not clear_allowed_record_types):
+            not resource_type):
         raise ValueError("At least one of new_name, description, privilege_level, "
-                         "clear_allowed_record_types, or allowed_record_types must be provided")
+                         "or resource_type must be provided")
 
     payload = {}
     if new_name:
@@ -84,11 +78,8 @@ def update_role(
     if privilege_level:
         payload["privilegeLevel"] = privilege_level
 
-    if not clear_allowed_record_types and allowed_record_types:
-        payload["resourceTypes"] = list(allowed_record_types)
-
-    if clear_allowed_record_types:
-        payload["resourceTypes"] = []
+    if resource_type:
+        payload["resourceType"] = resource_type
 
     api_patch(
         path=f"{ROLES_V2_PATH}/{role}",

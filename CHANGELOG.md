@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.92.0] - 2026-09-08
+
+### Removed
+- `-ogr/--owner-group-roles` option from `user add`. Use `org privilege assign` to assign directly against the organisation instead.
+
+## [0.91.0] - 2026-08-11
+
+### Added
+- `project org [add|list|remove]`.
+- `[--watermark-trees|--no-watermark-trees]` to `project [add|update]`.
+
+### Changed
+- `-ct/--client-type` is no longer required for `project add`.
+
+### Fixed
+- `[--is-process|--not-process]` did not function in `user update`.
+
+## [0.90.0] - 2026-07-28
+
+### Added
+- `proforma field-class` command to update a proforma field class.
+- `admin user update-object-id` command to update a user's object id.
+
+## [0.89.1] - 2026-07-21
+
+### Added
+- `--status` to `project update`.
+
 ## [0.89.0] - 2026-07-14
 
 ### Added

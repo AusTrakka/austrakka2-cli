@@ -1,6 +1,7 @@
 # pylint: disable=expression-not-assigned
 import click
 
+from trakka.components.admin.user import user
 from trakka.components.admin.message import message
 from trakka.components.admin.rawlog import rawlog
 from trakka.utils.cmd_filter import show_admin_cmds
@@ -15,3 +16,4 @@ def admin(ctx):
 
 admin.add_command(message) if show_admin_cmds() else None
 admin.add_command(rawlog) if show_admin_cmds() else None
+admin.add_command(user) if show_admin_cmds() else None

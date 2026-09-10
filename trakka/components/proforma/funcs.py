@@ -4,12 +4,14 @@ import pandas as pd
 from httpx import HTTPStatusError
 from loguru import logger
 
-
 from trakka.utils.api import api_delete, api_get
 from trakka.utils.api import api_post
 from trakka.utils.api import api_patch
 from trakka.utils.api import api_put
-from trakka.utils.exceptions import FailedResponseException, UnknownResponseException
+from trakka.utils.exceptions import \
+    FailedResponseException, \
+    UnknownResponseException, \
+    TrakkaCliException
 from trakka.utils.helpers.upload import upload_multipart
 from trakka.utils.helpers.share import resolve_share_targets
 from trakka.utils.misc import logger_wraps
@@ -104,7 +106,7 @@ def add_version_proforma(
 
     _validate_add_version_args(inherit, required_columns, optional_columns, remove_field)
 
-    data = api_get(path=f'{PROFORMA_PATH}/abbrev/{abbrev}')['data']
+    data = api_get(path=f'{PROFORMA_PATH}/{abbrev}')['data']
 
     current_field_spec = {field['metaDataColumnName']: field['isRequired']
                           for field in data['columnMappings']}
@@ -207,7 +209,7 @@ def generate_proforma(
     "Generate an XLSX template for a pro forma"    
     # Get the pro forma spec
     response = api_get(
-        path=f"{PROFORMA_PATH}/abbrev/{abbrev}"
+        path=f"{PROFORMA_PATH}/{abbrev}"
     )
     field_df = _get_proforma_fields_df(response['data'])
     field_df.index = field_df['name']
@@ -233,7 +235,8 @@ def _get_proforma_fields_df(data):
         'nndssFieldLabel',
         'metaDataColumnPrimitiveType',
         'metaDataColumnValidValues',
-        'isRequired'
+        'isRequired',
+        'class'
     ]]
 
     field_df.rename(
@@ -301,7 +304,7 @@ def list_proformas(view_type: str, out_format: str):
 @logger_wraps()
 def show_proforma(abbrev: str, out_format: str):
     response = api_get(
-        path=f"{PROFORMA_PATH}/abbrev/{abbrev}"
+        path=f"{PROFORMA_PATH}/{abbrev}"
     )
     data = response['data'] if ('data' in response) else response
 
@@ -406,3 +409,29 @@ def _build_field_spec(
 
 def rm_attach_proforma(identifier: str, version: int):
     api_delete(path=f'{PROFORMA_PATH}/{identifier}/{version}/Attach')
+
+
+def update_field_class_proforma(
+        identifier: str, 
+        field_identifiers: List[str],
+        metadata_class: str,
+):
+    response = api_get(
+        path=f"{PROFORMA_PATH}/{identifier}"
+    )
+    fields = response["data"]["columnMappings"]
+    field_abbrevs = [f["metaDataColumnName"] for f in fields]
+    field_global_ids = [f["metaDataColumnGlobalId"] for f in fields]
+    for field_identifier in field_identifiers:
+        if field_identifier not in field_abbrevs and field_identifier not in field_global_ids:
+            raise TrakkaCliException(
+                f'Field {field_identifier} is not in proforma {identifier}'
+            )
+
+    for field_identifier in field_identifiers:
+        api_patch(
+            path=f'{PROFORMA_PATH}/{identifier}/Field/{field_identifier}',
+            data={
+                "class": metadata_class,
+            },
+        )

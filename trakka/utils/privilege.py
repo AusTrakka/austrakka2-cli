@@ -1,6 +1,6 @@
 
-from trakka.utils.paths import ORG_V2_PATH
-from trakka.utils.paths import PROFORMA_V2_PATH
+from trakka.utils.paths import ORG_PATH
+from trakka.utils.paths import PROFORMA_PATH
 from trakka.utils.paths import PROJECT_PATH
 from trakka.utils.paths import TENANT_PATH
 
@@ -20,11 +20,11 @@ ALL_RESOURCES = [
 def _convert_record_type_to_route_string(record_type):
     record_type_route = record_type
     if record_type == ORG_RESOURCE:
-        record_type_route = ORG_V2_PATH
+        record_type_route = ORG_PATH
     if record_type == PROJECT_RESOURCE:
         record_type_route = PROJECT_PATH
     if record_type == PROFORMA_RESOURCE:
-        record_type_route = PROFORMA_V2_PATH
+        record_type_route = PROFORMA_PATH
     return record_type_route
 
 
