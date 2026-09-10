@@ -109,6 +109,8 @@ class TrakkaCxt:
             trakka_name = TrakkaCxt._get_trakka_env_var_name(k)
             at_name = TrakkaCxt._get_at_env_var_name(k)
             if at_name in os.environ and trakka_name not in os.environ:
-                logger.warning("Environment variable " + at_name 
+                # When we are closer to a v1, 
+                # upgrade the severity from debug to warning
+                logger.debug("Environment variable " + at_name 
                     + " is deprecated and will be replaced with " 
                     + trakka_name + " in a future release.")

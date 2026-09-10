@@ -17,6 +17,7 @@ def hide_admin_cmds():
     return not show_admin_cmds()
 
 
+# When we are closer to a v1, upgrade the severity from debug to warning
 def deprecation_warning(value: str):
     # This global flag is required as this function will be called
     # for every instance of a admin command
@@ -31,7 +32,7 @@ def deprecation_warning(value: str):
         # means this line might look different; it's temporary,
         # and as only internal users are using this flag we can
         # remove it sooner.
-        logger.warning("Value " + AUSTRAKKA_ADMIN + " for env vars " 
+        logger.debug("Value " + AUSTRAKKA_ADMIN + " for env vars " 
             + env_var_names + " is deprecated and will be replaced with " 
             + TRAKKA_ADMIN + " in a future release.")
         _DEPRECATION_WARNING_PRINTED = True
