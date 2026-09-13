@@ -482,21 +482,6 @@ def opt_plotspec(**attrs: t.Any):
     )
 
 
-def opt_owner_group_roles(**attrs: t.Any):
-    defaults = {
-        'required': True,
-        'multiple': True,
-        'help': 'The user''s Owner group and role assignment. Exclude ' +
-                'this option if the user is not an owner.',
-    }
-    return create_option(
-        '-ogr',
-        '--owner-group-roles',
-        type=click.STRING,
-        **{**defaults, **attrs}
-    )
-
-
 def opt_user_object_id(**attrs: t.Any):
     defaults = {
         'required': True,

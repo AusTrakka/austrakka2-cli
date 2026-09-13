@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 from loguru import logger
 
@@ -6,7 +6,7 @@ from trakka.utils.api import api_patch, api_get
 from trakka.utils.api import api_post
 from trakka.utils.helpers.output import call_get_and_print
 from trakka.utils.misc import logger_wraps
-from trakka.utils.paths import GROUP_PATH, ORG_PATH, USER_PATH
+from trakka.utils.paths import ORG_PATH, USER_PATH
 
 
 @logger_wraps()
@@ -29,7 +29,6 @@ def add_user(
         org: str,
         email: str,
         position: str,
-        owner_group_roles: List[str],
         is_process: bool,
         server_username: str,
         no_download_quota: bool,
@@ -54,18 +53,6 @@ def add_user(
     api_post(
         path=USER_PATH,
         data=user
-    )
-
-    api_patch(
-        path=f'{GROUP_PATH}/assign',
-        data={
-            "identifier": username,
-            "entitlements": [
-                { "groupName": f"{org}-Owner", "roleName": role} 
-                for role 
-                in owner_group_roles
-            ],
-        },
     )
 
 

@@ -1,14 +1,11 @@
-from typing import List
-
 import click
 
-from trakka.utils.output import table_format_option, default_object_format
+from trakka.utils.output import table_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import \
     opt_identifier, \
     opt_user_identifier, \
     opt_username, \
-    opt_owner_group_roles, \
     opt_name, \
     opt_email_address, \
     opt_is_active, \
@@ -46,7 +43,6 @@ def user_list(show_disabled: bool, out_format: str):
 @opt_user_object_id()
 @opt_username()
 @opt_organisation()
-@opt_owner_group_roles(required=False)
 @opt_is_trakka_process(default=False)
 @opt_server_username()
 @opt_user_no_dl_quota()
@@ -59,7 +55,6 @@ def user_add(
         org: str,
         email: str,
         position: str,
-        owner_group_roles: List[str],
         is_process: bool,
         server_username: str,
         no_download_quota: bool,
@@ -71,7 +66,6 @@ def user_add(
         org, 
         email,
         position,
-        owner_group_roles, 
         is_process, 
         server_username, 
         no_download_quota, 
