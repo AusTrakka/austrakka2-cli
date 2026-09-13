@@ -1,7 +1,8 @@
 import click
 from click import option
 
-from trakka.utils.options import opt_output_dir, opt_group_name
+from trakka.utils.options import RequiredMutuallyExclusiveOption
+from trakka.utils.options import opt_output_dir, opt_project, opt_organisation
 from trakka.utils.options import opt_recalc_hash
 from trakka.utils.options import opt_seq_type
 from trakka.utils.options import opt_batch_size
@@ -16,7 +17,18 @@ def sync(ctx):
 
 @sync.command('get')
 @opt_output_dir()
-@opt_group_name(default=None, multiple=False, required=True)
+@opt_project(
+    required=False,
+    default=None,
+    multiple=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['org'])
+@opt_organisation(
+    required=False,
+    default=None,
+    multiple=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['project'])
 @opt_recalc_hash()
 @opt_seq_type(required=True)
 @opt_batch_size(help='Specifies the number of sequence downloads to perform '
@@ -38,7 +50,8 @@ def sync(ctx):
 )
 def get_seq(
         output_dir: str,
-        group_name: str,
+        project: str,
+        org: str,
         recalculate_hashes: bool,
         seq_type: str,
         batch_size: int,
@@ -50,7 +63,8 @@ def get_seq(
     """
     seq_sync_get(
         output_dir,
-        group_name,
+        project,
+        org,
         recalculate_hashes,
         seq_type,
         batch_size,
