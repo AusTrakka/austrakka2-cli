@@ -632,7 +632,7 @@ def _create_samples(
     for project in shared_projects:
         api_patch(f'{SAMPLE_PATH}/Share', data={
             'seqIds': seq_ids,
-            'groupName': f'{project}-Group',
+            'projectIdentifier': project,
         })
 
 
