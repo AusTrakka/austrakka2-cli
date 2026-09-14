@@ -5,7 +5,7 @@ from ete_cmd_bricks import (
     _create_org,
     _create_group,
     _upload_fasta_cns_file,
-    _list_seq_by_group)
+    _list_seq_by_org)
 
 from ete_utils import (
     _new_identifier,
@@ -125,7 +125,6 @@ class TestSeqPurgeCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_org(self.cli, org_name)
@@ -136,7 +135,7 @@ class TestSeqPurgeCommand:
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
         _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
-        pre_purge_list = _list_seq_by_group(self.cli, owner_group)
+        pre_purge_list = _list_seq_by_org(self.cli, org_name)
         assert sum(1 for entry in pre_purge_list if entry.get('sampleName') == seq_id) == 1, pre_purge_list
         assert sum(1 for entry in pre_purge_list if entry.get('sampleName') == seq_id2) == 1, pre_purge_list
 
@@ -155,7 +154,7 @@ class TestSeqPurgeCommand:
         # Assert
         assert result.exit_code == 0, f'The seq purge command should succeed: {result.output}'
         # _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
-        pre_purge_list2 = _list_seq_by_group(self.cli, owner_group)
+        pre_purge_list2 = _list_seq_by_org(self.cli, org_name)
         assert sum(1 for entry in pre_purge_list2 if entry.get('sampleName') == seq_id) == 0, pre_purge_list2
         assert sum(1 for entry in pre_purge_list2 if entry.get('sampleName') == seq_id2) == 1, pre_purge_list2
     
@@ -197,7 +196,6 @@ class TestSeqPurgeCommand:
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_org(self.cli, org_name)
@@ -208,7 +206,7 @@ class TestSeqPurgeCommand:
             [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
 
         _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
-        pre_purge_list = _list_seq_by_group(self.cli, owner_group)
+        pre_purge_list = _list_seq_by_org(self.cli, org_name)
         assert sum(1 for entry in pre_purge_list if entry.get('sampleName') == seq_id) == 1, pre_purge_list
         assert sum(1 for entry in pre_purge_list if entry.get('sampleName') == seq_id2) == 1, pre_purge_list
 
@@ -227,6 +225,6 @@ class TestSeqPurgeCommand:
         # Assert
         assert result.exit_code == 0, f'The seq purge command should succeed: {result.output}'
         # _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
-        pre_purge_list2 = _list_seq_by_group(self.cli, owner_group)
+        pre_purge_list2 = _list_seq_by_org(self.cli, org_name)
         assert sum(1 for entry in pre_purge_list2 if entry.get('sampleName') == seq_id) == 0, pre_purge_list2
         assert sum(1 for entry in pre_purge_list2 if entry.get('sampleName') == seq_id2) == 1, pre_purge_list2
