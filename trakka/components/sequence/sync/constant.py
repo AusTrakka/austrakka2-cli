@@ -1,7 +1,9 @@
 # Sync state key constants
 MANIFEST_KEY = 'manifest'
 INTERMEDIATE_MANIFEST_FILE_KEY = 'intermediate_manifest_file'
-GROUP_NAME_KEY = 'group_name'
+GROUP_NAME_KEY = 'group_name' # Used for conversion of legacy sync state files
+RESOURCE_TYPE_KEY = 'resource_type'  # org or project type
+RESOURCE_NAME_KEY = 'resource_name'  # org or project abbrev
 SEQ_TYPE_KEY = 'seq_type'
 OUTPUT_DIR_KEY = 'output_dir'
 SYNC_STATE_FILE_KEY = 'sync_state_file'
@@ -44,6 +46,10 @@ FAILED = 'failed'
 MATCH = 'match'
 MISSING = 'missing'
 DONE = 'done'
+
+# Constants for resource types we can sync from
+RT_PROJECT = 'project'
+RT_ORG = 'organisation'
 
 # Command level value constants
 # SEQTYPE will be replaced with the seq type being operated on

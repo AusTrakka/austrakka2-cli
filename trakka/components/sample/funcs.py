@@ -1,4 +1,3 @@
-from trakka.utils.helpers.share import resolve_share_target
 from trakka.utils.misc import logger_wraps
 from trakka.utils.api import api_patch
 from trakka.utils.paths import SAMPLE_PATH, DETAILS_PATH
@@ -45,32 +44,28 @@ def show_sample_details(
 
 @logger_wraps()
 def share_sample(
-        group_name: str = None,
         project: str = None,
         seq_ids: [str] = None,
 ):
-    group_name = resolve_share_target(group_name, project)
     api_patch(
         path="/".join([SAMPLE_PATH, SHARE]),
         data={
             "seqIds": seq_ids,
-            "groupName": group_name
+            "projectIdentifier": project
         },
     )
 
 
 @logger_wraps()
 def unshare_sample(
-        group_name: str = None,
         project: str = None,
         seq_ids: [str] = None,
 ):
-    group_name = resolve_share_target(group_name, project)
     api_patch(
         path="/".join([SAMPLE_PATH, UNSHARE]),
         data={
             "seqIds": seq_ids,
-            "groupName": group_name
+            "projectIdentifier": project
         },
     )
 
