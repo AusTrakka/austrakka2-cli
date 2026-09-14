@@ -11,22 +11,22 @@ from trakka.utils.privilege import ORG_RESOURCE
 @click.group()
 @click.pass_context
 def org(ctx):
-    """Commands related to organisation shared proformas"""
+    """Commands related to sharing proformas with organisations"""
     ctx.context = ctx.parent.context
 
 
 @org.command('list', hidden=hide_admin_cmds())
-@opt_identifier(help="Proforma identifier")
+@click.argument('proforma', type=str)
 @table_format_option()
-def proforma_list_orgs(identifier: str, out_format: str):
+def proforma_list_orgs(proforma: str, out_format: str):
     '''
     List organisations a proforma is shared with
     '''
-    list_entities(identifier, ORG_RESOURCE, out_format)
+    list_entities(proforma, ORG_RESOURCE, out_format)
 
 
 @org.command('share', hidden=hide_admin_cmds())
-@opt_identifier(help="Proforma identifier")
+@click.argument('proforma', type=str)
 @opt_identifier(
         option_name="-o", 
         var_name="orgs",
@@ -34,15 +34,15 @@ def proforma_list_orgs(identifier: str, out_format: str):
         required=True,
         multiple=True,
 )
-def proforma_share_orgs(identifier: str, orgs: List[str]):
+def proforma_share_orgs(proforma: str, orgs: List[str]):
     '''
     Share proforma with organisations
     '''
-    share_entities(identifier, ORG_RESOURCE, orgs)
+    share_entities(proforma, ORG_RESOURCE, orgs)
 
 
 @org.command('unshare', hidden=hide_admin_cmds())
-@opt_identifier(help="Proforma identifier")
+@click.argument('proforma', type=str)
 @opt_identifier(
         option_name="-o", 
         var_name="orgs",
@@ -50,8 +50,8 @@ def proforma_share_orgs(identifier: str, orgs: List[str]):
         required=True,
         multiple=True,
 )
-def proforma_unshare_orgs(identifier: str, orgs: List[str]):
+def proforma_unshare_orgs(proforma: str, orgs: List[str]):
     '''
     Unshare proforma with organisations
     '''
-    unshare_entities(identifier, ORG_RESOURCE, orgs)
+    unshare_entities(proforma, ORG_RESOURCE, orgs)

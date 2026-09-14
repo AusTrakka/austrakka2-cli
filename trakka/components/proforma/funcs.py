@@ -14,7 +14,6 @@ from trakka.utils.exceptions import \
     TrakkaCliException
 from trakka.utils.helpers.output import call_get_and_print
 from trakka.utils.helpers.upload import upload_multipart
-from trakka.utils.helpers.share import resolve_share_targets
 from trakka.utils.misc import logger_wraps
 from trakka.utils.output import print_dataframe, log_response, get_viewtype_columns
 from trakka.utils.paths import PROFORMA_PATH
@@ -52,28 +51,6 @@ def enable_proforma(abbrev: str):
 
     api_patch(
         path=f'{PROFORMA_PATH}/{abbrev}/enable',
-    )
-
-    logger.info('Done.')
-
-
-@logger_wraps()
-def share_proforma(abbrev: str, group_names: List[str], projects: List[str]):
-    group_names = resolve_share_targets(group_names, projects)
-    api_patch(
-        path=f'{PROFORMA_PATH}/{abbrev}/share',
-        data=group_names
-    )
-
-    logger.info('Done.')
-
-
-@logger_wraps()
-def unshare_proforma(abbrev: str, group_names: List[str], projects: List[str]):
-    group_names = resolve_share_targets(group_names, projects)
-    api_patch(
-        path=f'{PROFORMA_PATH}/{abbrev}/unshare',
-        data=group_names
     )
 
     logger.info('Done.')

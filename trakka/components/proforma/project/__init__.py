@@ -5,28 +5,28 @@ from trakka.components.proforma.funcs import list_entities, share_entities, unsh
 from trakka.utils.output import table_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import *
-from trakka.utils.privilege import ORG_RESOURCE, PROJECT_RESOURCE
+from trakka.utils.privilege import PROJECT_RESOURCE
 
 
 @click.group()
 @click.pass_context
 def project(ctx):
-    """Commands related to project shared proformas"""
+    """Commands related to sharing proformas with projects"""
     ctx.context = ctx.parent.context
 
 
 @project.command('list', hidden=hide_admin_cmds())
-@opt_identifier(help="Proforma identifier")
+@click.argument('proforma', type=str)
 @table_format_option()
-def proforma_list_projects(identifier: str, out_format: str):
+def proforma_list_projects(proforma: str, out_format: str):
     '''
     List projects a proforma is shared with
     '''
-    list_entities(identifier, PROJECT_RESOURCE, out_format)
+    list_entities(proforma, PROJECT_RESOURCE, out_format)
 
 
 @project.command('share', hidden=hide_admin_cmds())
-@opt_identifier(help="Proforma identifier")
+@click.argument('proforma', type=str)
 @opt_identifier(
         option_name="-p", 
         var_name="projects",
@@ -34,15 +34,15 @@ def proforma_list_projects(identifier: str, out_format: str):
         required=True,
         multiple=True,
 )
-def proforma_share_projects(identifier: str, projects: List[str]):
+def proforma_share_projects(proforma: str, projects: List[str]):
     '''
     Share proforma with projects
     '''
-    share_entities(identifier, PROJECT_RESOURCE, projects)
+    share_entities(proforma, PROJECT_RESOURCE, projects)
 
 
 @project.command('unshare', hidden=hide_admin_cmds())
-@opt_identifier(help="Proforma identifier")
+@click.argument('proforma', type=str)
 @opt_identifier(
         option_name="-p", 
         var_name="projects",
@@ -50,8 +50,8 @@ def proforma_share_projects(identifier: str, projects: List[str]):
         required=True,
         multiple=True,
 )
-def proforma_unshare_projects(identifier: str, projects: List[str]):
+def proforma_unshare_projects(proforma: str, projects: List[str]):
     '''
     Unshare proforma with projects
     '''
-    unshare_entities(identifier, PROJECT_RESOURCE, projects)
+    unshare_entities(proforma, PROJECT_RESOURCE, projects)
