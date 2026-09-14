@@ -17,6 +17,7 @@ def sync(ctx):
 
 @sync.command('get')
 @opt_output_dir()
+# pylint: disable=R0801
 @opt_project(
     required=False,
     default=None,

@@ -33,6 +33,7 @@ from .sync_workflow import set_state_pulling_manifest
 
 
 def initialise(
+# pylint: disable=R0801
         resource_type,
         resource_name,
         recalc_hash,
@@ -91,4 +92,5 @@ def _handle_legacy_state(sync_state):
         raise ValueError(f"Cannot parse group {group_name} as a project or organisation group")
     sync_state[RESOURCE_NAME_KEY] = group_prefix
     del sync_state[GROUP_NAME_KEY]
-    logger.info(f"Updated group {group_name} to {sync_state[RESOURCE_TYPE_KEY]} {sync_state[RESOURCE_NAME_KEY]}")
+    logger.info(f"Updated group {group_name}"
+                + " to {sync_state[RESOURCE_TYPE_KEY]} {sync_state[RESOURCE_NAME_KEY]}")

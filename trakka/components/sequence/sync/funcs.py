@@ -34,13 +34,14 @@ def seq_sync_get(
     state_file_path = os.path.join(output_dir, SYNC_STATE_FILE.replace('SEQTYPE', seq_type))
 
     resource_type = None
+    resource_name = None
     if project is not None:
         resource_type = RT_PROJECT
         resource_name = project
     elif org is not None:
         resource_type = RT_ORG
         resource_name = org
-    if resource_type is None:
+    if resource_type is None or resource_name is None:
         # Should in theory have been prevented by click
         raise ValueError("Project and organisation values were both empty")
 
