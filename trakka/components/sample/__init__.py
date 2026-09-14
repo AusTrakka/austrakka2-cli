@@ -4,12 +4,10 @@ import click
 
 from trakka.utils.options import \
     opt_seq_id, \
-    opt_group_name, \
     opt_project, \
     options_seq_id_or_file, \
     opt_identifier
 from trakka.utils.option_utils import get_seq_list
-from trakka.utils.option_utils import RequiredMutuallyExclusiveOption
 from trakka.utils.cmd_filter import hide_admin_cmds
 from ...utils.output import table_format_option
 from ...utils.output import object_format_option
@@ -69,30 +67,20 @@ def sample_show_details(seq_id: str, out_format: str):
     show_sample_details(seq_id, out_format)
 
 @sample.command('unshare')
-@opt_group_name(mutually_exclusive=['project'],
-                cls=RequiredMutuallyExclusiveOption,
-                required=False,)
-@opt_project(mutually_exclusive=['group_name'],
-             cls=RequiredMutuallyExclusiveOption,
-             required=False, )
+@opt_project(required=True)
 @options_seq_id_or_file
-def sample_unshare(seq_id: [str], group_name: str, project: str, file: BufferedReader):
-    """Unshare a list of sample records with a group."""
+def sample_unshare(seq_id: [str], project: str, file: BufferedReader):
+    """Unshare a list of sample records with a project."""
     seq_ids = get_seq_list(seq_id, file)
-    unshare_sample(group_name, project, seq_ids)
+    unshare_sample(project, seq_ids)
 
 @sample.command('share')
-@opt_group_name(cls=RequiredMutuallyExclusiveOption,
-                mutually_exclusive=['project'],
-                required=False)
-@opt_project(mutually_exclusive=['group_name'],
-             cls=RequiredMutuallyExclusiveOption,
-             required=False,)
+@opt_project(required=True)
 @options_seq_id_or_file
-def sample_share(seq_id: [str], group_name: str, project: str, file: BufferedReader):
-    """Share a list of sample records with a group."""
+def sample_share(seq_id: [str], project: str, file: BufferedReader):
+    """Share a list of sample records with a project."""
     seq_ids = get_seq_list(seq_id, file)
-    share_sample(group_name, project, seq_ids)
+    share_sample(project, seq_ids)
 
 @sample.command('disable')
 @options_seq_id_or_file

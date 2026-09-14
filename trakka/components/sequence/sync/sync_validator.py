@@ -1,4 +1,5 @@
-from .constant import GROUP_NAME_KEY
+from .constant import RESOURCE_NAME_KEY
+from .constant import RESOURCE_TYPE_KEY
 from .constant import SEQ_TYPE_KEY
 from .constant import DOWNLOAD_BATCH_SIZE_KEY
 from .constant import OUTPUT_DIR_KEY
@@ -6,11 +7,12 @@ from .errors import SyncError
 
 
 def ensure_valid_state(sync_state):
-    ensure_is_present(
-        sync_state,
-        GROUP_NAME_KEY,
-        f'{GROUP_NAME_KEY} is not found in state. '
-        'Beware, you could be clobbering files for another group.')
+    if RESOURCE_TYPE_KEY not in sync_state or RESOURCE_NAME_KEY not in sync_state:
+        raise SyncError(
+            f'{RESOURCE_TYPE_KEY} and {RESOURCE_NAME_KEY} were not both in state file.'
+            'These specify the project or org previously synced here. We may be attempting to'
+            'sync files from the wrong project or organisation. The sync state may be corrupt.'
+        )
 
     ensure_is_present(
         sync_state,
@@ -37,15 +39,13 @@ def ensure_seq_type_matches(seq_type, sync_state):
             'file corrupt? Check your output directory and perhaps delete '
             'sync-state.json before continuing.')
 
-
-def ensure_group_names_match(group_name, sync_state):
-    if sync_state[GROUP_NAME_KEY] != group_name:
+def ensure_resources_match(resource_value, resource_key, sync_state):
+    if sync_state[resource_key] != resource_value:
         raise SyncError(
-            f'{GROUP_NAME_KEY} in saved state: {sync_state[GROUP_NAME_KEY]} '
-            f'differs from the parameter: {group_name}. You are '
+            f'{resource_key} in saved state: {sync_state[resource_key]} '
+            f'differs from the parameter: {resource_value}. You are '
             f'probably about to override files from another '
-            f'group or project. This is not allowed.')
-
+            f'organisation or project. Aborting.')
 
 def ensure_download_batch_size_positive(download_batch_size):
     if download_batch_size < 1:
