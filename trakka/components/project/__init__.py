@@ -6,7 +6,7 @@ from trakka.utils.output import object_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds, show_admin_cmds
 from trakka.utils.options import opt_abbrev, \
     opt_label, \
-    opt_view_type, opt_project_client_type, opt_merge_algorithm
+    opt_view_type, opt_project_client_type, opt_merge_algorithm, opt_show_disabled
 
 from trakka.utils.options import opt_name
 from trakka.utils.options import opt_dashboard_name
@@ -138,10 +138,11 @@ def dashboard_get(project_abbrev: str, out_format: str):
     get_dashboard(project_abbrev, out_format)
 
 @project.command('list', help='List projects')
+@opt_show_disabled(help="Show disabled projects", required=False)
 @opt_view_type()
 @table_format_option()
-def projects_list(view_type: str,out_format: str):
-    list_projects(view_type, out_format)
+def projects_list(view_type: str, out_format: str, show_disabled: bool):
+    list_projects(view_type, out_format, show_disabled)
 
 
 @project.command('enable')

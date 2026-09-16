@@ -53,7 +53,7 @@ persistent=yes
 
 # Min Python version to use for version dependend checks. Will default to the
 # version used to run pylint.
-py-version=3.9
+py-version=3.12
 
 # Allow loading of arbitrary C extensions. Extensions are imported into the
 # active Python interpreter and may run arbitrary code.
