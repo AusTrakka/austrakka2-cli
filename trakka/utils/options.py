@@ -784,7 +784,6 @@ def opt_field_and_source(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
-
 def opt_show_disabled(**attrs: t.Any):
     defaults = {
         'help': 'Shows or hides disabled entities [default: --hide-disabled]'
