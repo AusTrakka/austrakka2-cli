@@ -1,4 +1,4 @@
-from trakka.utils.api import api_post
+from trakka.utils.api import api_post, api_patch
 from trakka.utils.api import api_put
 from trakka.utils.misc import logger_wraps
 from trakka.utils.paths import ORG_PATH
@@ -38,8 +38,7 @@ def update_org(
         abbrev: str,
         name: str,
         country: str,
-        state: str,
-        is_active: bool,
+        state: str
 ):
     org = get_org_by_abbrev(abbrev)
 
@@ -47,7 +46,6 @@ def update_org(
         "name",
         "country",
         "state",
-        "isActive",
         "organisationId",
     ]}
 
@@ -57,10 +55,20 @@ def update_org(
         put_org["Country"] = country
     if state is not None:
         put_org["State"] = state
-    if is_active is not None:
-        put_org["IsActive"] = is_active
 
     api_put(
         path=f'{ORG_PATH}/{abbrev}',
         data=put_org
+    )
+
+@logger_wraps()
+def disable_org(abbrev: str):
+    api_patch(
+        path=f'{ORG_PATH}/{abbrev}/disable'
+    )
+
+@logger_wraps()
+def enable_org(abbrev: str):
+    api_patch(
+        path=f'{ORG_PATH}/{abbrev}/enable'
     )

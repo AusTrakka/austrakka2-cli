@@ -13,7 +13,7 @@ from trakka.components.iam.privilege import privilege_subcommands
 from trakka.components.log import log_subcommands
 from trakka.components.org.field import field
 from trakka.utils.cmd_filter import show_admin_cmds
-from .funcs import list_orgs
+from .funcs import list_orgs, disable_org, enable_org
 from .funcs import add_org
 from .funcs import update_org
 from .metadata import metadata
@@ -62,7 +62,16 @@ def org_update(
         org_abbrev: str,
         name: str,
         country: str,
-        state: str,
-        is_active: bool,
+        state: str
 ):
-    update_org(org_abbrev, name, country, state, is_active)
+    update_org(org_abbrev, name, country, state)
+
+@org.command('disable', hidden=hide_admin_cmds(), help="Disable organisation")
+@click.argument('org-abbrev', type=str)
+def org_disable(org_abbrev: str):
+    disable_org(org_abbrev)
+
+@org.command('enable', hidden=hide_admin_cmds(), help="Enable organisation")
+@click.argument('org-abbrev', type=str)
+def org_enable(org_abbrev: str):
+    enable_org(org_abbrev)
