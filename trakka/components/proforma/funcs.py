@@ -321,35 +321,6 @@ def show_proforma(abbrev: str, out_format: str):
         out_format,
     )
 
-
-@logger_wraps()
-def list_groups_proforma(abbrev: str, out_format: str):
-    response = api_get(
-        path=f"{PROFORMA_PATH}/{abbrev}/listgroups"
-    )
-    data = response['data'] if ('data' in response) else response
-
-    if not data:
-        logger.info("This pro forma is not shared with any groups.")
-        return
-
-    result = pd.DataFrame.from_dict(data)
-
-    result.drop(['created',
-                 'lastUpdated',
-                 'lastUpdatedBy',
-                 'createdBy',
-                 'organisation',
-                 'groupId'],
-                axis='columns',
-                inplace=True)
-
-    print_dataframe(
-        result,
-        out_format,
-    )
-
-
 def _post_proforma(files, file_hash: FileHash, custom_headers: dict):
     upload_multipart(path="/".join([PROFORMA_PATH, ATTACH]),
                      files=files,

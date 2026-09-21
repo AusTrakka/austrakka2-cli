@@ -17,7 +17,6 @@ from .funcs import \
     enable_proforma, \
     share_proforma, \
     unshare_proforma, \
-    list_groups_proforma, \
     attach_proforma, \
     generate_proforma, \
     pull_proforma
@@ -297,16 +296,6 @@ def proforma_unshare(proforma_abbrev: str, group_names: List[str], projects: Lis
     Unshare a proforma with one or more groups.
     """
     unshare_proforma(proforma_abbrev, group_names, projects)
-
-
-@proforma.command('list-groups')
-@click.argument('proforma-abbrev', type=click.STRING)
-@table_format_option()
-def proforma_list_groups(proforma_abbrev: str, out_format: str):
-    """
-    List groups which have access to the given proforma.
-    """
-    list_groups_proforma(proforma_abbrev, out_format)
 
 
 @proforma.command('rm-attach')
