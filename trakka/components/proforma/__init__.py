@@ -264,16 +264,6 @@ def proforma_enable(proforma_abbrev: str):
     enable_proforma(proforma_abbrev)
 
 
-@proforma.command('list-groups')
-@click.argument('proforma-abbrev', type=click.STRING)
-@table_format_option()
-def proforma_list_groups(proforma_abbrev: str, out_format: str):
-    """
-    List groups which have access to the given proforma.
-    """
-    list_groups_proforma(proforma_abbrev, out_format)
-
-
 @proforma.command('rm-attach')
 @opt_identifier(help="Identifier for a proforma")
 @create_option(
