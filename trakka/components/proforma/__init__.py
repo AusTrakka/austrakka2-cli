@@ -18,7 +18,6 @@ from .funcs import \
     show_proforma, \
     disable_proforma, \
     enable_proforma, \
-    list_groups_proforma, \
     attach_proforma, \
     generate_proforma, \
     pull_proforma
