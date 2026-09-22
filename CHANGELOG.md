@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.92.1] - 2026-09-22
+
+### Added
+- `[--show-disabled|--hide-disabled]` options to `[project|org] list`.
+
+### Fixed
+- Issues running `project document update`.
+
 ## [0.92.0] - 2026-09-08
 
 ### Removed

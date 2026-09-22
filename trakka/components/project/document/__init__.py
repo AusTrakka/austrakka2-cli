@@ -99,7 +99,7 @@ def document_enable(
 def document_update(
     project_abbrev: str,
     document_id: str,
-    file_name: str,
+    name: str,
     description: str
 ):
-    update_document(project_abbrev, document_id, file_name, description)
+    update_document(project_abbrev, document_id, name, description)
