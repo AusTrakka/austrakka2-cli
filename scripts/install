@@ -28,7 +28,7 @@ fi
 
 mkdir -p "$BIN_DIR"
 
-export DL_URL=$(curl -s https://api.github.com/repos/austrakka/austrakka2-cli/releases/latest \
+export DL_URL=$(curl -s https://api.github.com/repos/trakka-platform/cli/releases/latest \
               | grep browser_download_url \
               | cut -d '"' -f 4 \
               | grep '\linux.zip')
