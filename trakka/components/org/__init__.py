@@ -3,7 +3,7 @@ import click
 
 from trakka.utils.output import table_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
-from trakka.utils.options import opt_name
+from trakka.utils.options import opt_name, opt_show_disabled
 from trakka.utils.options import opt_abbrev
 from trakka.utils.options import opt_is_active
 from trakka.utils.options import opt_country
@@ -31,9 +31,10 @@ org.add_command(field) if show_admin_cmds() else None
 org.add_command(metadata)
 
 @org.command('list', help="List organisations")
+@opt_show_disabled(help="Show disabled organisations", required=False)
 @table_format_option()
-def org_list(out_format: str):
-    list_orgs(out_format)
+def org_list(out_format: str, show_disabled: bool):
+    list_orgs(out_format, show_disabled)
 
 
 @org.command('add', hidden=hide_admin_cmds(), help="Add organisation")
