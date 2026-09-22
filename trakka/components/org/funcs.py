@@ -7,8 +7,10 @@ from trakka.utils.helpers.output import call_get_and_print
 
 
 @logger_wraps()
-def list_orgs(out_format: str):
-    call_get_and_print(ORG_PATH, out_format)
+def list_orgs(out_format: str, show_disabled: bool):
+    call_get_and_print(ORG_PATH, out_format, {
+        "includeall": show_disabled,
+    })
 
 
 # pylint: disable=duplicate-code
