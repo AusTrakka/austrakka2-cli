@@ -422,7 +422,7 @@ def opt_output_dir(**attrs: t.Any):
                 'any sub-directories will be created beneath this as needed.',
     }
     return create_option(
-        "-o",
+        "-out",
         '--outdir',
         'output_dir',
         type=click.Path(exists=False),
