@@ -2,12 +2,11 @@ import pytest
 
 from ete_cmd_bricks import (
     _create_org,
-    _create_group,
     _list_seq_by_group,
-    _upload_fasta_asm_file, _upload_min_metadata)
-
+    _upload_fasta_asm_file)
 from ete_utils import _new_identifier
 from test.utils.trakka_test_cli import TrakkaTestCli
+
 
 class TestSeqAddCommands:
     @pytest.fixture(autouse=True)

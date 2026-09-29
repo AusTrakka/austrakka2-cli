@@ -1,11 +1,9 @@
-import click
-
-from trakka.utils.output import table_format_option
-from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.components.dashboard.project.funcs import add_dashboard
-from trakka.components.dashboard.project.funcs import update_dashboard
 from trakka.components.dashboard.project.funcs import list_dashboards
 from trakka.components.dashboard.project.funcs import rename_dashboard
+from trakka.components.dashboard.project.funcs import update_dashboard
+from trakka.utils.cmd_filter import hide_admin_cmds
+from trakka.utils.output import table_format_option
 from ....utils.options import *
 
 

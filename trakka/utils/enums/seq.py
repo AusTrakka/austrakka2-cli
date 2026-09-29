@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 
 from trakka.utils.exceptions import SeqTypeConversionException
 
@@ -15,7 +14,7 @@ class SeqType(Enum):
     FASTA_ASM = 'fasta-asm'
 
 
-def convert_to_seq_type(seq_type: str) -> Optional[SeqType]:
+def convert_to_seq_type(seq_type: str) -> SeqType:
     """
     Convert a string to a SeqType enum value.
     
@@ -28,7 +27,7 @@ def convert_to_seq_type(seq_type: str) -> Optional[SeqType]:
     Raises:
         ValueError: If the string is empty or doesn't match any enum value
     """
-    if seq_type is None:
+    if seq_type is None: # todo future refactor: this code is unreachable, seq_type is not nullable (noneable?)
         return None
     
     if seq_type == "":

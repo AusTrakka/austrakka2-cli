@@ -1,6 +1,6 @@
 from typing import List
 
-def resolve_share_target(group_name: str = None, project: str = None,):
+def resolve_share_target(group_name: str | None = None, project: str | None= None,):
     if group_name is None and project is None:
         raise ValueError(
             "Either Group Name or Project must be provided to share sequences")
@@ -11,7 +11,7 @@ def resolve_share_target(group_name: str = None, project: str = None,):
     return group_name
    
 
-def resolve_share_targets(group_names: List[str] = None, projects: List[str] = None):
+def resolve_share_targets(group_names: list[str] | None = None, projects: List[str] | None = None):
     if not group_names and not projects:
         raise ValueError(
             "Either Group Name(s) or Project(s) must be provided to share")

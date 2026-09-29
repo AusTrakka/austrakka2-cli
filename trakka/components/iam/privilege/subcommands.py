@@ -41,7 +41,7 @@ def privilege_subcommands(root_type: str):
         if root_type != TENANT_RESOURCE else lambda f: f
     )
     @table_format_option()
-    def privilege_list(out_format: str, identifier:str=None):
+    def privilege_list(out_format: str, identifier: str | None = None):
         list_privileges(root_type, identifier, out_format)
 
 
@@ -57,7 +57,7 @@ def privilege_subcommands(root_type: str):
          if root_type != TENANT_RESOURCE else lambda f: f
     )
     @table_format_option()
-    def privilege_list_by_role(role: str, out_format: str, identifier:str=None):
+    def privilege_list_by_role(role: str, out_format: str, identifier: str | None = None):
         list_by_role_privileges(role, root_type, identifier, out_format)
 
 
@@ -73,7 +73,7 @@ def privilege_subcommands(root_type: str):
         if root_type != TENANT_RESOURCE else lambda f: f
     )
     @table_format_option()
-    def privilege_list_by_user(user_id: str, out_format: str, identifier:str=None):
+    def privilege_list_by_user(user_id: str, out_format: str, identifier: str | None = None):
         list_by_user_privileges(user_id, root_type, identifier, out_format)
 
 
@@ -91,7 +91,7 @@ def privilege_subcommands(root_type: str):
     def privilege_assign(
             user_id: str,
             role: str,
-            identifier: str = None):
+            identifier: str | None = None):
         assign_privilege(user_id, role, identifier, root_type)
 
 
@@ -109,7 +109,7 @@ def privilege_subcommands(root_type: str):
     def privilege_unassign(
             user_id: str,
             role: str,
-            identifier: str = None):
+            identifier: str | None = None):
         unassign_privilege(user_id, role, identifier, root_type)
 
     return privilege

@@ -1,7 +1,5 @@
-import click
-
-from trakka.utils.output import table_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
+from trakka.utils.output import table_format_option
 from .funcs import list_fields, add_field, update_field, disable_field, enable_field, \
     list_field_groups, list_field_projects, list_field_proformas
 from ...utils.options import *

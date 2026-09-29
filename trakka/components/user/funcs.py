@@ -58,14 +58,14 @@ def add_user(
 
 def update_user(
         user_id: str,
-        name: str = None,
-        email: str = None,
-        position: str = None,
-        server_username: str = None,
-        is_active: bool = None,
-        no_download_quota: bool = None,
-        download_quota: int = None,
-        is_process: bool = None 
+        name: str | None = None,
+        email: str | None = None,
+        position: str | None = None,
+        server_username: str | None = None,
+        is_active: bool | None = None,
+        no_download_quota: bool | None = None,
+        download_quota: int | None = None,
+        is_process: bool | None = None
 ):
     user_resp = api_get(f'{USER_PATH}/{user_id}')
     user_full = user_resp['data']

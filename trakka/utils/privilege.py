@@ -28,7 +28,8 @@ def _convert_record_type_to_route_string(record_type):
     return record_type_route
 
 
-def get_priv_path(record_type: str, record_id: str):
+def get_priv_path(record_type: str, record_id: str | None):
     if record_type == TENANT_RESOURCE:
         return TENANT_PATH
+    # todo future refactor: we never check for record_id being not None
     return f'{_convert_record_type_to_route_string(record_type)}/{record_id}'

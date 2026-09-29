@@ -1,9 +1,7 @@
 import json
-import tempfile
 
-from click.testing import CliRunner
-from ete_utils import _save_to_test_dir, _create_single_seq_csv, _new_identifier, _create_paired_seq_csv
 from ete_constants import seq_id_field_name
+from ete_utils import _save_to_test_dir, _create_single_seq_csv, _create_paired_seq_csv
 from test.utils.trakka_test_cli import TrakkaTestCli
 
 
@@ -50,7 +48,7 @@ def _upload_fastq_ill_se_file(
         seq_id: str,
         fastq_file_path: str,
         owner_org: str,
-        shared_projects: list[str] = None,
+        shared_projects: list[str] | None= None,
         skip: bool = False,
         force: bool = False) -> str:
 
@@ -92,7 +90,7 @@ def _upload_fastq_ill_pe_file(
         fastq_file_path1: str,
         fastq_file_path2: str,
         owner_org: str,
-        shared_projects: list[str] = None,
+        shared_projects: list[str] | None = None,
         skip: bool = False,
         force: bool = False) -> str:
 
@@ -133,7 +131,7 @@ def _upload_fasta_asm_file(
         fasta_file_path: str,
         seq_id: str,
         owner_org: str,
-        shared_projects: list[str] = None,
+        shared_projects: list[str] | None = None,
         skip: bool = False,
         force: bool = False) -> str:
 
@@ -171,7 +169,7 @@ def _upload_fasta_cns_file(
         cli: TrakkaTestCli,
         fasta_file_path: str,
         owner_org: str,
-        shared_projects: list[str] = None,
+        shared_projects: list[str] | None = None,
         skip: bool = False,
         force: bool = False):
 
@@ -261,8 +259,8 @@ def _create_group(cli: TrakkaTestCli, name: str):
 def _create_proforma(
         cli: TrakkaTestCli,
         name: str,
-        required_fields: list[str] = None,
-        optional_fields: list[str] = None):
+        required_fields: list[str] | None = None,
+        optional_fields: list[str] | None = None):
 
     args = [
         'proforma',

@@ -6,7 +6,7 @@ from trakka.utils.misc import logger_wraps
 
 
 @logger_wraps()
-def list_privileges(record_type: str, record_id: str, out_format: str):
+def list_privileges(record_type: str, record_id: str | None, out_format: str):
     """
     List the privileges assigned to a record.
     """
@@ -14,7 +14,7 @@ def list_privileges(record_type: str, record_id: str, out_format: str):
 
 
 @logger_wraps()
-def list_by_role_privileges(role: str, record_type: str, record_id: str, out_format: str):
+def list_by_role_privileges(role: str, record_type: str, record_id: str | None, out_format: str):
     """
     List by role the privileges assigned to a record.
     """
@@ -24,7 +24,7 @@ def list_by_role_privileges(role: str, record_type: str, record_id: str, out_for
     )
 
 @logger_wraps()
-def list_by_user_privileges(user_id: str, record_type: str, record_id: str, out_format: str):
+def list_by_user_privileges(user_id: str, record_type: str, record_id: str | None, out_format: str):
     """
     List by user the privileges assigned to a record.
     """
@@ -38,7 +38,7 @@ def list_by_user_privileges(user_id: str, record_type: str, record_id: str, out_
 def assign_privilege(
         user_id: str,
         role: str,
-        record_id: str,
+        record_id: str | None,
         record_type: str
 ):
     payload = {
@@ -56,7 +56,7 @@ def assign_privilege(
 def unassign_privilege(
         user_id: str,
         role: str,
-        record_id: str,
+        record_id: str | None,
         record_type: str
 ):
     api_delete(

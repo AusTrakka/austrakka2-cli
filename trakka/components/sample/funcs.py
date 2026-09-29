@@ -15,7 +15,7 @@ PURGE = 'Purge'
 SAMPLES_OWNER = 'samplesOwner'
 
 @logger_wraps()
-def change_owner(curr_org: str, new_org: str, seq_ids: [str]):
+def change_owner(curr_org: str, new_org: str, seq_ids: list[str]):
     api_patch(
         path=f"{ORG_PATH}/{curr_org}/{SAMPLES_OWNER}",
         data={
@@ -36,9 +36,9 @@ def show_sample(
 
 @logger_wraps()
 def share_sample(
-        group_name: str = None,
-        project: str = None,
-        seq_ids: [str] = None,
+        group_name: str | None = None,
+        project: str | None = None,
+        seq_ids: list[str] | None = None,
 ):
     group_name = resolve_share_target(group_name, project)
     api_patch(
@@ -52,9 +52,9 @@ def share_sample(
 
 @logger_wraps()
 def unshare_sample(
-        group_name: str = None,
-        project: str = None,
-        seq_ids: [str] = None,
+        group_name: str | None = None,
+        project: str | None = None,
+        seq_ids: list[str] | None = None,
 ):
     group_name = resolve_share_target(group_name, project)
     api_patch(
@@ -76,7 +76,7 @@ def get_groups(
 
 @logger_wraps()
 def disable_sample(
-        seq_ids: [str]
+        seq_ids: list[str]
 ):
     api_patch(
         path="/".join([SAMPLE_PATH, DISABLE]),
@@ -88,7 +88,7 @@ def disable_sample(
 
 @logger_wraps()
 def enable_sample(
-        seq_ids: [str]
+        seq_ids: list[str]
 ):
     api_patch(
         path="/".join([SAMPLE_PATH, ENABLE]),

@@ -117,7 +117,7 @@ def seq_list(
 @opt_delete_all(help='Delete active and inactive sequences for the specified sample. '
                      'By default, only inactive sequences are deleted.')
 def sequence_purge(
-        seq_id: [str],
+        seq_id: str,
         seq_type: str,
         skip: bool = False,
         force: bool = False,

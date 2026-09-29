@@ -1,31 +1,30 @@
 # pylint: disable=expression-not-assigned
 import click
 
-from trakka.utils.output import table_format_option
-from trakka.utils.output import object_format_option
-from trakka.utils.cmd_filter import hide_admin_cmds, show_admin_cmds
+from trakka.components.iam.privilege import privilege_subcommands
+from trakka.components.log import log_subcommands
+from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import opt_abbrev, \
     opt_label, \
     opt_view_type, opt_project_client_type, opt_merge_algorithm, opt_show_disabled
-
-from trakka.utils.options import opt_name
 from trakka.utils.options import opt_dashboard_name
 from trakka.utils.options import opt_description
+from trakka.utils.options import opt_name
 from trakka.utils.options import opt_organisation
 from trakka.utils.options import opt_status
 from trakka.utils.options import opt_watermark_trees
+from trakka.utils.output import object_format_option
+from trakka.utils.output import table_format_option
 from trakka.utils.privilege import PROJECT_RESOURCE
-from trakka.components.log import log_subcommands
-from trakka.components.iam.privilege import privilege_subcommands
+from .dataset import dataset
+from .document import document
+from .field import field
 from .funcs import disable_project, enable_project, list_projects, \
     add_project, \
     update_project, \
     set_dashboard, \
     get_dashboard
-from .dataset import dataset
-from .field import field
 from .metadata import metadata
-from .document import document
 from .organisation import organisation
 
 
