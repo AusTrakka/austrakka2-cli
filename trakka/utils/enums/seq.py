@@ -27,7 +27,7 @@ def convert_to_seq_type(seq_type: str) -> SeqType:
     Raises:
         ValueError: If the string is empty or doesn't match any enum value
     """
-    if seq_type is None: # todo future refactor: this code is unreachable, seq_type is not nullable (noneable?)
+    if seq_type is None:
         return None
     
     if seq_type == "":

@@ -149,7 +149,7 @@ def api_post_multipart(
     custom_headers = {} if custom_headers is None else custom_headers
     return client.post(
         _get_url(path),
-        data=data, # todo future refactor: this currently seems to work, but we passing an incorrect type here
+        data=data,
         params=params,
         files=files,
         headers=dict(client.headers) | custom_headers
@@ -169,7 +169,7 @@ def api_post_multipart_raw(
     custom_headers = {} if custom_headers is None else custom_headers
     return client.post(
         _get_url(path),
-        data=data, # todo: see line 152
+        data=data,
         params=params,
         files=files,
         headers=dict(client.headers) | custom_headers
