@@ -12,7 +12,8 @@ from .sync_io import save_json
 from .constant import SYNC_STATE_FILE
 from .constant import OUTPUT_DIR_KEY
 from .constant import CURRENT_STATE_KEY
-from .constant import GROUP_NAME_KEY
+from .constant import RESOURCE_NAME_KEY, RESOURCE_TYPE_KEY
+from .constant import RT_PROJECT, RT_ORG
 from .constant import SEQ_TYPE_KEY
 from .constant import RECALCULATE_HASH_KEY
 from .constant import DOWNLOAD_BATCH_SIZE_KEY
@@ -22,7 +23,8 @@ from .constant import SYNC_STATE_FILE_KEY
 @logger_wraps()
 def seq_sync_get(
         output_dir: str,
-        group_name: str,
+        project: str,
+        org: str,
         recalc_hash: bool,
         seq_type: str,
         download_batch_size: int,
@@ -31,9 +33,22 @@ def seq_sync_get(
     sync_state = {}
     state_file_path = os.path.join(output_dir, SYNC_STATE_FILE.replace('SEQTYPE', seq_type))
 
+    resource_type = None
+    resource_name = None
+    if project is not None:
+        resource_type = RT_PROJECT
+        resource_name = project
+    elif org is not None:
+        resource_type = RT_ORG
+        resource_name = org
+    if resource_type is None or resource_name is None:
+        # Should in theory have been prevented by click
+        raise ValueError("Project and organisation values were both empty")
+
     if os.path.exists(state_file_path):
         sync_state = load_state(
-            group_name,
+            resource_type,
+            resource_name,
             output_dir,
             state_file_path,
             seq_type)
@@ -53,7 +68,8 @@ def seq_sync_get(
 
     if CURRENT_STATE_KEY not in sync_state:
         sync_state = initialise(
-            group_name,
+            resource_type,
+            resource_name,
             recalc_hash,
             output_dir,
             seq_type,
@@ -68,7 +84,8 @@ def seq_sync_get(
 
     logger.info('Starting sync with args..')
     logger.info(f'{OUTPUT_DIR_KEY}: {sync_state[OUTPUT_DIR_KEY]}')
-    logger.info(f'{GROUP_NAME_KEY}: {sync_state[GROUP_NAME_KEY]}')
+    logger.info(f'{RESOURCE_TYPE_KEY}: {sync_state[RESOURCE_TYPE_KEY]}')
+    logger.info(f'{RESOURCE_NAME_KEY}: {sync_state[RESOURCE_NAME_KEY]}')
     logger.info(f'{SEQ_TYPE_KEY}: {sync_state[SEQ_TYPE_KEY]}')
     logger.info(f'{RECALCULATE_HASH_KEY}: {sync_state[RECALCULATE_HASH_KEY]}')
 
