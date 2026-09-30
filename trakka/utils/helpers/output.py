@@ -9,9 +9,9 @@ from trakka.utils.output import print_dataframe, read_pd
 def call_get_and_print(
         path: str,
         out_format: str,
-        params: Dict|None = None,
+        params: Dict = None,
         restricted_cols: Union[List[str], None] = None,
-        datetime_cols: list[str]|None = None
+        datetime_cols: list[str] = None
 ):
     params = {} if params is None else params
     response = api_get(
@@ -36,7 +36,7 @@ def call_get_and_print(
 def call_get_and_print_dataset_status(
         path: str,
         out_format: str,
-        params: Dict|None = None
+        params: Dict = None
 ):
     params = {} if params is None else params
     response = api_get(
@@ -59,7 +59,7 @@ def call_get_and_print_table_on_state_change(
         path: str,
         out_format: str,
         prev_state: str,
-        params: Dict|None = None
+        params: Dict = None
 ):
     params = {} if params is None else params
     response = api_get(
