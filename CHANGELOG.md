@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.92.2] - 2026-09-30
+
+### Fixed
+- Revert code features dependent on Python 3.10 until this is an explicit dependency.
+
 ## [0.92.1] - 2026-09-22
 
 ### Added
