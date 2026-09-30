@@ -178,8 +178,8 @@ def proforma_add_version(
               type=click.INT,
               mutually_exclusive=["file_path"])
 def proforma_attach(proforma_abbrev: str,
-                    file_path: str = None,
-                    n_previous: int = None):
+                    file_path: str|None = None,
+                    n_previous: int|None = None):
     if file_path is None:
         pull_proforma(proforma_abbrev, n_previous)
     else:

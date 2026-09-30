@@ -611,7 +611,7 @@ def analyse_status(
         ctx: dict,
         use_hash_cache: bool,
         seq_path: str,
-        hash_cache: dict):
+        hash_cache: dict | None):
     previously_matched = ctx[ROW][STATUS_KEY] == MATCH
 
     if not os.path.exists(seq_path):
@@ -705,7 +705,7 @@ def reset(state_file_path, sync_state):
     save_json(sync_state, state_file_path)
 
 
-def manifest_column_key(file_or_hash: str, seq_type: str, read:str = None):
+def manifest_column_key(file_or_hash: str, seq_type: str, read: str | None = None):
     """Define desired column header for the manifest file"""
     assert file_or_hash in [FILE_NAME_ON_DISK_KEY, SERVER_SHA_256_KEY]
     header = (("HASH_" if file_or_hash==SERVER_SHA_256_KEY else "") + 

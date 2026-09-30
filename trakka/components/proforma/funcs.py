@@ -262,7 +262,7 @@ def _get_proforma_fields_df(data):
     return field_df
 
 @logger_wraps()
-def pull_proforma(abbrev: str, n_previous: int = None):
+def pull_proforma(abbrev: str, n_previous: int | None = None):
     n_prev = n_previous if n_previous is not None else 1
     api_patch(path=f'{PROFORMA_PATH}/PullPrevious/{abbrev}?nPrevious={n_prev}')
     logger.info('Done')
