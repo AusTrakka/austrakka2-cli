@@ -32,4 +32,3 @@ def get_server_info(
         )
         return None
     return (client_id, tenant_id, api_scope)
-
