@@ -7,7 +7,7 @@ import click
 from click.core import Context
 from loguru import logger
 
-from trakka.utils.config import get_server_info_or_create
+from trakka.utils.config import get_server_info
 from trakka.utils.privilege import TENANT_RESOURCE
 
 from trakka.utils.context import CxtKey
@@ -148,7 +148,7 @@ def cli(
     setup_logger(log_level, log_var)
     warn_if_austrakka()
     if not skip_version_check:
-        server_info = get_server_info_or_create(
+        server_info = get_server_info(
             uri,
             skip_cert_verify,
         )
