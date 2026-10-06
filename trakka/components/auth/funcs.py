@@ -5,7 +5,7 @@ from azure.identity import ClientSecretCredential
 from azure.identity import DeviceCodeCredential
 from loguru import logger
 
-from trakka.utils.config import get_server_info_or_create
+from trakka.utils.config import get_server_info
 from trakka.utils.context import CxtKey
 from trakka.utils.context import TrakkaCxt
 
@@ -19,7 +19,7 @@ def user_login(
         client_id: str,
         app_uri: str,
 ):
-    server_info = get_server_info_or_create(
+    server_info = get_server_info(
         TrakkaCxt.get_value(CxtKey.URI),
         TrakkaCxt.get_value(CxtKey.SKIP_CERT_VERIFY),
     )
@@ -54,7 +54,7 @@ def process_login(
         process_id: str,
         client_secret: str
 ):
-    server_info = get_server_info_or_create(
+    server_info = get_server_info(
         TrakkaCxt.get_value(CxtKey.URI),
         TrakkaCxt.get_value(CxtKey.SKIP_CERT_VERIFY),
     )
