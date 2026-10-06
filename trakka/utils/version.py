@@ -24,6 +24,8 @@ def check_version(current):
         elif latest_parsed.patch > current_parsed.patch:
             logger.warning(f"A new patch version of '{PROG_NAME}' is available: "
                            f"{latest}")
+    except ValueError as ex:
+        logger.debug(f"Error checking for new version : {ex}")
     # pylint: disable=broad-exception-caught
     except Exception as ex:
         logger.warning(f"Error checking for new version : {ex}")
