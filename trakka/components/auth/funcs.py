@@ -14,20 +14,12 @@ def _get_api_scope(app_uri):
     return f'{app_uri}/.default'
 
 
-def user_login(
-        tenant_id: str,
-        client_id: str,
-        app_uri: str,
-):
-    server_info = get_server_info(
+def user_login():
+    (client_id, tenant_id, app_uri, _) = get_server_info(
         TrakkaCxt.get_value(CxtKey.URI),
         TrakkaCxt.get_value(CxtKey.SKIP_CERT_VERIFY),
     )
-    if server_info is not None:
-        (client_id, tenant_id, app_uri) = server_info
 
-    logger.debug("Auth details: ClientId " + client_id + " TenantId " 
-        + tenant_id + " ApiScope " + app_uri )
     app_scope = _get_api_scope(app_uri)
     logger.warning(
         'NOTE: This may take some time to return a token after '
@@ -49,20 +41,14 @@ def user_login(
 
 
 def process_login(
-        tenant_id: str,
-        app_uri: str,
         process_id: str,
         client_secret: str
 ):
-    server_info = get_server_info(
+    (_, tenant_id, app_uri, _) = get_server_info(
         TrakkaCxt.get_value(CxtKey.URI),
         TrakkaCxt.get_value(CxtKey.SKIP_CERT_VERIFY),
     )
-    if server_info is not None:
-        (_, tenant_id, app_uri) = server_info
 
-    logger.debug("Auth details: ClientId " + process_id 
-        + " TenantId " + tenant_id + " ApiScope " + app_uri )
     credential = ClientSecretCredential(
         tenant_id=tenant_id,
         client_id=process_id,
