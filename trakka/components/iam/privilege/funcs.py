@@ -28,36 +28,3 @@ def list_privileges(resource_type, resource_id, user_id, role, out_format):
     if role:
         params['roleIdentifierFilter'] = role
     call_get_and_print(PRIVILEGE_PATH, out_format, params=params)
-
-
-@logger_wraps()
-def assign_privilege(resource_type, resource_id, user_id, role):
-    if resource_id and not resource_type:
-        raise ValueError("Resource type must be specified if resource ID is specified")
-    payload = {
-        "resourceType": resource_type,
-        "resourceIdentifier": resource_id,
-        "roleIdentifier": role,
-        "assigneeIdentifier": user_id
-    }
-    return api_post(
-        path=PRIVILEGE_PATH,
-        data=payload,
-    )
-
-
-@logger_wraps()
-def remove_privilege(resource_type, resource_id, user_id, role):
-    if resource_id and not resource_type:
-        raise ValueError("Resource type must be specified if resource ID is specified")
-    payload = {
-        "resourceType": resource_type,
-        "resourceIdentifier": resource_id,
-        "roleIdentifier": role,
-        "assigneeIdentifier": user_id
-    }
-    # TODO this DELETE with payload is consistent with current backend but needs fixing
-    api_delete(
-        path=PRIVILEGE_PATH,
-        data=payload,
-    )

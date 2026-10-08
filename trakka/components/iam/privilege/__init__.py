@@ -1,6 +1,6 @@
 import click
 
-from .funcs import list_privileges, assign_privilege, remove_privilege
+from .funcs import list_privileges
 
 from trakka.utils.options import (
     opt_role,
@@ -37,43 +37,3 @@ def privilege(ctx):
 @table_format_option()
 def privilege_list(resource_type, resource_id, user_id, role, out_format: str):
     list_privileges(resource_type, resource_id, user_id, role, out_format)
-
-# TODO: would we rather this (and corresponding commands) were `privilege add`?
-@privilege.command('assign',
-                   help="Assign a privilege to a user")
-@opt_resource_type(
-    required=True,
-    help="Type of the resource to which access will be granted")
-@opt_identifier( # this is -id; will this be clear to users? is there a better option?
-    required=False,
-    var_name="resource_id",
-    help=f"Identifier of the resource to which access will be granted. " +
-         "Must be specified unless resource type is System.")
-@opt_user_identifier(
-    required=True,
-    help=f"Identifier of the user to whom access will be granted.")
-@opt_role(
-    required=True,
-    help=f"Identifier of the role to be assigned.")
-def privilege_assign(resource_type, resource_id, user_id, role):
-    assign_privilege(resource_type, resource_id, user_id, role)
-
-
-@privilege.command('remove',
-                   help="Remove a privilege from a user")
-@opt_resource_type(
-    required=True,
-    help="Type of the resource from which access will be removed")
-@opt_identifier( # this is -id; will this be clear to users? is there a better option?
-    required=False,
-    var_name="resource_id",
-    help=f"Identifier of the resource from which access will be removed. " +
-         "Must be specified unless resource type is System.")
-@opt_user_identifier(
-    required=True,
-    help=f"Identifier of the user from whom access will be removed.")
-@opt_role(
-    required=True,
-    help=f"Identifier of the role to be unassigned.")
-def privilege_remove(resource_type, resource_id, user_id, role):
-    remove_privilege(resource_type, resource_id, user_id, role)
