@@ -1,69 +1,26 @@
 from trakka.utils.helpers.output import call_get_and_print
-from trakka.utils.privilege import get_priv_path
 
-from trakka.utils.api import api_delete, api_post
 from trakka.utils.misc import logger_wraps
 
+from trakka.utils.paths import PRIVILEGE_PATH
+
+# These functions call PrivilegeController endpoints
 
 @logger_wraps()
-def list_privileges(record_type: str, record_id: str, out_format: str):
+def list_privileges(resource_type, resource_id, user_id, role, out_format):
     """
-    List the privileges assigned to a record.
+    List privilege assignments across resources, users, and roles.
     """
-    call_get_and_print(f"{get_priv_path(record_type, record_id)}/privilege", out_format)
-
-
-@logger_wraps()
-def list_by_role_privileges(role: str, record_type: str, record_id: str, out_format: str):
-    """
-    List by role the privileges assigned to a record.
-    """
-    call_get_and_print(
-        f"{get_priv_path(record_type, record_id)}/privilege/role/{role}",
-        out_format,
-    )
-
-@logger_wraps()
-def list_by_user_privileges(user_id: str, record_type: str, record_id: str, out_format: str):
-    """
-    List by user the privileges assigned to a record.
-    """
-    call_get_and_print(
-        f"{get_priv_path(record_type, record_id)}/privilege/user/{user_id}",
-        out_format,
-    )
-
-
-@logger_wraps()
-def assign_privilege(
-        user_id: str,
-        role: str,
-        record_id: str,
-        record_type: str
-):
-    payload = {
-        "roleIdentifier": role,
-        "assigneeIdentifier": user_id
-    }
-
-    return api_post(
-        path=f"{get_priv_path(record_type, record_id)}/privilege",
-        data=payload,
-    )
-
-
-@logger_wraps()
-def unassign_privilege(
-        user_id: str,
-        role: str,
-        record_id: str,
-        record_type: str
-):
-    api_delete(
-        path=f"{get_priv_path(record_type, record_id)}/privilege",
-        custom_headers={},
-        params = {
-            'roleIdentifier': role,
-            'userIdentifier': user_id,
-        },
-    )
+    # If resource_id is specified, resource_type must be specified
+    if resource_id and not resource_type:
+        raise ValueError("Resource type must be specified if resource ID is specified")
+    params = {}
+    if resource_type:
+        params['resourceTypeFilter'] = resource_type
+    if resource_id:
+        params['resourceIdentifierFilter'] = resource_id
+    if user_id:
+        params['assigneeIdentifierFilter'] = user_id
+    if role:
+        params['roleIdentifierFilter'] = role
+    call_get_and_print(PRIVILEGE_PATH, out_format, params=params)
