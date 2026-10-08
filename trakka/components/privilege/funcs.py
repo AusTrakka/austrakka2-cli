@@ -4,10 +4,8 @@ from trakka.utils.privilege import get_priv_path
 from trakka.utils.api import api_delete, api_post
 from trakka.utils.misc import logger_wraps
 
-"""
-These functions call the per-controller (V2RootController) privilege endpoints
-and are used by the reusable privilege subcommands.py
-"""
+# These functions call the per-controller (V2RootController) privilege endpoints
+# and are used by the reusable privilege subcommands.py
 
 @logger_wraps()
 def list_privileges(record_type: str, record_id: str, out_format: str):

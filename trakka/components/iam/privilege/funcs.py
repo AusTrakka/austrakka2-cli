@@ -1,14 +1,10 @@
 from trakka.utils.helpers.output import call_get_and_print
 
-from trakka.utils.api import api_delete, api_post
 from trakka.utils.misc import logger_wraps
 
 from trakka.utils.paths import PRIVILEGE_PATH
 
-
-"""
-These functions call PrivilegeController endpoints.
-"""
+# These functions call PrivilegeController endpoints
 
 @logger_wraps()
 def list_privileges(resource_type, resource_id, user_id, role, out_format):
@@ -18,7 +14,7 @@ def list_privileges(resource_type, resource_id, user_id, role, out_format):
     # If resource_id is specified, resource_type must be specified
     if resource_id and not resource_type:
         raise ValueError("Resource type must be specified if resource ID is specified")
-    params = dict()
+    params = {}
     if resource_type:
         params['resourceTypeFilter'] = resource_type
     if resource_id:

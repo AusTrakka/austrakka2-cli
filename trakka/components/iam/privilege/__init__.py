@@ -1,7 +1,5 @@
 import click
 
-from .funcs import list_privileges
-
 from trakka.utils.options import (
     opt_role,
     opt_user_identifier,
@@ -10,6 +8,8 @@ from trakka.utils.options import (
 )
 from trakka.utils.output import table_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
+
+from .funcs import list_privileges
 
 
 @click.group(hidden=hide_admin_cmds())
@@ -27,13 +27,14 @@ def privilege(ctx):
 @opt_identifier( # this is -id; will this be clear to users? is there a better option?
     required=False,
     var_name="resource_id",
-    help=f"Only show privileges assigned to resource with the given identifier. Resource type must also be specified.")
+    help="Only show privileges assigned to resource with the given identifier." + 
+         "Resource type must also be specified.")
 @opt_user_identifier(
     required=False,
-    help=f"Only show privileges held by the specified user.")
+    help="Only show privileges held by the specified user.")
 @opt_role(
     required=False,
-    help=f"Only show assignments of the specified role.")
+    help="Only show assignments of the specified role.")
 @table_format_option()
 def privilege_list(resource_type, resource_id, user_id, role, out_format: str):
     list_privileges(resource_type, resource_id, user_id, role, out_format)
