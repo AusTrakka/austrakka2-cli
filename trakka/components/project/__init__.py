@@ -16,7 +16,7 @@ from trakka.utils.options import opt_status
 from trakka.utils.options import opt_watermark_trees
 from trakka.utils.privilege import PROJECT_RESOURCE
 from trakka.components.log import log_subcommands
-from trakka.components.iam.privilege import privilege_subcommands
+from trakka.components.privilege import privilege_subcommands
 from .funcs import disable_project, enable_project, list_projects, \
     add_project, \
     update_project, \

@@ -4,7 +4,7 @@ from trakka.utils.paths import PROFORMA_PATH
 from trakka.utils.paths import PROJECT_PATH
 from trakka.utils.paths import TENANT_PATH
 
-TENANT_RESOURCE = 'Tenant'
+TENANT_RESOURCE = 'System'
 ORG_RESOURCE = 'Organisation'
 PROJECT_RESOURCE = 'Project'
 PROFORMA_RESOURCE = 'Proforma'
