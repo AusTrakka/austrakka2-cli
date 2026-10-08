@@ -17,6 +17,7 @@ from trakka.components.auth import auth
 from trakka.components.user import user
 from trakka.components.org import org
 from trakka.components.log import log_subcommands
+from trakka.components.privilege import privilege_subcommands
 from trakka.components.project import project
 from trakka.components.tree import tree
 from trakka.components.metadata import metadata
@@ -180,6 +181,7 @@ def get_cli():
     cli.add_command(fieldtype)
     cli.add_command(iam) if show_admin_cmds() else None
     cli.add_command(log_subcommands(TENANT_RESOURCE)) if show_admin_cmds() else None
+    cli.add_command(privilege_subcommands(TENANT_RESOURCE)) if show_admin_cmds() else None
     return cli
 
 
