@@ -46,8 +46,10 @@ def log_subcommands(root_type: str):
     @( # This adds the event status parameter option only if the root_type is tenant
         click.option(
             '--event-status',
-            help='Event status to filter on (success/failed)',
-            required=False)
+            help='Event status to filter on',
+            required=False,
+            type=click.Choice(['success', 'failed'], case_sensitive=False),
+            )
         if root_type == TENANT_RESOURCE else lambda f: f
     )
     @click.option('--resource-type', help='Resource type to filter on', required=False)
