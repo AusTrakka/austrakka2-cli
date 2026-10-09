@@ -507,6 +507,19 @@ def opt_user_identifier(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_resource_identifier(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Resource abbreviation or global ID',
+    }
+    return create_option(
+        '-id',
+        '--resource-id',
+        'resource_id',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
 def opt_identifier(option_name='-id', var_name='identifier', **attrs: t.Any):
     defaults = {
         'required': True,
@@ -809,7 +822,8 @@ def opt_merge_algorithm(**attrs: t.Any):
         'help': 'Merge algorithm used to generate views for the sample table.',
         'type': click.Choice(['show-all', 'override']),
         'callback': map_merge_algo,
-        'required': True,
+        'required': False,
+        'default': 'override'
     }
     return create_option(
         '--merge-algorithm',

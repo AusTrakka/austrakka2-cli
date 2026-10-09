@@ -40,7 +40,7 @@ def _create_role(cli: TrakkaTestCli, role_name: str):
         '-r', role_name,
         '-d', f'Test role {role_name}',
         '-pv', 'User',
-        '-rt', 'Tenant',
+        '-rt', 'System',
         '--scope', 'ListRolesTenant'
     ])
     assert result.exit_code == 0, f'Failed to create role {role_name} as part of test setup: {result.output}'
