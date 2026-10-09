@@ -43,6 +43,15 @@ def log_subcommands(root_type: str):
         help='Resource name or identifier to filter on (strict match only)',
         required=False
     )
+    @( # This adds the event status parameter option only if the root_type is tenant
+        click.option(
+            '--event-status',
+            help='Event status to filter on',
+            required=False,
+            type=click.Choice(['success', 'failed'], case_sensitive=False),
+            )
+        if root_type == TENANT_RESOURCE else lambda f: f
+    )
     @click.option('--resource-type', help='Resource type to filter on', required=False)
     @table_format_option()
     @opt_view_type()
@@ -55,6 +64,7 @@ def log_subcommands(root_type: str):
         resource_type: str,
         out_format: str,
         view_type: str,
+        event_status: str = None,
         identifier: str = None,
     ):
         list_logs(
@@ -65,6 +75,7 @@ def log_subcommands(root_type: str):
             event_type,
             submitter,
             resource,
+            event_status,
             resource_type,
             out_format,
             view_type
