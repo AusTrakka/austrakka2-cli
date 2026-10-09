@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.92.3] - 2026-10-08
+
+### Added
+- `iam privilege list` to list privileges across all resources.
+
+### Changed
+- `iam privilege [*]` has moved to `privilege [*]`.
+- `auth user` no longer requires `--tenant-id`, `--client-id` and `--app-uri`.
+- `auth process` no longer requires `--tenant-id`` and `--app-uri`.
+
 ## [0.92.2] - 2026-09-30
 
 ### Fixed

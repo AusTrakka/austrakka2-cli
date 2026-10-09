@@ -9,7 +9,7 @@ from .funcs import list_roles, add_role, update_role, delete_role
 @click.group()
 @click.pass_context
 def role(ctx):
-    """Commands related to role based access control"""
+    """Commands related to roles"""
     ctx.context = ctx.parent.context
 
 
