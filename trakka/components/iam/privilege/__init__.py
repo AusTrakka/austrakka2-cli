@@ -3,8 +3,9 @@ import click
 from trakka.utils.options import (
     opt_role,
     opt_user_identifier,
-    opt_identifier,
-    opt_resource_type
+    opt_resource_identifier,
+    opt_resource_type,
+    opt_view_type,
 )
 from trakka.utils.output import table_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
@@ -24,9 +25,8 @@ def privilege(ctx):
 @opt_resource_type(
     required=False,
     help="Only show privileges assigned to resources of the given type")
-@opt_identifier( # this is -id; will this be clear to users? is there a better option?
+@opt_resource_identifier(
     required=False,
-    var_name="resource_id",
     help="Only show privileges assigned to resource with the given identifier." + 
          "Resource type must also be specified.")
 @opt_user_identifier(
@@ -35,6 +35,12 @@ def privilege(ctx):
 @opt_role(
     required=False,
     help="Only show assignments of the specified role.")
+@opt_view_type()
 @table_format_option()
-def privilege_list(resource_type, resource_id, user_id, role, out_format: str):
-    list_privileges(resource_type, resource_id, user_id, role, out_format)
+def privilege_list(
+        resource_type: str,
+        resource_id: str,
+        user_id, role,
+        out_format: str,
+        view_type: str):
+    list_privileges(resource_type, resource_id, user_id, role, out_format, view_type)

@@ -507,6 +507,19 @@ def opt_user_identifier(**attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_resource_identifier(**attrs: t.Any):
+    defaults = {
+        'required': True,
+        'help': 'Resource abbreviation or global ID',
+    }
+    return create_option(
+        '-id',
+        '--resource-id',
+        'resource_id',
+        type=click.STRING,
+        **{**defaults, **attrs}
+    )
+
 def opt_identifier(option_name='-id', var_name='identifier', **attrs: t.Any):
     defaults = {
         'required': True,
