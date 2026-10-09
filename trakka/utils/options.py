@@ -822,7 +822,8 @@ def opt_merge_algorithm(**attrs: t.Any):
         'help': 'Merge algorithm used to generate views for the sample table.',
         'type': click.Choice(['show-all', 'override']),
         'callback': map_merge_algo,
-        'required': True,
+        'required': False,
+        'default': 'override'
     }
     return create_option(
         '--merge-algorithm',
