@@ -55,7 +55,6 @@ def submission_add(
 
 @metadata.command('update', help="""
     Upload metadata to existing samples.
-    The update operation does not require (or accept) Owner_group.
     The specified pro forma must contain Seq_ID and metadata fields
     to be updated. All samples must already exist.
 """)
