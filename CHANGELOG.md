@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [0.93.0] - 2026-10-20
+## [0.93.0] - 2026-10-26
 
 ### Added
 - `sample show-details`.
