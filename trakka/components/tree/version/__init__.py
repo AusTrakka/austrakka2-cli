@@ -2,6 +2,8 @@
 from io import BufferedReader
 import click
 
+from trakka.utils.cmd_filter import hide_admin_cmds
+
 from .funcs import add_tree_version
 from .funcs import list_tree_versions
 from .funcs import disable_tree_version
