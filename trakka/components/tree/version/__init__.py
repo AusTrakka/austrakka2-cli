@@ -6,6 +6,7 @@ from .funcs import add_tree_version
 from .funcs import list_tree_versions
 from .funcs import disable_tree_version
 from .funcs import enable_tree_version
+from .funcs import get_tree_version
 from ....utils.options import opt_tree
 from ....utils.options import opt_tree_version_id
 from ....utils.output import table_format_option
@@ -46,3 +47,13 @@ def tree_disable(tree_version_id: int):
 def tree_enable(tree_version_id: int):
     '''Enable a tree version'''
     enable_tree_version(tree_version_id)
+
+
+@version.command('get', hidden=hide_admin_cmds())
+@opt_tree_version_id()
+def tree_get(tree_version_id: int):
+    '''
+    Get the newick string for a tree version. Samples will be redacted if they would be redacted
+    for the same user in the web client.
+    '''
+    get_tree_version(tree_version_id)
