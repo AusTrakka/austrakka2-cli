@@ -1,7 +1,7 @@
 from os import path
 from io import BufferedReader
 
-from trakka.utils.api import api_patch, api_post_multipart
+from trakka.utils.api import api_patch, api_post_multipart, api_get
 from trakka.utils.helpers.output import call_get_and_print
 from trakka.utils.misc import logger_wraps
 from trakka.utils.paths import TREE_VERSION_PATH
@@ -40,3 +40,8 @@ def disable_tree_version(tree_id: int):
 @logger_wraps()
 def enable_tree_version(tree_id: int):
     api_patch(path=f'{TREE_VERSION_PATH}/enable/{tree_id}')
+
+@logger_wraps()
+def get_tree_version(tree_id: int):
+    response = api_get(f'{TREE_VERSION_PATH}/{tree_id}')
+    print(response['data']['newickTree'])
