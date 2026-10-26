@@ -1,8 +1,8 @@
 # pylint: disable=expression-not-assigned
 import click
 
-from trakka.components.iam.privilege import privilege_subcommands
 from trakka.components.log import log_subcommands
+from trakka.components.privilege import privilege_subcommands
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import opt_abbrev, \
     opt_label, \
@@ -16,9 +16,6 @@ from trakka.utils.options import opt_watermark_trees
 from trakka.utils.output import object_format_option
 from trakka.utils.output import table_format_option
 from trakka.utils.privilege import PROJECT_RESOURCE
-from .dataset import dataset
-from .document import document
-from .field import field
 from .funcs import disable_project, enable_project, list_projects, \
     add_project, \
     update_project, \
@@ -26,7 +23,9 @@ from .funcs import disable_project, enable_project, list_projects, \
     get_dashboard
 from .metadata import metadata
 from .organisation import organisation
-
+from .dataset import dataset
+from .field import field
+from .document import document
 
 @click.group()
 @click.pass_context

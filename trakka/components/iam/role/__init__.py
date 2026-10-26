@@ -8,7 +8,7 @@ from .scope import scope
 @click.group()
 @click.pass_context
 def role(ctx):
-    """Commands related to role based access control"""
+    """Commands related to roles"""
     ctx.context = ctx.parent.context
 
 

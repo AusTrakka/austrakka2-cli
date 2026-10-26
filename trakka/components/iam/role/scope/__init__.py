@@ -9,7 +9,7 @@ from trakka.utils.options import *
 @click.group()
 @click.pass_context
 def scope(ctx):
-    """Commands related to roles scopes."""
+    """Commands related to modifying role permissions (scopes)."""
     ctx.context = ctx.parent.context
 
 

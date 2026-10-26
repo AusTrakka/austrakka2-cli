@@ -30,16 +30,14 @@ class TestSeqGetCommand:
     def _use_cli(self, trakka_test_cli: TrakkaTestCli):
         self.cli = trakka_test_cli
 
-    def test_get__given_both_seq_id_and_group_are_not_specified__expect_cli_error(self):
+    def test_get__given_seq_id_and_project_and_org_are_not_specified__expect_cli_error(self):
         # Arrange
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
@@ -55,14 +53,12 @@ class TestSeqGetCommand:
             'get',
             '-t',
             'fasta-cns',
-            '-o',
+            '-out',
             temp_dir,
         ])
         
         # Assert
         assert result.exit_code != 0, f'The seq get command should fail: {result.output}'
-        assert ("You must provide at least one of these arguments: "
-                "`group-name, seq-id`.") in result.output
     
     
     def test_get__given_no_output_dir__expect_cli_error(self):
@@ -95,7 +91,7 @@ class TestSeqGetCommand:
 
         # Assert
         assert result.exit_code != 0, f'The seq get command should fail: {result.output}'
-        assert "Missing option '-o' / '--outdir'." in result.output
+        assert "Missing option '-out' / '--outdir'." in result.output
     
     
     def test_get__given_seq_type_is_not_specified__expect_cli_error(self):
@@ -123,51 +119,13 @@ class TestSeqGetCommand:
             'get',
             '-s',
             seq_id,
-            '-o',
+            '-out',
             temp_dir,
         ])
 
         # Assert
         assert result.exit_code != 0, f'The seq get command should fail: {result.output}'
         assert "Missing option '-t' / '--type'." in result.output
-    
-    
-    def test_get__given_both_group_name_and_seq_id_are_specified__expect_cli_error(self):
-        # Arrange
-        org_name = f'org-{_new_identifier(4)}'
-        seq_id = f'seq-{_new_identifier(10)}'
-        seq_id2 = f'seq-{_new_identifier(10)}'
-        shared_group = f'sg-{_new_identifier(10)}'
-
-        _create_field_if_not_exists(self.cli, seq_id_field_name)
-        _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
-
-        original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
-        cns_fasta_path = _clone_cns_fasta_file(
-            original_file,
-            [('SEQ_multi-seq-cns-001', seq_id), ('SEQ_multi-seq-cns-002', seq_id2)])
-
-        _upload_fasta_cns_file(self.cli, cns_fasta_path, org_name)
-        temp_dir = _mk_temp_dir()
-
-        # Act
-        result = self.cli.invoke([
-            'seq',
-            'get',
-            '-t',
-            'fasta-cns',
-            '-s',
-            seq_id,
-            '-g',
-            shared_group,
-            '-o',
-            temp_dir,
-        ])
-
-        # Assert
-        assert result.exit_code != 0, f'The seq get command should fail: {result.output}'
-        assert "`seq-id` is mutually exclusive with `group-name`." in result.output
     
     
     def test_get__given_seq_type_is_not_supported__expect_cli_error(self):
@@ -197,7 +155,7 @@ class TestSeqGetCommand:
             'BLAH-BLAH-TYPE',
             '-s',
             seq_id,
-            '-o',
+            '-out',
             temp_dir,
         ])
 
@@ -234,7 +192,7 @@ class TestSeqGetCommand:
             'fasta-cns',
             '-s',
             unknown_seq_id,
-            '-o',
+            '-out',
             temp_dir,
         ])
 
@@ -270,7 +228,7 @@ class TestSeqGetCommand:
             'fasta-cns',
             '-s',
             seq_id,
-            '-o',
+            '-out',
             temp_dir,
         ])
     
@@ -306,7 +264,7 @@ class TestSeqGetCommand:
             'fastq-ill-pe',
             '-s',
             seq_id,
-            '-o',
+            '-out',
             temp_dir,
         ])
 
@@ -315,16 +273,14 @@ class TestSeqGetCommand:
         assert f"Skipped samples with no available sequences: {seq_id}" in result.output
     
     
-    def test_get__given_group_does_not_exist__expect_error(self):
+    def test_get__given_project_does_not_exist__expect_error(self):
         # Arrange
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
@@ -335,29 +291,26 @@ class TestSeqGetCommand:
         temp_dir = _mk_temp_dir()
 
         # Act
-        unknown_group = f'sg-{_new_identifier(10)}'
         result = self.cli.invoke([
             'seq',
             'get',
             '-t',
             'fasta-cns',
-            '-g',
-            unknown_group,
-            '-o',
+            '-p',
+            'unknown_project',
+            '-out',
             temp_dir,
         ])
 
         # Assert
         assert result.exit_code != 0, f'The seq get command should fail: {result.output}'
-        assert f"Group {unknown_group} not found" in str(result)
     
     
-    def test_get__given_group_exists_and_seq_type_matches_the_request__expect_files_downloaded(self):
+    def test_get__given_org_exists_and_seq_type_matches_the_request__expect_files_downloaded(self):
         # Arrange
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_org(self.cli, org_name)
@@ -376,9 +329,9 @@ class TestSeqGetCommand:
             'get',
             '-t',
             'fasta-cns',
-            '-g',
-            owner_group,
             '-o',
+            org_name,
+            '-out',
             temp_dir,
         ])
 
@@ -387,16 +340,14 @@ class TestSeqGetCommand:
         self._assert_single_file_downloads_exists([seq_id], 'fasta-cns', temp_dir)
     
     
-    def test_get__given_group_exists_and_seq_type_does_not_match_the_request__expect_no_download(self):
+    def test_get__given_org_exists_and_seq_type_does_not_match_the_request__expect_no_download(self):
         # Arrange
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
         seq_id2 = f'seq-{_new_identifier(10)}'
-        shared_group = f'sg-{_new_identifier(10)}'
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
@@ -412,9 +363,9 @@ class TestSeqGetCommand:
             'get',
             '-t',
             'fastq-ill-pe',
-            '-g',
-            shared_group,
             '-o',
+            org_name,
+            '-out',
             temp_dir,
         ])
 

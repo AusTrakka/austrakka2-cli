@@ -9,7 +9,7 @@ from trakka.utils.options import opt_is_active
 from trakka.utils.options import opt_country
 from trakka.utils.options import opt_state
 from trakka.utils.privilege import ORG_RESOURCE
-from trakka.components.iam.privilege import privilege_subcommands
+from trakka.components.privilege import privilege_subcommands
 from trakka.components.log import log_subcommands
 from trakka.components.org.field import field
 from trakka.utils.cmd_filter import show_admin_cmds

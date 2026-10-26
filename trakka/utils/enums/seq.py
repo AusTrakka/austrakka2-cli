@@ -14,7 +14,7 @@ class SeqType(Enum):
     FASTA_ASM = 'fasta-asm'
 
 
-def convert_to_seq_type(seq_type: str) -> SeqType:
+def convert_to_seq_type(seq_type: str|None) -> SeqType|None:
     """
     Convert a string to a SeqType enum value.
     

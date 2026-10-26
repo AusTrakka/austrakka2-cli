@@ -7,7 +7,7 @@ import click
 from click.core import Context
 from loguru import logger
 
-from trakka.utils.config import get_server_info_or_create
+from trakka.utils.config import get_server_info
 from trakka.utils.privilege import TENANT_RESOURCE
 
 from trakka.utils.context import CxtKey
@@ -17,6 +17,7 @@ from trakka.components.auth import auth
 from trakka.components.user import user
 from trakka.components.org import org
 from trakka.components.log import log_subcommands
+from trakka.components.privilege import privilege_subcommands
 from trakka.components.project import project
 from trakka.components.tree import tree
 from trakka.components.metadata import metadata
@@ -148,15 +149,18 @@ def cli(
     setup_logger(log_level, log_var)
     warn_if_austrakka()
     if not skip_version_check:
-        server_info = get_server_info_or_create(
-            uri,
-            skip_cert_verify,
-        )
-        if server_info is None:
-            check_version(VERSION)
-        else:
-            logger.debug("Not checking for new CLI updates as server is not"
-                         + " rolling.")
+        try:
+            (_, _, _, required_cli_version) = get_server_info(
+                uri,
+                skip_cert_verify,
+            )
+            if required_cli_version == "":
+                check_version(VERSION)
+            else:
+                logger.debug("Not checking for new CLI updates as server is not"
+                             + " rolling.")
+        except Exception as ex: # pylint: disable=broad-except
+            logger.debug(f"Exception occured checking for CLI update: {ex}")
 
 
 def get_cli():
@@ -177,6 +181,7 @@ def get_cli():
     cli.add_command(fieldtype)
     cli.add_command(iam) if show_admin_cmds() else None
     cli.add_command(log_subcommands(TENANT_RESOURCE)) if show_admin_cmds() else None
+    cli.add_command(privilege_subcommands(TENANT_RESOURCE)) if show_admin_cmds() else None
     return cli
 
 

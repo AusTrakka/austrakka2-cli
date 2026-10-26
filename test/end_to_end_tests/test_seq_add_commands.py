@@ -2,8 +2,9 @@ import pytest
 
 from ete_cmd_bricks import (
     _create_org,
-    _list_seq_by_group,
+    _list_seq_by_org,
     _upload_fasta_asm_file)
+
 from ete_utils import _new_identifier
 from test.utils.trakka_test_cli import TrakkaTestCli
 
@@ -18,7 +19,6 @@ class TestSeqAddCommands:
         # Arrange
         org_name = f'org-{_new_identifier(4)}'
         seq_id = f'seq-{_new_identifier(10)}'
-        owner_group = f'{org_name}-Owner'
 
         _create_org(self.cli, org_name)
 
@@ -27,5 +27,5 @@ class TestSeqAddCommands:
         print(output)
 
         # Assert
-        result = _list_seq_by_group(self.cli, owner_group)
+        result = _list_seq_by_org(self.cli, org_name)
         assert len(result) == 1, f'Failed to upload fasta asm file: {result}'

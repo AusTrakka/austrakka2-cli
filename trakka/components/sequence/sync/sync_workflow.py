@@ -49,9 +49,12 @@ from .constant import SEQ_ID_KEY
 from .constant import SEQ_TYPE_KEY
 from .constant import TYPE_KEY
 from .constant import READ_KEY
-from .constant import GROUP_NAME_KEY
+from .constant import RESOURCE_NAME_KEY
+from .constant import RESOURCE_TYPE_KEY
 from .constant import BLOB_FILE_PATH_KEY
 from .constant import SERVER_SHA_256_KEY
+
+from .constant import RT_PROJECT, RT_ORG
 
 from .constant import MATCH
 from .constant import DOWNLOADED
@@ -172,7 +175,8 @@ def pull_manifest(sync_state: dict):
     logger.success(f'Started: {Action.pull_manifest}')
 
     seq_type = sync_state[SEQ_TYPE_KEY]
-    group_name = sync_state[GROUP_NAME_KEY]
+    resource_type = sync_state[RESOURCE_TYPE_KEY]
+    resource_name = sync_state[RESOURCE_NAME_KEY]
     
     seq_type_enum = convert_to_seq_type(seq_type)
     raise_sync_exception_if_none(
@@ -180,7 +184,10 @@ def pull_manifest(sync_state: dict):
         "pull_manifest: seq_type_enum cannot be None."
         "Please check the state file.")
     
-    data = _get_seq_data(group_name, seq_type_enum)
+    project = resource_name if resource_type == RT_PROJECT else None
+    org = resource_name if resource_type == RT_ORG else None
+    
+    data = _get_seq_data(project, org, seq_type_enum)
 
     logger.success(f'Freshly pulled manifest has {len(data)} entries.')
     path = get_path(sync_state, INTERMEDIATE_MANIFEST_FILE_KEY)

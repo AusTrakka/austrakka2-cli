@@ -7,7 +7,7 @@ from trakka.utils.output import table_format_option
 
 from trakka.utils.option_utils import RequiredMutuallyExclusiveOption
 from trakka.utils.options import opt_seq_type
-from trakka.utils.options import opt_group_name
+from trakka.utils.options import opt_organisation, opt_project
 from trakka.utils.options import opt_output_dir
 from trakka.utils.options import opt_seq_id
 from trakka.utils.options import opt_force_mutex_skip
@@ -38,29 +38,36 @@ seq.add_command(sync)
 @seq.command('get')
 @opt_output_dir()
 @opt_seq_type()
-@opt_group_name(
+@opt_project(
     required=False,
     default=None,
     multiple=False,
     cls=RequiredMutuallyExclusiveOption,
-    mutually_exclusive=['seq_id'])
+    mutually_exclusive=['seq_id', 'org'])
+@opt_organisation(
+    required=False,
+    default=None,
+    multiple=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['seq_id', 'project'])
 @opt_seq_id(
     required=False,
     default=None,
     help='The Seq_IDs of specific sequences to download',
     cls=RequiredMutuallyExclusiveOption,
-    mutually_exclusive=['group_name'])
+    mutually_exclusive=['project', 'org'])
 def seq_get(
         output_dir,
         seq_type: str,
-        group_name: str,
+        project: str,
+        org: str,
         seq_id: List[str],
 ):
-    """Download sequence files to the local drive
+    """Download sequence files to the local drive. 
 
-    EXAMPLE: Download Fasta for group Example-Group
+    EXAMPLE: Download Fasta for project Example-Project
 
-        trakka seq get -t fasta --group-name Example-Group --outdir ~/Downloads/fasta-files
+        trakka seq get -t fasta --project Example-Project --outdir ~/Downloads/fasta-files
     """
     seq_type_enum = convert_to_seq_type(seq_type)
     
@@ -68,7 +75,8 @@ def seq_get(
     get_sequences(
         output_dir,
         seq_type_enum,
-        group_name,
+        project,
+        org,
         seq_id,
     )
 
@@ -76,30 +84,38 @@ def seq_get(
 @seq.command('list')
 @table_format_option()
 @opt_seq_type(default=None, required=False)
-@opt_group_name(
+@opt_project(
     required=False,
     default=None,
     multiple=False,
     cls=RequiredMutuallyExclusiveOption,
-    mutually_exclusive=['seq_id'])
+    mutually_exclusive=['seq_id', 'org'])
+@opt_organisation(
+    required=False,
+    default=None,
+    multiple=False,
+    cls=RequiredMutuallyExclusiveOption,
+    mutually_exclusive=['seq_id', 'project'])
 @opt_seq_id(
     required=False,
     default=None,
-    help='The Seq_IDs of specific sequences to list',
+    help='The Seq_IDs of specific sequences to download',
     cls=RequiredMutuallyExclusiveOption,
-    mutually_exclusive=['group_name'])
+    mutually_exclusive=['project', 'org'])
 def seq_list(
         out_format: str,
         seq_type: str,
-        group_name: str,
+        project: str,
+        org: str,
         seq_id: List[str],
 ):
-    """List sequences for a group or sample"""
+    """List sequences for a project, organisation, or specified Seq_IDs"""
     seq_type_enum = convert_to_seq_type(seq_type)
     
     list_sequences(
         out_format,
-        group_name,
+        project,
+        org,
         seq_type_enum,
         seq_id
     )
