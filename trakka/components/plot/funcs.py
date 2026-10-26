@@ -34,7 +34,7 @@ def add_plot(
         description: str,
         project: str,
         plottype: str,
-        spec: BufferedReader,
+        spec: BufferedReader|None,
         is_active: bool,
 ):
     if spec is not None:
@@ -62,7 +62,7 @@ def update_plot(
         description: str,
         project: str,
         plot_type: str,
-        spec: str,
+        spec: BufferedReader|None,
         is_active: bool,
 ):
     if spec is not None:

@@ -1,9 +1,8 @@
-import click
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import *
 from trakka.utils.output import table_format_option
-from .scope import scope
 from .funcs import list_roles, add_role, update_role, delete_role
+from .scope import scope
 
 
 @click.group()

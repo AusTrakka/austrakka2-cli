@@ -13,7 +13,7 @@ API_DATETIME_FORMAT = 'ISO8601'
 DT_FORMAT_WITH_TZ = '%Y-%m-%d %H:%M:%S %Z'
 DT_FORMAT_NO_TZ = '%Y-%m-%d %H:%M:%S'
 
-def parse_timezone(timezone_str: str = None):
+def parse_timezone(timezone_str: str | None = None):
     """
     Parse a timezone string to interpret special values such as "local".
     Returns a timezone object.

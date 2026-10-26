@@ -23,8 +23,8 @@ from .constant import SYNC_STATE_FILE_KEY
 @logger_wraps()
 def seq_sync_get(
         output_dir: str,
-        project: str,
-        org: str,
+        project: str|None,
+        org: str|None,
         recalc_hash: bool,
         seq_type: str,
         download_batch_size: int,

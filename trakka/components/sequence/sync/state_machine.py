@@ -109,5 +109,5 @@ class StateMachine:
                 f'Aborting. The unknown action has to be added to the '
                 f'allowed list at configuration time.')
 
-    def get_state(self, name: str) -> State:
+    def get_state(self, name: str) -> State | None:
         return None if name not in self.states else self.states[name]

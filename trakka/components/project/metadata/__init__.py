@@ -1,12 +1,10 @@
-from typing import Optional
-
 import click
 
-from trakka.utils.output import table_format_option
 from trakka.utils.output import FORMATS
-
+from trakka.utils.output import table_format_option
 from .funcs import get_view, \
     download_view
+
 
 @click.group()
 @click.pass_context

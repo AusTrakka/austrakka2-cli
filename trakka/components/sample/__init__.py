@@ -48,7 +48,7 @@ This will not be reversible unless you also have appropriate permissions in the 
     var_name="new_org_id",
 )
 @options_seq_id_or_file
-def owner_change(old_org_id: str, new_org_id: str, seq_id: [str], file: BufferedReader):
+def owner_change(old_org_id: str, new_org_id: str, seq_id: list[str], file: BufferedReader):
     seq_ids = get_seq_list(seq_id, file)
     change_owner(old_org_id, new_org_id, seq_ids)
 
@@ -69,7 +69,7 @@ def sample_show_details(seq_id: str, out_format: str):
 @sample.command('unshare')
 @opt_project(required=True)
 @options_seq_id_or_file
-def sample_unshare(seq_id: [str], project: str, file: BufferedReader):
+def sample_unshare(seq_id: list[str], project: str, file: BufferedReader):
     """Unshare a list of sample records with a project."""
     seq_ids = get_seq_list(seq_id, file)
     unshare_sample(project, seq_ids)
@@ -77,14 +77,14 @@ def sample_unshare(seq_id: [str], project: str, file: BufferedReader):
 @sample.command('share')
 @opt_project(required=True)
 @options_seq_id_or_file
-def sample_share(seq_id: [str], project: str, file: BufferedReader):
+def sample_share(seq_id: list[str], project: str, file: BufferedReader):
     """Share a list of sample records with a project."""
     seq_ids = get_seq_list(seq_id, file)
     share_sample(project, seq_ids)
 
 @sample.command('disable')
 @options_seq_id_or_file
-def sample_disable(seq_id: [str], file: BufferedReader):
+def sample_disable(seq_id: list[str], file: BufferedReader):
     """Disable a sample record. This is a soft delete. 
     The sample record's metadata and sequences will not appear in any projects. 
     Once disabled, it will not be possible to upload metadata or sequences
@@ -110,7 +110,7 @@ def sample_projects(
 
 @sample.command('enable')
 @options_seq_id_or_file
-def sample_enable(seq_id: [str], file: BufferedReader):
+def sample_enable(seq_id: list[str], file: BufferedReader):
     """Enable a sample record. This re-enables a previously disabled sample."""
     seq_ids = get_seq_list(seq_id, file)
     enable_sample(seq_ids)

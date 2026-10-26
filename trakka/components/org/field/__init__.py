@@ -1,8 +1,6 @@
-import click
-
-from trakka.utils.output import table_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import *
+from trakka.utils.output import table_format_option
 from .funcs import \
     add_field, \
     remove_field, \

@@ -55,7 +55,7 @@ def log_subcommands(root_type: str):
         resource_type: str,
         out_format: str,
         view_type: str,
-        identifier: str = None,
+        identifier: str | None= None,
     ):
         list_logs(
             root_type,

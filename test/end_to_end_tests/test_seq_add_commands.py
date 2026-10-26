@@ -8,6 +8,7 @@ from ete_cmd_bricks import (
 from ete_utils import _new_identifier
 from test.utils.trakka_test_cli import TrakkaTestCli
 
+
 class TestSeqAddCommands:
     @pytest.fixture(autouse=True)
     def _use_cli(self, trakka_test_cli: TrakkaTestCli):

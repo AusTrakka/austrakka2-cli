@@ -79,14 +79,14 @@ class SeqFile:
     multipart: tuple
     sha256: str
     filename: str
-    read_hint: str = None
+    read_hint: str | None = None
 
 
 @logger_wraps()
 def add_fasta_cns_submission(
         fasta_file: BufferedReader,
         owner_org: str,
-        shared_projects: List[str],
+        shared_projects: list[str],
         should_create: bool,
         skip: bool = False,
         force: bool = False,
@@ -401,7 +401,7 @@ def _download_sequences(
         _download_seq_file(file_path, filename, query_path, params, sample_dir)
 
 
-def _filter_sequences(data, seq_type: SeqType) -> List[Dict]:
+def _filter_sequences(data, seq_type: SeqType | None) -> List[Dict]:
     data_filtered = list(filter(lambda x: seq_type is None or x['type'] == seq_type.value, data))
     data_filtered = list(filter(lambda x: x['isActive'] is True, data_filtered))
     return data_filtered
@@ -422,7 +422,7 @@ def _get_seq_api_by_org(org: str):
         raise ValueError("Attempting to get org sequences, but org not specified")
     return api_path
 
-def _get_seq_api_by_sample_names(seq_ids: List[str]):
+def _get_seq_api_by_sample_names(seq_ids: List[str] | None):
     api_path = SEQUENCE_PATH
     paths = []
     if seq_ids is not None:
@@ -455,6 +455,7 @@ def _get_seq_data(
         data = api_get(path=api_path)['data']
         result = _filter_sequences(data, seq_type)
     else:
+        assert seq_ids is not None
         api_paths = _get_seq_api_by_sample_names(seq_ids)
         for path in api_paths:
             data.extend(api_get(path=path)['data'])
@@ -594,7 +595,7 @@ def _ensure_read_hint_and_filename_agrees(file):
                          f"is assigned to {PATH_2_CSV} which is reserved for read two.")
 
 
-def _get_file(filepath: str, read_hint: str = None) -> SeqFile:
+def _get_file(filepath: str, read_hint: str | None = None) -> SeqFile:
     # pylint: disable=consider-using-with
     file = open(filepath, 'rb')
     filename = os.path.basename(file.name)

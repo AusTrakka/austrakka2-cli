@@ -98,8 +98,8 @@ def default_object_format():
 def print_dataframe(
         dataframe: pd.DataFrame,
         output_format: str = default_object_format(),
-        restricted_cols: List[str] = None,
-        datetime_cols: List[str] = None,
+        restricted_cols: list[str] | None = None,
+        datetime_cols: list[str] | None = None,
 ):
     if datetime_cols is None:
         datetime_cols = []
