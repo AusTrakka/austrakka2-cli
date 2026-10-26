@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning].
 ### Changed
 - `sample groups` -> `sample projects`.
 - `-g/--group-name` -> `[-o/--org|-p/--project]` for `seq [get|list]` and `seq sync get`.
+- `-o/--outdir` -> `-out/--outdir` for `seq get` and `seq sync get`.
 - `proforma [share|unshare]` -> `proforma [org|project] [share|unshare]`.
 
 ### Removed
