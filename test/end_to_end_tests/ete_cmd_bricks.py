@@ -39,7 +39,7 @@ def _seq_sync_get(
     result = cli.invoke(args)
 
     if assert_success:
-        assert result.exit_code == 0, f'Failed to sync get for group {group} as part of test setup: {result.output}'
+        assert result.exit_code == 0, f'Failed to sync get for project {project} as part of test setup: {result.output}'
     return result
 
 
