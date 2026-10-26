@@ -1,9 +1,9 @@
 import click
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import *
-from trakka.utils.output import table_format_option
+from trakka.utils.output import object_format_option, table_format_option
 from .scope import scope
-from .funcs import list_roles, add_role, update_role, delete_role
+from .funcs import list_roles, add_role, show_role, update_role, delete_role
 
 
 @click.group()
@@ -89,3 +89,12 @@ def role_remove(role: str, no_confirm: bool):
             return
     
     delete_role(role)
+
+@role.command('show')
+@opt_role()
+@object_format_option()
+def role_show(role: str, out_format: str):
+    """
+    Show details of a role
+    """
+    show_role(role, out_format)
