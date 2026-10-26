@@ -31,7 +31,8 @@ from trakka.utils.paths import SEQUENCE_PATH
 from trakka.utils.paths import SEQUENCE_TYPE_QUERY
 from trakka.utils.paths import SEQUENCE_READ_QUERY
 from trakka.utils.paths import SEQUENCE_DOWNLOAD_PATH
-from trakka.utils.paths import SEQUENCE_BY_GROUP_PATH
+from trakka.utils.paths import SEQUENCE_BY_PROJECT_PATH
+from trakka.utils.paths import SEQUENCE_BY_ORG_PATH
 from trakka.utils.paths import SEQUENCE_BY_SAMPLE_PATH
 from trakka.utils.output import create_response_object
 from trakka.utils.output import log_response
@@ -405,15 +406,21 @@ def _filter_sequences(data, seq_type: SeqType) -> List[Dict]:
     data_filtered = list(filter(lambda x: x['isActive'] is True, data_filtered))
     return data_filtered
 
-
-def _get_seq_api_by_group(group_name: str):
+def _get_seq_api_by_project(project: str):
     api_path = SEQUENCE_PATH
-    if group_name is not None:
-        api_path += f'/{SEQUENCE_BY_GROUP_PATH}/{group_name}'
+    if project is not None:
+        api_path += f'/{SEQUENCE_BY_PROJECT_PATH}/{project}'
     else:
-        raise ValueError("A filter has not been passed")
+        raise ValueError("Attempting to get project sequences, but project not specified")
     return api_path
 
+def _get_seq_api_by_org(org: str):
+    api_path = SEQUENCE_PATH
+    if org is not None:
+        api_path += f'/{SEQUENCE_BY_ORG_PATH}/{org}'
+    else:
+        raise ValueError("Attempting to get org sequences, but org not specified")
+    return api_path
 
 def _get_seq_api_by_sample_names(seq_ids: List[str]):
     api_path = SEQUENCE_PATH
@@ -424,22 +431,27 @@ def _get_seq_api_by_sample_names(seq_ids: List[str]):
             paths.append(api_path)
             api_path = SEQUENCE_PATH
     else:
-        raise ValueError("A filter has not been passed")
+        raise ValueError("Attempting to get sample sequences, but Seq_ID not specified")
     return paths
 
 
 # pylint: disable=duplicate-code,no-else-return
 def _get_seq_data(
-        group_name: str,
+        project: str,
+        org: str,
         seq_type: SeqType = None,
         seq_ids: List[str] = None,
 ):
-    if group_name is None and (seq_ids is None or len(seq_ids) == 0):
+    if project is None and org is None and (seq_ids is None or len(seq_ids) == 0):
         raise ValueError(
-            "Either group name or Seq_IDs must be provided to get sequence information")
+            "Either project, organisation, or Seq_IDs must be provided to get sequence information")
     data = []
-    if group_name:
-        api_path = _get_seq_api_by_group(group_name)
+    if project:
+        api_path = _get_seq_api_by_project(project)
+        data = api_get(path=api_path)['data']
+        result = _filter_sequences(data, seq_type)
+    elif org:
+        api_path = _get_seq_api_by_org(org)
         data = api_get(path=api_path)['data']
         result = _filter_sequences(data, seq_type)
     else:
@@ -462,14 +474,16 @@ def _get_seq_data(
 def get_sequences(
         output_dir,
         seq_type: SeqType = None,
-        group_name: str = None,
+        project: str = None,
+        org: str = None,
         seq_ids: List[str] = None,
 ):
     if not os.path.exists(output_dir):
         create_dir(output_dir)
 
     data = _get_seq_data(
-        group_name,
+        project,
+        org,
         seq_type,
         seq_ids,
     )
@@ -479,12 +493,14 @@ def get_sequences(
 # pylint: disable=duplicate-code
 def list_sequences(
         out_format: str,
-        group_name: str,
+        project: str,
+        org: str,
         seq_type: SeqType = None,
         seq_ids: List[str] = None,
 ):
     data = _get_seq_data(
-        group_name,
+        project,
+        org,
         seq_type,
         seq_ids,
     )
@@ -616,7 +632,7 @@ def _create_samples(
     for project in shared_projects:
         api_patch(f'{SAMPLE_PATH}/Share', data={
             'seqIds': seq_ids,
-            'groupName': f'{project}-Group',
+            'projectIdentifier': project,
         })
 
 

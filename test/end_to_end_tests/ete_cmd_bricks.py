@@ -7,20 +7,20 @@ from ete_constants import seq_id_field_name
 from test.utils.trakka_test_cli import TrakkaTestCli
 
 
-def _sample_unshare(cli: TrakkaTestCli, seq_id: str, group_name: str):
+def _sample_unshare(cli: TrakkaTestCli, seq_id: str, project: str):
     result = cli.invoke([
         'sample',
         'unshare',
         '-s', seq_id,
-        '-g', group_name
+        '-p', project
     ])
 
-    assert result.exit_code == 0, f'Failed to unshare sequence {seq_id} from group {group_name} as part of test setup: {result.output}'
+    assert result.exit_code == 0, f'Failed to unshare sequence {seq_id} from project {project} as part of test setup: {result.output}'
 
 
 def _seq_sync_get(
         cli: TrakkaTestCli,
-        group: str,
+        project: str,
         output_dir: str,
         seq_type: str,
         recalculate_hash: bool = False,
@@ -30,8 +30,8 @@ def _seq_sync_get(
         'seq',
         'sync',
         'get',
-        '-g', group,
-        '-o', output_dir,
+        '-p', project,
+        '-out', output_dir,
         '-t', seq_type
     ]
 
@@ -79,7 +79,7 @@ def _upload_fastq_ill_se_file(
     if force:
         args.append('--force')
 
-    result = cli.invoke(args)
+    result = cli.invoke(args)    
     assert result.exit_code == 0, (f'Failed to upload fastq ill se file {fastq_file_path}, '
                                    f'with generated csv: {temp_csv_file_path}  as part of '
                                    f'test setup: {result.output}')
@@ -328,15 +328,29 @@ def _create_org(cli: TrakkaTestCli, name: str):
     assert result.exit_code == 0, f'Failed to create org {name} as part of test setup: {result.output}'
 
 
-def _list_seq_by_group(cli: TrakkaTestCli, group: str):
+def _list_seq_by_project(cli: TrakkaTestCli, project: str):
     result = cli.invoke([
         'seq',
         'list',
-        '-g',
-        group,
+        '-p',
+        project,
         '-f',
         'json'
     ])
 
-    assert result.exit_code == 0, f'Failed to list sequences by group {group} as part of test setup: {result.output}'
+    assert result.exit_code == 0, f'Failed to list sequences by project {project} as part of test setup: {result.output}'
+    return json.loads(result.stdout)
+
+
+def _list_seq_by_org(cli: TrakkaTestCli, org: str):
+    result = cli.invoke([
+        'seq',
+        'list',
+        '-o',
+        org,
+        '-f',
+        'json'
+    ])
+
+    assert result.exit_code == 0, f'Failed to list sequences by org {org} as part of test setup: {result.output}'
     return json.loads(result.stdout)
