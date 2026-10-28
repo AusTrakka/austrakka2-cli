@@ -95,3 +95,7 @@ def delete_role(role: str):
     api_delete(
         path=f"{ROLES_V2_PATH}/{role}",
     )
+
+@logger_wraps()
+def show_role(role: str, out_format: str):
+    call_get_and_print(f'{ROLES_V2_PATH}/{role}', out_format)
