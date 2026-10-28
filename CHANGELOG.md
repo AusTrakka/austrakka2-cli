@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.93.0] - 2026-10-26
+
+### Added
+- `sample show-details`.
+- `proforma privilege [assign|list|list-by-role|list-by-user|unassign]`.
+- `proforma [org|project] list`.
+
+### Changed
+- `sample groups` -> `sample projects`.
+- `-g/--group-name` -> `[-o/--org|-p/--project]` for `seq [get|list]` and `seq sync get`.
+- `-o/--outdir` -> `-out/--outdir` for `seq get` and `seq sync get`.
+- `proforma [share|unshare]` -> `proforma [org|project] [share|unshare]`.
+
+### Removed
+- `-g/--group-name` from `sample [share|unshare]`.
+- `proforma list-groups`.
+
 ## [0.92.3] - 2026-10-08
 
 ### Added
