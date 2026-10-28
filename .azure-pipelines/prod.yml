@@ -2,7 +2,7 @@ resources:
   repositories:
     - repository: CLI
       type: github
-      name: AusTrakka/austrakka2-cli
+      name: trakka-platform/cli
       ref: $(Build.SourceBranch) 
       endpoint: AusTrakka
     - repository: Pipelines
@@ -61,7 +61,7 @@ stages:
           displayName: 'Create GitHub Release'      
           inputs:
             gitHubConnection: AusTrakka
-            repositoryName: austrakka/austrakka2-cli
+            repositoryName: trakka-platform/cli
             tagSource: userSpecifiedTag
             tag: $(cliVersion)
             title: $(cliVersion) 
