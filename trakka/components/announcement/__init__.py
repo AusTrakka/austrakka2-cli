@@ -2,7 +2,8 @@ import click
 
 from trakka.components.announcement.funcs import create_announcement
 from trakka.utils.cmd_filter import hide_admin_cmds
-from trakka.utils.options import opt_user_identifier, opt_announcement_subject, opt_announcement_body
+from trakka.utils.options import opt_user_identifier, \
+    opt_announcement_subject, opt_announcement_body
 
 
 @click.group()

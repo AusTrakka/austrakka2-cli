@@ -1,6 +1,3 @@
-from click import Command
-from loguru import logger
-
 from trakka.utils.api import api_post
 from trakka.utils.misc import logger_wraps
 from trakka.utils.paths import ANNOUNCEMENT_PATH
