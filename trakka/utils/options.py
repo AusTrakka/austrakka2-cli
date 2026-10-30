@@ -894,3 +894,27 @@ def opt_watermark_trees(**attrs: t.Any):
         required=False,
         **{**defaults, **attrs}
     )
+
+def opt_announcement_subject(**attrs: t.Any):
+    defaults = {
+        "help": "The subject header on the announcement",
+    }
+    return create_option(
+        '--subject', "-s",
+        type=click.STRING,
+        required=True,
+        default=None,
+        **{**defaults, **attrs}
+    )
+
+def opt_announcement_body(**attrs: t.Any):
+    defaults = {
+        "help": "The body content of the announcement",
+    }
+    return create_option(
+        '--body', "-b",
+        type=click.STRING,
+        required=True,
+        default=None,
+        **{**defaults, **attrs}
+    )
