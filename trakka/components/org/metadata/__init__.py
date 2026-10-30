@@ -41,7 +41,7 @@ def metadata_get(identifier: str, field_names: List[str], out_format: str):
     help="Fields to retrieve; if none specified, all fields will be retrieved")
 @table_format_option(FORMATS.CSV)
 def metadata_get_v2(identifier: str, field_names: List[str], out_format: str):
-    """List metadata for an org"""
+    """[Experimental] List metadata for an org"""
     if len(field_names)==0:
         get_metadata_v2(identifier, out_format)
     else:

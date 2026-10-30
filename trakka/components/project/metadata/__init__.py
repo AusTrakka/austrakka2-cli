@@ -45,5 +45,5 @@ def download_dataset_view_v2(
         project_abbrev: str,
         out_format: str,
 ):
-    """Download sample metadata for the project."""
+    """[Experimental] Download sample metadata for the project."""
     download_view_v2(project_abbrev, out_format)
