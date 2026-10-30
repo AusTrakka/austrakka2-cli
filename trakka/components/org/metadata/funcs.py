@@ -39,4 +39,3 @@ def get_metadata_by_field_v2(identifier: str, field_names: List[str], out_format
             'fields': field_names
         }
     )
-
