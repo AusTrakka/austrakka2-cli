@@ -1,7 +1,4 @@
-from loguru import logger
-
 from trakka.utils.fs import verify_hash_single, FileHash
-from trakka.utils.fs import verify_hash_dataset_job
 from trakka.utils.misc import logger_wraps
 from trakka.utils.api import api_post_multipart_raw, get_response
 

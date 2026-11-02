@@ -1,14 +1,11 @@
 # pylint: disable=R0801
 import os
-import time
 
-from loguru import logger
-from trakka.utils.api import api_get, api_patch
+from trakka.utils.api import api_patch
 from trakka.utils.fs import get_hash
 from trakka.utils.helpers.output import call_get_and_print
 from trakka.utils.helpers.upload import upload_multipart
 from trakka.utils.misc import logger_wraps
-from trakka.utils.output import print_dict
 from trakka.utils.paths import PROJECT_PATH
 
 DATASET_UPLOAD_PATH = 'dataset'
