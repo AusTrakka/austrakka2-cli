@@ -7,7 +7,7 @@ import pytest
 from ete_cmd_bricks import (
     _create_field_if_not_exists,
     _create_org,
-    _create_group,
+    _create_project,
     _upload_fasta_asm_file,
     _seq_sync_get,
     _upload_fasta_cns_file,

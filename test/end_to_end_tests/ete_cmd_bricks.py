@@ -246,18 +246,6 @@ def _create_project(cli: TrakkaTestCli, name: str):
     assert result.exit_code == 0, f'Failed to create project {name} as part of test setup: {result.output}'
 
 
-def _create_group(cli: TrakkaTestCli, name: str):
-    result = cli.invoke([
-        'group',
-        'add',
-        '-n',
-        name,
-    ])
-
-    assert result.exit_code == 0, f'Failed to create group {name} as part of test setup: {result.output}'
-
-
-
 def _create_proforma(
         cli: TrakkaTestCli,
         name: str,
