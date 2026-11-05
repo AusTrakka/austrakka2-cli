@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.93.1] - 2026-11-04
+
+### Fixed
+- Fixed issue where uploading sequences with the `--skip` option could result in an error message
+and error code, and only the first row of the CSV file being processed.
+
 ## [0.93.0] - 2026-10-26
 
 ### Added
@@ -15,6 +21,7 @@ and this project adheres to [Semantic Versioning].
 ### Changed
 - `sample groups` -> `sample projects`.
 - `-g/--group-name` -> `[-o/--org|-p/--project]` for `seq [get|list]` and `seq sync get`.
+- `-o/--outdir` -> `-out/--outdir` for `seq get` and `seq sync get`.
 - `proforma [share|unshare]` -> `proforma [org|project] [share|unshare]`.
 
 ### Removed

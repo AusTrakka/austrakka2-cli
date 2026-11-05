@@ -275,8 +275,11 @@ def _post_sequence(sample_files: list[SeqFile], custom_headers):
     )
 
     data = get_response(resp, True)
-
-    if resp.status_code == 200:
+    
+    # If files in the upload were skipped server-side, the endpoint will return no data.
+    # Currently it is returning 200 in these cases.
+    # We test for non-null data as an intermediate fix. See AB#8649
+    if resp.status_code == 200 and 'data' in data and data['data']:
         hashes = [FileHash(filename=f.filename, sha256=f.sha256)
                   for f in sample_files]
         verify_hash(hashes, data)
