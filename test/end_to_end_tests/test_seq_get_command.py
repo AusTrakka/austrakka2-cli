@@ -6,7 +6,8 @@ import pytest
 from ete_cmd_bricks import (
     _create_field_if_not_exists,
     _create_org,
-    _create_group,
+    _create_project,
+    _upload_min_metadata,
     _upload_fasta_cns_file)
 from ete_utils import (
     _new_identifier,
@@ -70,7 +71,7 @@ class TestSeqGetCommand:
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_group)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
@@ -103,7 +104,7 @@ class TestSeqGetCommand:
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_group)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
@@ -137,7 +138,7 @@ class TestSeqGetCommand:
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_group)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
@@ -173,7 +174,7 @@ class TestSeqGetCommand:
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_group)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
@@ -210,7 +211,7 @@ class TestSeqGetCommand:
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_group)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
@@ -246,7 +247,7 @@ class TestSeqGetCommand:
 
         _create_field_if_not_exists(self.cli, seq_id_field_name)
         _create_org(self.cli, org_name)
-        _create_group(self.cli, shared_group)
+        _create_project(self.cli, shared_group)
 
         original_file = 'test/test-assets/sequences/cns/multi-seq-cns.fasta'
         cns_fasta_path = _clone_cns_fasta_file(
