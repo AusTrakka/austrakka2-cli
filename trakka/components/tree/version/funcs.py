@@ -44,4 +44,5 @@ def enable_tree_version(tree_id: int):
 @logger_wraps()
 def get_tree_version(tree_id: int):
     response = api_get(f'{TREE_VERSION_PATH}/{tree_id}')
+    # pylint: disable=bad-builtin
     print(response['data']['newickTree'])
