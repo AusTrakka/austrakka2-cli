@@ -7,6 +7,7 @@ from trakka.utils.output import FORMATS
 
 from .funcs import get_view, \
     download_view
+from .funcs import download_view_v2
 
 @click.group()
 @click.pass_context
@@ -36,3 +37,13 @@ def download_dataset_view(
 ):
     """Download sample metadata for the project."""
     download_view(project_abbrev, out_format)
+
+@metadata.command('get-v2')
+@click.argument('project-abbrev', type=str)
+@table_format_option(FORMATS.CSV)
+def download_dataset_view_v2(
+        project_abbrev: str,
+        out_format: str,
+):
+    """[Experimental] Download sample metadata for the project."""
+    download_view_v2(project_abbrev, out_format)

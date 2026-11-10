@@ -48,3 +48,11 @@ def download_view(
         logger.error(
             f'Failed to download from {abbrev}. Error: {ex}'
         )
+
+@logger_wraps()
+def download_view_v2(
+        abbrev: str,
+        out_format: str
+):
+    path = "/".join([PROJECT_PATH, abbrev, "download-project-view/v2"])
+    call_get_and_print(path, out_format)

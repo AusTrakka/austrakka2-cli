@@ -22,3 +22,20 @@ def get_metadata_by_field(identifier: str, field_names: List[str], out_format: s
             'fields': field_names
         }
     )
+
+@logger_wraps()
+def get_metadata_v2(identifier: str, out_format: str):
+    call_get_and_print(
+        f'{ORG_PATH}/{identifier}/Metadata/v2',
+        out_format,
+    )
+
+@logger_wraps()
+def get_metadata_by_field_v2(identifier: str, field_names: List[str], out_format: str):
+    call_get_and_print(
+        f'{ORG_PATH}/{identifier}/Metadata/Fields/v2',
+        out_format,
+        params={
+            'fields': field_names
+        }
+    )
