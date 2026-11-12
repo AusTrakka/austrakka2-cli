@@ -7,6 +7,7 @@ import click
 from click.core import Context
 from loguru import logger
 
+from trakka.components.announcement import announcement
 from trakka.utils.config import get_server_info
 from trakka.utils.privilege import TENANT_RESOURCE
 
@@ -165,6 +166,7 @@ def cli(
 
 def get_cli():
     cli.add_command(admin) if show_admin_cmds() else None
+    cli.add_command(announcement) if show_admin_cmds() else None
     cli.add_command(auth)
     cli.add_command(user) if show_admin_cmds() else None
     cli.add_command(org) if show_admin_cmds() else None
