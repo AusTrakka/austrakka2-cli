@@ -58,7 +58,6 @@ def org_add(
 @opt_name(help="Organisation Name", required=False)
 @opt_state(required=False)
 @opt_country(required=False)
-@opt_is_active(is_update=True)
 def org_update(
         org_abbrev: str,
         name: str,
