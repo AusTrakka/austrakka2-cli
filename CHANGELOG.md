@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.94.0] - 2026-11-10
+
+### Added
+- `-vt/--view-type` to `iam privilege list`.
+- `iam role show`.
+- `--event-status` to `log list`.
+- `org [enable|disable]`.
+- `tree version get`.
+
+### Changed
+- `-id` -> `-id/--resource-id` for `iam privilege list`.
+
+### Removed
+- `[--is-active|--not-active]` from `org update`. Use `org [enable|disable]` instead.
+
+## [0.93.1] - 2026-11-04
+
+### Fixed
+- Fixed issue where uploading sequences with the `--skip` option could result in an error message
+and error code, and only the first row of the CSV file being processed.
+
 ## [0.93.0] - 2026-10-26
 
 ### Added
