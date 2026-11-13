@@ -3,10 +3,10 @@ import click
 
 from trakka.utils.output import table_format_option
 from trakka.utils.output import object_format_option
-from trakka.utils.cmd_filter import hide_admin_cmds, show_admin_cmds
+from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import opt_abbrev, \
     opt_label, \
-    opt_view_type, opt_project_client_type, opt_merge_algorithm, opt_show_disabled
+    opt_view_type, opt_merge_algorithm, opt_show_disabled
 
 from trakka.utils.options import opt_name
 from trakka.utils.options import opt_dashboard_name
@@ -55,7 +55,6 @@ project.add_command(organisation, name="org")
 @opt_organisation(help="Requesting organisation abbreviation", required=False)
 @opt_dashboard_name(required=False)
 @opt_label(required=False)
-@opt_project_client_type(required=False, default='aardvark')
 @opt_merge_algorithm()
 @opt_watermark_trees()
 def project_add(
@@ -65,7 +64,6 @@ def project_add(
         org: str,
         dashboard_name: str,
         project_label: str,
-        client_type: str,
         merge_algo: str,
         watermark_trees: bool):
     add_project(abbrev,
@@ -74,7 +72,6 @@ def project_add(
                 org,
                 dashboard_name,
                 project_label,
-                client_type,
                 merge_algo,
                 watermark_trees)
 
@@ -90,7 +87,6 @@ def project_add(
 @opt_organisation(help="New requesting organisation abbreviation", required=False)
 @opt_dashboard_name(help="New dashboard", required=False)
 @opt_label(help="New project label", required=False)
-@opt_project_client_type(required=False)
 @opt_merge_algorithm(required=False)
 @opt_status(help="Set current project status")
 @opt_watermark_trees(default=None)
@@ -101,7 +97,6 @@ def project_update(
         org: str,
         dashboard_name: str,
         project_label: str,
-        client_type: str,
         merge_algo: str,
         status: str,
         watermark_trees: bool
@@ -112,7 +107,6 @@ def project_update(
                    org,
                    dashboard_name,
                    project_label,
-                   client_type,
                    merge_algo,
                    status,
                    watermark_trees)
