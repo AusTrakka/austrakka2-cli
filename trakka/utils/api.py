@@ -59,7 +59,7 @@ def _check_response(response: httpx.Response):
         )
 
 
-def _get_data(body: Union[Dict, List] = None) -> str:
+def _get_data(body: Union[Dict, List] | None = None) -> str|None:
     return json.dumps(body) if body is not None else None
 
 
@@ -106,8 +106,8 @@ def _use_http_client(
 @_use_http_client()
 def api_get(
         path: str,
-        params: Dict = None,
-        client: httpx.Client = None,
+        params: Dict | None = None,
+        client: httpx.Client | None = None,
 ):
     return client.get(
         _get_url(path),
@@ -119,8 +119,8 @@ def api_get(
 def api_get_stream(
         path: str,
         func: Callable[[httpx.Response], None],
-        params: Dict = None,
-        client: httpx.Client = None,
+        params: Dict | None = None,
+        client: httpx.Client | None = None,
 ):
     """
     Throws httpx.HTTPStatusError if status is not 2xx.
@@ -141,10 +141,10 @@ def api_get_stream(
 def api_post_multipart(
         path: str,
         files,
-        params: Dict = None,
-        data: Union[Dict, List] = None,
-        custom_headers: Dict = None,
-        client: httpx.Client = None,
+        params: Dict | None = None,
+        data: Union[Dict, List] | None = None,
+        custom_headers: Dict | None = None,
+        client: httpx.Client | None = None,
 ):
     custom_headers = {} if custom_headers is None else custom_headers
     return client.post(
@@ -161,10 +161,10 @@ def api_post_multipart(
 def api_post_multipart_raw(
         path: str,
         files,
-        params: Dict = None,
-        data: Union[Dict, List] = None,
-        custom_headers: Dict = None,
-        client: httpx.Client = None,
+        params: Dict | None = None,
+        data: Union[Dict, List] | None = None,
+        custom_headers: Dict | None = None,
+        client: httpx.Client | None = None,
 ):
     custom_headers = {} if custom_headers is None else custom_headers
     return client.post(
@@ -179,9 +179,9 @@ def api_post_multipart_raw(
 @_use_http_client(log_resp=True)
 def api_post(
         path: str,
-        params: Dict = None,
-        data: Union[Dict, List] = None,
-        client: httpx.Client = None,
+        params: Dict | None = None,
+        data: Union[Dict, List] | None = None,
+        client: httpx.Client | None = None,
 ):
     return client.post(
         _get_url(path),
@@ -193,9 +193,9 @@ def api_post(
 @_use_http_client(log_resp=True)
 def api_post_list(
         path: str,
-        params: Dict = None,
-        data: List = None,
-        client: httpx.Client = None,
+        params: Dict | None = None,
+        data: List | None = None,
+        client: httpx.Client | None = None,
 ):
     return client.post(
         _get_url(path),
@@ -206,9 +206,9 @@ def api_post_list(
 @_use_http_client(log_resp=True)
 def api_put(
         path: str,
-        params: Dict = None,
-        data: Union[Dict, List] = None,
-        client: httpx.Client = None,
+        params: Dict | None = None,
+        data: Union[Dict, List] | None = None,
+        client: httpx.Client | None = None,
 ):
     return client.put(
         _get_url(path),
@@ -220,9 +220,9 @@ def api_put(
 @_use_http_client(log_resp=True)
 def api_patch(
         path: str,
-        params: Dict = None,
-        data: Union[Dict, List, str] = None,
-        client: httpx.Client = None,
+        params: Dict | None = None,
+        data: Union[Dict, List, str] | None = None,
+        client: httpx.Client | None = None,
 ):
     return client.patch(
         _get_url(path),
@@ -234,9 +234,9 @@ def api_patch(
 @_use_http_client(log_resp=True)
 def api_delete(
         path: str,
-        params: Dict = None,
-        custom_headers: Dict = None,
-        client: httpx.Client = None,
+        params: Dict | None = None,
+        custom_headers: Dict | None = None,
+        client: httpx.Client | None = None,
 ):
     custom_headers = {} if custom_headers is None else custom_headers
     return client.delete(

@@ -1,4 +1,3 @@
-import click
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.options import *
 from trakka.utils.output import object_format_option, table_format_option

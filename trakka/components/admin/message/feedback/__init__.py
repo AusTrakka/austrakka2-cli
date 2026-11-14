@@ -4,8 +4,8 @@ from trakka.components.admin.message.feedback.funcs import delete_feedback
 from trakka.components.admin.message.feedback.funcs import list_feedback
 from trakka.components.admin.message.feedback.funcs import show_feedback
 from trakka.components.admin.message.funcs import opt_msg_id
-from trakka.components.admin.message.funcs import opt_queue_name
 from trakka.utils.output import object_format_option
+
 
 @click.group('feedback')
 @click.pass_context

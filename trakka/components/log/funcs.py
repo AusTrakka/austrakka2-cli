@@ -14,7 +14,7 @@ FIELD_ORDERING = ['globalId'] + COMPACT_FIELDS + ['callId','clientSessionId']
 @logger_wraps()
 def list_logs(
         record_type: str,
-        record_global_id: str,
+        record_global_id: str | None,
         start: str,
         end: str,
         event_type: str,

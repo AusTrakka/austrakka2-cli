@@ -99,8 +99,8 @@ class RequiredMutuallyExclusiveOption(TrakkaCliOption):
 
 @logger_wraps()
 def get_seq_list(
-        seq_ids: [str] = None,
-        file: BufferedReader = None,
+        seq_ids: list[str] | None = None,
+        file: BufferedReader | None = None,
 ):
     if file is None and (seq_ids is None or len(seq_ids) == 0):
         raise ValueError(
@@ -109,6 +109,7 @@ def get_seq_list(
     if file:
         seq_id_list = [line.decode("utf-8").strip() for line in file if line.strip()]
     else:
+        assert seq_ids is not None
         seq_id_list = list(seq_ids)
 
     return seq_id_list

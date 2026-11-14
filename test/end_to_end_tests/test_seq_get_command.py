@@ -1,5 +1,5 @@
-import os
 import glob
+import os
 
 import pytest
 
@@ -9,13 +9,11 @@ from ete_cmd_bricks import (
     _create_project,
     _upload_min_metadata,
     _upload_fasta_cns_file)
-
 from ete_utils import (
     _new_identifier,
     seq_id_field_name,
     _mk_temp_dir,
     _clone_cns_fasta_file)
-
 from test.utils.trakka_test_cli import TrakkaTestCli
 
 
