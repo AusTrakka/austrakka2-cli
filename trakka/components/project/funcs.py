@@ -24,7 +24,6 @@ more_fields = [
     'globalId',         # Global ID
     "projectId",        # Project ID
     "abbreviation",     # Abbreviation or short name
-    "clientType",       # the 'secret' client type
     "label",             # Type for the project
     "isActive",         # Active status
     "name",             # Project name
@@ -44,7 +43,6 @@ def add_project(
         org: str,
         dashboard_name: str,
         project_label: str,
-        client_type: str,
         merge_algo: str,
         watermark_trees: bool
 ):
@@ -58,7 +56,6 @@ def add_project(
             "requestingOrg": org,
             "dashboardName": dashboard_name,
             "label": project_label,
-            "clientType": client_type,
             "mergeAlgorithm": merge_algo, 
             "watermarkTrees": watermark_trees
        }
@@ -73,7 +70,6 @@ def update_project(
         org: str,
         dashboard_name: str,
         project_label: str,
-        client_type: str,
         merge_algorithm: str,
         status: str,
         watermark_trees: bool
@@ -88,7 +84,6 @@ def update_project(
             'requestingOrg',
             'dashboardName',
             'label',
-            'clientType',
             'mergeAlgorithm',
             'status',
             'watermarkTrees'
@@ -108,8 +103,6 @@ def update_project(
         put_project['dashboardName'] = dashboard_name
     if project_label is not None:
         put_project['label'] = project_label
-    if client_type is not None:
-        put_project['clientType'] = client_type
     if merge_algorithm is not None:
         put_project['mergeAlgorithm'] = merge_algorithm
     if status is not None:
