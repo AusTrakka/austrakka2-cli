@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [0.95.0] - 2026-11-17
+
+### Removed
+- `-ct/--client-type` from `project [add|update]`.
+
 ## [0.94.0] - 2026-11-10
 
 ### Added
