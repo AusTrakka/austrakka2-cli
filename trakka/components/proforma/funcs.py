@@ -1,27 +1,17 @@
-import os
 from typing import List, Dict
 import pandas as pd
-from httpx import HTTPStatusError
 from loguru import logger
 
-from trakka.utils.api import api_delete, api_get
+from trakka.utils.api import api_get
 from trakka.utils.api import api_post
 from trakka.utils.api import api_patch
 from trakka.utils.api import api_put
-from trakka.utils.exceptions import \
-    FailedResponseException, \
-    UnknownResponseException
 from trakka.utils.helpers.output import call_get_and_print
-from trakka.utils.helpers.upload import upload_multipart
 from trakka.utils.misc import logger_wraps
-from trakka.utils.output import print_dataframe, log_response, get_viewtype_columns
+from trakka.utils.output import print_dataframe, get_viewtype_columns
 from trakka.utils.paths import PROFORMA_PATH
 from trakka.utils.privilege import ORG_RESOURCE, PROJECT_RESOURCE
-from trakka.utils.retry import retry
-from trakka.utils.fs import FileHash, get_hash
-from .proforma_generation_utils import generate_template
 
-ATTACH = 'Attach'
 UPDATE = 'update'
 list_compact_fields = ['proFormaId', 'abbreviation', 'name', 'version', 'isActive']
 list_more_fields = [
@@ -143,108 +133,7 @@ def add_proforma(
             "description": description,
             "columnNames": column_names
         })
-
-
-@logger_wraps()
-def attach_proforma(abbrev: str,
-                    filepath: str):
-    """
-    abbrev:
-    file:
-    """
-    file_hash = get_hash(filepath)
-    with open(filepath, 'rb') as file_content:
-        files = [('files[]', (filepath, file_content))]
-
-        custom_headers = {
-            'proforma-abbrev': abbrev,
-            'filename': os.path.basename(filepath),
-        }
-        try:
-            retry(
-                func=lambda f=files, fh=file_hash, ch=custom_headers: _post_proforma(f, fh, ch),
-                retries=0,
-                desc=f"{abbrev} at " + "/".join([PROFORMA_PATH, ATTACH]),
-                delay=0.0
-            )
-        except FailedResponseException as ex:
-            logger.error(f'Pro Forma {abbrev} failed upload')
-            log_response(ex.parsed_resp)
-        except (
-                PermissionError, UnknownResponseException, HTTPStatusError
-        ) as ex:
-            logger.error(f'Pro Forma {abbrev} failed upload')
-            logger.error(ex)
-
-
-@logger_wraps()
-def generate_proforma(
-    abbrev: str,
-    restrict: Dict[str, List[str]],
-    nndss_column: bool,
-    metadata_classes: Dict[str, List[str]]
-):
-    "Generate an XLSX template for a pro forma"    
-    # Get the pro forma spec
-    response = api_get(
-        path=f"{PROFORMA_PATH}/{abbrev}"
-    )
-    field_df = get_proforma_fields_df(response['data'])
-    field_df.index = field_df['name']
-    restricted_values = {
-        field:sum([v.split(',') for v in valuestr.split(';')],[])
-        for (field, valuestr) in restrict
-    }
-    metadata_classes = {
-        mclass:sum([v.split(',') for v in valuestr.split(';')],[])
-        for (mclass, valuestr) in metadata_classes
-    }
-    # Generate the spreadsheet
-    filename = f"Trakka_metadata_submission_{abbrev}_DRAFT.xlsx"
-    logger.info(f"Generating template draft {filename}")
-    generate_template(
-        filename, field_df, restricted_values, metadata_classes, nndss_column)
     
-   
-def get_proforma_fields_df(data):
-    field_df = pd.DataFrame.from_dict(data['columnMappings'])[[
-        'metaDataColumnName',
-        'metaDataColumnDescription',
-        'nndssFieldLabel',
-        'metaDataColumnPrimitiveType',
-        'metaDataColumnValidValues',
-        'isRequired',
-        'class'
-    ]]
-
-    field_df.rename(
-        columns={
-            'metaDataColumnName': 'name',
-            'metaDataColumnDescription': 'description',
-            'metaDataColumnPrimitiveType': 'type',
-            'metaDataColumnValidValues': 'allowedValues',
-        },
-        inplace=True
-    )
-
-    field_df['type'] = field_df['type'].fillna('categorical')
-    field_df['nnssFieldLabel'] = field_df['nndssFieldLabel'].fillna('')
-    field_df['description'] = field_df['description'].fillna('')
-    field_df['isRequired'] = field_df['isRequired'].apply(
-        lambda x: True if x=='True' else (False if x=='False' else x)
-    )
-    field_df['allowedValues'] = field_df['allowedValues'].apply(
-        lambda x: ';'.join(x) if x else None
-    )
-
-    return field_df
-
-@logger_wraps()
-def pull_proforma(abbrev: str, n_previous: int = None):
-    n_prev = n_previous if n_previous is not None else 1
-    api_patch(path=f'{PROFORMA_PATH}/PullPrevious/{abbrev}?nPrevious={n_prev}')
-    logger.info('Done')
-
 
 @logger_wraps()
 def list_proformas(view_type: str, out_format: str):
@@ -283,12 +172,6 @@ def list_proformas(view_type: str, out_format: str):
 def show_proforma(abbrev: str, out_format: str):
     call_get_and_print(f"{PROFORMA_PATH}/{abbrev}", out_format)
 
-
-def _post_proforma(files, file_hash: FileHash, custom_headers: dict):
-    upload_multipart(path="/".join([PROFORMA_PATH, ATTACH]),
-                     files=files,
-                     file_hash=file_hash,
-                     custom_headers=custom_headers)
 
 def _validate_add_version_args(
         inherit: bool,
@@ -339,10 +222,6 @@ def _build_field_spec(
             )
     
     return field_spec
-
-
-def rm_attach_proforma(identifier: str, version: int):
-    api_delete(path=f'{PROFORMA_PATH}/{identifier}/{version}/Attach')
 
 
 @logger_wraps()
