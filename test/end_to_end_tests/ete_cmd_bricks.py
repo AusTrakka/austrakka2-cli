@@ -239,7 +239,6 @@ def _create_project(cli: TrakkaTestCli, name: str):
         '-a', name,
         '-n', name,
         '-d', 'Project for testing',
-        '-ct', 'aardvark',
         '-ma', 'override',
     ])
 
