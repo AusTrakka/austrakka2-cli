@@ -39,8 +39,8 @@ def add_dataset(
 @logger_wraps()
 def disable_dataset(
         abbrev: str,
-        dataset_id: int):
-    path = "/".join([PROJECT_PATH, abbrev, 'disable-dataset', str(dataset_id)])
+        dataset_id: str):
+    path = "/".join([PROJECT_PATH, abbrev, 'disable-dataset', dataset_id])
     return api_patch(
         path=path,
     )
