@@ -38,6 +38,6 @@ def dataset_list(project_abbrev: str, out_format: str):
               '--dataset-id',
               help='dataset to disable', )
 @click.argument('project-abbrev', type=str)
-def dataset_disable(project_abbrev: str, dataset_id: int):
+def dataset_disable(project_abbrev: str, dataset_id: str):
     """Disable a dataset for a given project"""
     disable_dataset(project_abbrev, dataset_id)
