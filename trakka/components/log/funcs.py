@@ -20,6 +20,7 @@ def list_logs(
         event_type: str,
         submitter: str,
         resource_identifier: str,
+        event_status: str,
         resource_type: str,
         out_format: str,
         view_type: str,
@@ -37,6 +38,8 @@ def list_logs(
         params["resourceIdentifier"] = resource_identifier
     if resource_type is not None:
         params["resourceType"] = resource_type
+    if event_status is not None:
+        params["eventStatus"] = event_status
 
     response = api_get(
         path=f"{get_priv_path(record_type, record_global_id)}/ActivityLog",

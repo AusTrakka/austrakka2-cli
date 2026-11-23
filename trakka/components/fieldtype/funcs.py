@@ -18,7 +18,7 @@ def list_fieldtypes(out_format: str):
     data = response['data'] if ('data' in response) else response
     for row in data:
         if 'validValues' in row:
-            row['validValues'] = ",".join([val['name'] for val in row['validValues']])
+            row['validValues'] = ";".join([val['name'] for val in row['validValues']])
     print_dict(data, out_format)
 
 
