@@ -124,13 +124,22 @@ def proforma_update(
 @opt_optional
 @opt_remove
 @opt_inherit()
+@click.option(
+        '--force',
+        type=bool,
+        is_flag=True,
+        default=False,
+        help="[deprecated] Creates a new version even if the columns are the same"
+)
 @click.argument('proforma-abbrev', type=click.STRING)
 def proforma_add_version(
         proforma_abbrev: str,
         required_field: List[str],
         optional_field: List[str],
         remove_field: List[str],
-        inherit: bool):
+        inherit: bool,
+        force: bool,
+):
     """
     Add a proforma version with a new set of fields.
     The fields specified by -req and -opt will fully replace the fields in the current version.
@@ -141,7 +150,9 @@ def proforma_add_version(
         required_field,
         optional_field,
         remove_field,
-        inherit)
+        inherit,
+        force,
+    )
 
 
 @proforma.command(
