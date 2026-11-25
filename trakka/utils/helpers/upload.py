@@ -8,7 +8,9 @@ def upload_multipart(
         path: str,
         files,
         file_hash: FileHash,
-        custom_headers: dict):
+        custom_headers: dict,
+        verify_hash: bool = True
+):
 
     resp = api_post_multipart_raw(
         path=path,
@@ -16,5 +18,5 @@ def upload_multipart(
         custom_headers=custom_headers,
     )
     data = get_response(resp, True)
-    if resp.status_code == 200:
+    if resp.status_code == 200 and verify_hash:
         verify_hash_single(file_hash, data)

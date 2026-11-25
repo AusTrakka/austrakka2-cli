@@ -33,7 +33,8 @@ def add_dataset(
         upload_multipart(path=path_adding,
                          files=files,
                          file_hash=file_hash,
-                         custom_headers=custom_headers)
+                         custom_headers=custom_headers,
+                         verify_hash=False)
 
 
 @logger_wraps()
