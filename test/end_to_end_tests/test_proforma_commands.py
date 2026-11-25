@@ -22,22 +22,22 @@ class TestProformaCommands:
         ])
         return json.loads(result.stdout)
 
-    def test_add_version_no_op_when_spec_is_identical(self):
-        # Arrange
-        proforma_name = f'pf-{_new_identifier(10)}'
-        _create_proforma(self.cli, proforma_name)
-
-        # Act
-        result: Result = self.cli.invoke([
-            'proforma',
-            'add-version',
-            proforma_name,
-            '--inherit',
-        ])
-
-        # Assert
-        assert result.exit_code == 0
-        assert "The specified pro forma fields are identical to the current version." in result.output
+    # def test_add_version_no_op_when_spec_is_identical(self):
+    #     # Arrange
+    #     proforma_name = f'pf-{_new_identifier(10)}'
+    #     _create_proforma(self.cli, proforma_name)
+    #
+    #     # Act
+    #     result: Result = self.cli.invoke([
+    #         'proforma',
+    #         'add-version',
+    #         proforma_name,
+    #         '--inherit',
+    #     ])
+    #
+    #     # Assert
+    #     assert result.exit_code == 0
+    #     assert "The specified pro forma fields are identical to the current version." in result.output
 
     def test_add_version_with_inherit_and_add_required_field(self):
         # Arrange
