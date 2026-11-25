@@ -8,7 +8,7 @@ from trakka.components.fieldtype.funcs import list_fieldtypes
 from trakka.components.fieldtype.funcs import add_fieldtype
 from trakka.components.fieldtype.funcs import update_fieldtype
 from trakka.components.fieldtype.value import value
-from trakka.utils.options import opt_description
+from trakka.utils.options import opt_description, opt_is_multi_valued
 from trakka.utils.options import opt_name
 from trakka.utils.options import opt_fieldtype_value
 from trakka.utils.options import opt_is_active
@@ -37,19 +37,22 @@ def fieldtype_list(out_format: str):
 @opt_name(help="Type name")
 @opt_description()
 @opt_fieldtype_value()
-def fieldtype_add(name: str, description: str, values: List[str]):
+@opt_is_multi_valued()
+def fieldtype_add(name: str, description: str, values: List[str], is_multi_valued: bool):
     """Add a new categorical field type and its valid values"""
-    add_fieldtype(name, description, valid_values=values)
+    add_fieldtype(name, description, valid_values=values, is_multi_valued=is_multi_valued)
 
 
 @fieldtype.command('update', hidden=hide_admin_cmds())
 @click.argument('name', type=str)
 @opt_description(required=False)
 @opt_is_active(is_update=True)
+@opt_is_multi_valued(is_update=True)
 def fieldtype_update(
         name: str,
         description: str,
         is_active: bool,
+        is_multi_valued: bool,
 ):
     """Update a fieldtype"""
-    update_fieldtype(name, description, is_active)
+    update_fieldtype(name, description, is_active, is_multi_valued)

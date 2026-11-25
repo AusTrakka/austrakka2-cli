@@ -695,6 +695,20 @@ def opt_fieldtype_value(var_name='values', **attrs: t.Any):
         **{**defaults, **attrs}
     )
 
+def opt_is_multi_valued(is_update: bool = False, var_name = 'is_multi_valued', **attrs: t.Any):
+    defaults = {
+        'required': True,
+        'multiple': False,
+        'help': 'Whether a field can have multiple values at once.',
+    }
+    return create_option(
+        '--multi-valued/--not-multi-valued',
+        var_name,
+        type=bool,
+        is_flag=True,
+        default=None if is_update else False,
+        **{**defaults, **attrs}
+    )
 
 def opt_resource_type(**attrs: t.Any):
     defaults = {
