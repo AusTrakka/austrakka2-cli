@@ -70,7 +70,9 @@ def add_version_proforma(
         required_columns: List[str],
         optional_columns: List[str],
         remove_field: List[str],
-        inherit: bool):
+        inherit: bool,
+        force: bool
+):
 
     _validate_add_version_args(inherit, required_columns, optional_columns, remove_field)
 
@@ -87,11 +89,6 @@ def add_version_proforma(
         inherit
     )
 
-    if field_spec == current_field_spec:
-        logger.info("The specified pro forma fields are identical to the "
-                    "current version. No update will be performed.")
-        return
-
     column_names = [
         {"name": name, "isRequired": is_required}
         for name, is_required in field_spec.items()
@@ -103,7 +100,7 @@ def add_version_proforma(
     logger.info(f'Updating pro forma: {abbrev} with {len(column_names)} fields')
 
     api_put(
-        path=f'{PROFORMA_PATH}/{abbrev}',
+        path=f'{PROFORMA_PATH}/{abbrev}?force={force}',
         data={
             "abbreviation": abbrev,
             "columnNames": column_names
