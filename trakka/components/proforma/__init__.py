@@ -3,24 +3,20 @@ from typing import List
 
 from trakka.components.proforma.org import org
 from trakka.components.proforma.project import project
-from trakka.utils.output import table_format_option
+from trakka.components.proforma.field import field
+from trakka.utils.output import object_format_option, table_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.privilege import PROFORMA_RESOURCE
 from trakka.components.privilege import privilege_subcommands
 from trakka.components.log import log_subcommands
 from .funcs import \
     add_proforma, \
-    rm_attach_proforma, \
-    update_field_class_proforma, \
     update_proforma, \
     add_version_proforma, \
     list_proformas, \
     show_proforma, \
     disable_proforma, \
-    enable_proforma, \
-    attach_proforma, \
-    generate_proforma, \
-    pull_proforma
+    enable_proforma
 
 from ...utils.options import *
 
@@ -35,6 +31,7 @@ proforma.add_command(privilege_subcommands(PROFORMA_RESOURCE))
 proforma.add_command(log_subcommands(PROFORMA_RESOURCE))
 proforma.add_command(org)
 proforma.add_command(project)
+proforma.add_command(field)
 
 # proforma-specific options used in multiple commands
 opt_required = create_option(
@@ -124,13 +121,6 @@ def proforma_update(
 @opt_optional
 @opt_remove
 @opt_inherit()
-@click.option(
-        '--force',
-        type=bool,
-        is_flag=True,
-        default=False,
-        help="[deprecated] Creates a new version even if the columns are the same"
-)
 @click.argument('proforma-abbrev', type=click.STRING)
 def proforma_add_version(
         proforma_abbrev: str,
@@ -138,7 +128,6 @@ def proforma_add_version(
         optional_field: List[str],
         remove_field: List[str],
         inherit: bool,
-        force: bool,
 ):
     """
     Add a proforma version with a new set of fields.
@@ -151,89 +140,8 @@ def proforma_add_version(
         optional_field,
         remove_field,
         inherit,
-        force,
     )
 
-
-@proforma.command(
-        'attach', 
-        hidden=hide_admin_cmds(),
-        help=f"""
-            Attach a new or existing file to the latest version of the specified proforma.
-
-            Usage:
-
-            {PROG_NAME} proforma attach [PROFORMA_ABBREV] 
-            ~~This will pull the most recent existing file from a previous proforma version
-
-            {PROG_NAME} proforma attach [PROFORMA_ABBREV] -f [FILEPATH]
-            ~~uploads and attaches a new file
-
-            {PROG_NAME} proforma attach [PROFORMA_ABBREV] -id [PROFORMA-VERSION-ID]
-            ~~This will pull an existing file from a previous proforma version
-        """
-)
-@click.argument('proforma-abbrev', type=click.STRING)
-@create_option('-f',
-              '--file-path',
-              help='File that you may want to link.  '
-                   'Only one xlsx filepath will be accepted',
-              cls=MutuallyExclusiveOption,
-              mutually_exclusive=["n_previous"])
-@create_option('-n',
-              '--n-previous',
-              cls=MutuallyExclusiveOption,
-              help="If pulling a file from a previous version, "
-                   "of all versions that had a file attached, "
-                   "how many steps back to pull from. 1 means "
-                   "the first previous version that has a file "
-                   "attachment. 2 means the second previous version "
-                   "that as a file attachment, etc..",
-              type=click.INT,
-              mutually_exclusive=["file_path"])
-def proforma_attach(proforma_abbrev: str,
-                    file_path: str = None,
-                    n_previous: int = None):
-    if file_path is None:
-        pull_proforma(proforma_abbrev, n_previous)
-    else:
-        attach_proforma(proforma_abbrev, file_path)
-
-@proforma.command('generate')
-@click.argument('proforma-abbrev', type=click.STRING)
-@create_option(
-    '-r',
-    '--restrict',
-    type=click.STRING,
-    multiple=True,
-    nargs=2,
-    help='Key-value pair; restrict the specified field to the specified '+
-        'comma-separated subset of values. Multiple restrictions may be specifed')
-@create_option(
-    '--nndss/--no-nndss',
-    type=bool,
-    default=False,
-    help='Include an NNDSS label column in the Data Dictionary',
-)
-@create_option(
-    '-c',
-    '--metadata-class',
-    type=click.STRING,
-    multiple=True,
-    nargs=2,
-    help='Key-value pair; add a metadata field class and assign it to the specified '+
-        'comma-separated subset of fields',
-)
-def proforma_generate(proforma_abbrev: str, restrict, nndss, metadata_class):
-    """
-    Generate a draft XLSX pro forma template from the current specification.
-    """
-    generate_proforma(
-        proforma_abbrev,
-        restrict,
-        nndss_column=nndss,
-        metadata_classes=metadata_class
-        )
 
 @proforma.command('list', help='List metadata proformas')
 @opt_view_type()
@@ -244,10 +152,10 @@ def proforma_list(view_type: str, out_format: str):
 
 @proforma.command('show')
 @click.argument('proforma-abbrev', type=click.STRING)
-@table_format_option()
+@object_format_option()
 def proforma_show(proforma_abbrev: str, out_format: str):
     """
-    Show pro forma fields.
+    Show proforma details
 
     See `trakka proforma list` for available pro formas.
     """
@@ -272,44 +180,3 @@ def proforma_enable(proforma_abbrev: str):
     Re-enable a proforma.
     """
     enable_proforma(proforma_abbrev)
-
-
-@proforma.command('rm-attach')
-@opt_identifier(help="Identifier for a proforma")
-@create_option(
-    '--version',
-    type=int,
-    required=True,
-    help='Proforma version',
-)
-def proforma_rm_attach(identifier: str, version: int):
-    """
-    Removes attachment from proforma
-    """
-    rm_attach_proforma(identifier, version)
-
-
-@proforma.command('field-class')
-@opt_identifier(help="Identifier for a proforma")
-@opt_identifier(
-    help="Identifier for a field in the proforma", 
-    option_name="--field-id",
-    var_name="field_identifiers",
-    multiple=True,
-)
-@create_option(
-    '--class',
-    "metadata_class",
-    type=click.Choice(["Enhanced", "Required", "Minimum"]),
-    required=True,
-    help='Metadata class',
-)
-def proforma_update_field_class(
-        identifier: str, 
-        field_identifiers: List[str],
-        metadata_class: str,
-):
-    """
-    Updates metadata class for a field in a proforma.
-    """
-    update_field_class_proforma(identifier, field_identifiers, metadata_class)
