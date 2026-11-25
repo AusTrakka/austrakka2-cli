@@ -10,8 +10,7 @@ from trakka.utils.api import api_patch
 from trakka.utils.api import api_put
 from trakka.utils.exceptions import \
     FailedResponseException, \
-    UnknownResponseException, \
-    TrakkaCliException
+    UnknownResponseException
 from trakka.utils.helpers.output import call_get_and_print
 from trakka.utils.helpers.upload import upload_multipart
 from trakka.utils.misc import logger_wraps
@@ -190,7 +189,7 @@ def generate_proforma(
     response = api_get(
         path=f"{PROFORMA_PATH}/{abbrev}"
     )
-    field_df = _get_proforma_fields_df(response['data'])
+    field_df = get_proforma_fields_df(response['data'])
     field_df.index = field_df['name']
     restricted_values = {
         field:sum([v.split(',') for v in valuestr.split(';')],[])
@@ -207,7 +206,7 @@ def generate_proforma(
         filename, field_df, restricted_values, metadata_classes, nndss_column)
     
    
-def _get_proforma_fields_df(data):
+def get_proforma_fields_df(data):
     field_df = pd.DataFrame.from_dict(data['columnMappings'])[[
         'metaDataColumnName',
         'metaDataColumnDescription',
@@ -282,23 +281,8 @@ def list_proformas(view_type: str, out_format: str):
 
 @logger_wraps()
 def show_proforma(abbrev: str, out_format: str):
-    response = api_get(
-        path=f"{PROFORMA_PATH}/{abbrev}"
-    )
-    data = response['data'] if ('data' in response) else response
+    call_get_and_print(f"{PROFORMA_PATH}/{abbrev}", out_format)
 
-    if out_format != 'json':
-        for field in ['abbreviation', 'name', 'version', 'description']:
-            logger.info(f'{field}: {data[field]}')
-
-        logger.info('Pro forma fields:')
-
-    field_df = _get_proforma_fields_df(data)
-    
-    print_dataframe(
-        field_df,
-        out_format,
-    )
 
 def _post_proforma(files, file_hash: FileHash, custom_headers: dict):
     upload_multipart(path="/".join([PROFORMA_PATH, ATTACH]),
@@ -360,31 +344,6 @@ def _build_field_spec(
 def rm_attach_proforma(identifier: str, version: int):
     api_delete(path=f'{PROFORMA_PATH}/{identifier}/{version}/Attach')
 
-
-def update_field_class_proforma(
-        identifier: str, 
-        field_identifiers: List[str],
-        metadata_class: str,
-):
-    response = api_get(
-        path=f"{PROFORMA_PATH}/{identifier}"
-    )
-    fields = response["data"]["columnMappings"]
-    field_abbrevs = [f["metaDataColumnName"] for f in fields]
-    field_global_ids = [f["metaDataColumnGlobalId"] for f in fields]
-    for field_identifier in field_identifiers:
-        if field_identifier not in field_abbrevs and field_identifier not in field_global_ids:
-            raise TrakkaCliException(
-                f'Field {field_identifier} is not in proforma {identifier}'
-            )
-
-    for field_identifier in field_identifiers:
-        api_patch(
-            path=f'{PROFORMA_PATH}/{identifier}/Field/{field_identifier}',
-            data={
-                "class": metadata_class,
-            },
-        )
 
 @logger_wraps()
 def list_entities(identifier: str, entity_type: str, out_format: str):

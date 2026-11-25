@@ -15,7 +15,9 @@ class TestProformaCommands:
     def _get_proforma_fields(self, proforma_name: str):
         result: Result = self.cli.invoke([
             'proforma',
-            'show',
+            'field',
+            'list',
+            '-id',
             proforma_name,
             '--format',
             'json'
