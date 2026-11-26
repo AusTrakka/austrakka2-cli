@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## Unreleased
+
+### Added
+- Admin commands `trakka admin rlog [enable|disable]`
+
 ## [0.95.0] - 2026-11-17
 
 ### Removed
