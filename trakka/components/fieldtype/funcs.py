@@ -27,6 +27,7 @@ def add_fieldtype(
         name: str,
         description: str,
         valid_values: List[str],
+        is_multi_valued: bool,
 ):
     """
     Add a categorical fieldtype and its valid values
@@ -37,7 +38,8 @@ def add_fieldtype(
             "Name": name,
             "Description": description,
             "ValidValues": valid_values,
-            "IsActive": True
+            "IsActive": True,
+            "IsMultiValued": is_multi_valued,
         }
     )
 
@@ -47,6 +49,7 @@ def update_fieldtype(
         name: str,
         description: str,
         is_active: bool,
+        is_multi_valued: bool,
 ):
     field_type = get_fieldtype_by_name_v2(name)
 
@@ -55,6 +58,9 @@ def update_fieldtype(
 
     if is_active is not None:
         field_type['isActive'] = is_active
+
+    if is_multi_valued is not None:
+        field_type['isMultiValued'] = is_multi_valued
 
     field_type['validValues'] = None
 
