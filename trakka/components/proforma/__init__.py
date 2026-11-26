@@ -3,7 +3,8 @@ from typing import List
 
 from trakka.components.proforma.org import org
 from trakka.components.proforma.project import project
-from trakka.utils.output import table_format_option
+from trakka.components.proforma.field import field
+from trakka.utils.output import object_format_option, table_format_option
 from trakka.utils.cmd_filter import hide_admin_cmds
 from trakka.utils.privilege import PROFORMA_RESOURCE
 from trakka.components.privilege import privilege_subcommands
@@ -11,7 +12,6 @@ from trakka.components.log import log_subcommands
 from .funcs import \
     add_proforma, \
     rm_attach_proforma, \
-    update_field_class_proforma, \
     update_proforma, \
     add_version_proforma, \
     list_proformas, \
@@ -35,6 +35,7 @@ proforma.add_command(privilege_subcommands(PROFORMA_RESOURCE))
 proforma.add_command(log_subcommands(PROFORMA_RESOURCE))
 proforma.add_command(org)
 proforma.add_command(project)
+proforma.add_command(field)
 
 # proforma-specific options used in multiple commands
 opt_required = create_option(
@@ -233,10 +234,10 @@ def proforma_list(view_type: str, out_format: str):
 
 @proforma.command('show')
 @click.argument('proforma-abbrev', type=click.STRING)
-@table_format_option()
+@object_format_option()
 def proforma_show(proforma_abbrev: str, out_format: str):
     """
-    Show pro forma fields.
+    Show proforma details
 
     See `trakka proforma list` for available pro formas.
     """
@@ -276,29 +277,3 @@ def proforma_rm_attach(identifier: str, version: int):
     Removes attachment from proforma
     """
     rm_attach_proforma(identifier, version)
-
-
-@proforma.command('field-class')
-@opt_identifier(help="Identifier for a proforma")
-@opt_identifier(
-    help="Identifier for a field in the proforma", 
-    option_name="--field-id",
-    var_name="field_identifiers",
-    multiple=True,
-)
-@create_option(
-    '--class',
-    "metadata_class",
-    type=click.Choice(["Enhanced", "Required", "Minimum"]),
-    required=True,
-    help='Metadata class',
-)
-def proforma_update_field_class(
-        identifier: str, 
-        field_identifiers: List[str],
-        metadata_class: str,
-):
-    """
-    Updates metadata class for a field in a proforma.
-    """
-    update_field_class_proforma(identifier, field_identifiers, metadata_class)
