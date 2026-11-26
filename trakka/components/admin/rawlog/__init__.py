@@ -4,7 +4,8 @@ from trakka.utils.options import opt_identifier, opt_view_type
 from trakka.utils.output import object_format_option, table_format_option
 from trakka.utils.option_utils import create_option
 from trakka.components.admin.rawlog.funcs import \
-    show_raw_log, list_raw_logs, regenerate_raw_log, regenerate_raw_log_bulk
+    show_raw_log, list_raw_logs, regenerate_raw_log, regenerate_raw_log_bulk, \
+    disable_raw_log, enable_raw_log
 
 def opt_spec_filter():
     return create_option(
@@ -41,6 +42,23 @@ def rawlog_show(global_id: str, out_format: str):
     Get a single raw log by global ID.
     '''
     show_raw_log(global_id, out_format)
+
+@rawlog.command('disable')
+@opt_identifier(help="Raw log global ID", var_name="global_id")
+def rawlog_disable(global_id: str):
+    '''
+    Disable a single raw log by global ID, and delete derived logs.
+    '''
+    disable_raw_log(global_id)
+
+@rawlog.command('enable')
+@opt_identifier(help="Raw log global ID", var_name="global_id")
+def rawlog_enable(global_id: str):
+    '''
+    Re-enable a single raw log by global ID, and reinstate derived logs.
+    '''
+    enable_raw_log(global_id)
+
 
 @rawlog.command('list')
 @opt_spec_filter()

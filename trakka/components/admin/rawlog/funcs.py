@@ -19,6 +19,26 @@ def show_raw_log(global_id: str, out_format: str):
     )
 
 @logger_wraps()
+def disable_raw_log(global_id: str):
+    '''
+    Disable a single raw log by global ID, and delete derived logs.
+    '''
+    api_post(
+        f"{TENANT_PATH}/RawLog/{global_id}/Ignore",
+        data={'rawLogGlobalId': global_id}
+    )
+
+@logger_wraps()
+def enable_raw_log(global_id: str):
+    '''
+    Re-enable a single raw log by global ID, and reinstate derived logs.
+    '''
+    api_post(
+        f"{TENANT_PATH}/RawLog/{global_id}/UnIgnore",
+        data={'rawLogGlobalId': global_id}
+    )
+
+@logger_wraps()
 def list_raw_logs(spec: str, start: str, end: str, submitter: str, allow_no_filters: bool,
                   out_format: str, view_type: str):
     '''
