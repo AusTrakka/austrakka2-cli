@@ -106,4 +106,3 @@ def tree_disable(tree_abbrev: str):
 def tree_enable(tree_abbrev: str):
     """Re-enable a named tree and all its versions"""
     enable_tree(tree_abbrev)
-
