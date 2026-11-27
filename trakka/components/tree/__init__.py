@@ -4,7 +4,7 @@ import click
 
 from trakka.utils.output import table_format_option
 from trakka.components.tree.version import version
-from trakka.components.tree.funcs import list_trees, disable_tree, enable_tree
+from trakka.components.tree.funcs import list_trees, disable_tree, enable_tree, rename_tree
 from trakka.components.tree.funcs import add_tree
 from trakka.components.tree.funcs import update_tree
 from trakka.utils.cmd_filter import show_admin_cmds
@@ -87,6 +87,12 @@ def tree_update(
         is_active,
     )
 
+@tree.command('rename')
+@click.argument('tree-abbrev', type=str)
+@opt_abbrev()
+def tree_rename(tree_abbrev: str, abbrev: str):
+    """Rename a tree abbreviation"""
+    rename_tree(tree_abbrev, abbrev)
 
 @tree.command('disable', hidden=hide_admin_cmds())
 @click.argument('tree-abbrev', type=str)

@@ -61,6 +61,17 @@ def update_tree(
         data=tree
     )
 
+@logger_wraps()
+def rename_tree(abbrev: str, new_abbrev: str):
+    tree = get_tree_by_abbrev(abbrev)
+
+    api_patch(
+        path=f'{TREE_PATH}/rename',
+        data={
+            'treeId': tree['treeId'],
+            'abbreviation': new_abbrev
+        }
+    )
 
 @logger_wraps()
 def disable_tree(abbrev: str):
